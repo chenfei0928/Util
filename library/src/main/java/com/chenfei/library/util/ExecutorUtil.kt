@@ -1,16 +1,15 @@
-package com.yikelive.util
+package com.chenfei.library.util
 
 import android.os.Handler
 import android.os.Looper
 import android.support.annotation.MainThread
 import android.support.annotation.WorkerThread
 import android.util.Log
-import com.yikelive.retrofitUtil.RxJavaUtil
-import com.yikelive.util.lambdaFunction.Action1
+import com.chenfei.library.util.lambdaFunction.Action1
 import java.util.concurrent.ArrayBlockingQueue
 
 object ExecutorUtil {
-    private const val TAG = "KW_ExecutorUtil"
+    private const val TAG = "ExecutorUtil"
     private val mMainHandler = Handler(Looper.getMainLooper())
     // 此处不要使用HandlerThread，以直接暴露其运行的Runnable调用Looper.myLooper()导致的错误
     private val bgThread: BgExecutorThread by lazy {
@@ -23,7 +22,6 @@ object ExecutorUtil {
 
     @JvmStatic
     fun <R> execute(@WorkerThread commend: () -> R, @MainThread callBack: Action1<R>) {
-        val throwableAction = RxJavaUtil.onError(RxJavaUtil.CELL_METHOD_STACK_TRACE + 1)
         bgThread.enqueue(Runnable {
             try {
                 val r = commend()
@@ -31,7 +29,6 @@ object ExecutorUtil {
                 mMainHandler.post { callBack.call(r) }
             } catch (t: Throwable) {
                 try {
-                    throwableAction.accept(t)
                 } catch (ignore: Exception) {
                 }
             }

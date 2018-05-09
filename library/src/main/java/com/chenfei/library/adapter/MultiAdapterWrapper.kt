@@ -1,7 +1,7 @@
 package com.chenfei.library.adapter
 
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.changeViewType
+import android.support.v7.widget.RecyclerViewHelperKt
 import android.view.ViewGroup
 import com.chenfei.library.R
 
@@ -58,12 +58,12 @@ open class MultiAdapterWrapper<in Adapter, ViewHolder : RecyclerView.ViewHolder>
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemViewType = holder.itemViewType
-        changeViewType(holder, holder.realViewType)
+        RecyclerViewHelperKt.changeViewType(holder, holder.realViewType)
         val upOfThisAdapter = mAdapters
                 .takeWhile { it != holder.adapter }
                 .sumBy { it.itemCount }
         holder.adapter.onBindViewHolder(holder, position - upOfThisAdapter)
-        changeViewType(holder, itemViewType)
+        RecyclerViewHelperKt.changeViewType(holder, itemViewType)
     }
 
     interface InnerAdapter {

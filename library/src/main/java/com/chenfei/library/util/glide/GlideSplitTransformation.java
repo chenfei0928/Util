@@ -19,7 +19,7 @@ import java.security.MessageDigest;
 public class GlideSplitTransformation extends BitmapTransformation {
     private static final Paint DEFAULT_PAINT = new Paint(TransformationUtils.PAINT_FLAGS);
     private static final String ID =
-            "com.yikelive.util.GlideSplitTransformation";
+            "com.chenfei.library.util.glide.GlideSplitTransformation";
     private static final byte[] ID_BYTES = ID.getBytes(CHARSET);
 
     private final int page;

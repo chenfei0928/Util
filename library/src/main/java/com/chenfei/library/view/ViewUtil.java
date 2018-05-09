@@ -20,7 +20,7 @@ import android.view.ViewParent;
  * Created by Admin on 2015/8/19.
  */
 public class ViewUtil {
-    private static final String TAG = "KW_ViewUtil";
+    private static final String TAG = "ViewUtil";
 
     /**
      * 通过API获得屏幕方向，如果是横屏或主动设置了屏幕方向为横屏的话，返回true
