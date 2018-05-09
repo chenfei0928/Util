@@ -21,7 +21,7 @@ object ExecutorUtil {
     }
 
     @JvmStatic
-    fun <R> execute(@WorkerThread commend: () -> R, @MainThread callBack: Action1<R>) {
+    fun <R> execute(commend: () -> R, callBack: Action1<R>) {
         bgThread.enqueue(Runnable {
             try {
                 val r = commend()
@@ -36,7 +36,7 @@ object ExecutorUtil {
     }
 
     @JvmStatic
-    fun postToBg(@WorkerThread r: Runnable): Boolean {
+    fun postToBg(r: Runnable): Boolean {
         return bgThread.enqueue(r)
     }
 
@@ -46,12 +46,12 @@ object ExecutorUtil {
     }
 
     @JvmStatic
-    fun runOnUiThread(@MainThread r: Runnable): Boolean {
+    fun runOnUiThread(r: Runnable): Boolean {
         return mMainHandler.post(r)
     }
 
     @JvmStatic
-    fun runOnUiThreadDelayed(@MainThread r: Runnable, delayMillis: Long): Boolean {
+    fun runOnUiThreadDelayed(r: Runnable, delayMillis: Long): Boolean {
         return mMainHandler.postDelayed(r, delayMillis)
     }
 
