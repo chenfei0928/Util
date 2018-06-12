@@ -1,4 +1,4 @@
-package com.chenfei.library.util
+package com.chenfei.library.util.kotlin
 
 import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
@@ -12,8 +12,9 @@ class DataBindingExt {
          * 用于加载ViewDataBinding而不添加到ViewGroup时使用，常见于Adapter
          */
         @JvmStatic
-        fun <Binding : ViewDataBinding> inflate(parent: ViewGroup, @LayoutRes layoutId: Int): Binding {
-            return DataBindingUtil.inflate(LayoutInflater.from(parent.context), layoutId, parent, false)
+        @JvmOverloads
+        fun <Binding : ViewDataBinding> inflate(parent: ViewGroup, @LayoutRes layoutId: Int, attachToParent: Boolean = false): Binding {
+            return DataBindingUtil.inflate(LayoutInflater.from(parent.context), layoutId, parent, attachToParent)
         }
     }
 }

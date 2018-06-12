@@ -1,4 +1,4 @@
-package com.chenfei.library.util
+package com.chenfei.library.util.kotlin
 
 import android.content.Context
 import android.os.Build

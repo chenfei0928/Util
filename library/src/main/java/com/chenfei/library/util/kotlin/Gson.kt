@@ -1,4 +1,4 @@
-package com.chenfei.library.util
+package com.chenfei.library.util.kotlin
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

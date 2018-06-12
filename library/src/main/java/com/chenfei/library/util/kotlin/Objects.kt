@@ -1,17 +1,7 @@
-@file:Suppress("NOTHING_TO_INLINE")
+package com.chenfei.library.util.kotlin
 
-package com.chenfei.library.util
-
-inline fun <T> Collection<T>?.isNullOrEmpty() = this == null || isEmpty()
-inline fun <T> Array<out T>?.isNullOrEmpty() = this == null || isEmpty()
-inline fun ByteArray?.isNullOrEmpty() = this == null || isEmpty()
-inline fun ShortArray?.isNullOrEmpty() = this == null || isEmpty()
-inline fun IntArray?.isNullOrEmpty() = this == null || isEmpty()
-inline fun LongArray?.isNullOrEmpty() = this == null || isEmpty()
-inline fun FloatArray?.isNullOrEmpty() = this == null || isEmpty()
-inline fun DoubleArray?.isNullOrEmpty() = this == null || isEmpty()
-inline fun BooleanArray?.isNullOrEmpty() = this == null || isEmpty()
-inline fun CharArray?.isNullOrEmpty() = this == null || isEmpty()
+import java.text.SimpleDateFormat
+import java.util.*
 
 inline fun <T1, T2> checkNotNull(t1: T1?, t2: T2?, action: (T1, T2) -> Unit) {
     if (t1 != null && t2 != null)
@@ -42,3 +32,20 @@ inline fun <R> Process.use(block: (Process) -> R): R {
         this.destroy()
     }
 }
+
+fun Long.toDate() = Date(this)
+fun Long.formatDateTime(pattern: String): String =
+        this.toDate().toString(pattern)
+
+/**
+ * 规则字符串内如果要使用模式字母，将非匹配规则内的字符以单引号括住
+ * 在单引号内的模式字母不会被认为是规则，如要输出单引号本身，则使用两个单引号
+ * 比如要输出：LastTime's 12:00 ，则将匹配规则写为：'LastTime''s 'hh:mm
+ *
+ * @receiver      日期
+ * @param pattern 规则
+ * @return 格式化后的日期
+ */
+@JvmOverloads
+fun Date.toString(pattern: String, locale: Locale = Locale.CHINA): String =
+        SimpleDateFormat(pattern, locale).format(this)
