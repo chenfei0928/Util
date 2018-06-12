@@ -5,6 +5,8 @@ import android.content.Context
 import android.os.Build
 import android.support.v4.util.ArrayMap
 import android.util.Log
+import com.chenfei.library.util.kotlin.forEachLine
+import com.chenfei.library.util.kotlin.use
 import java.io.File
 import java.io.PrintWriter
 import java.text.ParsePosition

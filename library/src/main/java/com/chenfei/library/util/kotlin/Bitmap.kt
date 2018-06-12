@@ -5,7 +5,7 @@ import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
 
-private const val TAG = "KW_Bitmap"
+private const val TAG = "Bitmap"
 
 /**
  * Created by MrFeng on 2018/5/15.

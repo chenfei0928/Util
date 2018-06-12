@@ -4,7 +4,7 @@ import android.databinding.ViewDataBinding
 import android.support.annotation.LayoutRes
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import com.chenfei.library.util.DataBindingExt
+import com.chenfei.library.util.kotlin.DataBindingExt
 
 abstract class CommonAdapter<Bean, Binding : ViewDataBinding>
 protected constructor(
