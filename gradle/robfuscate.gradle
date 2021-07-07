@@ -1,0 +1,2 @@
+// NOTICE: Robfuscate must be added AFTER android plugin.
+apply plugin: 'com.catchingnow.robfuscate'

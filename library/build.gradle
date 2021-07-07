@@ -1,67 +1,17 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-
-android {
-    compileSdkVersion 27
-
-    defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-    compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
-    }
-}
-
-kotlin {
-    experimental {
-        coroutines 'enable'
-    }
-}
-
-androidExtensions {
-    experimental = true
-}
+apply from: "../gradle/lib.gradle"
+apply from: "../gradle/test.gradle"
+apply from: "../gradle/kotlin.gradle"
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "com.android.support:design:${rootProject.ext.support_version}"
-    implementation "com.android.support:palette-v7:${rootProject.ext.support_version}"
-    implementation "com.android.support:appcompat-v7:${rootProject.ext.support_version}"
-    implementation "com.android.support:recyclerview-v7:${rootProject.ext.support_version}"
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation deps.androidx.core
+    implementation deps.androidx.material
+    implementation deps.androidx.palette
+    implementation deps.androidx.recyclerview.core
 
-    // Android KTX for framework API
-    // https://github.com/android/android-ktx/
-    // https://android.github.io/android-ktx/core-ktx/
-    implementation 'androidx.core:core-ktx:0.3'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.anko:anko:$anko_version"
-    // Anko Commons
-    implementation "org.jetbrains.anko:anko-commons:$anko_version"
-
-    compileOnly "com.android.databinding:adapters:$ide_version"
     // https://github.com/bumptech/glide
-    compileOnly "com.github.bumptech.glide:glide:4.6.1"
+    compileOnly deps.glide.core
     // https://github.com/florent37/GlidePalette
-    compileOnly 'com.github.florent37:glidepalette:2.1.2'
-    // https://github.com/hotchemi/PermissionsDispatcher
-    compileOnly "com.github.hotchemi:permissionsdispatcher:3.2.0"
+    compileOnly deps.glide.glidePalette
     // https://github.com/google/gson
-    compileOnly 'com.google.code.gson:gson:2.8.5'
+    compileOnly deps.lib.gson
 }

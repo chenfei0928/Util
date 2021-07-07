@@ -1,0 +1,75 @@
+// Application 和 Library 通用属性的gradle
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    ndkVersion "22.0.7026061"
+
+    buildTypes {
+        release {
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            buildConfigField "boolean", "thirdSdkEnable",           "true"
+            buildConfigField "boolean", "loggable",                 "false"
+            buildConfigField "boolean", "toastFullNetApiErrorResp", "false"
+        }
+        abtest {
+            debuggable true
+
+            buildConfigField "boolean", "thirdSdkEnable",           "false"
+            buildConfigField "boolean", "loggable",                 "true"
+            buildConfigField "boolean", "toastFullNetApiErrorResp", "false"
+        }
+        debug {
+            debuggable true
+            crunchPngs false
+
+            buildConfigField "boolean", "thirdSdkEnable",           "false"
+            buildConfigField "boolean", "loggable",                 "true"
+            buildConfigField "boolean", "toastFullNetApiErrorResp", "true"
+        }
+    }
+    // Debug时禁用PNG优化
+    aaptOptions {
+        cruncherEnabled gradle.ext.isRelease
+    }
+    // 移除lint检查的error
+    lintOptions {
+        abortOnError false
+        checkReleaseBuilds false
+        disable 'InvalidPackage'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+// 同步依赖版本
+// https://juejin.im/post/5d2dee0851882569755f5494
+def needMargeVersion = [
+        deps.lib.gson,
+]
+configurations {
+    all {
+        resolutionStrategy {
+            eachDependency { DependencyResolveDetails details ->
+                def foundMargeVersion = needMargeVersion.find {
+                    it.startsWith(details.requested.group + ":" + details.requested.name)
+                }
+                if (foundMargeVersion != null) {
+                    details.useVersion foundMargeVersion.split(":").last()
+                    details.because "use lastest version"
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+}
