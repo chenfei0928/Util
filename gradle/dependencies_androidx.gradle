@@ -27,9 +27,10 @@ def androidx = [
         ],
         // https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-adapters/maven-metadata.xml
         databinding  : [
-                adapters: "androidx.databinding:databinding-adapters:$ide_version",
-                runtime : "androidx.databinding:databinding-runtime:$ide_version",
-                common  : "androidx.databinding:databinding-common:$ide_version",
+                adapters   : "androidx.databinding:databinding-adapters:$ide_version",
+                runtime    : "androidx.databinding:databinding-runtime:$ide_version",
+                common     : "androidx.databinding:databinding-common:$ide_version",
+                viewbinding: "androidx.databinding:viewbinding:$ide_version",
         ],
 ]
 

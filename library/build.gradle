@@ -4,9 +4,19 @@ apply from: "../gradle/kotlin.gradle"
 
 dependencies {
     implementation deps.androidx.core
+    implementation deps.androidx.ktx
+    implementation deps.androidx.activity
+    implementation deps.androidx.fragment
     implementation deps.androidx.material
     implementation deps.androidx.palette
     implementation deps.androidx.recyclerview.core
+    implementation deps.androidx.gridlayout
+    implementation deps.androidx.preference
+    implementation deps.androidx.preferenceKtx
+    implementation deps.androidx.multidex.core
+    implementation deps.androidx.constraintlayout.core
+    implementation deps.androidx.databinding.viewbinding
+    implementation deps.androidx.databinding.adapters
 
     // https://github.com/bumptech/glide
     compileOnly deps.glide.core
@@ -14,4 +24,15 @@ dependencies {
     compileOnly deps.glide.glidePalette
     // https://github.com/google/gson
     compileOnly deps.lib.gson
+    compileOnly deps.lib.zxing.core
+    compileOnly deps.network.okhttp
+    compileOnly deps.network.retrofit.core
+
+    // ARouter
+    compileOnly deps.lib.aRouter.api
+
+    // 6.0 权限请求代理库
+    implementation deps.lib.permissionsDispatcher.core
+    implementation deps.widget.recyclerView.multiType
+    implementation deps.widget.flexbox
 }

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="onPropertyChanged" type="id"/>
     <item name="toolbar" type="id"/>
     <item name="multiAdapterId_adapter" type="id"/>
     <item name="multiAdapterId_realViewType" type="id"/>
+    <item name="glide_id" type="id"/>
 </resources>
