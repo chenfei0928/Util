@@ -1,4 +1,4 @@
-package com.chenfei.module
+package com.chenfei.storage
 
 import java.io.InputStream
 import java.io.OutputStream
@@ -14,5 +14,9 @@ class StringSerializer : LocalSerializer<String> {
 
     override fun load(inputStream: InputStream): String? {
         return String(inputStream.readBytes())
+    }
+
+    override fun copy(obj: String): String {
+        return obj
     }
 }

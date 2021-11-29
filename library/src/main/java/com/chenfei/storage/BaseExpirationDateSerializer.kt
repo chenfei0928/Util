@@ -1,4 +1,4 @@
-package com.chenfei.module
+package com.chenfei.storage
 
 import java.io.InputStream
 import java.io.OutputStream
@@ -10,7 +10,7 @@ import java.io.OutputStream
  */
 abstract class BaseExpirationDateSerializer<T>(
     private val serializer: LocalSerializer<T>
-) : LocalSerializer<T> {
+) : LocalSerializer<T> by serializer {
 
     override fun save(outputStream: OutputStream, obj: T) {
         // 记录保存时间

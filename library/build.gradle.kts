@@ -1,5 +1,6 @@
 plugins {
     `android-library`
+    `kotlin-android`
 }
 
 applyLib()
@@ -9,6 +10,7 @@ applyKotlin()
 dependencies {
     implementation(DepsAndroidx.core)
     implementation(DepsAndroidx.ktx)
+    implementation(DepsAndroidx.webkit)
     implementation(DepsAndroidx.activity)
     implementation(DepsAndroidx.fragment)
     implementation(DepsAndroidx.material)
@@ -31,6 +33,7 @@ dependencies {
     compileOnly(Deps.lib.zxing.core)
     compileOnly(Deps.network.okhttp)
     compileOnly(Deps.network.retrofit.core)
+    compileOnly(Deps.lib.protobuf.java)
 
     // ARouter
     compileOnly(Deps.lib.aRouter.api)

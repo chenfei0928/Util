@@ -1,4 +1,4 @@
-package com.chenfei.module
+package com.chenfei.storage
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -11,7 +11,7 @@ object ParcelableUtils {
     /**
      * 创建一个Parcel并使用以写入数据
      */
-    private inline fun obtainToUse(block: Parcel.() -> Unit): ByteArray {
+    inline fun obtainToUse(block: Parcel.() -> Unit): ByteArray {
         val parcel = Parcel.obtain()
         block(parcel)
         val bytes = parcel.marshall()
@@ -22,7 +22,7 @@ object ParcelableUtils {
     /**
      * 使用读取的ByteArray创建Parcel并读取其
      */
-    private inline fun <T> ByteArray.useByParcel(block: Parcel.() -> T): T {
+    inline fun <T> ByteArray.useByParcel(block: Parcel.() -> T): T {
         val parcel = Parcel.obtain()
         parcel.unmarshall(this, 0, size)
         parcel.setDataPosition(0) // This is extremely important!

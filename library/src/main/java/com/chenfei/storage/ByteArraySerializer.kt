@@ -1,4 +1,4 @@
-package com.chenfei.module
+package com.chenfei.storage
 
 import java.io.IOException
 import java.io.InputStream
@@ -18,5 +18,9 @@ class ByteArraySerializer : LocalSerializer<ByteArray> {
     @Throws(IOException::class)
     override fun load(inputStream: InputStream): ByteArray? {
         return inputStream.readBytes()
+    }
+
+    override fun copy(obj: ByteArray): ByteArray {
+        return obj.copyOf()
     }
 }

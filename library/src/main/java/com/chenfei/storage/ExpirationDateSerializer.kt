@@ -1,8 +1,8 @@
-package com.chenfei.module
+package com.chenfei.storage
 
 class ExpirationDateSerializer<T>(
-        serializer: LocalSerializer<T>,
-        private val timeout: Long
+    serializer: LocalSerializer<T>,
+    private val timeout: Long
 ) : BaseExpirationDateSerializer<T>(serializer) {
 
     override fun check(localSavedTimeMillis: Long): Boolean {

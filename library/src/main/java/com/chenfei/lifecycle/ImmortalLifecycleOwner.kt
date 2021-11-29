@@ -1,4 +1,4 @@
-package com.chenfei.util
+package com.chenfei.lifecycle
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver

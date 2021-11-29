@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.collection.ArrayMap
+import com.google.protobuf.GeneratedMessageLite
+import com.google.protobuf.getParseFrom
 
 fun Intent.putParcelableListExtra(name: String, value: List<Parcelable>?): Intent {
     return putParcelableArrayListExtra(name, value?.asArrayList())
@@ -11,6 +13,23 @@ fun Intent.putParcelableListExtra(name: String, value: List<Parcelable>?): Inten
 
 fun Bundle.putParcelableList(name: String, value: List<Parcelable>?) {
     putParcelableArrayList(name, value?.asArrayList())
+}
+
+fun Intent.putExtra(name: String, value: com.google.protobuf.GeneratedMessageLite<*, *>) {
+    putExtra(name, value.toByteArray())
+}
+
+fun <T : com.google.protobuf.GeneratedMessageLite<*, *>> Intent.getExtra(
+    name: String, parse: (ByteArray) -> T
+): T? {
+    return getByteArrayExtra(name)?.let(parse)
+}
+
+inline fun <reified T : GeneratedMessageLite<T, *>, Source> Intent.getExtra(
+    name: String
+): T? {
+    val parseFrom = T::class.java.getParseFrom<T, ByteArray>()
+    return getByteArrayExtra(name)?.let(parseFrom)
 }
 
 fun Intent.getAllExtras() = extras?.getAll() ?: emptyMap()
