@@ -1,6 +1,6 @@
-package com.chenfei.util.kotlin.coroutines
+package com.chenfei.coroutines
 
-import com.chenfei.util.Log
+import android.util.Log
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,12 +12,14 @@ import kotlin.coroutines.CoroutineContext
  * 通用的协程异常处理器，用于补充[GlobalScope]不带错误处理，在协程中出异常直接导致应用崩溃的问题
  * [博文](https://www.jianshu.com/p/2056d5424001)
  */
-private object UncaughtCoroutineExceptionHandler : CoroutineExceptionHandler,
+object UncaughtCoroutineExceptionHandler : CoroutineExceptionHandler,
     AbstractCoroutineContextElement(CoroutineExceptionHandler.Key) {
     private const val TAG = "KW_CoroutineExceptionH"
+    var onErrorLis: ((context: CoroutineContext, exception: Throwable) -> Unit)? = null
 
     override fun handleException(context: CoroutineContext, exception: Throwable) {
         Log.w(TAG, "UncaughtCoroutineExceptionHandler: ", exception)
+        onErrorLis?.invoke(context, exception)
     }
 }
 

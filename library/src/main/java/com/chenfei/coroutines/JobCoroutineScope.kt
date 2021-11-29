@@ -1,4 +1,4 @@
-package com.chenfei.util.kotlin.coroutines
+package com.chenfei.coroutines
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

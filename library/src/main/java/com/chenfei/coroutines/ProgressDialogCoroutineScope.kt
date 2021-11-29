@@ -1,4 +1,4 @@
-package com.chenfei.util.kotlin.coroutines
+package com.chenfei.coroutines
 
 import android.app.Activity
 import android.content.DialogInterface

@@ -1,4 +1,4 @@
-package com.chenfei.util.kotlin.coroutines
+package com.chenfei.coroutines
 
 import android.content.Context
 import androidx.fragment.app.Fragment
@@ -15,7 +15,7 @@ import kotlin.coroutines.CoroutineContext
  */
 class CoroutineAndroidContextImpl(
     override val androidContext: Context, override val fragmentHost: Fragment?
-) : CoroutineAndroidContext, AbstractCoroutineContextElement(CoroutineAndroidContext.Key) {
+) : CoroutineAndroidContext, AbstractCoroutineContextElement(CoroutineAndroidContext) {
 
     override fun toString(): String {
         return "CoroutineAndroidContextImpl(androidContext=$androidContext, fragmentHost=$fragmentHost)"
