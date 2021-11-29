@@ -19,14 +19,14 @@ object Env {
         impl = EnvImpl(containsReleaseBuild)
     }
 
-    var containsReleaseBuild: Boolean = false
+    internal var containsReleaseBuild: Boolean = false
         private set
 
-    val kotlinVer: String
+    internal val kotlinVer: String
         get() = impl.kotlinVer
-    val agp: String
+    internal val agp: String
         get() = impl.agp
-    val vcsCommitId: String
+    internal val vcsCommitId: String
         get() = impl.vcsCommitId
     internal val vcsVersionCode: Int
         get() = impl.vcsVersionCode
@@ -61,8 +61,7 @@ object Env {
             // 以commit数量从大到小排序
             val commitId = Runtime.getRuntime()
                 .exec("git rev-parse --short HEAD")
-                .readText()
-                .trim()
+                .readTrimmedText()
             logger.quiet("VCS Commit Id: ${commitId}, time cost ${System.currentTimeMillis() - l} ms.")
             commitId
         }
@@ -76,8 +75,7 @@ object Env {
                 Runtime
                     .getRuntime()
                     .exec("git rev-list HEAD --count")
-                    .readText()
-                    .trim()
+                    .readTrimmedText()
                     .toInt()
             } catch (e: Throwable) {
                 logger.error("vcsVersionCode: ", e)
@@ -87,8 +85,8 @@ object Env {
             ver
         }
 
-        private fun Process.readText(): String {
-            return inputStream.reader().readText()
+        private fun Process.readTrimmedText(): String {
+            return inputStream.reader().readText().trim()
         }
     }
 }

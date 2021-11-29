@@ -3,7 +3,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import java.lang.Integer.max
 
-private const val composeVer = "1.0.1"
+private const val composeVer = "1.0.5"
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -56,14 +56,14 @@ fun Project.applyJetpackCompose() {
         implementation(DepsAndroidx.activityCompose)
         // Integration with ViewModels
         // https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel-compose/maven-metadata.xml
-        implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07")
+        implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${DepsAndroidx.lifecycle.lifecycleVer}")
         // Integration with observables
         implementation("androidx.compose.runtime:runtime-livedata:$composeVer")
         implementation("androidx.compose.runtime:runtime-rxjava2:$composeVer")
 
         implementation(Deps.widget.lottieCompose)
         // https://dl.google.com/dl/android/maven2/androidx/constraintlayout/constraintlayout-compose/maven-metadata.xml
-        implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02")
+        implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02")
 
         // UI Tests
         add("androidTestImplementation", "androidx.compose.ui:ui-test-junit4:$composeVer")

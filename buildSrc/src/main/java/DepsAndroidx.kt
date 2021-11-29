@@ -18,7 +18,7 @@ object DepsAndroidx {
     const val activityKtx = "androidx.activity:activity-ktx:1.3.1"
 
     // https://dl.google.com/dl/android/maven2/androidx/activity/activity-compose/maven-metadata.xml
-    const val activityCompose = "androidx.activity:activity-compose:1.3.1"
+    const val activityCompose = "androidx.activity:activity-compose:1.4.0"
 
     // https://dl.google.com/dl/android/maven2/androidx/fragment/fragment/maven-metadata.xml
     const val fragment = "androidx.fragment:fragment:1.3.6"
@@ -245,7 +245,7 @@ object DepsAndroidx {
     // https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/maven-metadata.xml
     object lifecycle {
         // https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/maven-metadata.xml
-        private const val lifecycleVer = "2.3.1"
+        internal const val lifecycleVer = "2.4.0"
 
         const val common = "androidx.lifecycle:lifecycle-common:$lifecycleVer"
         const val commonJ8 = "androidx.lifecycle:lifecycle-common-java8:$lifecycleVer"
