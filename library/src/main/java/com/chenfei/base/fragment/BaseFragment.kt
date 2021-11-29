@@ -5,7 +5,7 @@ import android.os.Message
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.chenfei.util.SafeHandler
+import com.chenfei.util.safeHandler
 
 /**
  * 基础Fragment，所有含有View的fragment必须继承于此类
@@ -13,7 +13,6 @@ import com.chenfei.util.SafeHandler
  * Created by Admin on 2016/3/2.
  */
 abstract class BaseFragment : Fragment(), FragmentHost {
-    internal val mHandler by lazy { SafeHandler.create(this) }
     private var mDestroyedView = false
     var isDestroyed = false
         private set
@@ -32,13 +31,13 @@ abstract class BaseFragment : Fragment(), FragmentHost {
         super.onDestroyView()
         mDestroyedView = true
         // 移除所有信息，以让其回收
-        mHandler.removeMessages(DELAYED_TASK)
+        safeHandler.removeMessages(DELAYED_TASK)
     }
 
     override fun onDestroy() {
         isDestroyed = true
         // 移除所有信息，以让其回收
-        mHandler.removeCallbacksAndMessages(null)
+        safeHandler.removeCallbacksAndMessages(null)
         super.onDestroy()
     }
 
@@ -49,9 +48,9 @@ abstract class BaseFragment : Fragment(), FragmentHost {
         if (isDestroyed) {
             return false
         }
-        val message = Message.obtain(mHandler, action)
+        val message = Message.obtain(safeHandler, action)
         message.what = DELAYED_TASK
-        return mHandler.sendMessageDelayed(message, delayMillis)
+        return safeHandler.sendMessageDelayed(message, delayMillis)
     }
 
     protected inline fun postDelayedWithoutView(delayMillis: Long, crossinline action: () -> Unit) =
@@ -61,8 +60,8 @@ abstract class BaseFragment : Fragment(), FragmentHost {
         if (mDestroyedView) {
             return false
         }
-        val message = Message.obtain(mHandler, action)
-        return mHandler.sendMessageDelayed(message, delayMillis)
+        val message = Message.obtain(safeHandler, action)
+        return safeHandler.sendMessageDelayed(message, delayMillis)
     }
 
     protected inline fun post(crossinline action: () -> Unit) = post(Runnable { action() })
@@ -71,13 +70,13 @@ abstract class BaseFragment : Fragment(), FragmentHost {
         if (isDestroyed) {
             return false
         }
-        val message = Message.obtain(mHandler, action)
+        val message = Message.obtain(safeHandler, action)
         message.what = DELAYED_TASK
-        return mHandler.sendMessage(message)
+        return safeHandler.sendMessage(message)
     }
 
     protected fun removeCallbacks(action: Runnable) {
-        mHandler.removeCallbacks(action)
+        safeHandler.removeCallbacks(action)
     }
 
     override fun getSupportFragmentManager(): FragmentManager = childFragmentManager
