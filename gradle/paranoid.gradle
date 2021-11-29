@@ -1,9 +1,0 @@
-apply plugin: 'io.michaelrocks.paranoid'
-
-paranoid {
-    enabled !gradle.ext.isRelease
-}
-
-dependencies {
-    implementation 'io.michaelrocks:paranoid-core:0.3.2'
-}
