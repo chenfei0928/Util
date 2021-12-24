@@ -5,8 +5,8 @@ import android.os.Handler
 import android.view.ViewConfiguration
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
-import androidx.core.os.postAtTime
-import io.github.chenfei0928.library.R
+import androidx.core.os.postDelayed
+import io.github.chenfei0928.util.R
 
 /**
  * 双击退出
@@ -22,7 +22,7 @@ class DoubleBackToExitCallback(
     override fun handleOnBackPressed() {
         ToastUtil.showShort(context, R.string.main_doubleBackToExit)
         isEnabled = false
-        handler.postAtTime(doubleTapTimeout * 7L) {
+        handler.postDelayed(doubleTapTimeout * 7L) {
             isEnabled = true
         }
     }
@@ -30,7 +30,7 @@ class DoubleBackToExitCallback(
     companion object {
         fun setup(context: ComponentActivity) {
             context.onBackPressedDispatcher.addCallback(
-                context, DoubleBackToExitCallback(context, context.safeHandler)
+                context, DoubleBackToExitCallback(context, SafeHandler.getOrCreate(context))
             )
         }
     }

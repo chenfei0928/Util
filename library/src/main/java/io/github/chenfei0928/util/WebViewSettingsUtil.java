@@ -9,23 +9,22 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import io.github.chenfei0928.base.app.BaseApplication;
-import io.github.chenfei0928.library.BuildConfig;
+import io.github.chenfei0928.util.BuildConfig;
+import io.github.chenfei0928.util.R;
+import io.github.chenfei0928.util.kotlin.ViewKt;
+import io.github.chenfei0928.view.SystemUiUtil;
 
 import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArraySet;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.webkit.ProxyConfig;
 import androidx.webkit.ProxyController;
 import androidx.webkit.WebSettingsCompat;
@@ -36,10 +35,12 @@ import androidx.webkit.WebViewRenderProcessClient;
 import kotlin.jvm.functions.Function1;
 
 /**
+ * @author MrFeng
+ * @date 2017/3/8
  * @see <a href="http://reezy.me/p/20170515/android-webview/">原博客</a>
  */
 public class WebViewSettingsUtil {
-    private static final String TAG = "WebSettingUtil";
+    private static final String TAG = "KW_WebSettingUtil";
     private static boolean safeBrowsingEnable = true;
 
     static {
@@ -98,10 +99,12 @@ public class WebViewSettingsUtil {
             }
         } catch (Throwable e) {
             Log.w(TAG, "installWebView: webView 创建失败", e);
+            ToastUtil.showShort(placeHolder.getContext(), R.string.webViewLoadFailed);
             return null;
         }
         // 检查是否创建成功
         if (webView == null) {
+            ToastUtil.showShort(placeHolder.getContext(), R.string.webViewLoadFailed);
             return null;
         } else {
             // 替换到placeHolder占位View
@@ -117,44 +120,8 @@ public class WebViewSettingsUtil {
         }
     }
 
-    /**
-     * 创建并安装WebView到占位View上。
-     * <p>
-     * 创建WebView成功后将会将WebView替换到占位View上，并使WebView监听宿主的生命周期。
-     * 以自动恢复/暂停WebView的Js计时器，并在宿主销毁时自动销毁WebView实例，以优化电量消耗与避免内存泄漏。
-     *
-     * @param lifecycleOwner 生命周期宿主，为WebView所在的Activity/Fragment
-     * @param placeHolder    WebView布局占位View，WebView创建完毕后会将其移除
-     * @param creator        WebView构造者
-     */
-    @Nullable
-    public static <WV extends WebView> WV installWebViewWithLifecycle(
-            @NonNull LifecycleOwner lifecycleOwner, @NonNull View placeHolder, @NonNull Function1<Context, WV> creator) {
-        WV webView = installWebView(placeHolder, creator);
-        if (webView == null) {
-            return null;
-        }
-        settingWebView(webView);
-        lifecycleOwner.getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
-            switch (event) {
-                case ON_RESUME:
-                    webView.onResume();
-                    webView.resumeTimers();
-                    break;
-                case ON_PAUSE:
-                    webView.pauseTimers();
-                    webView.onPause();
-                    break;
-                case ON_DESTROY:
-                    onDestroy(webView);
-                    break;
-            }
-        });
-        return webView;
-    }
-
     @SuppressLint("SetJavaScriptEnabled")
-    public static void settingWebView(@NonNull WebView webView) {
+    public static void settingWebView(@NonNull WebView webView, @NonNull Config config) {
         // 监听渲染器进程客户端
         if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
             Log.i(TAG, "settingWebView: setWebViewRenderProcessClient");
@@ -226,7 +193,7 @@ public class WebViewSettingsUtil {
         }
         // 夜间模式
         if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-            WebSettingsCompat.setForceDark(settings, WebSettingsCompat.FORCE_DARK_AUTO);
+            WebSettingsCompat.setForceDark(settings, config.darkMode);
         }
         if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK_STRATEGY)) {
             WebSettingsCompat.setForceDarkStrategy(settings, WebSettingsCompat.DARK_STRATEGY_PREFER_WEB_THEME_OVER_USER_AGENT_DARKENING);
@@ -249,6 +216,13 @@ public class WebViewSettingsUtil {
             intent.setData(Uri.parse(url));
             webView.getContext().startActivity(intent);
         });
+    }
+
+    public static void appendScreenInfoWhenImmersive(WebView webView) {
+        WebSettings settings = webView.getSettings();
+        // 设置UserAgent
+        settings.setUserAgentString(settings.getUserAgentString()
+                + SystemUiUtil.getWebViewUserAgentSystemUiSafeAreaInsetsDescription(webView.getContext()));
     }
 
     public static boolean isSupportProxyOverride() {
@@ -282,11 +256,12 @@ public class WebViewSettingsUtil {
             webView.clearHistory();
             webView.setWebChromeClient(null);
             webView.setWebViewClient(null);
-            ViewParent parent = webView.getParent();
-            if (parent instanceof ViewGroup) {
-                ((ViewGroup) parent).removeView(webView);
-            }
+            ViewKt.removeSelfFromParent(webView);
             webView.destroy();
         }
+    }
+
+    public static class Config {
+        public int darkMode = WebSettingsCompat.FORCE_DARK_ON;
     }
 }

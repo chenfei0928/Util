@@ -21,4 +21,15 @@
         <!-- Whether the extended FAB should automatically shrink when there is no space for it. -->
         <attr name="behavior_autoShrink" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="OutlineClipImageView">
+        <attr name="olciv_clipToBackground" format="boolean"/>
+        <attr name="olciv_oval" format="boolean"/>
+        <attr name="olciv_cornerRadius" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="BorderImageView">
+        <attr name="biv_border_width" format="dimension"/>
+        <attr name="biv_border_color" format="color"/>
+    </declare-styleable>
 </resources>

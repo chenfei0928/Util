@@ -10,7 +10,7 @@ import android.text.style.StyleSpan
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDialog
-import io.github.chenfei0928.library.R
+import io.github.chenfei0928.util.R
 import java.text.NumberFormat
 
 /**

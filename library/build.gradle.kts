@@ -26,6 +26,8 @@ dependencies {
     implementation(DepsAndroidx.constraintlayout.core)
     implementation(DepsAndroidx.databinding.viewBinding)
     implementation(DepsAndroidx.databinding.adapters)
+    implementation(DepsAndroidx.databinding.runtime)
+    implementation(DepsAndroidx.ads)
 
     // https://github.com/bumptech/glide
     compileOnly(Deps.glide.core)
@@ -43,6 +45,8 @@ dependencies {
 
     // 6.0 权限请求代理库
     implementation(Deps.lib.permissionsDispatcher.core)
-    implementation(Deps.widget.recyclerView.multiType)
-    implementation(Deps.widget.flexbox)
+    compileOnly(Deps.widget.recyclerView.multiType)
+    compileOnly(Deps.widget.flexbox)
+    compileOnly(Deps.widget.jsBridge)
+    compileOnly(Deps.widget.recyclerView.vlayout)
 }

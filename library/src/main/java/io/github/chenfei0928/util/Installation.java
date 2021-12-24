@@ -1,8 +1,6 @@
 package io.github.chenfei0928.util;
 
 import android.content.Context;
-import android.provider.Settings;
-import android.text.TextUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,9 +15,10 @@ import androidx.ads.identifier.AdvertisingIdClient;
 import androidx.ads.identifier.AdvertisingIdInfo;
 
 /**
- * 获取应用安装时安卓系统自动分配的UUID的工具类，支持自动保存
+ * 获取应用安装时安卓系统自动分配的UUID的工具类，支持自动保存。
  * 但是并没有打算去用这个玩意，因为应用重新安装之后会导致UUID被更新（UUID唯一，但是不保证对设备的唯一）
  * 之前使用获取网卡MAC地址的方式在6.0上莫名出现了无法正确获取得问题
+ * 为了审核合规，在此处不再获取AndroidId，而使用UUID，此值将会在重装应用后被更新
  *
  * @author Admin
  * @date 2016/2/1
@@ -27,7 +26,6 @@ import androidx.ads.identifier.AdvertisingIdInfo;
 public class Installation {
     private static final String TAG = "KW_Installation";
     private static final String INSTALLATION = "INSTALLATION";
-    private static final String STATIC_DEVICES_ID = "9774d56d682e549c";
     private static String sID = null;
 
     public synchronized static String id(Context context) {
@@ -74,13 +72,7 @@ public class Installation {
         } else {
             Log.d(TAG, "getAdId: AdvertisingId 不可用");
         }
-        // 优先获取AndroidId，此数值会在设备恢复出厂时被重置
-        String androidId = Settings.Secure.getString(
-                context.getContentResolver(), Settings.Secure.ANDROID_ID);
         // 如果获取到的是模拟器ID，使用生成的随机id
-        if (STATIC_DEVICES_ID.equals(androidId) || TextUtils.isEmpty(androidId)) {
-            androidId = UUID.randomUUID().toString();
-        }
-        return androidId;
+        return UUID.randomUUID().toString();
     }
 }

@@ -15,21 +15,18 @@ fun Bundle.putParcelableList(name: String, value: List<Parcelable>?) {
     putParcelableArrayList(name, value?.asArrayList())
 }
 
-fun Intent.putExtra(name: String, value: com.google.protobuf.GeneratedMessageLite<*, *>) {
+fun Intent.putExtra(name: String, value: GeneratedMessageLite<*, *>) {
     putExtra(name, value.toByteArray())
 }
 
-fun <T : com.google.protobuf.GeneratedMessageLite<*, *>> Intent.getExtra(
+fun <T : GeneratedMessageLite<*, *>> Intent.getExtra(
     name: String, parse: (ByteArray) -> T
 ): T? {
     return getByteArrayExtra(name)?.let(parse)
 }
 
-inline fun <reified T : GeneratedMessageLite<T, *>, Source> Intent.getExtra(
-    name: String
-): T? {
-    val parseFrom = T::class.java.getParseFrom<T, ByteArray>()
-    return getByteArrayExtra(name)?.let(parseFrom)
+inline fun <reified T : GeneratedMessageLite<T, *>> Intent.getExtra(name: String): T? {
+    return getByteArrayExtra(name)?.let(T::class.java.getParseFrom())
 }
 
 fun Intent.getAllExtras() = extras?.getAll() ?: emptyMap()

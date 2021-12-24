@@ -16,14 +16,14 @@ import io.github.chenfei0928.util.Log
 open class BaseLibWebChromeClient(
     private var host: FragmentHost? = null,
     private val mClientCallback: WebViewClientCallback,
-    private val mProgress: ProgressBar
+    private val mProgress: ProgressBar?
 ) : BaseDialogWebChromeClient() {
 
     /**
      * 当加载网页进度发生改变时触发
      */
     override fun onProgressChanged(view: WebView, newProgress: Int) {
-        mProgress.progress = newProgress
+        mProgress?.progress = newProgress
         super.onProgressChanged(view, newProgress)
     }
 

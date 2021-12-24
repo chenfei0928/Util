@@ -2,7 +2,7 @@ package io.github.chenfei0928.util;
 
 import android.text.TextUtils;
 
-import io.github.chenfei0928.library.BuildConfig;
+import io.github.chenfei0928.util.BuildConfig;
 import io.github.chenfei0928.util.lambdaFunction.Action1;
 import io.github.chenfei0928.util.lambdaFunction.Actions;
 

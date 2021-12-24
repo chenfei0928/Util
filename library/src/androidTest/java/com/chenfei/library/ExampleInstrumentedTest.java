@@ -1,4 +1,4 @@
-package io.github.chenfei0928.library;
+package io.github.chenfei0928.util;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("io.github.chenfei0928.library.test", appContext.getPackageName());
+        assertEquals("io.github.chenfei0928.util.test", appContext.getPackageName());
     }
 }

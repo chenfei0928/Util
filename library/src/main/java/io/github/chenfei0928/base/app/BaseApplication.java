@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.ViewTarget;
-import io.github.chenfei0928.library.R;
+import io.github.chenfei0928.util.R;
 import io.github.chenfei0928.util.ExecutorUtil;
 import io.github.chenfei0928.util.PowerSaveUtil;
 import io.github.chenfei0928.util.ToastUtil;

@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
-import io.github.chenfei0928.content.YikeFileProvider
 import java.io.File
 
 /**
@@ -17,7 +16,7 @@ import java.io.File
 class IntentKt {
     companion object {
         fun findManifestFileProviderScheme(context: Context): String? =
-            findManifestFileProviderScheme(context, YikeFileProvider::class.java)
+            findManifestFileProviderScheme(context, FileProvider::class.java)
 
         fun <F : FileProvider> findManifestFileProviderScheme(
             context: Context, clazz: Class<F>

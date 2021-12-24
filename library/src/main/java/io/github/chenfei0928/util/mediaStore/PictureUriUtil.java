@@ -11,7 +11,7 @@ import android.provider.MediaStore;
 
 /**
  * 做图片选择的帮助类，用于处理4.4以上时的scheme图片返回路径
- * 暂时仅用于{@link com.yikelive.ui.user.editProfile.EditProfileActivity}
+ * 暂时仅用于{@link io.github.chenfei0928.ui.user.editProfile.EditProfileActivity}
  * <p>
  *
  * @author MrFeng

@@ -4,14 +4,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
 import com.drakeet.multitype.MultiTypeAdapter
 import com.drakeet.multitype.ViewTypeProvider
-import io.github.chenfei0928.util.recyclerview.AbsRecyclerViewBinderRecorderBinding.LayoutParams
 import com.drakeet.multitype.registerWithTypeRecorderMap
+import io.github.chenfei0928.util.recyclerview.AbsRecyclerViewBinderRecorderBinding.LayoutParams
 
 /**
- * 提供bean类型映射保存的 [AbsRecyclerViewBinding]
- * 用于同一种Bean要对应多种layout的使用场景（不限制layoutManager类型）
+ * 提供bean类型映射保存的 [AbsRecyclerViewBinding]，
+ * 用于同一种Bean要对应多种layout的使用场景（不限制layoutManager类型）。
  *
- * 对[AbsLayoutParamRecyclerViewBinding]进行了添加 一bean类型对多binder支持
+ * 对[AbsLayoutParamRecyclerViewBinding]进行了添加 一bean类型对多binder支持。
  *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-01-19 16:38

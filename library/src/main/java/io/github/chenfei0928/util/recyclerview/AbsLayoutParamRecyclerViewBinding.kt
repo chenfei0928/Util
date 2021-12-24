@@ -9,9 +9,9 @@ import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.util.recyclerview.AbsLayoutParamRecyclerViewBinding.LayoutParams
 
 /**
- * 支持[LayoutParams]的RecyclerViewBinding
+ * 支持[LayoutParams]的RecyclerViewBinding。
  *
- * 对[AbsRecyclerViewBinding]进行了添加[LayoutParams]支持，以允许存储item的扩展属性
+ * 对[AbsRecyclerViewBinding]进行了添加[LayoutParams]支持，以允许存储item的扩展属性。
  *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-01-19 16:18

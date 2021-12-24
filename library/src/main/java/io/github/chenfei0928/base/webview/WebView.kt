@@ -1,8 +1,13 @@
 package io.github.chenfei0928.base.webview
 
 import android.os.Build
-import android.webkit.*
+import android.webkit.ConsoleMessage
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import android.webkit.WebView
 import androidx.annotation.RequiresApi
+import androidx.webkit.WebResourceErrorCompat
+import androidx.webkit.WebViewFeature
 
 /**
  * WebView 诊断与排查问题的方法和技巧，日志输出格式化
@@ -24,12 +29,20 @@ fun WebResourceRequest.toSimpleString(): String {
     return simpleString
 }
 
-fun WebResourceError.toSimpleString(): String {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        "errorCode=${errorCode}; description=${description}"
-    } else {
-        ""
-    }
+fun WebResourceErrorCompat.toSimpleString(): String {
+    val errorCode =
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_RESOURCE_ERROR_GET_CODE)) {
+            errorCode
+        } else {
+            -1
+        }
+    val description =
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_RESOURCE_ERROR_GET_DESCRIPTION)) {
+            description
+        } else {
+            "-"
+        }
+    return "errorCode=${errorCode}; description=${description}"
 }
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)

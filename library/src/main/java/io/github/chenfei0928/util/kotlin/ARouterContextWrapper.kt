@@ -3,6 +3,7 @@ package io.github.chenfei0928.util.kotlin
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.IntentSender
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.alibaba.android.arouter.facade.Postcard
@@ -40,6 +41,70 @@ private class ARouterActivityWrapper(
 
     override fun overridePendingTransition(enterAnim: Int, exitAnim: Int) {
         fragment.requireActivity().overridePendingTransition(enterAnim, exitAnim)
+    }
+
+    override fun startIntentSenderForResult(
+        intent: IntentSender?,
+        requestCode: Int,
+        fillInIntent: Intent?,
+        flagsMask: Int,
+        flagsValues: Int,
+        extraFlags: Int
+    ) {
+        fragment.startIntentSenderForResult(
+            intent,
+            requestCode,
+            fillInIntent,
+            flagsMask,
+            flagsValues,
+            extraFlags,
+            null
+        )
+    }
+
+    override fun startIntentSenderForResult(
+        intent: IntentSender?,
+        requestCode: Int,
+        fillInIntent: Intent?,
+        flagsMask: Int,
+        flagsValues: Int,
+        extraFlags: Int,
+        options: Bundle?
+    ) {
+        fragment.startIntentSenderForResult(
+            intent,
+            requestCode,
+            fillInIntent,
+            flagsMask,
+            flagsValues,
+            extraFlags,
+            options
+        )
+    }
+
+    override fun startIntentSenderFromChild(
+        child: Activity?,
+        intent: IntentSender?,
+        requestCode: Int,
+        fillInIntent: Intent?,
+        flagsMask: Int,
+        flagsValues: Int,
+        extraFlags: Int
+    ) {
+        TODO()
+    }
+
+    override fun startIntentSenderFromChild(
+        child: Activity?,
+        intent: IntentSender?,
+        requestCode: Int,
+        fillInIntent: Intent?,
+        flagsMask: Int,
+        flagsValues: Int,
+        extraFlags: Int,
+        options: Bundle?
+    ) {
+        TODO()
     }
 }
 

@@ -4,6 +4,9 @@ dependencyResolutionManagement {
         // 原生镜像
         mavenCentral()
         google()
+        maven("https://jitpack.io") {
+            name = "jetpack"
+        }
         // 腾讯云镜像
         // https://cloud.tencent.com/document/product/213/8623
         maven("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/") {

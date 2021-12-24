@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
-import androidx.activity.result.launch
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import io.github.chenfei0928.base.fragment.BaseFragment
@@ -53,7 +52,7 @@ class FileExportFragment : BaseFragment() {
                 parseArgToSave(context, bundle)
             }
         } else {
-            sdCardPermissionLauncher.launch()
+            sdCardPermissionLauncher.launch(null)
         }
     }
 

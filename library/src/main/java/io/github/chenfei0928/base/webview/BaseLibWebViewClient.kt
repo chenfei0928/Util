@@ -1,5 +1,6 @@
 package io.github.chenfei0928.base.webview
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
 import android.webkit.WebView
@@ -14,8 +15,8 @@ import com.github.lzyzsd.jsbridge.BridgeWebView
  * @author MrFeng
  */
 open class BaseLibWebViewClient(
-        private val mProgress: ProgressBar
-) : BaseLogWebViewClient() {
+    context: Context, private val mProgress: ProgressBar?
+) : BaseLogWebViewClient(context) {
     private val TAG = "KW_BaseLibWebViewClient"
     private var bridgeWebView: BridgeWebView? = null
 
@@ -23,7 +24,7 @@ open class BaseLibWebViewClient(
      * 网页开始加载时触发
      */
     override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-        mProgress.visibility = View.VISIBLE
+        mProgress?.visibility = View.VISIBLE
         super.onPageStarted(view, url, favicon)
     }
 
@@ -31,7 +32,7 @@ open class BaseLibWebViewClient(
      * 网页加载结束时触发
      */
     override fun onPageFinished(view: WebView, url: String) {
-        mProgress.visibility = View.GONE
+        mProgress?.visibility = View.GONE
         super.onPageFinished(view, url)
     }
 }

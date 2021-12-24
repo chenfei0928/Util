@@ -30,7 +30,7 @@ fun TextView.updateDrawableRelative(
 @Deprecated(message = "use setDrawableStart insert",
         replaceWith = ReplaceWith(
                 expression = "setDrawableStart(drawable)",
-                imports = ["com.yikelive.viewModel.setDrawableStart"]
+                imports = ["io.github.chenfei0928.viewModel.setDrawableStart"]
         )
 )
 fun TextView.setDrawableLeft(drawable: Drawable?) {
@@ -42,7 +42,7 @@ fun TextView.setDrawableLeft(drawable: Drawable?) {
 @Deprecated(message = "use setDrawableEnd insert",
         replaceWith = ReplaceWith(
                 expression = "setDrawableEnd(drawable)",
-                imports = ["com.yikelive.viewModel.setDrawableEnd"]
+                imports = ["io.github.chenfei0928.viewModel.setDrawableEnd"]
         )
 )
 fun TextView.setDrawableRight(drawable: Drawable?) {

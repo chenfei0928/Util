@@ -1,4 +1,4 @@
-package io.github.chenfei0928.library.widget;
+package io.github.chenfei0928.util.widget;
 
 import android.animation.ValueAnimator;
 import android.content.Context;

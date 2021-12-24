@@ -7,7 +7,7 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import io.github.chenfei0928.library.R
+import io.github.chenfei0928.util.R
 import io.github.chenfei0928.util.PermissionRequest
 
 /**

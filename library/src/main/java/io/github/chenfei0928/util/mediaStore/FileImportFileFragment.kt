@@ -7,6 +7,7 @@ import android.os.Bundle
 import io.github.chenfei0928.app.ProgressDialog
 import io.github.chenfei0928.util.FileUtil
 import io.github.chenfei0928.util.kotlin.coroutines.coroutineScope
+import io.github.chenfei0928.view.pictureHelp.PictureUriUtil
 import io.github.chenfei0928.view.pictureHelp.copyTo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

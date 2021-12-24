@@ -1,7 +1,6 @@
 package io.github.chenfei0928.util.mediaStore
 
 import android.os.Build
-import androidx.activity.result.launch
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.util.PermissionRequest
 import io.github.chenfei0928.util.kotlin.onPermissionDeniedKt
@@ -34,7 +33,7 @@ abstract class BasePermissionFileImportFragment<T>(
             // 如果当前sdk等级已经不再需要该权限，不请求
             launchFileChooseImpl()
         } else {
-            sdCardPermissionLauncher.launch()
+            sdCardPermissionLauncher.launch(null)
         }
     }
 

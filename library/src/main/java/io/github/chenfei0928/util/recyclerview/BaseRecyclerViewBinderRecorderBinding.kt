@@ -3,9 +3,10 @@ package io.github.chenfei0928.util.recyclerview
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import io.github.chenfei0928.util.recyclerview.AbsRecyclerViewBinderRecorderBinding
 
 /**
- * 建议用于[LinearLayoutManager]或其它[LayoutManager]、一bean类型对多binder场景
+ * 建议用于[LinearLayoutManager]或其它[LayoutManager]、一bean类型对多binder场景。
  *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-01-19 17:14

@@ -1,4 +1,4 @@
-package io.github.chenfei0928.library.anim;
+package io.github.chenfei0928.util.anim;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

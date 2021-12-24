@@ -2,7 +2,7 @@ package io.github.chenfei0928.util.kotlin
 
 import android.os.Debug
 import androidx.annotation.Size
-import io.github.chenfei0928.library.BuildConfig
+import io.github.chenfei0928.util.BuildConfig
 import io.github.chenfei0928.util.Log
 
 /**

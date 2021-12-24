@@ -104,7 +104,7 @@ class TabLayout : LinearLayout {
                     val childTabView = childTabViewCreator.onCreateView(inflater, parent)
                     childTabView.setOnClickListener {
                         val indexOfChild = this@TabLayout.indexOfChild(childTabView)
-                        if (isSelected) {
+                        if (it.isSelected) {
                             internalOnTabSelectListener.onTabReselect(childTabView, indexOfChild)
                         } else {
                             internalOnTabSelectListener.onTabSelect(childTabView, indexOfChild)

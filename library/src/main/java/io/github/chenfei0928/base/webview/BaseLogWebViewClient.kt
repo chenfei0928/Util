@@ -1,47 +1,40 @@
 package io.github.chenfei0928.base.webview
 
 import android.annotation.TargetApi
-import android.content.DialogInterface
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.http.SslError
 import android.os.Build
-import android.view.KeyEvent
 import android.webkit.*
 import androidx.annotation.Size
-import androidx.appcompat.app.AlertDialog
+import androidx.webkit.SafeBrowsingResponseCompat
+import androidx.webkit.WebResourceErrorCompat
+import androidx.webkit.WebViewAssetLoader
 import com.github.lzyzsd.jsbridge.SupportBridgeWebViewClient
 import io.github.chenfei0928.util.BuildConfig
-import io.github.chenfei0928.util.LhWebSettingsUtil
 import io.github.chenfei0928.util.Log
-import io.github.chenfei0928.util.ToastUtil
+import io.github.chenfei0928.util.WebViewSettingsUtil
+import java.io.File
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-11-15 11:52
  */
-open class BaseLogWebViewClient : SupportBridgeWebViewClient() {
-
-    /**
-     * 接收到错误信息时触发
-     */
-    override fun onReceivedError(
-        view: WebView, errorCode: Int, description: String?, failingUrl: String?
-    ) {
-        super.onReceivedError(view, errorCode, description, failingUrl)
-        ToastUtil.showShort(view.context, description)
-        debugMessage(
-            "onReceivedError", arrayOf(
-                "errorCode",
-                errorCode.toString(),
-                "description",
-                description,
-                "failingUrl",
-                failingUrl,
-                "webview.info",
-                view.toSimpleString()
+open class BaseLogWebViewClient(context: Context) : SupportBridgeWebViewClient() {
+    private val assetLoader: WebViewAssetLoader = WebViewAssetLoader
+        .Builder()
+        // https://appassets.androidplatform.net/assets/index.html
+        .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
+        // https://appassets.androidplatform.net/resources/mipmap/ic_launcher.png
+        .addPathHandler("/resources/", WebViewAssetLoader.ResourcesPathHandler(context))
+        // https://appassets.androidplatform.net/osRes/android/mipmap/sym_def_app_icon.png
+        .addPathHandler("/osRes/", OsResourcesPathHandler(context))
+        .addPathHandler(
+            "/public/", WebViewAssetLoader.InternalStoragePathHandler(
+                context, File(context.filesDir, "webViewPublic")
             )
         )
-    }
+        .build()
 
     /**
      * 接收到错误信息时触发
@@ -51,17 +44,17 @@ open class BaseLogWebViewClient : SupportBridgeWebViewClient() {
      */
     @TargetApi(Build.VERSION_CODES.M)
     override fun onReceivedError(
-        view: WebView?, request: WebResourceRequest?, error: WebResourceError?
+        view: WebView, request: WebResourceRequest, error: WebResourceErrorCompat
     ) {
         super.onReceivedError(view, request, error)
         debugMessage(
             "onReceivedError", arrayOf(
                 "request",
-                request?.toSimpleString(),
+                request.toSimpleString(),
                 "error",
-                error?.toSimpleString(),
+                error.toSimpleString(),
                 "webview.info",
-                view?.toSimpleString()
+                view.toSimpleString()
             )
         )
     }
@@ -74,20 +67,20 @@ open class BaseLogWebViewClient : SupportBridgeWebViewClient() {
      */
     @TargetApi(Build.VERSION_CODES.O_MR1)
     override fun onSafeBrowsingHit(
-        view: WebView?,
-        request: WebResourceRequest?,
+        view: WebView,
+        request: WebResourceRequest,
         threatType: Int,
-        callback: SafeBrowsingResponse?
+        callback: SafeBrowsingResponseCompat
     ) {
         super.onSafeBrowsingHit(view, request, threatType, callback)
         debugMessage(
             "onSafeBrowsingHit", arrayOf(
                 "request",
-                request?.toSimpleString(),
+                request.toSimpleString(),
                 "threatType",
                 threatType.toString(),
                 "webview.info",
-                view?.toSimpleString()
+                view.toSimpleString()
             )
         )
     }
@@ -100,7 +93,7 @@ open class BaseLogWebViewClient : SupportBridgeWebViewClient() {
      */
     @TargetApi(Build.VERSION_CODES.M)
     override fun onReceivedHttpError(
-        view: WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?
+        view: WebView, request: WebResourceRequest, errorResponse: WebResourceResponse
     ) {
         super.onReceivedHttpError(view, request, errorResponse)
         debugMessage(
@@ -108,9 +101,9 @@ open class BaseLogWebViewClient : SupportBridgeWebViewClient() {
                 "request",
                 request.toString(),
                 "errorResponse",
-                errorResponse?.toSimpleString(),
+                errorResponse.toSimpleString(),
                 "webview.info",
-                view?.toSimpleString()
+                view.toSimpleString()
             )
         )
     }
@@ -132,21 +125,11 @@ open class BaseLogWebViewClient : SupportBridgeWebViewClient() {
             "onReceivedSslError",
             arrayOf("error", error.toString(), "webview.info", view.toSimpleString())
         )
-        AlertDialog
-            .Builder(view.context)
-            .setMessage("ssl证书验证失败")
-            .setPositiveButton("继续") { _, _ -> handler.proceed() }
-            .setNegativeButton(android.R.string.cancel) { _, _ -> handler.cancel() }
-            .setOnKeyListener(DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                if (event.action == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                    handler.cancel()
-                    dialog.dismiss()
-                    return@OnKeyListener true
-                }
-                false
-            })
-            .create()
-            .show()
+        sslErrorHandler.emit(handler, error)
+    }
+
+    private val sslErrorHandler by lazy {
+        WebViewSslErrorHandler(context)
     }
 
     /**
@@ -168,7 +151,7 @@ open class BaseLogWebViewClient : SupportBridgeWebViewClient() {
                 )
             }
 
-            LhWebSettingsUtil.onDestroy(view)
+            WebViewSettingsUtil.onDestroy(view)
 
             // By this point, the instance variable "mWebView" is guaranteed
             // to be null, so it's safe to reinitialize it.
@@ -192,9 +175,9 @@ open class BaseLogWebViewClient : SupportBridgeWebViewClient() {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest?): Boolean {
+    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
         if (debugLog) {
-            Log.v(TAG, "shouldOverrideUrlLoading: ${request?.toSimpleString()}")
+            Log.v(TAG, "shouldOverrideUrlLoading: ${request.toSimpleString()}")
         }
         return super.shouldOverrideUrlLoading(view, request)
     }
@@ -215,12 +198,12 @@ open class BaseLogWebViewClient : SupportBridgeWebViewClient() {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     override fun shouldInterceptRequest(
-        view: WebView?, request: WebResourceRequest?
+        view: WebView, request: WebResourceRequest
     ): WebResourceResponse? {
         if (debugLog) {
-            Log.i(TAG, "shouldInterceptRequest: ${request?.toSimpleString()}")
+            Log.i(TAG, "shouldInterceptRequest: ${request.toSimpleString()}")
         }
-        return super.shouldInterceptRequest(view, request)
+        return assetLoader.shouldInterceptRequest(request.url)
     }
 
     private fun debugMessage(

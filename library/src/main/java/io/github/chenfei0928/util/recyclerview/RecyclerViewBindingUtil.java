@@ -9,16 +9,16 @@ import java.util.Map;
  * @author ChenFei(chenfei0928 @ gmail.com)
  * @date 2020-11-01 13:43
  */
-class RecyclerViewBindingUtil {
-    static MultiTypeAdapter getAdapter(AbsRecyclerViewBinding binding) {
+public class RecyclerViewBindingUtil {
+    public static MultiTypeAdapter getAdapter(AbsRecyclerViewBinding binding) {
         return binding.getAdapter();
     }
 
-    static List<Object> getList(AbsRecyclerViewBinding binding) {
+    public static List<Object> getList(AbsRecyclerViewBinding binding) {
         return binding.getList();
     }
 
-    static void addSingleItem(AbsRecyclerViewBinding binding,int position,  Object item) {
+    public static void addSingleItem(AbsRecyclerViewBinding binding, int position, Object item) {
         if (binding instanceof AbsLayoutParamRecyclerViewBinding) {
             AbsLayoutParamRecyclerViewBinding<AbsLayoutParamRecyclerViewBinding.LayoutParams> spanBinding =
                     (AbsLayoutParamRecyclerViewBinding<AbsLayoutParamRecyclerViewBinding.LayoutParams>) binding;
@@ -28,7 +28,7 @@ class RecyclerViewBindingUtil {
         }
     }
 
-    static <LP extends AbsLayoutParamRecyclerViewBinding.LayoutParams>
+    public static <LP extends AbsLayoutParamRecyclerViewBinding.LayoutParams>
     Map<Object, LP> getLayoutParamsRecord(AbsLayoutParamRecyclerViewBinding<LP> binding) {
         return binding.getLayoutParamsRecord();
     }

@@ -20,7 +20,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.internal.DescendantOffsetUtils;
 import com.google.android.material.internal.ThemeEnforcement;
-import io.github.chenfei0928.library.R;
+import io.github.chenfei0928.util.R;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -3,6 +3,8 @@ package io.github.chenfei0928.adapter
 import androidx.recyclerview.widget.RecyclerView
 
 /**
+ * 真实数据无限循环的适配器
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-10-29 15:15
  */
