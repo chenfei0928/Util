@@ -45,7 +45,6 @@ dependencies {
     compileOnly(Deps.lib.aRouter.api)
 
     // 6.0 权限请求代理库
-    implementation(Deps.lib.permissionsDispatcher.core)
     compileOnly(Deps.widget.recyclerView.multiType)
     compileOnly(Deps.widget.flexbox)
     compileOnly(Deps.widget.jsBridge)
