@@ -19,14 +19,6 @@
     <option name="pathToUserRulesConfiguration" value="" />
     <option name="pathToJarWithRules" value="" />
   </component>
-  <component name="DesignSurface">
-    <option name="filePathToZoomLevelMap">
-      <map>
-        <entry key="..\:/Users/chenfei/AndroidStudioProjects/Util/library/src/main/res/layout/alert_progress_dialog.xml" value="0.3296296296296296" />
-        <entry key="..\:/Users/chenfei/AndroidStudioProjects/Util/library/src/main/res/layout/dialog_progress.xml" value="0.3296296296296296" />
-      </map>
-    </option>
-  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FindBugsConfigurable">
     <option name="make" value="true" />
