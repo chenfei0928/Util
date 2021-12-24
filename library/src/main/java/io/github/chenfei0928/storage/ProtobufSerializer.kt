@@ -1,24 +1,20 @@
-package io.github.chenfei0928.storage
+/*
+package com.cocos.base.storage
 
-import com.google.protobuf.GeneratedMessageLite
-import com.google.protobuf.getParseFrom
+import com.google.protobuf.GeneratedMessageV3
+import com.google.protobuf.Parser
 import java.io.InputStream
 import java.io.OutputStream
 
 /**
  * 用于Protobuf的数据序列化
  *
- * @author chenfei(chenfei0928@gmail.com)
+ * @author chenfei(chenfei@cocos.com)
  * @date 2021-11-22 16:03
  */
-class ProtobufSerializer<MessageType, BuilderType>(
-        clazz: Class<MessageType>
-) : LocalSerializer<MessageType>
-        where
-MessageType : GeneratedMessageLite<MessageType, BuilderType>,
-BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
-
-    private val parser = clazz.getParseFrom<MessageType, Any>()
+class ProtobufSerializer<MessageType : GeneratedMessageV3>(
+    private val parser: Parser<MessageType>
+) : LocalSerializer<MessageType> {
 
     override fun save(outputStream: OutputStream, obj: MessageType) {
         obj.writeTo(outputStream)
@@ -26,10 +22,11 @@ BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
     }
 
     override fun load(inputStream: InputStream): MessageType {
-        return parser(inputStream)
+        return parser.parseFrom(inputStream)
     }
 
     override fun copy(obj: MessageType): MessageType {
-        return obj.toBuilder().build()
+        return obj.toBuilder().build() as MessageType
     }
 }
+*/

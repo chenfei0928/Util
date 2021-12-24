@@ -28,6 +28,7 @@ abstract class LocalFileStorage<T>(
         return File(parentFile, fileName)
     }
 
+    //<editor-fold defaultstate="collapsed" desc="通过文件锁读写文件的实现">
     private fun <T> runFileWithLock(context: Context, block: (File) -> T): T {
         return getFile(context, this.fileName + LOCK_FILE_SUFFIX).let {
             ShareFileLockHelper.getFileLock(it)
@@ -84,6 +85,7 @@ abstract class LocalFileStorage<T>(
             saveToLocalFile(context, value)
         }
     }
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="带缓存的快速访问">
     @Volatile

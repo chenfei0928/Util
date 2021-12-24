@@ -22,8 +22,6 @@ object Env {
     internal var containsReleaseBuild: Boolean = false
         private set
 
-    internal val kotlinVer: String
-        get() = impl.kotlinVer
     internal val agp: String
         get() = impl.agp
     internal val vcsCommitId: String
@@ -37,14 +35,6 @@ object Env {
     private class EnvImpl(
         containsReleaseBuild: Boolean
     ) {
-        /**
-         * 通过使用其同库中的实例，来通过其实例类的classLoader获取其jar包中的配置文件的值
-         * [org.jetbrains.kotlin.gradle.plugin.kotlinPluginVersionFromResources]
-         */
-        val kotlinVer: String =
-            org.jetbrains.kotlin.gradle.plugin.ProjectLocalConfigurations
-                .loadPropertyFromResources("project.properties", "project.version")
-
         /**
          * [com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION]
          * [com.android.build.gradle.internal.profile.AnalyticsUtil.getProductDetails().version]
