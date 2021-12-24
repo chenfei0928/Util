@@ -22,6 +22,21 @@
         <attr name="behavior_autoShrink" format="boolean"/>
     </declare-styleable>
 
+    <declare-styleable name="IconFontView">
+        <attr name="fontAsset" format="string"/>
+        <attr name="android:textColor"/>
+        <attr name="android:text"/>
+    </declare-styleable>
+
+    <declare-styleable name="MarqueeTextView">
+        <attr name="mtv_scrollInterval" format="integer"/>
+        <attr name="mtv_scrollFirstDelay" format="integer"/>
+        <attr name="mtv_scrollMode">
+            <enum name="mode_forever" value="100"/>
+            <enum name="mode_once" value="101"/>
+        </attr>
+    </declare-styleable>
+
     <declare-styleable name="OutlineClipImageView">
         <attr name="olciv_clipToBackground" format="boolean"/>
         <attr name="olciv_oval" format="boolean"/>
