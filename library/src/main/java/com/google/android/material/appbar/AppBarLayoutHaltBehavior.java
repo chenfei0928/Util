@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.chenfei.util.Log;
+import io.github.chenfei0928.util.Log;
 
 import java.lang.reflect.Field;
 

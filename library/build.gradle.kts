@@ -1,11 +1,14 @@
 plugins {
     `android-library`
     `kotlin-android`
+    `maven-publish`
+    signing
 }
 
 applyLib()
 applyTest()
 applyKotlin()
+applyMavenPublish()
 
 dependencies {
     implementation(DepsAndroidx.core)

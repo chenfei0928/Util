@@ -10,7 +10,7 @@ applyKotlin()
 
 android {
     defaultConfig {
-        applicationId = "com.chenfei.util"
+        applicationId = "io.github.chenfei0928.util"
         minSdk = 14
         targetSdk = 30
         versionName = "1.0"

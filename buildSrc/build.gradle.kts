@@ -7,7 +7,7 @@ dependencies {
     val kotlinVersion = "1.5.31"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "7.0.3"
+    val agpVersion = "7.0.4"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
     implementation(kotlin("gradle-plugin", kotlinVersion))
@@ -29,7 +29,10 @@ dependencies {
     // 参与编译打包流程，但不参与代码编写
     // 增加 protobuf-gradle-plugin 插件
     // https://github.com/google/protobuf-gradle-plugin
-    implementation("com.google.protobuf:protobuf-gradle-plugin:0.8.17")
+    implementation("com.google.protobuf:protobuf-gradle-plugin:0.8.18")
+
+    // https://github.com/bintray/gradle-bintray-plugin
+    implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
 }
 
 repositories {

@@ -6,7 +6,7 @@
  */
 package com.drakeet.multitype
 
-import com.chenfei.util.Log
+import io.github.chenfei0928.util.Log
 
 private const val TAG = "KW_MultiType"
 

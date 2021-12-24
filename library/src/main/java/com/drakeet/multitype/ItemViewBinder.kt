@@ -1,6 +1,6 @@
 package com.drakeet.multitype
 
-import com.chenfei.adapter.ViewHolder
+import io.github.chenfei0928.adapter.ViewHolder
 
 /**
  * 检查指定 viewHolder 是否显示的是该数据

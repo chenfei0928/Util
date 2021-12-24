@@ -1,4 +1,4 @@
-package com.chenfei.util
+package io.github.chenfei0928.util
 
 import org.junit.Test
 

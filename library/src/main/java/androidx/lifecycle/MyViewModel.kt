@@ -7,15 +7,15 @@ package androidx.lifecycle
 import android.app.Activity
 import android.content.Context
 import androidx.fragment.app.Fragment
-import com.chenfei.base.app.BaseApplication
-import com.chenfei.util.kotlin.coroutines.CoroutineAndroidContext
-import com.chenfei.util.kotlin.coroutines.CoroutineAndroidContextImpl
-import com.chenfei.util.kotlin.coroutines.MainScope
+import io.github.chenfei0928.base.app.BaseApplication
+import io.github.chenfei0928.util.kotlin.coroutines.CoroutineAndroidContext
+import io.github.chenfei0928.util.kotlin.coroutines.CoroutineAndroidContextImpl
+import io.github.chenfei0928.util.kotlin.coroutines.MainScope
 import kotlinx.coroutines.*
 import java.io.Closeable
 import kotlin.coroutines.CoroutineContext
 
-private const val CONTEXT_KEY = "com.chenfei.util.kotlin.CONTEXT_KEY"
+private const val CONTEXT_KEY = "io.github.chenfei0928.util.kotlin.CONTEXT_KEY"
 private const val SCOPE_KEY = "androidx.lifecycle.UncaughtHandlerCoroutineScope.JOB_KEY"
 
 private val ViewModel.context: Context?
