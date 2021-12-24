@@ -48,5 +48,4 @@ dependencies {
     compileOnly(Deps.widget.recyclerView.multiType)
     compileOnly(Deps.widget.flexbox)
     compileOnly(Deps.widget.jsBridge)
-    compileOnly(Deps.widget.recyclerView.vlayout)
 }

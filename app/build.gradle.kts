@@ -19,4 +19,5 @@ android {
 }
 
 dependencies {
+    implementation(DepsAndroidx.appcompat)
 }

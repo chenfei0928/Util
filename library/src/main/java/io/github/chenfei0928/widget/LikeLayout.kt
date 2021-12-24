@@ -12,7 +12,6 @@ import android.view.animation.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import io.github.chenfei0928.animation.BezierEvaluator
-import io.github.chenfei0928.util.glide.DEFAULT_CROSS_FADE_DURATION
 import java.util.*
 
 /**
@@ -70,7 +69,7 @@ class LikeLayout
         // 动画集合
         val set = AnimatorSet()
         set.playTogether(alpha, scaleX, scaleY)
-        set.duration = DEFAULT_CROSS_FADE_DURATION.toLong()
+        set.duration = 300.toLong()
         // 贝塞尔曲线动画
         val bzier: ValueAnimator = getBezierAnimator(iv)
         val set2 = AnimatorSet()

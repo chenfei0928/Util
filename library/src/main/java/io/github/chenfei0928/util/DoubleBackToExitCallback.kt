@@ -6,7 +6,6 @@ import android.view.ViewConfiguration
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.postDelayed
-import io.github.chenfei0928.util.R
 
 /**
  * 双击退出
@@ -30,7 +29,7 @@ class DoubleBackToExitCallback(
     companion object {
         fun setup(context: ComponentActivity) {
             context.onBackPressedDispatcher.addCallback(
-                context, DoubleBackToExitCallback(context, SafeHandler.getOrCreate(context))
+                context, DoubleBackToExitCallback(context, context.safeHandler)
             )
         }
     }

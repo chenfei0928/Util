@@ -15,7 +15,6 @@ private const val TAG = "KW_ViewLayoutSetter"
 var View.marginStart: Int
     get() = when (val lp = layoutParams) {
         is ViewGroup.MarginLayoutParams -> MarginLayoutParamsCompat.getMarginStart(lp)
-        is ConstraintLayout.LayoutParams -> lp.startMargin
         else -> {
             Log.w(TAG, "marginStart: unknown layoutParams type: ${lp.javaClass}")
             0
@@ -28,9 +27,6 @@ var View.marginStart: Int
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && lp.isMarginRelative) {
                     lp.marginStart = value
                 }
-            }
-            is ConstraintLayout.LayoutParams -> {
-                lp.startMargin = value
             }
             else -> {
                 Log.w(TAG, "marginStart: unknown layoutParams type: ${lp.javaClass}")
@@ -68,7 +64,6 @@ var View.marginTop: Int
 var View.marginEnd: Int
     get() = when (val lp = layoutParams) {
         is ViewGroup.MarginLayoutParams -> MarginLayoutParamsCompat.getMarginEnd(lp)
-        is ConstraintLayout.LayoutParams -> lp.endMargin
         else -> {
             Log.w(TAG, "marginEnd: unknown layoutParams type: ${lp.javaClass}")
             0
@@ -81,9 +76,6 @@ var View.marginEnd: Int
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && lp.isMarginRelative) {
                     lp.marginEnd = value
                 }
-            }
-            is ConstraintLayout.LayoutParams -> {
-                lp.endMargin = value
             }
             else -> {
                 Log.w(TAG, "marginEnd: unknown layoutParams type: ${lp.javaClass}")
