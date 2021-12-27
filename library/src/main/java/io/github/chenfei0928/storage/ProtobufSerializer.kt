@@ -1,5 +1,5 @@
 /*
-package com.cocos.base.storage
+package io.github.chenfei0928.storage
 
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
@@ -9,7 +9,7 @@ import java.io.OutputStream
 /**
  * 用于Protobuf的数据序列化
  *
- * @author chenfei(chenfei@cocos.com)
+ * @author chenfei(chenfei0928@gmail.com)
  * @date 2021-11-22 16:03
  */
 class ProtobufSerializer<MessageType : GeneratedMessageV3>(

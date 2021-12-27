@@ -62,8 +62,6 @@ public class LhWebSettingsUtil {
         // 安全浏览白名单
         if (WebViewFeature.isFeatureSupported(WebViewFeature.SAFE_BROWSING_WHITELIST)) {
             List<String> array = new ArrayList<>();
-            array.add("yiketalks.com");
-            array.add(".yiketalks.com");
             WebViewCompat.setSafeBrowsingWhitelist(array, isReceive ->
                     Log.i(TAG, "setSafeBrowsingWhitelist: " + isReceive));
         }

@@ -14,9 +14,9 @@ import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import io.github.chenfei0928.base.fragment.BaseFragment
-import io.github.chenfei0928.util.R
 import io.github.chenfei0928.util.FileUtil
 import io.github.chenfei0928.util.IntentKt
+import io.github.chenfei0928.util.R
 import io.github.chenfei0928.util.ToastUtil
 import io.github.chenfei0928.util.kotlin.coroutines.coroutineScope
 import io.github.chenfei0928.util.kotlin.registerForExternalStoragePermission
@@ -198,7 +198,7 @@ class FileExportFragment : BaseFragment() {
             title: String,
             description: String,
             displayName: String,
-            relativePath: String = "YikeTalks"
+            relativePath: String
         ): FileExportFragment {
             val extName = FileUtil.getFileExtensionFromUrl(displayName)
             val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extName)
@@ -240,7 +240,7 @@ class FileExportFragment : BaseFragment() {
             title: String,
             description: String,
             displayName: String,
-            relativePath: String = "YikeTalks"
+            relativePath: String
         ): FileExportFragment {
             val extName = FileUtil.getFileExtensionFromUrl(displayName)
             val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extName)

@@ -20,7 +20,7 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
  */
 fun Project.applyMavenPublishByGoogle(
     groupId: String, artifactId: String, version: String,
-    description: String, username:String, gitPageUrl: String, inception: String
+    description: String, username: String, gitPageUrl: String, inception: String
 ) {
     val properties: Map<Any, Any> = project.rootProject.file("local.properties")
         .reader().use {
@@ -39,11 +39,10 @@ fun Project.applyMavenPublishByGoogle(
                     this.artifactId = artifactId
                     this.version = version
 
-//                    artifact(javadocJar.get())
+                    artifact(javadocJar.get())
                     from(components["release"])
 
                     pom {
-                        packaging = "aar" //我这里发布的是安卓的包，所有写的aar
                         // Description
                         this.description.set(description)
                         url.set(gitPageUrl)
@@ -76,8 +75,8 @@ fun Project.applyMavenPublishByGoogle(
                     name = "sonatype"
                     setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
                     credentials {
-                        username = properties["ossrh.username"].toString()
-                        password = properties["ossrh.password"].toString()
+                        this.username = properties["ossrh.username"].toString()
+                        this.password = properties["ossrh.password"].toString()
                     }
                 }
             }

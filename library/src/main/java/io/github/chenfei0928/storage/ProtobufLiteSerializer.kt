@@ -8,7 +8,7 @@ import java.io.OutputStream
 /**
  * 用于ProtobufLite的数据序列化
  *
- * @author chenfei(chenfei@cocos.com)
+ * @author chenfei(chenfei0928@gmail.com)
  * @date 2021-11-22 16:03
  */
 class ProtobufLiteSerializer<MessageType, BuilderType>(

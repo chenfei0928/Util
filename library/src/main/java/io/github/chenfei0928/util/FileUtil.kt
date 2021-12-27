@@ -181,7 +181,7 @@ class FileUtil {
          */
         @JvmStatic
         @JvmOverloads
-        fun getExternalStorageDir(type: String, dirName: String = "YikeTalks"): File? {
+        fun getExternalStorageDir(type: String, dirName: String): File? {
             val typeDir = Environment.getExternalStoragePublicDirectory(type) ?: return null
             val dir = File(typeDir, dirName)
             // 如路径不存在，创建文件夹路径
