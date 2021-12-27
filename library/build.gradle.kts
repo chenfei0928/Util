@@ -9,7 +9,15 @@ plugins {
 applyLib()
 applyTest()
 applyKotlin()
-applyMavenPublish()
+applyMavenPublishByGoogle(
+    groupId = "io.github.chenfei0928",
+    artifactId = "util",
+    version = "1.0",
+    description = "Android util collection",
+    username = "MrFeng",
+    gitPageUrl = "https://github.com/chenfei0928/Util",
+    inception = "2018"
+)
 
 dependencies {
     implementation(DepsAndroidx.core)

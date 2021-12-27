@@ -2,10 +2,11 @@ package io.github.chenfei0928.util.widget;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import androidx.core.widget.NestedScrollView;
 
 /**
  * 支持超量滑动并放大其中一个子View
