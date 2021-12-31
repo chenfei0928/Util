@@ -15,11 +15,13 @@ import java.util.*
  * @date 2020-01-07 15:07
  */
 class ActivityIntentQueue : Fragment() {
+    private var emitted = false
     private val queue: Queue<Any> = LinkedList()
     private val activityResultCallback: Queue<Function2<Int, Intent?, Unit>> = LinkedList()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        emitted = false
         pollIntentOrRemoveSelf()
     }
 
@@ -70,14 +72,22 @@ class ActivityIntentQueue : Fragment() {
         return this
     }
 
-    fun emit(fragmentManager: FragmentManager) {
+    @JvmOverloads
+    fun emit(fragmentManager: FragmentManager, now: Boolean = false) {
         if (isAdded || queue.isEmpty()) {
             return
         }
+        emitted = true
         fragmentManager
             .beginTransaction()
             .add(this, "ActivityIntentQueue")
-            .commitAllowingStateLoss()
+            .run {
+                if (now) {
+                    commitNowAllowingStateLoss()
+                } else {
+                    commitAllowingStateLoss()
+                }
+            }
     }
 
     interface ShowFuncWithDismissListener {

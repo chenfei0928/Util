@@ -7,7 +7,6 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.register
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 /**
  * [GoogleDocs](https://developer.android.com/studio/build/maven-publish-plugin#kts)
@@ -39,7 +38,7 @@ fun Project.applyMavenPublishByGoogle(
                     this.artifactId = artifactId
                     this.version = version
 
-                    artifact(javadocJar.get())
+//                    artifact(javadocJar.get())
                     from(components["release"])
 
                     pom {
@@ -61,9 +60,9 @@ fun Project.applyMavenPublishByGoogle(
                             }
                         }
                         scm {
-                            connection.set(gitPageUrl + ".git")
-                            developerConnection.set(gitPageUrl + ".git")
-                            url.set(gitPageUrl + "/issues")
+                            connection.set("$gitPageUrl.git")
+                            developerConnection.set("$gitPageUrl.git")
+                            url.set("$gitPageUrl/issues")
                         }
                     }
                 })
