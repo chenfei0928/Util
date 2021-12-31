@@ -6,7 +6,7 @@ import org.gradle.kotlin.dsl.dependencies
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-07-27 18:28
  */
-internal fun Project.applyCommon() {
+internal fun Project.applyCommon(appendBuildConfig: Boolean = true) {
     buildSrcAndroid<com.android.build.gradle.BaseExtension> {
         compileSdkVersion(Env.compileSdkVersion)
 
@@ -26,6 +26,9 @@ internal fun Project.applyCommon() {
             fun com.android.build.api.dsl.BuildType.buildConfigFields(
                 thirdSdkEnable: Boolean, loggable: Boolean, toastFullNetApiErrorResp: Boolean
             ) {
+                if (!appendBuildConfig) {
+                    return
+                }
                 buildConfigField("boolean", "thirdSdkEnable", "$thirdSdkEnable")
                 buildConfigField("boolean", "loggable", "$loggable")
                 buildConfigField("boolean", "toastFullNetApiErrorResp", "$toastFullNetApiErrorResp")

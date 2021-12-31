@@ -14,12 +14,6 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import io.github.chenfei0928.base.app.BaseApplication;
-import io.github.chenfei0928.util.BuildConfig;
-import io.github.chenfei0928.util.R;
-import io.github.chenfei0928.util.kotlin.ViewKt;
-import io.github.chenfei0928.view.SystemUiUtil;
-
 import java.util.Set;
 
 import androidx.annotation.NonNull;
@@ -32,6 +26,9 @@ import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 import androidx.webkit.WebViewRenderProcess;
 import androidx.webkit.WebViewRenderProcessClient;
+import io.github.chenfei0928.base.app.BaseApplication;
+import io.github.chenfei0928.util.kotlin.ViewKt;
+import io.github.chenfei0928.view.SystemUiUtil;
 import kotlin.jvm.functions.Function1;
 
 /**
@@ -45,19 +42,13 @@ public class WebViewSettingsUtil {
 
     static {
         Context appContext = BaseApplication.getInstance();
-        // webView可被调试
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && BuildConfig.DEBUG) {
-            WebView.setWebContentsDebuggingEnabled(true);
-        }
         // 当前的webView提供者
-        if (BuildConfig.loggable) {
-            if (WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROCESS)) {
-                boolean multiProcessEnabled = WebViewCompat.isMultiProcessEnabled();
-                Log.d(TAG, "WebView multiProcessEnabled: " + multiProcessEnabled);
-            }
-            PackageInfo packageInfo = WebViewCompat.getCurrentWebViewPackage(appContext);
-            Log.d(TAG, "WebView version: " + packageInfo);
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROCESS)) {
+            boolean multiProcessEnabled = WebViewCompat.isMultiProcessEnabled();
+            Log.d(TAG, "WebView multiProcessEnabled: " + multiProcessEnabled);
         }
+        PackageInfo packageInfo = WebViewCompat.getCurrentWebViewPackage(appContext);
+        Log.d(TAG, "WebView version: " + packageInfo);
         // 安全浏览
         if (WebViewFeature.isFeatureSupported(WebViewFeature.START_SAFE_BROWSING)) {
             WebViewCompat.startSafeBrowsing(appContext, success ->

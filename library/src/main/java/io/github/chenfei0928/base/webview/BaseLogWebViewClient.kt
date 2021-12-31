@@ -11,7 +11,6 @@ import androidx.webkit.SafeBrowsingResponseCompat
 import androidx.webkit.WebResourceErrorCompat
 import androidx.webkit.WebViewAssetLoader
 import com.github.lzyzsd.jsbridge.SupportBridgeWebViewClient
-import io.github.chenfei0928.util.BuildConfig
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.util.WebViewSettingsUtil
 import java.io.File
@@ -116,7 +115,7 @@ open class BaseLogWebViewClient(context: Context) : SupportBridgeWebViewClient()
     override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError?) {
         super.onReceivedSslError(view, handler, error)
         // 如果debug情况下忽略了证书错误，直接允许
-        if (ignoreSslError && BuildConfig.DEBUG) {
+        if (ignoreSslError) {
             handler.proceed()
             return
         }

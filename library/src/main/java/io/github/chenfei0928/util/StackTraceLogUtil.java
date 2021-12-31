@@ -2,14 +2,12 @@ package io.github.chenfei0928.util;
 
 import android.text.TextUtils;
 
-import io.github.chenfei0928.util.BuildConfig;
-import io.github.chenfei0928.util.lambdaFunction.Action1;
-import io.github.chenfei0928.util.lambdaFunction.Actions;
-
 import java.util.Locale;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.NoSideEffects;
+import io.github.chenfei0928.util.lambdaFunction.Action1;
+import io.github.chenfei0928.util.lambdaFunction.Actions;
 
 /**
  * @author ChenFei(chenfei0928 @ gmail.com)
@@ -21,9 +19,6 @@ public class StackTraceLogUtil {
 
     @CheckResult
     public static Action1<Throwable> onError(int level) {
-        if (!BuildConfig.loggable) {
-            return Actions.empty();
-        }
         String strings = generateTags(level);
         return throwable -> Log.w(TAG, strings + "\ndefaultOnErrorHandler: ", throwable);
     }
@@ -49,9 +44,6 @@ public class StackTraceLogUtil {
      */
     @NoSideEffects
     public static void printStackTrace(String tag) {
-        if (!BuildConfig.loggable) {
-            return;
-        }
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         StringBuilder sb = new StringBuilder("printStackTrace:");
         for (int i = 3; i < stackTrace.length; i++) {

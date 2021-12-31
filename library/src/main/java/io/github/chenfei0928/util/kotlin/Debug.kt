@@ -2,7 +2,6 @@ package io.github.chenfei0928.util.kotlin
 
 import android.os.Debug
 import androidx.annotation.Size
-import io.github.chenfei0928.util.BuildConfig
 import io.github.chenfei0928.util.Log
 
 /**
@@ -12,15 +11,11 @@ import io.github.chenfei0928.util.Log
 class Debug {
     companion object {
         inline fun <T> trace(tracePath: String, block: () -> T): T {
-            return if (BuildConfig.DEBUG) {
-                Debug.startMethodTracing(tracePath)
-                try {
-                    block()
-                } finally {
-                    Debug.stopMethodTracing()
-                }
-            } else {
+            Debug.startMethodTracing(tracePath)
+            return try {
                 block()
+            } finally {
+                Debug.stopMethodTracing()
             }
         }
 
