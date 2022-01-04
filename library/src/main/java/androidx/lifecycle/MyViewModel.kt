@@ -7,7 +7,7 @@ package androidx.lifecycle
 import android.app.Activity
 import android.content.Context
 import androidx.fragment.app.Fragment
-import io.github.chenfei0928.base.app.BaseApplication
+import io.github.chenfei0928.base.ContextProvider
 import io.github.chenfei0928.coroutines.CoroutineAndroidContext
 import io.github.chenfei0928.coroutines.CoroutineAndroidContextImpl
 import io.github.chenfei0928.coroutines.MainScope
@@ -71,7 +71,7 @@ private class UncaughtHandlerCoroutineScope(
             }
             else -> {
                 CoroutineAndroidContextImpl(
-                    BaseApplication.getInstance(), null
+                    ContextProvider.context, null
                 )
             }
         }

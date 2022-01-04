@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.base.app.BaseApplication
+import io.github.chenfei0928.base.ContextProvider
 import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
 import io.github.chenfei0928.lifecycle.LifecycleCacheDelegate
 import kotlinx.coroutines.CoroutineScope
@@ -41,8 +41,8 @@ val LifecycleOwner.coroutineScope: CoroutineScope by LifecycleCacheDelegate { ow
  * [博文](https://juejin.im/post/5cfb38f96fb9a07eeb139a00)
  */
 private class LifecycleCoroutineScope(
-        host: LifecycleOwner,
-        private val closeCallback: () -> Unit
+    host: LifecycleOwner,
+    private val closeCallback: () -> Unit
 ) : JobCoroutineScope(MainScope.coroutineContext), LifecycleEventObserver, Closeable {
     override val coroutineContext: CoroutineContext
         get() = super.coroutineContext + // 生命周期的协程
@@ -67,7 +67,7 @@ private class LifecycleCoroutineScope(
                 CoroutineAndroidContextImpl(host, null)
             }
             else -> {
-                CoroutineAndroidContextImpl(BaseApplication.getInstance(), null)
+                CoroutineAndroidContextImpl(ContextProvider.context, null)
             }
         }
     }

@@ -1,2 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.github.chenfei0928.util"/>
+    package="io.github.chenfei0928.util">
+
+    <application>
+        <provider
+            android:name="io.github.chenfei0928.base.ContextProvider"
+            android:authorities="${applicationId}.chenfei0928.util.context-provider"
+            android:exported="false" />
+    </application>
+</manifest>

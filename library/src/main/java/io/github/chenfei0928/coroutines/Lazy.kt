@@ -2,8 +2,6 @@ package io.github.chenfei0928.coroutines
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
-import okhttp3.internal.notifyAll
-import okhttp3.internal.wait
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -16,7 +14,7 @@ fun <T> lazyByAutoLoad(scope: CoroutineScope, initializer: suspend () -> T): Laz
 }
 
 private class CoroutineAutoLoadLazy<T>(
-        scope: CoroutineScope, initializer: suspend () -> T, lock: Any? = null
+    scope: CoroutineScope, initializer: suspend () -> T, lock: Any? = null
 ) : Lazy<T> {
     @Volatile
     private var _value: Any? = UNINITIALIZED_VALUE
@@ -34,7 +32,7 @@ private class CoroutineAutoLoadLazy<T>(
 
     private fun notifyLock() {
         synchronized(lock) {
-            this@CoroutineAutoLoadLazy.lock.notifyAll()
+            (lock as Object).notifyAll()
         }
     }
 
@@ -47,7 +45,7 @@ private class CoroutineAutoLoadLazy<T>(
             while (true) {
                 synchronized(lock) {
                     try {
-                        lock.wait()
+                        (lock as Object).wait()
                     } catch (ignore: InterruptedException) {
                     }
                 }

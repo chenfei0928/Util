@@ -4,7 +4,6 @@ import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Px
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.MarginLayoutParamsCompat
 import io.github.chenfei0928.util.Log
 
@@ -39,7 +38,6 @@ var View.marginStart: Int
 var View.marginTop: Int
     get() = when (val lp = layoutParams) {
         is ViewGroup.MarginLayoutParams -> lp.topMargin
-        is ConstraintLayout.LayoutParams -> lp.topMargin
         else -> {
             Log.w(TAG, "marginTop: unknown layoutParams type: ${lp.javaClass}")
             0
@@ -49,9 +47,6 @@ var View.marginTop: Int
         when (val lp = layoutParams) {
             is ViewGroup.MarginLayoutParams -> {
                 lp.setMargins(lp.leftMargin, value, lp.rightMargin, lp.bottomMargin)
-            }
-            is ConstraintLayout.LayoutParams -> {
-                lp.topMargin = value
             }
             else -> {
                 Log.w(TAG, "marginTop: unknown layoutParams type: ${lp.javaClass}")
@@ -88,7 +83,6 @@ var View.marginEnd: Int
 var View.marginBottom: Int
     get() = when (val lp = layoutParams) {
         is ViewGroup.MarginLayoutParams -> lp.bottomMargin
-        is ConstraintLayout.LayoutParams -> lp.bottomMargin
         else -> {
             Log.w(TAG, "marginBottom: unknown layoutParams type: ${lp.javaClass}")
             0
@@ -98,9 +92,6 @@ var View.marginBottom: Int
         when (val lp = layoutParams) {
             is ViewGroup.MarginLayoutParams -> {
                 lp.setMargins(lp.leftMargin, lp.topMargin, lp.rightMargin, value)
-            }
-            is ConstraintLayout.LayoutParams -> {
-                lp.bottomMargin = value
             }
             else -> {
                 Log.w(TAG, "marginBottom: unknown layoutParams type: ${lp.javaClass}")

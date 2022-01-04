@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.base.app.BaseApplication
+import io.github.chenfei0928.base.ContextProvider
 import io.github.chenfei0928.coroutines.CoroutineAndroidContext
 import io.github.chenfei0928.coroutines.CoroutineAndroidContextImpl
 import io.github.chenfei0928.coroutines.JobCoroutineScope
@@ -78,7 +78,7 @@ private class LifecycleCoroutineScope(
                 CoroutineAndroidContextImpl(host, null)
             }
             else -> {
-                CoroutineAndroidContextImpl(BaseApplication.getInstance(), null)
+                CoroutineAndroidContextImpl(ContextProvider.context, null)
             }
         }
     }

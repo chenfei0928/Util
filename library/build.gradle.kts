@@ -12,7 +12,7 @@ applyLib(appendBuildConfig = false)
 applyTest()
 applyKotlin()
 withKotlinAndroidMavenPublication(
-    versionName = "1.0",
+    versionName = "1.0-SNAPSHOT",
     signed = false,
     componentName = "debug"
 )
@@ -29,35 +29,30 @@ dependencies {
     implementation(DepsAndroidx.webkit)
     implementation(DepsAndroidx.activity)
     implementation(DepsAndroidx.fragment)
+    implementation(DepsAndroidx.lifecycle.runtime)
+    implementation(DepsAndroidx.lifecycle.viewModel)
     implementation(DepsAndroidx.material)
-    implementation(DepsAndroidx.palette)
     implementation(DepsAndroidx.recyclerview.core)
     implementation(DepsAndroidx.gridlayout)
-    implementation(DepsAndroidx.preference)
-    implementation(DepsAndroidx.preferenceKtx)
-    implementation(DepsAndroidx.multidex.core)
     implementation(DepsAndroidx.constraintlayout.core)
     implementation(DepsAndroidx.databinding.viewBinding)
-    implementation(DepsAndroidx.databinding.adapters)
     implementation(DepsAndroidx.databinding.runtime)
     implementation(DepsAndroidx.ads)
 
     // https://github.com/bumptech/glide
-    compileOnly(Deps.glide.core)
-    // https://github.com/florent37/GlidePalette
-    compileOnly(Deps.glide.glidePalette)
+    implementation(Deps.glide.core)
     // https://github.com/google/gson
-    compileOnly(Deps.lib.gson)
+    implementation(Deps.lib.gson)
     compileOnly(Deps.lib.zxing.core)
     compileOnly(Deps.network.okhttp)
     compileOnly(Deps.network.retrofit.core)
     compileOnly(Deps.lib.protobuf.java)
 
     // ARouter
-    compileOnly(Deps.lib.aRouter.api)
+    implementation(Deps.lib.aRouter.api)
 
     // 6.0 权限请求代理库
-    compileOnly(Deps.widget.recyclerView.multiType)
-    compileOnly(Deps.widget.flexbox)
-    compileOnly(Deps.widget.jsBridge)
+    implementation(Deps.widget.recyclerView.multiType)
+    implementation(Deps.widget.flexbox)
+    implementation(Deps.widget.jsBridge)
 }

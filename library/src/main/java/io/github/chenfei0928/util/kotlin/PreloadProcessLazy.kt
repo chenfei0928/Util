@@ -3,8 +3,6 @@ package io.github.chenfei0928.util.kotlin
 import io.github.chenfei0928.util.kotlin.coroutines.UNINITIALIZED_VALUE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
-import okhttp3.internal.notifyAll
-import okhttp3.internal.wait
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -25,7 +23,7 @@ abstract class PreloadProcessLazy<R, T>(
 
     private fun notifyLock() {
         synchronized(lock) {
-            this@PreloadProcessLazy.lock.notifyAll()
+            (this@PreloadProcessLazy.lock as Object).notifyAll()
         }
     }
 
@@ -49,7 +47,7 @@ abstract class PreloadProcessLazy<R, T>(
             while (true) {
                 synchronized(lock) {
                     try {
-                        lock.wait()
+                        (this@PreloadProcessLazy.lock as Object).wait()
                     } catch (ignore: InterruptedException) {
                     }
                 }

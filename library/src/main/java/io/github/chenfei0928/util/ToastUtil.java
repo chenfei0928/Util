@@ -1,7 +1,6 @@
 package io.github.chenfei0928.util;
 
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
@@ -10,10 +9,10 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
+import java.lang.ref.WeakReference;
+
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Toast工具帮助类，缓存View，但不复用Toast
@@ -29,12 +28,11 @@ public class ToastUtil {
      */
     private static volatile WeakReference<Toast> sToast;
     private static View sToastView;
-    private static Handler sHandler;
+    private static final Handler sHandler = new Handler(Looper.getMainLooper());
     private static volatile ToastShowTask sToastShowTask;
 
-    public static void init(Application context) {
-        ToastUtil.sAppContext = context;
-        ToastUtil.sHandler = new Handler(Looper.getMainLooper());
+    public static void init(Context context) {
+        ToastUtil.sAppContext = context.getApplicationContext();
     }
 
     @SuppressLint("ShowToast")

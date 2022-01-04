@@ -26,7 +26,7 @@ import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 import androidx.webkit.WebViewRenderProcess;
 import androidx.webkit.WebViewRenderProcessClient;
-import io.github.chenfei0928.base.app.BaseApplication;
+import io.github.chenfei0928.base.ContextProvider;
 import io.github.chenfei0928.util.kotlin.ViewKt;
 import io.github.chenfei0928.view.SystemUiUtil;
 import kotlin.jvm.functions.Function1;
@@ -41,7 +41,7 @@ public class WebViewSettingsUtil {
     private static boolean safeBrowsingEnable = true;
 
     static {
-        Context appContext = BaseApplication.getInstance();
+        Context appContext = ContextProvider.Companion.getContext();
         // 当前的webView提供者
         if (WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROCESS)) {
             boolean multiProcessEnabled = WebViewCompat.isMultiProcessEnabled();

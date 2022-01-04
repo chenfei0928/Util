@@ -2,7 +2,7 @@ package io.github.chenfei0928.util;
 
 import android.util.DisplayMetrics;
 
-import io.github.chenfei0928.base.app.BaseApplication;
+import io.github.chenfei0928.base.ContextProvider;
 
 /**
  * @author MrFeng
@@ -10,7 +10,7 @@ import io.github.chenfei0928.base.app.BaseApplication;
  */
 public class DensityUtil {
     private static final DisplayMetrics metrics =
-            BaseApplication.getInstance().getResources().getDisplayMetrics();
+            ContextProvider.Companion.getContext().getResources().getDisplayMetrics();
 
     private DensityUtil() {
     }

@@ -43,8 +43,6 @@ fun <T> MutableList<T>.removeRange(range: IntProgression) {
     }
 }
 
-fun <K, V> Map<K, List<V>>.toKeyValueList(): List<Any> = MapKeyValueList(this)
-
 inline fun <K, V> MutableMap<K, V?>.getContainOrPut(key: K, defaultValue: () -> V?): V? {
     return if (containsKey(key)) {
         get(key)

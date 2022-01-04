@@ -64,10 +64,6 @@ fun Project.configureMavenPublication(
                     }
                     setUrl(localProperties.getProperty(name))
                 }
-                maven {
-                    name = "myMavenlocal"
-                    url = uri(java.lang.System.getProperty("user.home") + "/.m2/repository")
-                }
             }
             if (signed && !isSnapshot(versionName)) {
                 configure<SigningExtension> {

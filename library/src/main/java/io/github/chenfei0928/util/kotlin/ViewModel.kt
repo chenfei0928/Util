@@ -11,12 +11,12 @@ private val factory = ViewModelProvider.NewInstanceFactory()
 val factoryProducer = { factory }
 
 inline fun <reified VM : ViewModel> ComponentActivity.viewModels(
-        key: String? = null, noinline factoryProducerBlock: (() -> VM)? = null
+    key: String? = null, noinline factoryProducerBlock: (() -> VM)? = null
 ): Lazy<VM> {
     val factoryPromise: () -> ViewModelProvider.Factory = factoryProducerBlock?.let {
         {
             object : ViewModelProvider.Factory {
-                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return factoryProducerBlock() as T
                 }
             }
@@ -30,12 +30,12 @@ inline fun <reified VM : ViewModel> ComponentActivity.viewModels(
 }
 
 inline fun <reified VM : ViewModel> Fragment.viewModels(
-        key: String? = null, noinline factoryProducerBlock: (() -> VM)? = null
+    key: String? = null, noinline factoryProducerBlock: (() -> VM)? = null
 ): Lazy<VM> {
     val factoryPromise: () -> ViewModelProvider.Factory = factoryProducerBlock?.let {
         {
             object : ViewModelProvider.Factory {
-                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return factoryProducerBlock() as T
                 }
             }

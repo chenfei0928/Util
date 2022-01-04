@@ -12,6 +12,8 @@ import okio.source
 import java.io.IOException
 
 /**
+ * 使用Intent返回的Uri读取文件内容
+ *
  * Created by MrFeng on 2017/5/8.
  */
 internal class UriRequestBody(

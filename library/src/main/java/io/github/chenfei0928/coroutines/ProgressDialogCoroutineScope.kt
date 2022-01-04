@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.DialogInterface
 import androidx.fragment.app.Fragment
 import io.github.chenfei0928.app.ProgressDialog
-import io.github.chenfei0928.base.app.BaseApplication
+import io.github.chenfei0928.base.ContextProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -83,7 +83,7 @@ private class ProgressDialogCoroutineScope(
                 CoroutineAndroidContextImpl(context, null)
             }
             else -> {
-                CoroutineAndroidContextImpl(BaseApplication.getInstance(), null)
+                CoroutineAndroidContextImpl(ContextProvider.context, null)
             }
         }
     }

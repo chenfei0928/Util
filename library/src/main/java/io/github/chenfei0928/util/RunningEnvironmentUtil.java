@@ -1,10 +1,14 @@
 package io.github.chenfei0928.util;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.app.Application;
 import android.app.Service;
 import android.content.Context;
+import android.os.Build;
 import android.os.Process;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 public class RunningEnvironmentUtil {
@@ -45,15 +49,25 @@ public class RunningEnvironmentUtil {
     }
 
     private static String getProcessNameInner(Context context) {
-        ActivityManager am = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE));
-        List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
-        int myPid = Process.myPid();
-        for (ActivityManager.RunningAppProcessInfo info : processInfos) {
-            if (info.pid == myPid) {
-                return info.processName;
+        if (Build.VERSION.SDK_INT >= 28) {
+            return Application.getProcessName();
+        } else {
+            try {
+                @SuppressLint("PrivateApi") Class<?> activityThread = Class.forName("android.app.ActivityThread");
+                @SuppressLint("DiscouragedPrivateApi") Method method = activityThread.getDeclaredMethod("currentProcessName");
+                return (String) method.invoke(null);
+            } catch (Throwable e) {
+                ActivityManager am = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE));
+                List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
+                int myPid = Process.myPid();
+                for (ActivityManager.RunningAppProcessInfo info : processInfos) {
+                    if (info.pid == myPid) {
+                        return info.processName;
+                    }
+                }
+                return null;
             }
         }
-        return null;
     }
 
     public static boolean isServiceWork(Context context, Class<? extends Service> service) {

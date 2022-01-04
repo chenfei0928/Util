@@ -89,6 +89,10 @@ object DepsAndroidx {
     // https://developer.android.com/jetpack/androidx/releases/ads
     // https://dl.google.com/dl/android/maven2/androidx/ads/ads-identifier/maven-metadata.xml
     const val ads = "androidx.ads:ads-identifier:1.0.0-alpha04"
+
+    // https://developer.android.com/jetpack/androidx/releases/startup
+    // https://dl.google.com/dl/android/maven2/androidx/startup/startup-runtime/maven-metadata.xml
+    const val startup = "androidx.startup:startup-runtime:1.1.0"
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Media">
@@ -137,7 +141,8 @@ object DepsAndroidx {
         val uiKtx = "androidx.navigation:navigation-ui-ktx:$nav_version"
 
         // Feature module Support
-        val dynamicFragment = "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
+        val dynamicFragment =
+            "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
 
         // Testing Navigation
         val testing = "androidx.navigation:navigation-testing:$nav_version"
