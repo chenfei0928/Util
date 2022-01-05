@@ -11,7 +11,7 @@ fun Project.applyComponent() {
     if (plugins.hasPlugin(AppPlugin::class.java)) {
         applyApp()
     } else if (plugins.hasPlugin(LibraryPlugin::class.java)) {
-        applyLib()
+        applyLibrary()
     }
     applyVersion()
 

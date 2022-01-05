@@ -8,7 +8,7 @@ plugins {
     signing
 }
 
-applyLib(appendBuildConfig = false)
+applyLibrary(appendBuildConfig = false)
 applyTest()
 applyKotlin()
 withKotlinAndroidMavenPublication(

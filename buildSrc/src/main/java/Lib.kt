@@ -4,7 +4,7 @@ import org.gradle.api.Project
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-07-27 18:12
  */
-fun Project.applyLib(appendBuildConfig: Boolean = true) {
+fun Project.applyLibrary(appendBuildConfig: Boolean = true) {
     applyCommon(appendBuildConfig = appendBuildConfig)
 
     buildSrcAndroid<com.android.build.gradle.LibraryExtension> {
