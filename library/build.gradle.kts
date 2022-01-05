@@ -12,7 +12,7 @@ applyLibrary(appendBuildConfig = false)
 applyTest()
 applyKotlin()
 withKotlinAndroidMavenPublication(
-    versionName = "1.0",
+    versionName = "1.1-SNAPSHOT",
     signed = true,
     componentName = "debug"
 )
