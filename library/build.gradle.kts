@@ -51,7 +51,6 @@ dependencies {
     // ARouter
     implementation(Deps.lib.aRouter.api)
 
-    // 6.0 权限请求代理库
     implementation(Deps.widget.recyclerView.multiType)
     implementation(Deps.widget.flexbox)
     implementation(Deps.widget.jsBridge)

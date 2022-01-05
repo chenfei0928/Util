@@ -19,6 +19,8 @@ import java.util.Set;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArraySet;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.webkit.ProxyConfig;
 import androidx.webkit.ProxyController;
 import androidx.webkit.WebSettingsCompat;
@@ -109,6 +111,42 @@ public class WebViewSettingsUtil {
             }
             return webView;
         }
+    }
+
+    /**
+     * 创建并安装WebView到占位View上。
+     * <p>
+     * 创建WebView成功后将会将WebView替换到占位View上，并使WebView监听宿主的生命周期。
+     * 以自动恢复/暂停WebView的Js计时器，并在宿主销毁时自动销毁WebView实例，以优化电量消耗与避免内存泄漏。
+     *
+     * @param lifecycleOwner 生命周期宿主，为WebView所在的Activity/Fragment
+     * @param placeHolder    WebView布局占位View，WebView创建完毕后会将其移除
+     * @param creator        WebView构造者
+     */
+    @Nullable
+    public static <WV extends WebView> WV installWebViewWithLifecycle(
+            @NonNull LifecycleOwner lifecycleOwner, @NonNull View placeHolder, @NonNull Config config, @NonNull Function1<Context, WV> creator) {
+        WV webView = installWebView(placeHolder, creator);
+        if (webView == null) {
+            return null;
+        }
+        settingWebView(webView, config);
+        lifecycleOwner.getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
+            switch (event) {
+                case ON_RESUME:
+                    webView.onResume();
+                    webView.resumeTimers();
+                    break;
+                case ON_PAUSE:
+                    webView.pauseTimers();
+                    webView.onPause();
+                    break;
+                case ON_DESTROY:
+                    onDestroy(webView);
+                    break;
+            }
+        });
+        return webView;
     }
 
     @SuppressLint("SetJavaScriptEnabled")

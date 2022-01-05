@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import io.github.chenfei0928.util.kotlin.removeSelf
 import java.util.*
 
 /**
@@ -16,13 +15,16 @@ import java.util.*
  */
 class ActivityIntentQueue : Fragment() {
     private var emitted = false
-    private val queue: Queue<Any> = LinkedList()
+    private val pendingTaskQueue: Queue<Any> = LinkedList()
     private val activityResultCallback: Queue<Function2<Int, Intent?, Unit>> = LinkedList()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         emitted = false
-        pollIntentOrRemoveSelf()
+        // 防止pendingTask中处理fragment，在此发送message执行
+        safeHandler.post {
+            pollPendingTaskOrRemoveSelf()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -33,27 +35,38 @@ class ActivityIntentQueue : Fragment() {
                 .poll()
                 ?.invoke(resultCode, data)
             // 尝试调用下一个intent
-            pollIntentOrRemoveSelf()
+            pollPendingTaskOrRemoveSelf()
         }
     }
 
-    private fun pollIntentOrRemoveSelf() {
-        when (val intent = queue.poll()) {
+    private fun pollPendingTaskOrRemoveSelf() {
+        if (!isAdded) {
+            return
+        }
+        when (val pendingTask = pendingTaskQueue.poll()) {
             null -> {
-                removeSelf()
+                safeHandler.post {
+                    fragmentManager
+                        ?.beginTransaction()
+                        ?.remove(this)
+                        ?.commitAllowingStateLoss()
+                }
             }
             is Intent -> {
-                startActivityForResult(intent, REQUEST_CODE)
+                startActivityForResult(pendingTask, REQUEST_CODE)
             }
             is ShowFuncWithDismissListener -> {
-                intent.show {
-                    if (isAdded) {
-                        pollIntentOrRemoveSelf()
+                pendingTask.show {
+                    // 防止使用处保存回调后先调用回调再将回调设null，而在回调中poll下一个任务时会设置回调字段导致的回调字段设置新值后会被设null的问题
+                    // 回调示例字段保存的回调——>（回调中poll出下一个任务，将回调传入后将回调保存到实例的字段中）——>将实例保存的回调字段设null
+                    // 在此将poll任务发送到下个message去执行
+                    safeHandler.post {
+                        pollPendingTaskOrRemoveSelf()
                     }
                 }
             }
             else -> {
-                throw IllegalArgumentException("无法处理的请求类型: ${intent.javaClass}")
+                throw IllegalArgumentException("无法处理的请求类型: ${pendingTask.javaClass}")
             }
         }
     }
@@ -62,19 +75,19 @@ class ActivityIntentQueue : Fragment() {
     fun offer(
         intent: Intent, callback: (resultCode: Int, data: Intent?) -> Unit = { _, _ -> }
     ): ActivityIntentQueue {
-        queue.offer(intent)
+        pendingTaskQueue.offer(intent)
         activityResultCallback.offer(callback)
         return this
     }
 
     fun offer(showWithDismissListener: ShowFuncWithDismissListener): ActivityIntentQueue {
-        queue.offer(showWithDismissListener)
+        pendingTaskQueue.offer(showWithDismissListener)
         return this
     }
 
     @JvmOverloads
     fun emit(fragmentManager: FragmentManager, now: Boolean = false) {
-        if (isAdded || queue.isEmpty()) {
+        if (isAdded || emitted || pendingTaskQueue.isEmpty()) {
             return
         }
         emitted = true
