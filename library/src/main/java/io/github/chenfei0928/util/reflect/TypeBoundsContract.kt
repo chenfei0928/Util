@@ -18,7 +18,16 @@ constructor(
 ) {
     val clazz: Class<T>
         get() = _clazz ?: childClassTypeParameter?.run {
+            // 当前子类直接实现了一个范围
             bounds
+                .filterIsInstance<Class<T>>()
+                .firstOrNull()
+        } ?: childClassTypeParameter?.run {
+            // 当前类有泛型约束范围，且该范围有子泛型，但没有子类实现该范围时
+            // Child<T : List<E>, E> : Parent<T>
+            bounds
+                .filterIsInstance<ParameterizedType>()
+                .map { it.rawType }
                 .filterIsInstance<Class<T>>()
                 .firstOrNull()
         } ?: childClassWildcardType?.run {

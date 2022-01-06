@@ -34,10 +34,14 @@ public class ParameterizedTypeReflect {
             Class<Parent> parentClass,
             Class<Child> finalChildClass,
             int positionInParentParameter) {
-        // 从子类开始向上迭代查找超类，直到到达父类为止，并获取父类的直接子类
-        ParentParameterizedTypeNode childClassNode = getParentTypeDefinedImplInChild(parentClass, finalChildClass).first;
         // 要获取的类型声明
         TypeVariable<?> parentTypeParameter = parentClass.getTypeParameters()[positionInParentParameter];
+        // 如果查找的是当前类，不需要从继承链上查找，直接返回当前类的泛型约束
+        if (parentClass == finalChildClass) {
+            return findParameterizedTypeDefinedImplInChild(parentClass, finalChildClass, parentTypeParameter);
+        }
+        // 从子类开始向上迭代查找超类，直到到达父类为止，并获取父类的直接子类
+        ParentParameterizedTypeNode childClassNode = getParentTypeDefinedImplInChild(parentClass, finalChildClass).first;
         // 从父类到子类查找过程中的类型边界约束
         TypeBoundsContract<R> parentTypeBoundsContract = null;
         // 从父类的直接子类开始向最后实现类遍历
@@ -62,6 +66,8 @@ public class ParameterizedTypeReflect {
                 // Child<R extends XXX> extends Parent<R>
                 // Child<R super XXX> extends Parent<R>
                 parentTypeParameter = (TypeVariable<?>) childActualTypeArgument;
+//                return findParameterizedTypeDefinedImplInChild(
+//                        (Class<Parent>) childClass.nodeClass, finalChildClass, parentTypeParameter);
                 // 查找该范型在该类中的声明下标
                 TypeVariable<? extends Class<?>>[] childClassTypeParameters = childClass.getTypeParameters();
                 for (int i = 0; i < childClassTypeParameters.length; i++) {
@@ -180,7 +186,12 @@ public class ParameterizedTypeReflect {
      * 传入该数组元素范型约束和声明该数组元素范型约束的父类、最终子类类对象，
      * 来查找该数组范型约束元素的子类约束实现。
      * <p>
-     * 如 {@code Child<R> extends Parent<R[]>}
+     * 如：
+     * <pre>
+     *     Child<R> extends Parent<R>
+     *     Child<R extends XXX> extends Parent<R>
+     *     Child<R super XXX> extends Parent<R>
+     * </pre>
      *
      * @param parentClass               声明数组约束的父类类实例
      * @param finalChildClass           最终子类类实例

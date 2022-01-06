@@ -2,6 +2,7 @@ package io.github.chenfei0928.util.reflect;
 
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -10,7 +11,16 @@ import static org.junit.Assert.assertEquals;
  * @author ChenFei(chenfei0928 @ gmail.com)
  * @date 2021-03-18 11:31
  */
-public class Test {
+public class ParameterizedTypeReflectTest {
+
+    @org.junit.Test
+    public void issueTest() {
+        // 当前类有泛型约束范围，但没有子类实现该范围时，TypeVariable.getBounds()[0] is ParameterizedType, this ParameterizedType未处理
+        test(I1.class, List.class);
+        Class<Object> listClass = ParameterizedTypeReflect.getParentParameterizedTypeDefinedImplInChild(
+                I1.class, I1.class, 1).getClazz();
+        assertEquals(listClass, List.class);
+    }
 
     @org.junit.Test
     public void testParam() {
@@ -34,6 +44,15 @@ public class Test {
         test(II.ViewGroup.class, android.view.ViewGroup.class);
         test(II.View.class, android.view.View.class);
         test(II.Any.class, android.view.View.class);
+        // 中间接口测试
+//        test(I1.class, List.class);
+        test(I1.ArrayList.class, (Class<ArrayList<Object>>) ((Class) ArrayList.class));
+        Class<Object> arrayListClass = ParameterizedTypeReflect.getParentParameterizedTypeDefinedImplInChild(
+                I1.class, I1.ArrayList.class, 1).getClazz();
+        assertEquals(arrayListClass, ArrayList.class);
+//        Class<Object> listClass = ParameterizedTypeReflect.getParentParameterizedTypeDefinedImplInChild(
+//                I1.class, I1.class, 1).getClazz();
+//        assertEquals(listClass, List.class);
     }
 
     private static <IInterface extends I<R>, R> void test(Class<IInterface> finalChildClass, Class<R> paramsType) {
@@ -43,6 +62,11 @@ public class Test {
                 "onViewCreatedImpl: I, " + finalChildClass.getName() + " " + parentParameterizedTypeDefinedImplInChild
         );
         assertEquals(parentParameterizedTypeDefinedImplInChild.getClazz(), paramsType);
+    }
+}
+
+interface I1<E, T extends List<E>> extends I<T> {
+    class ArrayList implements I1<Object, java.util.ArrayList<Object>> {
     }
 }
 
