@@ -30,7 +30,7 @@ object Env {
         get() = impl.vcsVersionCode
 
     internal const val targetSdkVersion = 29
-    internal const val compileSdkVersion = 30
+    internal const val compileSdkVersion = 31
 
     private class EnvImpl(
         containsReleaseBuild: Boolean
