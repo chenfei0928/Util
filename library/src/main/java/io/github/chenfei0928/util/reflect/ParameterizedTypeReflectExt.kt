@@ -15,5 +15,7 @@ inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeDefinedImp
 inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeClassDefinedImplInChild(
     positionInParentParameter: Int
 ): Class<R> {
-    return getParentParameterizedTypeDefinedImplInChild<Parent, R>(positionInParentParameter).clazz
+    return ParameterizedTypeReflect0.getParentParameterizedTypeDefinedImplInChild1(
+        Parent::class.java, this::class.java, positionInParentParameter
+    )
 }
