@@ -19,7 +19,7 @@ import java.lang.reflect.*
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-07 11:06
  */
-class ParameterizedTypeReflect<Parent, Child : Parent, R>
+class ParameterizedTypeReflect1<Parent, Child : Parent, R>
 /**
  * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
  *
@@ -37,7 +37,10 @@ constructor(
     val parentParameterizedTypeDefinedImplInChild: Class<R>
         get() = if (parentClass == finalChildClass) {
             val typeVariable = parentClass.typeParameters[positionInParentParameter]
-            getErasedTypeClass(ParentParameterizedTypeNode(finalChildClass), typeVariable)
+            getErasedTypeClass(
+                ParentParameterizedTypeNode(finalChildClass),
+                typeVariable
+            )
         } else {
             val childClassNodeToFinalChildClassNode =
                 ParameterizedTypeReflect0.getParentTypeDefinedImplInChild(
@@ -51,6 +54,9 @@ constructor(
 
     /**
      * 获取已擦除后的类型类
+     *
+     * @param currentNode 当前类节点
+     * @param typeImplOnParent 当前类实现的父类中泛型定义（Child : Parent<X> 中的X）
      */
     private fun getErasedTypeClass(
         currentNode: ParentParameterizedTypeNode, typeImplOnParent: Type
@@ -72,11 +78,10 @@ constructor(
             currentNode.childNode?.let { childNode ->
                 // 如果父类定义了泛型，但子类没有实现，此处不会返回ParameterizedType的实例（测试为父类类实例），需要去获取该子类父类的泛型范围
                 val genericSuperclass = childNode.genericSuperclass as? ParameterizedType
-                genericSuperclass?.let { childNode to genericSuperclass }
-            }?.let { (childNode, genericSuperclass) ->
-                getErasedTypeClass(
-                    childNode, genericSuperclass.actualTypeArguments[indexOfCurrentNodeDefParameter]
-                )
+                genericSuperclass?.let { childNode to genericSuperclass.actualTypeArguments[indexOfCurrentNodeDefParameter] }
+            }?.let { (childNode, typeImplOnParent) ->
+                // 在子类中查找父类中泛型定义实现
+                getErasedTypeClass(childNode, typeImplOnParent)
             } ?: run {
                 // 获取该父类的泛型范围
                 typeParameters[indexOfCurrentNodeDefParameter].bounds
@@ -87,10 +92,10 @@ constructor(
         is GenericArrayType -> {
             // 如果是数组范型，还要查找子类中该范型数组元素的具体实现
             // Child extends Parent<XXX[]>
-            val elementType = getErasedTypeClass(
+            // 将生成ChildR的数组
+            getErasedTypeClass(
                 currentNode, typeImplOnParent.genericComponentType
-            )
-            elementType.arrayClass()
+            ).arrayClass()
         }
         is ParameterizedType -> {
             // 子类的范型约束虽然是一个Interface或Class，但其仍有范型定义
@@ -100,13 +105,17 @@ constructor(
             typeImplOnParent.rawType as Class<*>
         }
         is WildcardType -> {
-            // 范型约束只约束了范围，而没有继续约束实现
+            // 范型约束只约束了范围，而没有继续约束实现，通常不会被类实现，或许为字段或方法（？）
             typeImplOnParent.upperBounds
-                .filterIsInstance<Class<*>>()
+                .map { getErasedTypeClass(currentNode, it) }
                 .first()
         }
         else -> throw IllegalArgumentException(
-            "无法从指定类型中获取其泛型擦除后的类型：当前子类实现的父类中的范型定义：${typeImplOnParent.javaClass} $typeImplOnParent"
+            "无法从指定类型中获取其泛型擦除后的类型." +
+                    "\n父类：" + parentClass +
+                    "\n最终子类：" + finalChildClass +
+                    "\n当前子类：" + currentNode +
+                    "\n当前子类实现的父类中的范型定义：" + typeImplOnParent.javaClass + typeImplOnParent
         )
     }
 }

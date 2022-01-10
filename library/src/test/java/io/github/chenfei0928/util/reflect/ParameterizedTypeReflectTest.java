@@ -5,16 +5,13 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author ChenFei(chenfei0928 @ gmail.com)
  * @date 2021-03-18 11:31
  */
 public class ParameterizedTypeReflectTest {
-
-    @org.junit.Test
-    public void testParam0() {
-        test(II.Any.class, android.view.View.class);
-    }
 
     @org.junit.Test
     public void testParam() {
@@ -41,22 +38,18 @@ public class ParameterizedTypeReflectTest {
         // 中间接口测试
         test(I1.class, List.class);
         test(I1.ArrayList.class, (Class<ArrayList<Object>>) ((Class) ArrayList.class));
-//        Class<Object> arrayListClass = ParameterizedTypeReflect0.getParentParameterizedTypeDefinedImplInChild(
-//                I1.class, I1.ArrayList.class, 1).getClazz();
-//        assertEquals(arrayListClass, ArrayList.class);
-//        Class<Object> listClass = ParameterizedTypeReflect0.getParentParameterizedTypeDefinedImplInChild(
-//                I1.class, I1.class, 1).getClazz();
-//        assertEquals(listClass, List.class);
+        Class<Object> arrayListClass = new ParameterizedTypeReflect1(I1.class, I1.ArrayList.class, 1)
+                .getParentParameterizedTypeDefinedImplInChild();
+        assertEquals(arrayListClass, ArrayList.class);
+        Class<Object> listClass = new ParameterizedTypeReflect1(I1.class, I1.class, 1)
+                .getParentParameterizedTypeDefinedImplInChild();
+        assertEquals(listClass, List.class);
     }
 
     private static <IInterface extends I<R>, R> void test(Class<IInterface> finalChildClass, Class<R> paramsType) {
-        ParameterizedTypeReflect reflect = new ParameterizedTypeReflect(I.class, finalChildClass, 0);
-        Class reflectParentParameterizedTypeDefinedImplInChild = reflect.getParentParameterizedTypeDefinedImplInChild();
-        if (paramsType != reflectParentParameterizedTypeDefinedImplInChild) {
-            System.err.println("finalChildClass " + finalChildClass
-                    + "\n paramsType " + paramsType
-                    + "\n" + reflectParentParameterizedTypeDefinedImplInChild);
-        }
+        ParameterizedTypeReflect1<I<R>, IInterface, R> reflect = new ParameterizedTypeReflect1(I.class, finalChildClass, 0);
+        Class<R> reflectParentParameterizedTypeDefinedImplInChild = reflect.getParentParameterizedTypeDefinedImplInChild();
+        assertEquals(reflectParentParameterizedTypeDefinedImplInChild, paramsType);
     }
 }
 
