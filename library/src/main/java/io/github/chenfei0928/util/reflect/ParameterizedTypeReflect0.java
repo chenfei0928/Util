@@ -14,7 +14,7 @@ import io.github.chenfei0928.util.kotlin.ReflectKt;
  * @author ChenFei(chenfei0928 @ gmail.com)
  * @date 2020-10-21 18:18
  */
-public class ParameterizedTypeReflect {
+public class ParameterizedTypeReflect0 {
 
     /**
      * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
@@ -237,7 +237,7 @@ public class ParameterizedTypeReflect {
      * @return 父类的直接子类 to 最终子类的节点链
      */
     @NonNull
-    private static <Parent, Child extends Parent> Pair<ParentParameterizedTypeNode, ParentParameterizedTypeNode> getParentTypeDefinedImplInChild(
+    static <Parent, Child extends Parent> Pair<ParentParameterizedTypeNode, ParentParameterizedTypeNode> getParentTypeDefinedImplInChild(
             Class<Parent> parentClass,
             Class<Child> finalChildClass) {
         final ParentParameterizedTypeNode finalChildClassNode = new ParentParameterizedTypeNode(finalChildClass);

@@ -80,6 +80,7 @@ class ParentParameterizedTypeNode {
                 '}';
     }
 
+    @NonNull
     @Override
     public String toString() {
         String parentString = parentNode != null ? parentNode.toParentString() : null;
