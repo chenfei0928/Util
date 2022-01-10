@@ -10,7 +10,7 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
-import io.github.chenfei0928.util.ListenersProxy
+import io.github.chenfei0928.reflect.ListenersProxy
 import io.github.chenfei0928.view.asyncinflater.LikeListViewInjector
 
 /**

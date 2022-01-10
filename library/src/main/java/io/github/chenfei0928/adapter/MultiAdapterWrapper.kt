@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerViewHelper
 import io.github.chenfei0928.util.R
-import io.github.chenfei0928.util.kotlin.ViewHolderTagDelegate
+import io.github.chenfei0928.widget.recyclerview.ViewHolderTagDelegate
 
 /**
  * Created by MrFeng on 2018/1/8.

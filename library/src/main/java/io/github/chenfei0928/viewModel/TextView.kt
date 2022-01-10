@@ -16,7 +16,7 @@ import androidx.core.text.PrecomputedTextCompat
 import androidx.core.view.doOnLayout
 import androidx.core.widget.TextViewCompat
 import io.github.chenfei0928.util.ExecutorUtil
-import io.github.chenfei0928.util.kotlin.contains
+import io.github.chenfei0928.collection.contains
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 

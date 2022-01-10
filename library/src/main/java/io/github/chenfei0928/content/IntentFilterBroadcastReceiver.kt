@@ -6,7 +6,7 @@ import android.content.IntentFilter
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.util.kotlin.isAlive
+import io.github.chenfei0928.lifecycle.isAlive
 
 /**
  * 跟随生命周期随动自动反注册的广播接收者

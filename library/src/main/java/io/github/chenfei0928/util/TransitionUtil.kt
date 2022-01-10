@@ -10,7 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
-import io.github.chenfei0928.util.kotlin.arrayOfNotNull
+import io.github.chenfei0928.collection.arrayOfNotNull
 import java.util.*
 
 /**

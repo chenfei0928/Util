@@ -7,7 +7,6 @@ import java.util.Locale;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NoSideEffects;
 import io.github.chenfei0928.util.lambdaFunction.Action1;
-import io.github.chenfei0928.util.lambdaFunction.Actions;
 
 /**
  * @author ChenFei(chenfei0928 @ gmail.com)

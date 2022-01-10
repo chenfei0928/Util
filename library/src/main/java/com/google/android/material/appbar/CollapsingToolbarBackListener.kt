@@ -9,7 +9,7 @@ import androidx.appcompat.R
 import androidx.appcompat.app.ActionBar
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import io.github.chenfei0928.util.kotlin.blendColors
+import io.github.chenfei0928.graphics.blendColors
 
 /**
  * 根据AppBarLayout收起进度来调整ToolBar返回箭头的着色，类似[CollapsingToolbarLayout]Title效果

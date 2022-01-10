@@ -2,6 +2,7 @@ package io.github.chenfei0928.util.kotlin
 
 import android.os.Parcelable
 import androidx.fragment.app.Fragment
+import io.github.chenfei0928.content.putParcelableList
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 

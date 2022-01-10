@@ -11,7 +11,7 @@ import io.github.chenfei0928.coroutines.CoroutineAndroidContext
 import io.github.chenfei0928.coroutines.CoroutineAndroidContextImpl
 import io.github.chenfei0928.coroutines.JobCoroutineScope
 import io.github.chenfei0928.coroutines.MainScope
-import io.github.chenfei0928.util.kotlin.isAlive
+import io.github.chenfei0928.lifecycle.isAlive
 import kotlinx.coroutines.CoroutineScope
 import java.io.Closeable
 import kotlin.coroutines.CoroutineContext

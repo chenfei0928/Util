@@ -5,14 +5,13 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
-import io.github.chenfei0928.util.kotlin.ContextKt;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.github.chenfei0928.content.ContextKt;
 
 /**
  * 记录首次启动的帮助类

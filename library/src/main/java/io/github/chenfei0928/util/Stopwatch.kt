@@ -2,7 +2,7 @@ package io.github.chenfei0928.util
 
 import android.os.SystemClock
 import androidx.annotation.IntRange
-import io.github.chenfei0928.util.kotlin.sumByLong
+import io.github.chenfei0928.collection.sumByLong
 import java.util.*
 
 /**

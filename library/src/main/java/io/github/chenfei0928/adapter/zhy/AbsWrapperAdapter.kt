@@ -7,8 +7,8 @@ import androidx.annotation.LayoutRes
 import androidx.collection.SparseArrayCompat
 import androidx.recyclerview.widget.RecyclerView
 import io.github.chenfei0928.adapter.AdapterDelegate
-import io.github.chenfei0928.util.kotlin.contains
-import io.github.chenfei0928.util.kotlin.isEmpty
+import io.github.chenfei0928.collection.contains
+import io.github.chenfei0928.widget.recyclerview.isEmpty
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)

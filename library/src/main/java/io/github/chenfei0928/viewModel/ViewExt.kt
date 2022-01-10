@@ -4,7 +4,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
-import io.github.chenfei0928.widget.TextWatcherAdapter
+import io.github.chenfei0928.text.TextWatcherAdapter
 
 /**
  * 使View监听其他的EditText内容不为空时才可用

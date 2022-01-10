@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Parcelable
 import androidx.lifecycle.Lifecycle
 import io.github.chenfei0928.content.IntentFilterBroadcastReceiver
-import io.github.chenfei0928.util.kotlin.asType
+import io.github.chenfei0928.reflect.asType
 import kotlinx.parcelize.Parcelize
 
 /**

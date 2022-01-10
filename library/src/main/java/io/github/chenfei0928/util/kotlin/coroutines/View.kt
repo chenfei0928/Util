@@ -11,8 +11,8 @@ import io.github.chenfei0928.coroutines.CoroutineAndroidContext
 import io.github.chenfei0928.coroutines.CoroutineAndroidContextImpl
 import io.github.chenfei0928.coroutines.JobCoroutineScope
 import io.github.chenfei0928.coroutines.MainScope
-import io.github.chenfei0928.util.kotlin.findActivity
-import io.github.chenfei0928.util.kotlin.findParentFragment
+import io.github.chenfei0928.content.findActivity
+import io.github.chenfei0928.view.findParentFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import java.io.Closeable

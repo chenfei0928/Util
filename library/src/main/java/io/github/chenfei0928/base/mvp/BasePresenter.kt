@@ -7,7 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.util.SimpleLifecycleObserver
 import io.github.chenfei0928.util.StackTraceLogUtil
-import io.github.chenfei0928.util.kotlin.onEvent
+import io.github.chenfei0928.lifecycle.onEvent
 
 /**
  * Created by MrFeng on 18-7-4.

@@ -7,7 +7,7 @@ import androidx.databinding.Observable
 import androidx.viewbinding.ViewBinding
 import io.github.chenfei0928.adapter.ViewBindingHolder
 import io.github.chenfei0928.util.R
-import io.github.chenfei0928.util.kotlin.ViewHolderTagDelegate
+import io.github.chenfei0928.widget.recyclerview.ViewHolderTagDelegate
 import io.github.chenfei0928.util.kotlin.createOnPropertyChanged
 
 /**

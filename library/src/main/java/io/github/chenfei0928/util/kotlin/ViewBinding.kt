@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.collection.LruCache
 import androidx.viewbinding.ViewBinding
+import io.github.chenfei0928.reflect.safeInvoke
 import java.lang.reflect.Method
 
 inline fun <reified T : ViewBinding> Activity.setContentViewBinding(

@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.github.chenfei0928.util.kotlin.inflateFunc
-import io.github.chenfei0928.util.reflect.getParentParameterizedTypeClassDefinedImplInChild
+import io.github.chenfei0928.reflect.getParentParameterizedTypeClassDefinedImplInChild
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)

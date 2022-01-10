@@ -3,6 +3,7 @@ package io.github.chenfei0928.util.kotlin
 import android.animation.Animator
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import io.github.chenfei0928.lifecycle.onEvent
 
 fun Animator.bindToLifecycle(owner: LifecycleOwner): Animator {
     bindUntilEvent(owner, Lifecycle.Event.ON_DESTROY)
