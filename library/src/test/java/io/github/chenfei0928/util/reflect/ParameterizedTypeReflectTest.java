@@ -60,12 +60,9 @@ interface I1<E, T extends List<E>> extends I<T> {
 
 interface I<E> {
     /**
-     * 子类直接实现一阶数组 GenericArrayType
+     * 子类直接实现一阶数组 Class: Int[]
      * <pre>
-     *     getParentParameterizedTypeDefinedImplInChild()
-     *     // Child extends Parent<XXX[]>
-     *         findParameterizedArrayTypeDefinedImplInChild()
-     *         // Child extends Parent<R-Element[]>
+     *     Class
      * </pre>
      */
     class IntArray implements I<int[]> {
@@ -74,11 +71,8 @@ interface I<E> {
     /**
      * 子类直接实现二阶或多阶数组 GenericArrayType
      * <pre>
-     *     getParentParameterizedTypeDefinedImplInChild()
-     *     // Child extends Parent<XXX[]>
-     *         findParameterizedArrayTypeDefinedImplInChild()
-     *         // Child extends Parent<XXX[][]>
-     *             ...
+     *     GenericArrayType
+     *         Class
      * </pre>
      */
     class IntArrayArray implements I<int[][]> {
@@ -87,8 +81,7 @@ interface I<E> {
     /**
      * 子类直接实现泛型元素类型 (Class<?>)
      * <pre>
-     *     getParentParameterizedTypeDefinedImplInChild()
-     *     // Child extends Parent<SomeType>
+     *     Class
      * </pre>
      */
     class View implements I<android.view.View> {
@@ -99,8 +92,7 @@ interface I<E> {
  * 子类的范型约束ChildP虽然是一个Interface或Class，但其仍有范型定义
  * 但由于泛型擦除，只能获取到List.class
  * <pre>
- *     getParentParameterizedTypeDefinedImplInChild()
- *     // Child<ChildR> extends Parent<ChildP<ChildR>>
+ *     ParameterizedType
  * </pre>
  */
 interface IList<E> extends I<List<E>> {
@@ -115,10 +107,8 @@ interface IList<E> extends I<List<E>> {
  * 数组范型，还要查找子类中该范型数组元素的具体实现
  * 但由于泛型擦除，只能获取到 List[].class
  * <pre>
- *     getParentParameterizedTypeDefinedImplInChild()
- *     // Child extends Parent<XXX[]>
- *         findParameterizedArrayTypeDefinedImplInChild()
- *         // Child<ChildR> extends Parent<List<ChildR>[]>
+ *     GenericArrayType
+ *         ParameterizedType
  * </pre>
  */
 interface IListEArray<E> extends I<List<E>[]> {
@@ -132,23 +122,16 @@ interface IListEArray<E> extends I<List<E>[]> {
 /**
  * 这一层子类只实现了范型为数组（且未约束范围），但数组元素仍由范型约束由子类提供
  * <pre>
- *     getParentParameterizedTypeDefinedImplInChild()
- *     // Child extends Parent<XXX[]>
- *         findParameterizedArrayTypeDefinedImplInChild()
- *         // Child<ChildR> extends Parent<ChildR[]>
- *             ...
+ *     GenericArrayType
+ *         ...
  * </pre>
  */
 interface IEArray<E> extends I<E[]> {
     /**
      * 中间父类只实现了范型为数组（且未约束范围），数组元素由子类提供
      * <pre>
-     *     getParentParameterizedTypeDefinedImplInChild()
-     *     // Child extends Parent<XXX[]>
-     *         findParameterizedArrayTypeDefinedImplInChild()
-     *         // Child<ChildR> extends Parent<ChildR[]>
-     *             findParameterizedArrayTypeDefinedImplInChild()
-     *             // Child extends Parent<R-Element[]>
+     *     GenericArrayType
+     *         Class
      * </pre>
      * View[].class
      */
@@ -159,10 +142,8 @@ interface IEArray<E> extends I<E[]> {
 /**
  * 子类继续范型约束该类型，要继续向子类查找该范型在子类中的实现
  * <pre>
- *     getParentParameterizedTypeDefinedImplInChild()
- *     // Child<R> extends Parent<R>
- *     // Child<R extends XXX> extends Parent<R>
- *     // Child<R super XXX> extends Parent<R>
+ *     TypeVariable
+ *         ...
  * </pre>
  */
 interface II<E extends android.view.View> extends I<E> {
