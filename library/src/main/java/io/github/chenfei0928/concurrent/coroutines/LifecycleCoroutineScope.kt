@@ -9,6 +9,7 @@ import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.base.ContextProvider
 import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
 import io.github.chenfei0928.lifecycle.LifecycleCacheDelegate
+import io.github.chenfei0928.lifecycle.isAlive
 import kotlinx.coroutines.CoroutineScope
 import java.io.Closeable
 import kotlin.coroutines.CoroutineContext
@@ -27,7 +28,7 @@ private val cancelledCoroutineScope by lazy(LazyThreadSafetyMode.NONE) {
  * 在宿主生命周期结束后再获取协程时，将返回一个被取消的协程实例，在该实例上创建的协程子任务将不会被执行。
  */
 val LifecycleOwner.coroutineScope: CoroutineScope by LifecycleCacheDelegate { owner, closeCallback ->
-    if (owner.lifecycle.currentState != Lifecycle.State.DESTROYED) {
+    if (owner.lifecycle.isAlive) {
         // 宿主存活时，创建或从缓存中获取一个与该宿主生命周期绑定的协程实例
         LifecycleCoroutineScope(owner, closeCallback)
     } else {

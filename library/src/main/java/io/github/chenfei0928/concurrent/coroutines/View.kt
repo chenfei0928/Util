@@ -45,8 +45,7 @@ private class ViewCoroutineScope(
     }
 
     private val androidContextElement: CoroutineAndroidContext = run {
-        when (val host: Any =
-            view.findParentFragment() ?: view.context.findActivity() ?: view.context) {
+        when (val host = view.findParentFragment() ?: view.context.findActivity() ?: view.context) {
             is Fragment -> {
                 CoroutineAndroidContextImpl(host.activity ?: host.requireContext(), host)
             }

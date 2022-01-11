@@ -7,30 +7,42 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.lifecycle.LifecycleCacheDelegate
+import io.github.chenfei0928.lifecycle.isAlive
 
 /**
  * Created by MrFeng on 2017/6/28.
  */
-private class SafeHandler : Handler(Looper.getMainLooper()), LifecycleEventObserver {
-    private var mIsDestroyed = false
+private class SafeHandler(
+    owner: LifecycleOwner,
+    private val closeCallback: () -> Unit
+) : Handler(Looper.getMainLooper()), LifecycleEventObserver {
+    private var mIsAlive = !owner.lifecycle.isAlive
 
     override fun dispatchMessage(msg: Message) {
-        if (mIsDestroyed) {
+        if (!mIsAlive) {
             return
         }
         super.dispatchMessage(msg)
     }
 
+    override fun sendMessageAtTime(msg: Message, uptimeMillis: Long): Boolean {
+        if (!mIsAlive) {
+            return false
+        }
+        return super.sendMessageAtTime(msg, uptimeMillis)
+    }
+
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         if (event == Lifecycle.Event.ON_DESTROY) {
             removeCallbacksAndMessages(null)
-            mIsDestroyed = true
+            closeCallback()
+            mIsAlive = false
         } else if (event == Lifecycle.Event.ON_CREATE) {
-            mIsDestroyed = false
+            mIsAlive = true
         }
     }
 }
 
-val LifecycleOwner.safeHandler: Handler by LifecycleCacheDelegate<LifecycleOwner, SafeHandler> { _, _ ->
-    SafeHandler()
+val LifecycleOwner.safeHandler: Handler by LifecycleCacheDelegate<LifecycleOwner, SafeHandler> { owner, closeCallback ->
+    SafeHandler(owner, closeCallback)
 }

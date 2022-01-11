@@ -2,13 +2,13 @@ package io.github.chenfei0928.app;
 
 import android.content.Context;
 import android.os.Handler;
-import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
+import io.github.chenfei0928.os.SafeHandlerKt;
 
 /**
  * 带生命周期宿主回调的Dialog
@@ -17,7 +17,7 @@ import androidx.lifecycle.LifecycleRegistry;
  * @date 2020-08-13 10:16
  */
 public class AppCompatLifecycleOwnerDialog extends AppCompatDialog implements LifecycleOwner {
-    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = SafeHandlerKt.getSafeHandler(this);
     private final LifecycleRegistry mLifecycle = new LifecycleRegistry(this);
 
     public AppCompatLifecycleOwnerDialog(Context context) {

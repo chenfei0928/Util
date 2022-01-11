@@ -22,6 +22,7 @@ class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObserver>
      */
     private val valueCreator: (owner: Owner, closeCallback: () -> Unit) -> V
 ) : ReadOnlyProperty<Owner, V> {
+    // 通过虚引用HashMap来持有键值对，其将自动移除GC不可访问的key和其所对应的value
     private val cache: MutableMap<Owner, V> = WeakHashMap()
 
     override fun getValue(thisRef: Owner, property: KProperty<*>): V {

@@ -1,7 +1,9 @@
 package io.github.chenfei0928.content.sp.delegate
 
 import android.content.SharedPreferences
+import com.google.gson.Gson
 import io.github.chenfei0928.collection.mapToIntArray
+import java.lang.reflect.Type
 import kotlin.reflect.KProperty
 
 /**
@@ -45,5 +47,20 @@ class IntArraySpConvertSaver(
 
     override fun onSave(value: IntArray): String {
         return value.joinToString(",")
+    }
+}
+
+class GsonSpConvertSaver<T>(
+    saver: AbsSpSaver.AbsSpDelegate<String?>,
+    private val gson: Gson = io.github.chenfei0928.util.gson.gson,
+    private val type: Type
+) : SpConvertSaver<String?, T?>(saver) {
+
+    override fun onRead(value: String?): T? {
+        return gson.fromJson<T>(value, type)
+    }
+
+    override fun onSave(value: T?): String? {
+        return gson.toJson(value)
     }
 }
