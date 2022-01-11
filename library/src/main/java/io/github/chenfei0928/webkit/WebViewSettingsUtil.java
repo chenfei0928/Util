@@ -32,9 +32,9 @@ import io.github.chenfei0928.base.ContextProvider;
 import io.github.chenfei0928.concurrent.ExecutorUtil;
 import io.github.chenfei0928.util.Log;
 import io.github.chenfei0928.util.R;
-import io.github.chenfei0928.widget.ToastUtil;
 import io.github.chenfei0928.view.SystemUiUtil;
 import io.github.chenfei0928.view.ViewKt;
+import io.github.chenfei0928.widget.ToastUtil;
 import kotlin.jvm.functions.Function1;
 
 /**

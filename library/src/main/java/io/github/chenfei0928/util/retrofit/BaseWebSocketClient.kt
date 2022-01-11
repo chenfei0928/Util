@@ -11,17 +11,21 @@ import okhttp3.*
  * Created by MrFeng on 2018/1/19.
  */
 abstract class BaseWebSocketClient(
-        private val okHttpClient: OkHttpClient,
-        private val address: String,
-        private val keepAliveDelay: Long
+    private val okHttpClient: OkHttpClient,
+    private val address: String,
+    private val keepAliveDelay: Long
 ) {
     protected val handler = Handler(Looper.getMainLooper())
+
     // 内部的webSocket，可能会存在正在连接中或或未准备好的情况
     private var _socket: WebSocket? = null
+
     // 如果已经成功建立连接后才能发送消息
     private var isReady = false
+
     // 链接被用户关闭而非因异常中断时，为true
     private var isClosed = false
+
     // 如果连接可用并已准备好，返回可用的webSocket
     protected val socket: WebSocket?
         get() {
@@ -40,65 +44,65 @@ abstract class BaseWebSocketClient(
             return
         }
         _socket = okHttpClient.newWebSocket(
-                Request.Builder()
-                        .url(address)
-                        .build(),
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        super.onOpen(webSocket, response)
-                        _socket = webSocket
-                        Log.i(TAG, "onOpen $response")
-                        // 链接聊天室
-                        this@BaseWebSocketClient.onOpen(webSocket)
-                        // 标记已就绪
-                        isReady = true
-                        // 保活
-                        postSendKeepAliveDelay()
-                    }
+            Request.Builder()
+                .url(address)
+                .build(),
+            object : WebSocketListener() {
+                override fun onOpen(webSocket: WebSocket, response: Response) {
+                    super.onOpen(webSocket, response)
+                    _socket = webSocket
+                    Log.i(TAG, "onOpen $response")
+                    // 链接聊天室
+                    this@BaseWebSocketClient.onOpen(webSocket)
+                    // 标记已就绪
+                    isReady = true
+                    // 保活
+                    postSendKeepAliveDelay()
+                }
 
-                    override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                        super.onFailure(webSocket, t, response)
-                        Log.i(TAG, "onFailure ", t)
-                        _socket = null
-                        isReady = false
-                        handler.removeCallbacksAndMessages(TOKEN_CONNECT)
-                        handler.removeCallbacksAndMessages(TOKEN_CLOSE)
-                        handler.removeCallbacksAndMessages(TOKEN_SEND_MSG)
-                        // 如果连接失败，重连
-                        if (!isClosed && autoRetry) {
-                            handler.postDelayed(1000L, TOKEN_CONNECT) {
-                                connect(autoRetry)
-                            }
+                override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                    super.onFailure(webSocket, t, response)
+                    Log.i(TAG, "onFailure ", t)
+                    _socket = null
+                    isReady = false
+                    handler.removeCallbacksAndMessages(TOKEN_CONNECT)
+                    handler.removeCallbacksAndMessages(TOKEN_CLOSE)
+                    handler.removeCallbacksAndMessages(TOKEN_SEND_MSG)
+                    // 如果连接失败，重连
+                    if (!isClosed && autoRetry) {
+                        handler.postDelayed(1000L, TOKEN_CONNECT) {
+                            connect(autoRetry)
                         }
                     }
+                }
 
-                    override fun onMessage(webSocket: WebSocket, text: String) {
-                        super.onMessage(webSocket, text)
-                        Log.i(TAG, "onMessage: $text")
-                        parseMsg(text)
-                    }
+                override fun onMessage(webSocket: WebSocket, text: String) {
+                    super.onMessage(webSocket, text)
+                    Log.i(TAG, "onMessage: $text")
+                    parseMsg(text)
+                }
 
-                    override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                        super.onClosing(webSocket, code, reason)
-                        webSocket.close(1000, null)
-                    }
+                override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+                    super.onClosing(webSocket, code, reason)
+                    webSocket.close(1000, null)
+                }
 
-                    override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                        super.onClosed(webSocket, code, reason)
-                        Log.i(TAG, "onClosed $code $reason")
-                        _socket = null
-                        isReady = false
-                        handler.removeCallbacksAndMessages(TOKEN_CONNECT)
-                        handler.removeCallbacksAndMessages(TOKEN_CLOSE)
-                        handler.removeCallbacksAndMessages(TOKEN_SEND_MSG)
-                        // 如果连接失败，重连
-                        if (!isClosed && autoRetry) {
-                            handler.postDelayed(1000L, TOKEN_CONNECT) {
-                                connect(autoRetry)
-                            }
+                override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                    super.onClosed(webSocket, code, reason)
+                    Log.i(TAG, "onClosed $code $reason")
+                    _socket = null
+                    isReady = false
+                    handler.removeCallbacksAndMessages(TOKEN_CONNECT)
+                    handler.removeCallbacksAndMessages(TOKEN_CLOSE)
+                    handler.removeCallbacksAndMessages(TOKEN_SEND_MSG)
+                    // 如果连接失败，重连
+                    if (!isClosed && autoRetry) {
+                        handler.postDelayed(1000L, TOKEN_CONNECT) {
+                            connect(autoRetry)
                         }
                     }
-                })
+                }
+            })
     }
 
     /**

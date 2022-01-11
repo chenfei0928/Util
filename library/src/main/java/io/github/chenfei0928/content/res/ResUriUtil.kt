@@ -8,14 +8,14 @@ class ResUriUtil {
     companion object {
         @JvmStatic
         fun getResUri(context: Resources, @AnyRes id: Int) =
-                ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
-                        context.getResourcePackageName(id) + "/" +
-                        context.getResourceTypeName(id) + "/" +
-                        context.getResourceEntryName(id)
+            ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+                    context.getResourcePackageName(id) + "/" +
+                    context.getResourceTypeName(id) + "/" +
+                    context.getResourceEntryName(id)
 
         @JvmStatic
         fun getResUri2(context: Resources, @AnyRes id: Int) =
-                ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
-                        context.getResourcePackageName(id) + "/" + id
+            ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+                    context.getResourcePackageName(id) + "/" + id
     }
 }

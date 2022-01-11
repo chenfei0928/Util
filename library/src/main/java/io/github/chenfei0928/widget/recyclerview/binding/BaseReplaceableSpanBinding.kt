@@ -1,8 +1,8 @@
 package io.github.chenfei0928.widget.recyclerview.binding
 
 import androidx.recyclerview.widget.RecyclerView
-import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.collection.removeRange
+import io.github.chenfei0928.util.Log
 
 /**
  * 局部可替换的 AbsRecyclerViewBinding 扩展支持

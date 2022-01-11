@@ -19,7 +19,7 @@ class TmpFileWriter : ContentValuesWriter {
         super.parseArg(host, arg)
         arg ?: return false
         val tmpFilePath = arg.getString(TMP_FILE_PATH)
-                ?: return false
+            ?: return false
         tmpFile = File(tmpFilePath)
         // 检查文件是否存在
         if (tmpFile.isDirectory || !tmpFile.exists()) {
@@ -32,8 +32,8 @@ class TmpFileWriter : ContentValuesWriter {
     override fun write(outputStream: OutputStream) {
         // 将临时文件写入目标
         tmpFile.inputStream()
-                .buffered()
-                .copyTo(outputStream)
+            .buffered()
+            .copyTo(outputStream)
         // 删除临时文件
         if (autoDeleteTmpFile) {
             tmpFile.delete()

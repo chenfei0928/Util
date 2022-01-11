@@ -14,16 +14,20 @@ val <T : Parcelable> Class<T>.PARCELABLE_CREATOR: Parcelable.Creator<T>
     get() {
         val f = getField("CREATOR")
         if (f.modifiers and Modifier.STATIC == 0) {
-            throw BadParcelableException("Parcelable protocol requires "
-                    + "the CREATOR object to be static on class " + name)
+            throw BadParcelableException(
+                "Parcelable protocol requires "
+                        + "the CREATOR object to be static on class " + name
+            )
         }
         val creatorType = f.type
         if (!Parcelable.Creator::class.java.isAssignableFrom(creatorType)) {
             // Fail before calling Field.get(), not after, to avoid initializing
             // parcelableClass unnecessarily.
-            throw BadParcelableException("Parcelable protocol requires a "
-                    + "Parcelable.Creator object called "
-                    + "CREATOR on class " + name)
+            throw BadParcelableException(
+                "Parcelable protocol requires a "
+                        + "Parcelable.Creator object called "
+                        + "CREATOR on class " + name
+            )
         }
         return f.get(null) as Parcelable.Creator<T>
     }

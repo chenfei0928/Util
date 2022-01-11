@@ -4,8 +4,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerViewHelper
-import io.github.chenfei0928.util.R
 import io.github.chenfei0928.concurrent.ExecutorUtil
+import io.github.chenfei0928.util.R
 
 /**
  * 使用adapter方式注入子view

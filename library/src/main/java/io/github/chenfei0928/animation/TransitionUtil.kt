@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import io.github.chenfei0928.collection.arrayOfNotNull
 import io.github.chenfei0928.os.PowerSaveUtil
 import io.github.chenfei0928.util.R
-import java.util.*
 
 /**
  * [Github地址](https://github.com/lgvalle/Material-Animations)

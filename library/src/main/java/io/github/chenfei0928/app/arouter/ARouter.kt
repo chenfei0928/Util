@@ -13,7 +13,9 @@ inline fun Postcard.navigation(context: Activity, crossinline onArrivalAction: (
     navigation(context, -1, onArrivalAction)
 }
 
-inline fun Postcard.navigation(context: Activity, requestCode: Int = -1, crossinline onArrivalAction: (Postcard) -> Unit) {
+inline fun Postcard.navigation(
+    context: Activity, requestCode: Int = -1, crossinline onArrivalAction: (Postcard) -> Unit
+) {
     navigation(context, requestCode, object : NavigationCallback {
         override fun onLost(postcard: Postcard) {
             // 路由不匹配

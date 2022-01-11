@@ -7,7 +7,7 @@ import java.util.*
  * @date 2019-11-20 17:50
  */
 class MapKeyValueList(
-        private val map: Map<*, List<*>>
+    private val map: Map<*, List<*>>
 ) : AbstractList<Any>() {
     override val size: Int
         get() {

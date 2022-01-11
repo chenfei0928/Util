@@ -14,7 +14,7 @@ import java.io.File
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-11-19 13:32
  */
-class IntentKt {
+class FileProviderKt {
     companion object {
         fun findManifestFileProviderScheme(context: Context): String? =
             findManifestFileProviderScheme(context, FileProvider::class.java)

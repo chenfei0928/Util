@@ -6,8 +6,8 @@ import android.content.res.ColorStateList
 import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
-import io.github.chenfei0928.util.R
 import io.github.chenfei0928.util.Log
+import io.github.chenfei0928.util.R
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)

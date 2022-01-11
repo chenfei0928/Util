@@ -1,8 +1,7 @@
 package io.github.chenfei0928.widget.recyclerview.adapter;
 
-import io.github.chenfei0928.widget.recyclerview.adapter.zhy.WrapperAdapter;
-
 import androidx.recyclerview.widget.RecyclerView;
+import io.github.chenfei0928.widget.recyclerview.adapter.zhy.WrapperAdapter;
 
 public class ZhyAdapterWrapperFactory {
 

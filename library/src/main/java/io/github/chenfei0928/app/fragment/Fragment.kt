@@ -24,21 +24,21 @@ fun Fragment.visibleStatus(): String = this::class.java.simpleName +
         } ?: "")
 
 inline fun <F : Fragment> F.applyArgumentBundle(block: Bundle.() -> Unit): F =
-        apply { arguments = (arguments ?: Bundle()).apply(block) }
+    apply { arguments = (arguments ?: Bundle()).apply(block) }
 
 fun Fragment.removeSelf() {
     if (!isAdded) {
         return
     }
     fragmentManager
-            ?.beginTransaction()
-            ?.remove(this)
-            ?.commitAllowingStateLoss()
+        ?.beginTransaction()
+        ?.remove(this)
+        ?.commitAllowingStateLoss()
 }
 
 inline fun <reified T> Fragment.findParentByType(block: T.() -> Unit) {
     findParentByType(T::class.java)
-            ?.run(block)
+        ?.run(block)
 }
 
 inline fun <reified T> Fragment.findParentByType(): T? {

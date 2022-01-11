@@ -17,17 +17,17 @@ import androidx.annotation.Px;
  * @see <a href="http://blog.csdn.net/zyldzs27/article/details/75091299">原博客</a>
  */
 public class RoundBackgroundColorSpan extends ReplacementSpan {
+    private final RectF mTmpRectF = new RectF();
+    @ColorInt
+    private final int bgColor;
+    @ColorInt
+    private final int textColor;
     // 圆角的半径
     public int radius = 15;
     // 文本内容相对圆角背景水平方向的内边距
     public int paddingHorizontal = 20;
     // 文本内容相对圆角背景垂直方向的内边距
     public int paddingVertical = 1;
-    private final RectF mTmpRectF = new RectF();
-    @ColorInt
-    private final int bgColor;
-    @ColorInt
-    private final int textColor;
 
     public RoundBackgroundColorSpan(@Px int radius, @ColorInt int bgColor, @ColorInt int textColor) {
         super();

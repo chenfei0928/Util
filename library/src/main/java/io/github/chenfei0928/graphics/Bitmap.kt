@@ -25,7 +25,9 @@ fun Bitmap.save(outputFile: File, quality: Int = 100): Boolean {
     }
 }
 
-private fun getCompressFormat(extName: String, default: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG): Bitmap.CompressFormat {
+private fun getCompressFormat(
+    extName: String, default: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
+): Bitmap.CompressFormat {
     return when (extName.lowercase(Locale.getDefault())) {
         "jpg", "jpe", "jpeg" ->
             Bitmap.CompressFormat.JPEG  // JPEG

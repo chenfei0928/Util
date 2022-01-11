@@ -6,9 +6,9 @@ import android.view.ViewConfiguration
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.postDelayed
+import io.github.chenfei0928.os.safeHandler
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.widget.ToastUtil
-import io.github.chenfei0928.util.safeHandler
 
 /**
  * 双击退出

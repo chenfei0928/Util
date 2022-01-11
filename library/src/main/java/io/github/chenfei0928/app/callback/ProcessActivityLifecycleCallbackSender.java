@@ -4,11 +4,10 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
-import io.github.chenfei0928.app.RunningEnvironmentUtil;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
+import io.github.chenfei0928.app.RunningEnvironmentUtil;
 
 /**
  * @author ChenFei(chenfei0928 @ gmail.com)

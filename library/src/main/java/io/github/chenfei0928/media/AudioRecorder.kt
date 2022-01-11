@@ -12,9 +12,10 @@ import kotlin.math.log10
  * @date 2019-10-25 17:00
  */
 class AudioRecorder(
-        val fileName: String  // 录音生成的文件存储路径
+    val fileName: String  // 录音生成的文件存储路径
 ) {
     private val TAG = "KW_VoiceRecorder"
+
     // 录音类
     private var recorder: MediaRecorder = MediaRecorder()
 
@@ -57,15 +58,15 @@ class AudioRecorder(
     /**
      * 获取声压（场的幅值）
      */
-    private fun getMaxAmplitude() =
-            try {
-                recorder.maxAmplitude
-            } catch (e: IllegalStateException) {
-                0
-            }
+    private fun getMaxAmplitude() = try {
+        recorder.maxAmplitude
+    } catch (e: IllegalStateException) {
+        0
+    }
 
     // 初始值记录
     private var dbstart = 0f
+
     // 最新值
     private var dblast = dbstart
 

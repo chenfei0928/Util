@@ -11,8 +11,9 @@ fun <T : GeneratedMessageLite<T, *>, Source> Class<T>.getParseFrom(): (Source) -
     val defaultInstance: T = GeneratedMessageLite.getDefaultInstance(this)
     return { source ->
         when (source) {
-            null -> GeneratedMessageLite.parseFrom(defaultInstance,
-                    CodedInputStream.newInstance(Internal.EMPTY_BYTE_ARRAY))
+            null -> GeneratedMessageLite.parseFrom(
+                defaultInstance, CodedInputStream.newInstance(Internal.EMPTY_BYTE_ARRAY)
+            )
             is ByteBuffer -> GeneratedMessageLite.parseFrom(defaultInstance, source)
             is ByteString -> GeneratedMessageLite.parseFrom(defaultInstance, source)
             is ByteArray -> GeneratedMessageLite.parseFrom(defaultInstance, source)

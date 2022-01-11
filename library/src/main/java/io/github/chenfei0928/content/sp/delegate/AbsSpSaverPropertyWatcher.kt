@@ -4,8 +4,8 @@ import android.os.Looper
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.github.chenfei0928.content.sp.registerOnSharedPreferenceChangeListener
 import io.github.chenfei0928.concurrent.ExecutorUtil
+import io.github.chenfei0928.content.sp.registerOnSharedPreferenceChangeListener
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1

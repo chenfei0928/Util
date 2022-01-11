@@ -5,10 +5,6 @@ import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import io.github.chenfei0928.content.res.getDimensionPixelSize
 import io.github.chenfei0928.content.res.getDrawable
-import io.github.chenfei0928.widget.setDrawableBottom
-import io.github.chenfei0928.widget.setDrawableEnd
-import io.github.chenfei0928.widget.setDrawableStart
-import io.github.chenfei0928.widget.setDrawableTop
 
 fun TextView.setDrawableStartRes(@DrawableRes drawableRes: Int) {
     setDrawableStart(getDrawable(drawableRes))

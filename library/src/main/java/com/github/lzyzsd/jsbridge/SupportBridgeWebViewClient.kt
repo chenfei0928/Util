@@ -1,7 +1,6 @@
 package com.github.lzyzsd.jsbridge
 
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.webkit.WebViewClientCompat
 import io.github.chenfei0928.util.Log
 import java.io.UnsupportedEncodingException
@@ -15,7 +14,7 @@ abstract class SupportBridgeWebViewClient : WebViewClientCompat() {
 
     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
         val webView = view as? BridgeWebView
-                ?: return super.shouldOverrideUrlLoading(view, url)
+            ?: return super.shouldOverrideUrlLoading(view, url)
 
         var url = url
         try {
@@ -40,7 +39,7 @@ abstract class SupportBridgeWebViewClient : WebViewClientCompat() {
     override fun onPageFinished(view: WebView, url: String) {
         super.onPageFinished(view, url)
         val webView = view as? BridgeWebView
-                ?: return
+            ?: return
 
         if (BridgeWebView.toLoadJs != null) {
             BridgeUtil.webViewLoadLocalJs(view, BridgeWebView.toLoadJs)

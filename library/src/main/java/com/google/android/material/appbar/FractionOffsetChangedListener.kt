@@ -26,7 +26,8 @@ abstract class FractionOffsetChangedListener(
         val insetTop = WindowInsetsCompat.Type.statusBars()
         // Update the collapsing text's fraction
         val expandRange = collapsingToolbarLayout.height - ViewCompat.getMinimumHeight(
-            collapsingToolbarLayout) - insetTop
+            collapsingToolbarLayout
+        ) - insetTop
         expandedFraction = MathUtils.clamp(abs(verticalOffset) / expandRange.toFloat(), 0f, 1f)
         onExpandedFractionChanged(expandedFraction)
     }
@@ -34,5 +35,9 @@ abstract class FractionOffsetChangedListener(
     /**
      * @param expandedFraction 展开进度，0为已完全展开，1为已完全收起
      */
-    abstract fun onExpandedFractionChanged(@FloatRange(from = 0.0, to = 1.0) expandedFraction: Float)
+    abstract fun onExpandedFractionChanged(
+        @FloatRange(
+            from = 0.0, to = 1.0
+        ) expandedFraction: Float
+    )
 }

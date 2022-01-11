@@ -20,7 +20,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.internal.DescendantOffsetUtils;
 import com.google.android.material.internal.ThemeEnforcement;
-import io.github.chenfei0928.util.R;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -32,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
+import io.github.chenfei0928.util.R;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static java.lang.Math.min;

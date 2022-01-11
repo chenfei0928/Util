@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import com.drakeet.multitype.ItemViewBinder
+import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
 import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
-import io.github.chenfei0928.concurrent.ExecutorUtil
 
 /**
  * User: ChenFei(chenfei0928@gmail.com)

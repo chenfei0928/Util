@@ -15,6 +15,7 @@ import io.github.chenfei0928.util.Log;
 
 public class RunningEnvironmentUtil {
     private static final String TAG = "KW_RunningEnvironmentU";
+    private static volatile String sProcessName;
 
     /**
      * 因为推送服务XMPushService在AndroidManifest.xml中设置为运行在另外一个进程
@@ -27,8 +28,6 @@ public class RunningEnvironmentUtil {
         String mainProcessName = context.getPackageName();
         return mainProcessName.equals(getProcessName(context));
     }
-
-    private static volatile String sProcessName;
 
     /**
      * 因为推送服务XMPushService在AndroidManifest.xml中设置为运行在另外一个进程

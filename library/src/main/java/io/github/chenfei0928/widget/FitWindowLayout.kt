@@ -16,7 +16,7 @@ fun View.onMeasure(fitStatusBar: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // 修复状态栏边距
             updatePadding(
-                    top = rootWindowInsets.systemWindowInsetTop
+                top = rootWindowInsets.systemWindowInsetTop
             )
         } else {
             applySystemInsetTopPadding()
@@ -34,7 +34,7 @@ fun View.fitSystemWindows(insets: Rect, fitStatusBar: Boolean) {
         // 修复状态栏边距
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             updatePadding(
-                    top = rootWindowInsets.systemWindowInsetTop
+                top = rootWindowInsets.systemWindowInsetTop
             )
         }
     }
@@ -50,7 +50,7 @@ private fun View.fitDisplayCutoutSafeInset() {
         if (insetTop != 0) {
             // 有刘海，设置为刘海高度
             updatePadding(
-                    top = insetTop
+                top = insetTop
             )
         }
     } else {
@@ -58,7 +58,7 @@ private fun View.fitDisplayCutoutSafeInset() {
         // 有物理刘海区域，状态栏显示在刘海区域内
         // 无物理刘海区域，状态栏覆盖显示在window绘制区域内
         updatePadding(
-                top = rootWindowInsets.systemWindowInsetTop
+            top = rootWindowInsets.systemWindowInsetTop
         )
     }
 }

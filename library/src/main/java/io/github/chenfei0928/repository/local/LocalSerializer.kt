@@ -37,7 +37,7 @@ interface LocalSerializer<T> {
     }
 
     abstract class BaseIODecorator<T>(
-            private val serializer: LocalSerializer<T>
+        private val serializer: LocalSerializer<T>
     ) : LocalSerializer<T> by serializer, IODecorator {
 
         override fun onOpenInputStream(inputStream: InputStream): InputStream {

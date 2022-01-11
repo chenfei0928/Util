@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
  * @date 2019-10-22 16:47
  */
 class WrapperAdapterDataObserver(
-        private val adapter: WrapperAdapter
+    private val adapter: WrapperAdapter
 ) : RecyclerView.AdapterDataObserver() {
 
     override fun onChanged() {
@@ -35,7 +35,10 @@ class WrapperAdapterDataObserver(
             return
         }
         if (itemCount == 1) {
-            adapter.notifyItemMoved(adapter.headerSize + fromPosition, adapter.headerSize + toPosition)
+            adapter.notifyItemMoved(
+                adapter.headerSize + fromPosition,
+                adapter.headerSize + toPosition
+            )
         } else {
             adapter.notifyDataSetChanged()
         }

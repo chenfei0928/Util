@@ -30,8 +30,12 @@ class WebViewClientRequestIntercept {
         return shouldInterceptRequest(view, "GET", url?.toUri(), emptyMap())
     }
 
-    private fun shouldInterceptRequest(view: WebView, method: String,
-                                       uri: Uri?, requestHeaders: Map<String, String>): WebResourceResponse? {
+    private fun shouldInterceptRequest(
+        view: WebView,
+        method: String,
+        uri: Uri?,
+        requestHeaders: Map<String, String>
+    ): WebResourceResponse? {
         uri ?: return null
         if (uri.host != "localhost") {
             return null
@@ -102,7 +106,11 @@ class WebViewClientRequestIntercept {
     }
 
     private fun createWebResourceResponse(inputStream: String): WebResourceResponse {
-        return WebResourceResponse("text/plain", Charsets.UTF_8.name(), ByteArrayInputStream(inputStream.toByteArray()))
+        return WebResourceResponse(
+            "text/plain",
+            Charsets.UTF_8.name(),
+            ByteArrayInputStream(inputStream.toByteArray())
+        )
     }
 
     private fun createWebResourceResponse(inputStream: InputStream): WebResourceResponse {

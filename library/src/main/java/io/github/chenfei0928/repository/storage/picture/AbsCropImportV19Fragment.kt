@@ -14,7 +14,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
-import io.github.chenfei0928.content.IntentKt
+import io.github.chenfei0928.content.FileProviderKt
 import io.github.chenfei0928.repository.storage.BaseFileImportUriFragment
 import java.io.File
 
@@ -70,7 +70,8 @@ internal abstract class AbsCropImportV19Fragment : BaseFileImportUriFragment() {
      * @return 缓存目录
      */
     protected fun obtainPicturePathUri(context: Context): Uri {
-        val authority = IntentKt.findManifestFileProviderScheme(context) ?: context.packageName
+        val authority =
+            FileProviderKt.findManifestFileProviderScheme(context) ?: context.packageName
         return FileProvider.getUriForFile(context, authority, obtainPictureFile(context))
     }
 
@@ -89,7 +90,9 @@ internal abstract class AbsCropImportV19Fragment : BaseFileImportUriFragment() {
             }
         }
 
-        override fun createIntent(context: Context, input: Pair<Uri, Bundle?>): Intent {
+        override fun createIntent(
+            context: Context, input: Pair<Uri, Bundle?>
+        ): Intent {
             // 创建裁图intent
             val intent = createBaseCropImageIntent(input.first, croppedImageUri)
             // 将传入的裁图参数传入
@@ -132,7 +135,9 @@ internal abstract class AbsCropImportV19Fragment : BaseFileImportUriFragment() {
          * @param fileUri 要授予权限的uri
          */
         @JvmStatic
-        protected fun grantUriPermission(context: Context, intent: Intent, fileUri: Uri) {
+        protected fun grantUriPermission(
+            context: Context, intent: Intent, fileUri: Uri
+        ) {
             val resolvedIntentActivities: List<ResolveInfo> =
                 context.packageManager.queryIntentActivities(
                     intent, PackageManager.MATCH_DEFAULT_ONLY

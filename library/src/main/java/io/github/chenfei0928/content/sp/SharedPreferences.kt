@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.lifecycle.isAlive
+import io.github.chenfei0928.util.Log
 
 private const val TAG = "KW_SharedPreferences"
 

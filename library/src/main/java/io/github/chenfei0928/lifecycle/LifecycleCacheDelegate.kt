@@ -14,13 +14,13 @@ import kotlin.reflect.KProperty
  * @date 2021-11-11 15:09
  */
 class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObserver>(
-        /**
-         * 传入宿主与值对象的关闭回调以创建值。
-         * 值可以直接监听宿主生命周期变化以清理资源
-         * （此时可通知回调，也可以不通知回调，因为关闭回调自身也会监听生命周期变化）
-         * 值也可以在自己提前被关闭时调用回调通知委托移除它
-         */
-        private val valueCreator: (owner: Owner, closeCallback: () -> Unit) -> V
+    /**
+     * 传入宿主与值对象的关闭回调以创建值。
+     * 值可以直接监听宿主生命周期变化以清理资源
+     * （此时可通知回调，也可以不通知回调，因为关闭回调自身也会监听生命周期变化）
+     * 值也可以在自己提前被关闭时调用回调通知委托移除它
+     */
+    private val valueCreator: (owner: Owner, closeCallback: () -> Unit) -> V
 ) : ReadOnlyProperty<Owner, V> {
     private val cache: MutableMap<Owner, V> = WeakHashMap()
 
@@ -39,7 +39,7 @@ class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObserver>
     }
 
     private inner class CloseCallback(
-            private val owner: LifecycleOwner
+        private val owner: LifecycleOwner
     ) : () -> Unit, LifecycleEventObserver {
         lateinit var observer: LifecycleEventObserver
 

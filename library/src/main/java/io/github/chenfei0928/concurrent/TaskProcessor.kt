@@ -7,8 +7,8 @@ import android.os.MessageQueue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
 import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
+import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
 import java.util.*
 import java.util.concurrent.Executor
 

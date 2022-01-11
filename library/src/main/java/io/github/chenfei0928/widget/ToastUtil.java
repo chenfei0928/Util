@@ -23,13 +23,13 @@ import io.github.chenfei0928.util.Log;
  */
 public class ToastUtil {
     private static final String TAG = "KW_ToastUtil";
+    private static final Handler sHandler = new Handler(Looper.getMainLooper());
     private static Context sAppContext;
     /**
      * Toast暂存，下次使用时取消上一个Toast，防止应用退出后Toast像吃了哔一样往外弹
      */
     private static volatile WeakReference<Toast> sToast;
     private static View sToastView;
-    private static final Handler sHandler = new Handler(Looper.getMainLooper());
     private static volatile ToastShowTask sToastShowTask;
 
     public static void init(Context context) {

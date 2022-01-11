@@ -13,10 +13,10 @@ class CropPictureImportFragment : BaseFileImportUriFragment() {
 
     override fun launchFileChoose() {
         val source = arguments?.getInt(KEY_SOURCE)
-                ?: run {
-                    removeSelf(null)
-                    return
-                }
+            ?: run {
+                removeSelf(null)
+                return
+            }
         // 根据参数创建指定的图片裁剪导入器
         val fragment = when (source) {
             PICTURE -> PictureImportPermissionFragment()
@@ -33,8 +33,8 @@ class CropPictureImportFragment : BaseFileImportUriFragment() {
         }
         // 启动导入器
         childFragmentManager.beginTransaction()
-                .add(fragment, "fileExport")
-                .commitAllowingStateLoss()
+            .add(fragment, "fileExport")
+            .commitAllowingStateLoss()
     }
 
     companion object {
@@ -46,9 +46,9 @@ class CropPictureImportFragment : BaseFileImportUriFragment() {
         @JvmStatic
         @JvmOverloads
         fun newInstance(source: Int, cropParam: Bundle? = Square) =
-                CropPictureImportFragment().apply {
-                    arguments = createArg(source, cropParam)
-                }
+            CropPictureImportFragment().apply {
+                arguments = createArg(source, cropParam)
+            }
 
         private fun createArg(source: Int, cropParam: Bundle?): Bundle {
             return Bundle().apply {

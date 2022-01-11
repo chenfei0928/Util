@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.collection.SparseArrayCompat
 import androidx.recyclerview.widget.RecyclerView
-import io.github.chenfei0928.widget.recyclerview.adapter.AdapterDelegate
 import io.github.chenfei0928.collection.contains
+import io.github.chenfei0928.widget.recyclerview.adapter.AdapterDelegate
 import io.github.chenfei0928.widget.recyclerview.isEmpty
 
 /**

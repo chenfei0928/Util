@@ -17,7 +17,6 @@ import com.bumptech.glide.request.target.ViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.bumptech.glide.util.Preconditions;
 import com.bumptech.glide.util.Synthetic;
-import io.github.chenfei0928.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import io.github.chenfei0928.util.Log;
 
 /**
  * 逻辑复制自{@link com.bumptech.glide.request.target.CustomViewTarget}

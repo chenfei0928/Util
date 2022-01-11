@@ -38,7 +38,7 @@ fun copyTo(context: Context, uri: Uri?, dest: File): Boolean {
         return false
     } else try {
         ParcelFileDescriptor.AutoCloseInputStream(
-                context.contentResolver.openFileDescriptor(uri, "r")
+            context.contentResolver.openFileDescriptor(uri, "r")
         ).use {
             FileOutputStream(dest).use { os ->
                 val b = ByteArray(DEFAULT_BUFFER_SIZE)

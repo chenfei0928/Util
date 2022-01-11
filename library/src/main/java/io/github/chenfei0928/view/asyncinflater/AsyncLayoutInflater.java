@@ -6,14 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import io.github.chenfei0928.concurrent.ExecutorUtil;
-import io.github.chenfei0928.util.Log;
-
 import androidx.annotation.LayoutRes;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import io.github.chenfei0928.concurrent.ExecutorUtil;
+import io.github.chenfei0928.util.Log;
 import kotlin.jvm.functions.Function2;
 
 /**

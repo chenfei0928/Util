@@ -11,9 +11,8 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
 
-import io.github.chenfei0928.util.R;
-
 import androidx.appcompat.widget.AppCompatTextView;
+import io.github.chenfei0928.util.R;
 
 /**
  * @author ChenFei(chenfei0928 @ gmail.com)

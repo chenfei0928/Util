@@ -5,8 +5,8 @@ import android.os.Build;
 import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
-import io.github.chenfei0928.util.Log;
 import io.github.chenfei0928.app.RunningEnvironmentUtil;
+import io.github.chenfei0928.util.Log;
 
 /**
  * @author ChenFei(chenfei0928 @ gmail.com)

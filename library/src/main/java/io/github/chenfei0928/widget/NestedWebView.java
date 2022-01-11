@@ -21,10 +21,9 @@ public class NestedWebView extends ObservableWebView implements NestedScrollingC
     public static final String TAG = NestedWebView.class.getSimpleName();
     private final int[] mScrollOffset = new int[2];
     private final int[] mScrollConsumed = new int[2];
+    private final NestedScrollingChildHelper mChildHelper;
     private int mLastMotionY;
     private int mNestedYOffset;
-
-    private final NestedScrollingChildHelper mChildHelper;
 
     public NestedWebView(Context context) {
         this(context, null);

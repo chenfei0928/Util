@@ -51,9 +51,9 @@ class LikeListViewDataBindingInjector {
          */
         @JvmStatic
         fun <Bean, Binding : ViewDataBinding> inject(
-                viewGroup: ViewGroup,
-                beanIterable: Iterable<Bean>?,
-                adapter: DataBindingAdapter<Binding, Bean>
+            viewGroup: ViewGroup,
+            beanIterable: Iterable<Bean>?,
+            adapter: DataBindingAdapter<Binding, Bean>
         ) {
             BaseLikeListViewInjector.injectImpl(viewGroup, beanIterable, adapter) { beanIterator ->
                 // 布局加载器
@@ -61,7 +61,8 @@ class LikeListViewDataBindingInjector {
                 beanIterator.forEach { bean ->
                     // 在主线程直接加载布局、加入ViewGroup并绑定数据
                     val binding = DataBindingUtil.inflate<Binding>(
-                            inflater, adapter.layoutId, viewGroup, false)
+                        inflater, adapter.layoutId, viewGroup, false
+                    )
                     binding.root.setTag(R.id.viewTag_dataBinding, binding)
                     adapter.onViewCreated(binding)
                     viewGroup.addView(binding.root)
@@ -79,9 +80,9 @@ class LikeListViewDataBindingInjector {
          */
         @JvmStatic
         fun <Bean, Binding : ViewDataBinding> injectAsync(
-                viewGroup: ViewGroup,
-                beanIterable: Iterable<Bean>?,
-                adapter: DataBindingAdapter<Binding, Bean>
+            viewGroup: ViewGroup,
+            beanIterable: Iterable<Bean>?,
+            adapter: DataBindingAdapter<Binding, Bean>
         ) {
             BaseLikeListViewInjector.injectImpl(viewGroup, beanIterable, adapter) { beanIterator ->
                 // 异步布局加载器

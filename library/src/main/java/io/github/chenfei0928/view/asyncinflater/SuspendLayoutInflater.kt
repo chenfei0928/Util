@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.annotation.UiThread
 import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
+import io.github.chenfei0928.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,8 +18,8 @@ import kotlinx.coroutines.withContext
  * @date 2019-10-24 15:36
  */
 class SuspendLayoutInflater(
-        context: Context,
-        private val lifecycle: LifecycleOwner
+    context: Context,
+    private val lifecycle: LifecycleOwner
 ) {
     private val inflater = AsyncLayoutInflater.BasicInflater(context)
 
@@ -33,16 +33,21 @@ class SuspendLayoutInflater(
     </VG> */
     @UiThread
     fun <VG : ViewGroup> inflate(
-            onCreateView: (LayoutInflater, VG) -> View,
-            parent: VG,
-            callback: (View) -> Unit) {
+        onCreateView: (LayoutInflater, VG) -> View,
+        parent: VG,
+        callback: (View) -> Unit
+    ) {
         lifecycle.coroutineScope.launch(Dispatchers.Main) {
             val view = withContext(Dispatchers.Default) {
                 try {
                     onCreateView(inflater, parent)
                 } catch (ex: RuntimeException) {
                     // Probably a Looper failure, retry on the UI thread
-                    Log.w(TAG, "Failed to inflate resource in the background! Retrying on the UI" + " thread", ex)
+                    Log.w(
+                        TAG,
+                        "Failed to inflate resource in the background! Retrying on the UI" + " thread",
+                        ex
+                    )
                     null
                 }
             }
@@ -60,15 +65,21 @@ class SuspendLayoutInflater(
     </VG> */
     @UiThread
     fun <VG : ViewGroup> inflate(
-            @LayoutRes resId: Int, parent: VG?,
-            callback: (View) -> Unit) {
+        @LayoutRes resId: Int,
+        parent: VG?,
+        callback: (View) -> Unit
+    ) {
         lifecycle.coroutineScope.launch(Dispatchers.Main) {
             val view = withContext(Dispatchers.Default) {
                 try {
                     inflater.inflate(resId, parent, false)
                 } catch (ex: RuntimeException) {
                     // Probably a Looper failure, retry on the UI thread
-                    Log.w(TAG, "Failed to inflate resource in the background! Retrying on the UI" + " thread", ex)
+                    Log.w(
+                        TAG,
+                        "Failed to inflate resource in the background! Retrying on the UI" + " thread",
+                        ex
+                    )
                     null
                 }
             }
@@ -76,7 +87,7 @@ class SuspendLayoutInflater(
         }
     }
 
-    companion object{
+    companion object {
         private const val TAG = "KW_SuspendLayoutInflate"
     }
 }

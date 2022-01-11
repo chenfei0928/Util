@@ -12,7 +12,7 @@ import java.util.zip.GZIPOutputStream
  * @date 2021-08-19 16:48
  */
 class GZipSerializer<T>(
-        serializer: LocalSerializer<T>
+    serializer: LocalSerializer<T>
 ) : LocalSerializer.BaseIODecorator<T>(serializer) {
 
     override fun onOpenInputStream1(inputStream: InputStream): InputStream {

@@ -29,7 +29,8 @@ data class ActivityInfo(
     companion object {
         internal const val EVENT = "event"
         internal const val ACTIVITY_INFO = "activityInfo"
-        internal const val ACTION = "io.github.chenfei0928.util.MULTI_PROCESS_ACTIVITY_LIFECYCLE_CALLBACK"
+        internal const val ACTION =
+            "io.github.chenfei0928.util.MULTI_PROCESS_ACTIVITY_LIFECYCLE_CALLBACK"
     }
 }
 

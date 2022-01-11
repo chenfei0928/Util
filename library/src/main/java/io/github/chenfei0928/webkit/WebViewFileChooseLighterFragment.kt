@@ -10,9 +10,9 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import io.github.chenfei0928.app.fragment.removeSelf
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.widget.ToastUtil
-import io.github.chenfei0928.app.fragment.removeSelf
 
 /**
  * webView 文件选择器启动者（打火器）
@@ -36,7 +36,7 @@ class WebViewFileChooseLighterFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         val fileChooserParams = fileChooserParams
-                ?: return
+            ?: return
         val intent = fileChooserParams.createIntent()
         try {
             startActivityForResult(intent, REQUEST_CODE)
@@ -44,11 +44,12 @@ class WebViewFileChooseLighterFragment : Fragment() {
             ToastUtil.showShort(context, "打开文件选择器失败")
             Log.w(
                 TAG, "启动文件选择器失败：title: ${fileChooserParams.title}, " +
-                    "filenameHint:  ${fileChooserParams.filenameHint}, " +
-                    "acceptTypes: ${fileChooserParams.acceptTypes?.contentToString()}, " +
-                    "isCaptureEnabled: ${fileChooserParams.isCaptureEnabled}, " +
-                    "mode: ${fileChooserParams.mode}, " +
-                    "intent: $intent", e)
+                        "filenameHint:  ${fileChooserParams.filenameHint}, " +
+                        "acceptTypes: ${fileChooserParams.acceptTypes?.contentToString()}, " +
+                        "isCaptureEnabled: ${fileChooserParams.isCaptureEnabled}, " +
+                        "mode: ${fileChooserParams.mode}, " +
+                        "intent: $intent", e
+            )
             removeSelf()
         }
     }
@@ -57,7 +58,8 @@ class WebViewFileChooseLighterFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         // 通知回调
         filePathCallback?.onReceiveValue(
-                WebChromeClient.FileChooserParams.parseResult(resultCode, data))
+            WebChromeClient.FileChooserParams.parseResult(resultCode, data)
+        )
         // 移除自身
         removeSelf()
     }

@@ -16,7 +16,7 @@ import java.io.IOException
  */
 object GsonBoolean : TypeAdapter<Boolean>() {
     val factory: TypeAdapterFactory =
-            TypeAdapters.newFactory(Boolean::class.javaPrimitiveType, Boolean::class.java, this)
+        TypeAdapters.newFactory(Boolean::class.javaPrimitiveType, Boolean::class.java, this)
 
     @Throws(IOException::class)
     override fun read(`in`: JsonReader): Boolean? {

@@ -15,14 +15,14 @@ class VersionedSerializer<T>(
 ) : LocalSerializer<T> by serializer {
     private val versionCode: ByteArray = versionCodeLong.run {
         byteArrayOf(
-                (this shr 56).toByte(),
-                (this shr 48).toByte(),
-                (this shr 40).toByte(),
-                (this shr 32).toByte(),
-                (this shr 24).toByte(),
-                (this shr 16).toByte(),
-                (this shr 8).toByte(),
-                this.toByte()
+            (this shr 56).toByte(),
+            (this shr 48).toByte(),
+            (this shr 40).toByte(),
+            (this shr 32).toByte(),
+            (this shr 24).toByte(),
+            (this shr 16).toByte(),
+            (this shr 8).toByte(),
+            this.toByte()
         )
     }
 
@@ -44,7 +44,7 @@ class VersionedSerializer<T>(
         } else {
             // 抛出异常，通知对数据进行反序列化失败，交由调用处LocalFileModule删除缓存文件
             throw IllegalArgumentException(
-                    "当前版本是${versionCode.toLong()}, 本地文件的版本是${savedVersionCode.toLong()}，版本不匹配！数据结构可能已经被修改"
+                "当前版本是${versionCode.toLong()}, 本地文件的版本是${savedVersionCode.toLong()}，版本不匹配！数据结构可能已经被修改"
             )
         }
     }
@@ -60,8 +60,8 @@ class VersionedSerializer<T>(
 }
 
 fun <T> LocalSerializer<T>.versioned(versionCodeInt: Long): VersionedSerializer<T> =
-        if (this is VersionedSerializer) {
-            this
-        } else {
-            VersionedSerializer(this, versionCodeInt)
-        }
+    if (this is VersionedSerializer) {
+        this
+    } else {
+        VersionedSerializer(this, versionCodeInt)
+    }

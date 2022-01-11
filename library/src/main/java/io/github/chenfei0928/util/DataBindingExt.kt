@@ -36,10 +36,11 @@ class DataBindingExt {
          */
         @JvmStatic
         @JvmOverloads
-        fun <Binding : ViewDataBinding> inflate(parent: ViewGroup,
-                                                @LayoutRes layoutId: Int,
-                                                attachToParent: Boolean = false,
-                                                inflater: LayoutInflater = LayoutInflater.from(parent.context)
+        fun <Binding : ViewDataBinding> inflate(
+            parent: ViewGroup,
+            @LayoutRes layoutId: Int,
+            attachToParent: Boolean = false,
+            inflater: LayoutInflater = LayoutInflater.from(parent.context)
         ): Binding {
             return DataBindingUtil.inflate(inflater, layoutId, parent, attachToParent)
         }
@@ -60,11 +61,11 @@ inline fun <T : Observable> T.doOnPropertyChanged(crossinline block: T.(Int) -> 
 }
 
 inline fun <T : Observable> T.createOnPropertyChanged(crossinline block: T.(Int) -> Unit) =
-        object : Observable.OnPropertyChangedCallback() {
-            override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-                block(this@createOnPropertyChanged, propertyId)
-            }
+    object : Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+            block(this@createOnPropertyChanged, propertyId)
         }
+    }
 
 inline fun <T : Observable> T.observe(owner: LifecycleOwner, crossinline block: T.(Int) -> Unit) {
     if (owner.lifecycle.currentState == Lifecycle.State.DESTROYED) {
@@ -80,7 +81,7 @@ inline fun <T : Observable> T.observe(owner: LifecycleOwner, crossinline block: 
 }
 
 abstract class LifecycleOnPropertyChangedCallback(
-        private val observable: Observable
+    private val observable: Observable
 ) : Observable.OnPropertyChangedCallback(), LifecycleEventObserver {
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

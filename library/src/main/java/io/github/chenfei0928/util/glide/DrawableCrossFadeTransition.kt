@@ -13,8 +13,8 @@ import com.bumptech.glide.request.transition.Transition
  * @date 2019-09-09 15:50
  */
 class DrawableCrossFadeTransition(
-        val duration: Int,
-        private val isCrossFadeEnabled: Boolean
+    val duration: Int,
+    private val isCrossFadeEnabled: Boolean
 ) : Transition<Drawable> {
 
     override fun transition(current: Drawable, adapter: Transition.ViewAdapter): Boolean {

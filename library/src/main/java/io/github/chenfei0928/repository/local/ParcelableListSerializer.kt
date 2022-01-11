@@ -8,7 +8,7 @@ import android.os.Parcelable
  * 由于其API在开始时不是为持久化数据设计，会导致其数据结构定义变化后反序列化时大概率会产生数据混乱的问题
  */
 class ParcelableListSerializer<T : Parcelable>(
-        private val creator: Parcelable.Creator<T>
+    private val creator: Parcelable.Creator<T>
 ) : BaseParcelSerializer<List<T>>() {
 
     constructor(clazz: Class<T>) : this(clazz.PARCELABLE_CREATOR)

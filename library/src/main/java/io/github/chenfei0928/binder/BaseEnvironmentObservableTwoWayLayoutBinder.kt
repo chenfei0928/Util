@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.databinding.Observable
 import androidx.viewbinding.ViewBinding
-import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
 import io.github.chenfei0928.util.R
-import io.github.chenfei0928.widget.recyclerview.ViewHolderTagDelegate
 import io.github.chenfei0928.util.createOnPropertyChanged
+import io.github.chenfei0928.widget.recyclerview.ViewHolderTagDelegate
+import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
 
 /**
  * 带有一个环境参数的view更新实现
@@ -54,6 +54,6 @@ abstract class BaseEnvironmentObservableTwoWayLayoutBinder<Bean, V : ViewBinding
     /**
      * View与切环境变化的监听
      */
-    private var ViewBindingHolder<Bean, V>.onEnvironmentChanged: Observable.OnPropertyChangedCallback? by ViewHolderTagDelegate(
-        R.id.onPropertyChanged)
+    private var ViewBindingHolder<Bean, V>.onEnvironmentChanged: Observable.OnPropertyChangedCallback?
+            by ViewHolderTagDelegate(R.id.onPropertyChanged)
 }

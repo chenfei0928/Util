@@ -1,7 +1,6 @@
 package io.github.chenfei0928.collection
 
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the collection.

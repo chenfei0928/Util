@@ -13,14 +13,14 @@ import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
+import io.github.chenfei0928.app.fragment.removeSelf
+import io.github.chenfei0928.app.result.registerForExternalStoragePermission
 import io.github.chenfei0928.base.fragment.BaseFragment
+import io.github.chenfei0928.concurrent.coroutines.coroutineScope
+import io.github.chenfei0928.content.FileProviderKt
 import io.github.chenfei0928.io.FileUtil
-import io.github.chenfei0928.content.IntentKt
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.widget.ToastUtil
-import io.github.chenfei0928.concurrent.coroutines.coroutineScope
-import io.github.chenfei0928.app.result.registerForExternalStoragePermission
-import io.github.chenfei0928.app.fragment.removeSelf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -115,7 +115,7 @@ class FileExportFragment : BaseFragment() {
             }
             val file = File(targetFile)
             val saved = FileResolver.save(context, file, writer)
-            val uri = IntentKt.createUriFromFile(context, file)
+            val uri = FileProviderKt.createUriFromFile(context, file)
             removeSelf(saved, uri)
         }
     }

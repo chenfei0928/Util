@@ -6,18 +6,21 @@ package io.github.chenfei0928.util
 
 import java.security.MessageDigest
 
-private val hexDigits = charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f')
+private val hexDigits =
+    charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f')
 
 fun MessageDigest.digestToHex(): String {
     return digest().toHexString(false)
 }
 
 fun ByteArray.toHexString(needSeparator: Boolean): String {
-    val buffer = CharArray(if (needSeparator) {
-        size * 3 - 1
-    } else {
-        size * 2
-    })
+    val buffer = CharArray(
+        if (needSeparator) {
+            size * 3 - 1
+        } else {
+            size * 2
+        }
+    )
     var i = 0
     this.forEachIndexed { index, byte ->
         val int = byte.toInt()

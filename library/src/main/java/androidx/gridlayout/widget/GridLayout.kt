@@ -23,7 +23,7 @@ fun GridLayout.LayoutParams.row(block: GridLayoutLayoutParamsSpecBuilder.() -> U
 }
 
 class GridLayoutLayoutParamsSpecBuilder(
-        private val isHorizontal: Boolean
+    private val isHorizontal: Boolean
 ) {
     @Slide.GravityFlag
     var gravity: Int = Gravity.NO_GRAVITY
@@ -40,7 +40,9 @@ class GridLayoutLayoutParamsSpecBuilder(
         private val DEFAULT_SPAN = GridLayout.Interval(UNDEFINED, UNDEFINED + 1)
         private val DEFAULT_SPAN_SIZE = DEFAULT_SPAN.size()
 
-        fun createFrom(spec: GridLayout.Spec, isHorizontal: Boolean): GridLayoutLayoutParamsSpecBuilder {
+        fun createFrom(
+            spec: GridLayout.Spec, isHorizontal: Boolean
+        ): GridLayoutLayoutParamsSpecBuilder {
             val builder = GridLayoutLayoutParamsSpecBuilder(isHorizontal)
             builder.gravity = when (spec.alignment) {
                 GridLayout.START -> Gravity.START

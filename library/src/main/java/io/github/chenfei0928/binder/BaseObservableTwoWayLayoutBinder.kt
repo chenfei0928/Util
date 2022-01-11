@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.databinding.Observable
 import androidx.viewbinding.ViewBinding
-import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
 import io.github.chenfei0928.util.BeanExtValDelegate
+import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
 
 /**
  * dataBinding [Observable] 的从实例状态回调通知view更新的实现
@@ -36,8 +36,8 @@ abstract class BaseObservableTwoWayLayoutBinder<Bean, V : ViewBinding>(
     /**
      * 获取当前 可删除状态标记实例Bean 的 其状态变化时更新view回调 的get方法委托
      */
-    private val Bean.viewObservable: ObservableBindToViewHolderCallback<Bean, V> by BeanViewObservable(
-        this)
+    private val Bean.viewObservable: ObservableBindToViewHolderCallback<Bean, V>
+            by BeanViewObservable(this)
 
     private class BeanViewObservable<Bean, V : ViewBinding>(
         private val binder: BaseObservableTwoWayLayoutBinder<Bean, V>,

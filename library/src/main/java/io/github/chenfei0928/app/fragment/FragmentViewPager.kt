@@ -12,7 +12,9 @@ private const val TAG = "KW_FragmentViewPager"
 /**
  * 获取显示在ViewPager中指定位置的fragment实例（如果指定位置的fragment未被加载，将返回null）
  */
-inline fun <reified F> ViewPager.findFragmentWithType(fm: FragmentManager, position: Int = currentItem): F? {
+inline fun <reified F> ViewPager.findFragmentWithType(
+    fm: FragmentManager, position: Int = currentItem
+): F? {
     return findFragment(fm, position) as? F
 }
 
@@ -32,12 +34,17 @@ fun ViewPager.findFragment(fm: FragmentManager, position: Int = currentItem): Fr
         adapter == null -> null
         adapter.count == 0 -> null
         adapter.count <= position -> {
-            Log.e(TAG, "findFragment: ", IndexOutOfBoundsException(
-                    "adapter.count less to viewPager.currentItem: $adapter ${adapter.count}, $position"))
+            Log.e(
+                TAG, "findFragment: ", IndexOutOfBoundsException(
+                    "adapter.count less to viewPager.currentItem: $adapter ${adapter.count}, $position"
+                )
+            )
             return null
         }
         adapter is FragmentPagerAdapter -> findCurrentFragmentByAdapter(adapter, fm, position)
-        adapter is FragmentStatePagerAdapter -> findCurrentFragmentByStatePager(adapter, fm, position)
+        adapter is FragmentStatePagerAdapter -> findCurrentFragmentByStatePager(
+            adapter, fm, position
+        )
         else -> null
     }
 }
@@ -46,7 +53,9 @@ fun ViewPager.findFragment(fm: FragmentManager, position: Int = currentItem): Fr
  * 从[FragmentStatePagerAdapter]中查找当前显示的Fragment
  * 要求adapter实现[FragmentStatePagerAdapter.getItemPosition]
  */
-private fun ViewPager.findCurrentFragmentByStatePager(adapter: FragmentStatePagerAdapter, fm: FragmentManager, position: Int): Fragment? {
+private fun ViewPager.findCurrentFragmentByStatePager(
+    adapter: FragmentStatePagerAdapter, fm: FragmentManager, position: Int
+): Fragment? {
     return fm.fragments.find {
         it.id == this.id && adapter.getItemPosition(it) == position
     }
@@ -55,7 +64,9 @@ private fun ViewPager.findCurrentFragmentByStatePager(adapter: FragmentStatePage
 /**
  * 从[FragmentPagerAdapter]中查找当前显示的Fragment
  */
-private fun ViewPager.findCurrentFragmentByAdapter(adapter: FragmentPagerAdapter, fm: FragmentManager, position: Int): Fragment? {
+private fun ViewPager.findCurrentFragmentByAdapter(
+    adapter: FragmentPagerAdapter, fm: FragmentManager, position: Int
+): Fragment? {
     val id = adapter.getItemId(position)
     val name = makeFragmentName(this.id, id)
     return fm.findFragmentByTag(name)

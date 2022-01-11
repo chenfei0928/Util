@@ -5,9 +5,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.widget.TextView;
 
-import io.github.chenfei0928.util.lambdaFunction.Action1;
-
 import androidx.annotation.StringRes;
+import io.github.chenfei0928.util.lambdaFunction.Action1;
 
 /**
  * 倒计时工具类

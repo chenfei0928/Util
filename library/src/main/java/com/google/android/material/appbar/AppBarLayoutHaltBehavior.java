@@ -4,11 +4,10 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import io.github.chenfei0928.util.Log;
-
 import java.lang.reflect.Field;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import io.github.chenfei0928.util.Log;
 
 /**
  * AppBarLayout的快速滚动中的点击停止滚动

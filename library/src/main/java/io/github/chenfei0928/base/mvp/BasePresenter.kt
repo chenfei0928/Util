@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import androidx.annotation.CallSuper
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.lifecycle.SimpleLifecycleObserver
-import io.github.chenfei0928.util.StackTraceLogUtil
 import io.github.chenfei0928.lifecycle.onEvent
+import io.github.chenfei0928.util.Log
+import io.github.chenfei0928.util.StackTraceLogUtil
 
 /**
  * Created by MrFeng on 18-7-4.
@@ -15,8 +15,8 @@ import io.github.chenfei0928.lifecycle.onEvent
 open class BasePresenter<Contract : BaseContract>
 @SuppressLint("CheckResult")
 constructor(
-        @JvmField protected val mLifecycleProvider: LifecycleOwner,
-        @JvmField protected val mContract: Contract
+    @JvmField protected val mLifecycleProvider: LifecycleOwner,
+    @JvmField protected val mContract: Contract
 ) : LifecycleOwner {
     private val TAG = "KW_BasePresenter"
     protected var isAlive: Boolean = true
@@ -29,7 +29,9 @@ constructor(
      * 延时一个事件的订阅，直到fragment可见（View创建完毕或可见）
      */
     @JvmOverloads
-    protected inline fun bindToCreatedEvent(onlyFirst: Boolean = false, crossinline action: () -> Unit) {
+    protected inline fun bindToCreatedEvent(
+        onlyFirst: Boolean = false, crossinline action: () -> Unit
+    ) {
         val lifecycle = mLifecycleProvider.lifecycle
         if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             action()

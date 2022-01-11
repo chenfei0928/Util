@@ -17,14 +17,12 @@ import androidx.annotation.Nullable;
  */
 class ParentParameterizedTypeNode {
     static final int BY_SUPER_CLASS = -1;
-
+    @NonNull
+    final Class<?> nodeClass;
     @Nullable
     ParentParameterizedTypeNode parentNode;
     @Nullable
     ParentParameterizedTypeNode childNode;
-
-    @NonNull
-    final Class<?> nodeClass;
     /**
      * 如果该类的父节点是由继承获得，则为{@link ParentParameterizedTypeNode#BY_SUPER_CLASS}，
      * 如果是由实现接口获得的父节点，则父节点接口在当前类中实现的下标。

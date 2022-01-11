@@ -99,8 +99,8 @@ class Stopwatch {
     }
 
     data class Node(
-            override val start: Long,
-            var end: Long = -1
+        override val start: Long,
+        var end: Long = -1
     ) : Comparable<Node>, ClosedRange<Long> {
         override fun compareTo(other: Node): Int {
             return start.compareTo(other.start)
