@@ -17,13 +17,9 @@ public class AndroidBug5497Workaround {
     // For more information, see https://issuetracker.google.com/issues/36911528
     // To use this class, simply invoke assistActivity() on an Activity that already has its content view set.
 
-    public static void assistActivity(Activity activity) {
-        new AndroidBug5497Workaround(activity);
-    }
-
     private final View mChildOfContent;
-    private int usableHeightPrevious;
     private final FrameLayout.LayoutParams frameLayoutParams;
+    private int usableHeightPrevious;
 
     private AndroidBug5497Workaround(Activity activity) {
         FrameLayout content = activity.findViewById(android.R.id.content);
@@ -35,6 +31,10 @@ public class AndroidBug5497Workaround {
             }
         });
         frameLayoutParams = (FrameLayout.LayoutParams) mChildOfContent.getLayoutParams();
+    }
+
+    public static void assistActivity(Activity activity) {
+        new AndroidBug5497Workaround(activity);
     }
 
     private void possiblyResizeChildOfContent() {

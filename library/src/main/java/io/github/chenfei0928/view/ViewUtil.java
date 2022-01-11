@@ -103,7 +103,7 @@ public class ViewUtil {
                 out.append("/");
                 out.append(entryName);
             } catch (Resources.NotFoundException e) {
-                out.append(v.toString());
+                out.append(v);
             }
         }
         return out.toString();

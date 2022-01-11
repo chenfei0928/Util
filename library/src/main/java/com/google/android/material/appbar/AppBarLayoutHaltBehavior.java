@@ -25,6 +25,17 @@ public class AppBarLayoutHaltBehavior extends AppBarLayout.Behavior {
         super(context, attrs);
     }
 
+    private static Field getFlingRunnableField() {
+        try {
+            Field flingRunnableField = HeaderBehavior.class.getDeclaredField("flingRunnable");
+            flingRunnableField.setAccessible(true);
+            return flingRunnableField;
+        } catch (NoSuchFieldException e) {
+            Log.e(TAG, "getFlingRunnableField: ", e);
+            return null;
+        }
+    }
+
     @Override
     public boolean onInterceptTouchEvent(CoordinatorLayout parent, AppBarLayout child, MotionEvent ev) {
         if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
@@ -72,17 +83,6 @@ public class AppBarLayoutHaltBehavior extends AppBarLayout.Behavior {
                 return null;
             }
         } else {
-            return null;
-        }
-    }
-
-    private static Field getFlingRunnableField() {
-        try {
-            Field flingRunnableField = HeaderBehavior.class.getDeclaredField("flingRunnable");
-            flingRunnableField.setAccessible(true);
-            return flingRunnableField;
-        } catch (NoSuchFieldException e) {
-            Log.e(TAG, "getFlingRunnableField: ", e);
             return null;
         }
     }

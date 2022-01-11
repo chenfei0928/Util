@@ -21,6 +21,7 @@ import io.github.chenfei0928.content.ContextKt;
  */
 public class FirstUtil {
     private static final String SP_NAME = "first";
+
     /**
      * 可重复使用的，根据md5值判断是否本次md5已经被消费的事件前缀
      */
@@ -33,6 +34,7 @@ public class FirstUtil {
      * 用于处理在某个时间节点后多长时间后重新判断为未处理事件时使用的前缀
      */
     public static final String EVENT_PREFIX_TIME_INTERVAL = "timeInterval_";
+
     /**
      * 用于配合字符串事件保存当前事件的md5，判断事件是否被消费
      */
@@ -41,13 +43,6 @@ public class FirstUtil {
      * 用于配合字符串事件保存上次事件的md5，判断事件是否被消费
      */
     private static final String EVENT_STRING_SUFFIX_PRE = "_suffixPre";
-
-    @IntDef({EventType.EVENT_NORMAL, EventType.EVENT_STRING})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface EventType {
-        int EVENT_NORMAL = 0;
-        int EVENT_STRING = 1;
-    }
 
     private static SharedPreferences getSP(Context context) {
         return context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
@@ -214,5 +209,12 @@ public class FirstUtil {
 
     public static void clear(Context context) {
         getSP(context).edit().clear().apply();
+    }
+
+    @IntDef({EventType.EVENT_NORMAL, EventType.EVENT_STRING})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface EventType {
+        int EVENT_NORMAL = 0;
+        int EVENT_STRING = 1;
     }
 }

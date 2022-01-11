@@ -21,6 +21,9 @@ import androidx.annotation.RequiresApi;
 public class SystemIdentityWeakHashMapN<K, V>
         extends SystemIdentityWeakHashMap<K, V> {
 
+    transient Set<K> keySet;
+    transient Collection<V> values;
+
     /**
      * Constructs a new, empty <tt>SystemIdentityWeakHashMap</tt> with the given initial
      * capacity and the given load factor.
@@ -67,22 +70,7 @@ public class SystemIdentityWeakHashMapN<K, V>
         super(m);
     }
 
-    private class ValueIterator extends HashIterator<V> {
-        public V next() {
-            return nextEntry().value;
-        }
-    }
-
-    private class KeyIterator extends HashIterator<K> {
-        public K next() {
-            return nextEntry().getKey();
-        }
-    }
-
     // Views
-
-    transient Set<K> keySet;
-    transient Collection<V> values;
 
     /**
      * Returns a {@link Set} view of the keys contained in this map.
@@ -104,36 +92,6 @@ public class SystemIdentityWeakHashMapN<K, V>
             keySet = ks;
         }
         return ks;
-    }
-
-    private class KeySet extends AbstractSet<K> {
-        public Iterator<K> iterator() {
-            return new KeyIterator();
-        }
-
-        public int size() {
-            return SystemIdentityWeakHashMapN.this.size();
-        }
-
-        public boolean contains(Object o) {
-            return containsKey(o);
-        }
-
-        public boolean remove(Object o) {
-            if (containsKey(o)) {
-                SystemIdentityWeakHashMapN.this.remove(o);
-                return true;
-            } else
-                return false;
-        }
-
-        public void clear() {
-            SystemIdentityWeakHashMapN.this.clear();
-        }
-
-        public Spliterator<K> spliterator() {
-            return new KeySpliterator<>(SystemIdentityWeakHashMapN.this, 0, -1, 0, 0);
-        }
     }
 
     /**
@@ -158,28 +116,6 @@ public class SystemIdentityWeakHashMapN<K, V>
         return vs;
     }
 
-    private class Values extends AbstractCollection<V> {
-        public Iterator<V> iterator() {
-            return new ValueIterator();
-        }
-
-        public int size() {
-            return SystemIdentityWeakHashMapN.this.size();
-        }
-
-        public boolean contains(Object o) {
-            return containsValue(o);
-        }
-
-        public void clear() {
-            SystemIdentityWeakHashMapN.this.clear();
-        }
-
-        public Spliterator<V> spliterator() {
-            return new ValueSpliterator<>(SystemIdentityWeakHashMapN.this, 0, -1, 0, 0);
-        }
-    }
-
     /**
      * Returns a {@link Set} view of the mappings contained in this map.
      * The set is backed by the map, so changes to the map are
@@ -197,15 +133,6 @@ public class SystemIdentityWeakHashMapN<K, V>
     public Set<Map.Entry<K, V>> entrySet() {
         Set<Map.Entry<K, V>> es = entrySet;
         return es != null ? es : (entrySet = new EntrySet());
-    }
-
-    private class EntrySet extends SystemIdentityWeakHashMap<K, V>.EntrySet {
-
-        @NotNull
-        @Override
-        public Spliterator<Map.Entry<K, V>> spliterator() {
-            return new EntrySpliterator<>(SystemIdentityWeakHashMapN.this, 0, -1, 0, 0);
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -527,6 +454,79 @@ public class SystemIdentityWeakHashMapN<K, V>
 
         public int characteristics() {
             return Spliterator.DISTINCT;
+        }
+    }
+
+    private class ValueIterator extends HashIterator<V> {
+        public V next() {
+            return nextEntry().value;
+        }
+    }
+
+    private class KeyIterator extends HashIterator<K> {
+        public K next() {
+            return nextEntry().getKey();
+        }
+    }
+
+    private class KeySet extends AbstractSet<K> {
+        public Iterator<K> iterator() {
+            return new KeyIterator();
+        }
+
+        public int size() {
+            return SystemIdentityWeakHashMapN.this.size();
+        }
+
+        public boolean contains(Object o) {
+            return containsKey(o);
+        }
+
+        public boolean remove(Object o) {
+            if (containsKey(o)) {
+                SystemIdentityWeakHashMapN.this.remove(o);
+                return true;
+            } else
+                return false;
+        }
+
+        public void clear() {
+            SystemIdentityWeakHashMapN.this.clear();
+        }
+
+        public Spliterator<K> spliterator() {
+            return new KeySpliterator<>(SystemIdentityWeakHashMapN.this, 0, -1, 0, 0);
+        }
+    }
+
+    private class Values extends AbstractCollection<V> {
+        public Iterator<V> iterator() {
+            return new ValueIterator();
+        }
+
+        public int size() {
+            return SystemIdentityWeakHashMapN.this.size();
+        }
+
+        public boolean contains(Object o) {
+            return containsValue(o);
+        }
+
+        public void clear() {
+            SystemIdentityWeakHashMapN.this.clear();
+        }
+
+        public Spliterator<V> spliterator() {
+            return new ValueSpliterator<>(SystemIdentityWeakHashMapN.this, 0, -1, 0, 0);
+        }
+    }
+
+    private class EntrySet extends SystemIdentityWeakHashMap<K, V>.EntrySet {
+
+        @NotNull
+        @Override
+        public Spliterator<Map.Entry<K, V>> spliterator() {
+            return new EntrySpliterator<>(SystemIdentityWeakHashMapN.this, 0, -1, 0, 0);
         }
     }
 }

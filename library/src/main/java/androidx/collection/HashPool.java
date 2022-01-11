@@ -39,6 +39,34 @@ public class HashPool implements Cloneable {
         mSize = 0;
     }
 
+    /**
+     * Primitive int version of {@link #insert(Object[], int, int, Object)}.
+     */
+    public static int[] insert(int[] array, int currentSize, int index, int element) {
+        assert currentSize <= array.length;
+
+        if (currentSize + 1 <= array.length) {
+            System.arraycopy(array, index, array, index + 1, currentSize - index);
+            array[index] = element;
+            return array;
+        }
+
+        int[] newArray = new int[growSize(currentSize)];
+        System.arraycopy(array, 0, newArray, 0, index);
+        newArray[index] = element;
+        System.arraycopy(array, index, newArray, index + 1, array.length - index);
+        return newArray;
+    }
+
+    /**
+     * Given the current size of an array, returns an ideal size to which the array should grow.
+     * This is typically double the given size, but should not be relied upon to do so in the
+     * future.
+     */
+    public static int growSize(int currentSize) {
+        return currentSize <= 4 ? 8 : currentSize * 2;
+    }
+
     @Override
     public HashPool clone() {
         HashPool clone;
@@ -119,34 +147,6 @@ public class HashPool implements Cloneable {
             mValues = insert(mValues, mSize, i, value);
             mSize++;
         }
-    }
-
-    /**
-     * Primitive int version of {@link #insert(Object[], int, int, Object)}.
-     */
-    public static int[] insert(int[] array, int currentSize, int index, int element) {
-        assert currentSize <= array.length;
-
-        if (currentSize + 1 <= array.length) {
-            System.arraycopy(array, index, array, index + 1, currentSize - index);
-            array[index] = element;
-            return array;
-        }
-
-        int[] newArray = new int[growSize(currentSize)];
-        System.arraycopy(array, 0, newArray, 0, index);
-        newArray[index] = element;
-        System.arraycopy(array, index, newArray, index + 1, array.length - index);
-        return newArray;
-    }
-
-    /**
-     * Given the current size of an array, returns an ideal size to which the array should grow.
-     * This is typically double the given size, but should not be relied upon to do so in the
-     * future.
-     */
-    public static int growSize(int currentSize) {
-        return currentSize <= 4 ? 8 : currentSize * 2;
     }
 
     /**

@@ -37,13 +37,13 @@ public class DrawableWrapper extends Drawable implements Drawable.Callback {
     }
 
     @Override
-    public void setChangingConfigurations(int configs) {
-        mDrawable.setChangingConfigurations(configs);
+    public int getChangingConfigurations() {
+        return mDrawable.getChangingConfigurations();
     }
 
     @Override
-    public int getChangingConfigurations() {
-        return mDrawable.getChangingConfigurations();
+    public void setChangingConfigurations(int configs) {
+        mDrawable.setChangingConfigurations(configs);
     }
 
     @Override
@@ -163,13 +163,13 @@ public class DrawableWrapper extends Drawable implements Drawable.Callback {
     }
 
     @Override
-    public void setAutoMirrored(boolean mirrored) {
-        DrawableCompat.setAutoMirrored(mDrawable, mirrored);
+    public boolean isAutoMirrored() {
+        return DrawableCompat.isAutoMirrored(mDrawable);
     }
 
     @Override
-    public boolean isAutoMirrored() {
-        return DrawableCompat.isAutoMirrored(mDrawable);
+    public void setAutoMirrored(boolean mirrored) {
+        DrawableCompat.setAutoMirrored(mDrawable, mirrored);
     }
 
     @Override

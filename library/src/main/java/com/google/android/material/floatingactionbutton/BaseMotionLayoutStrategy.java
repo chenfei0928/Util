@@ -40,11 +40,6 @@ abstract class BaseMotionLayoutStrategy implements MotionLayoutStrategy {
         this.tracker = tracker;
     }
 
-    @Override
-    public final void setMotionSpec(@Nullable MotionSpec motionSpec) {
-        this.motionSpec = motionSpec;
-    }
-
     @SuppressLint("RestrictedApi")
     @Override
     public final MotionSpec getCurrentMotionSpec() {
@@ -79,6 +74,11 @@ abstract class BaseMotionLayoutStrategy implements MotionLayoutStrategy {
     @Nullable
     public MotionSpec getMotionSpec() {
         return motionSpec;
+    }
+
+    @Override
+    public final void setMotionSpec(@Nullable MotionSpec motionSpec) {
+        this.motionSpec = motionSpec;
     }
 
     @Override

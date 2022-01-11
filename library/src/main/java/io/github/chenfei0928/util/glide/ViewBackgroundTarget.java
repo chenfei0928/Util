@@ -40,10 +40,8 @@ public abstract class ViewBackgroundTarget<T extends View, Z> implements Target<
     @IdRes
     private static final int VIEW_TAG_ID =
             R.id.glide_custom_view_target_tag;
-
-    private final SizeDeterminer sizeDeterminer;
-
     protected final T view;
+    private final SizeDeterminer sizeDeterminer;
     @Nullable
     private View.OnAttachStateChangeListener attachStateListener;
     private boolean isClearedByUs;
@@ -226,16 +224,6 @@ public abstract class ViewBackgroundTarget<T extends View, Z> implements Target<
     }
 
     /**
-     * Stores the request using {@link View#setTag(Object)}.
-     *
-     * @param request {@inheritDoc}
-     */
-    @Override
-    public final void setRequest(@Nullable Request request) {
-        setTag(request);
-    }
-
-    /**
      * Returns any stored request using {@link android.view.View#getTag()}.
      */
     @Override
@@ -250,6 +238,16 @@ public abstract class ViewBackgroundTarget<T extends View, Z> implements Target<
             }
         }
         return null;
+    }
+
+    /**
+     * Stores the request using {@link View#setTag(Object)}.
+     *
+     * @param request {@inheritDoc}
+     */
+    @Override
+    public final void setRequest(@Nullable Request request) {
+        setTag(request);
     }
 
     @Override
@@ -277,13 +275,13 @@ public abstract class ViewBackgroundTarget<T extends View, Z> implements Target<
         }
     }
 
-    private void setTag(@Nullable Object tag) {
-        view.setTag(overrideTag == 0 ? VIEW_TAG_ID : overrideTag, tag);
-    }
-
     @Nullable
     private Object getTag() {
         return view.getTag(overrideTag == 0 ? VIEW_TAG_ID : overrideTag);
+    }
+
+    private void setTag(@Nullable Object tag) {
+        view.setTag(overrideTag == 0 ? VIEW_TAG_ID : overrideTag, tag);
     }
 
     private void maybeAddAttachStateListener() {

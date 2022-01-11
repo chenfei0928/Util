@@ -9,11 +9,11 @@ package io.github.chenfei0928.media;
  */
 public class PcmToWavConverter {
     public static final int HEADER_SIZE_WAVE = 44;
-    private final byte[] header;
     /**
      * 目标大小，单位：字节
      */
     public final int bufferSize;
+    private final byte[] header;
 
     /**
      * @param totalAudioLen 预计的整个音频PCM数据大小，单位：字节
@@ -24,46 +24,6 @@ public class PcmToWavConverter {
     public PcmToWavConverter(int totalAudioLen, int sampleRate, byte channels, byte bitNum) {
         header = createHeader(totalAudioLen, sampleRate, channels, bitNum);
         bufferSize = HEADER_SIZE_WAVE + totalAudioLen;
-    }
-
-    public int converter(short[] pcmData, int size, byte[] target) {
-        // 文件头数据
-        System.arraycopy(header, 0, target, 0, HEADER_SIZE_WAVE);
-        // 将pcm数据输出到target
-        for (int i = 0; i < size; i++) {
-            int it = pcmData[i];
-            // 高8bit内存位
-            target[HEADER_SIZE_WAVE + i++] = (byte) ((it >> 8) & 0xff);
-            // 低8bit内存位
-            target[HEADER_SIZE_WAVE + i++] = (byte) (it & 0xff);
-        }
-        // 修复数据大小
-        fixSize(target, size * 2);
-        return HEADER_SIZE_WAVE + size * 2;
-    }
-
-    public int converter(byte[] pcmData, int size, byte[] target) {
-        // 文件头数据
-        System.arraycopy(header, 0, target, 0, HEADER_SIZE_WAVE);
-        // 将pcm数据输出到target
-        System.arraycopy(pcmData, 0, target, HEADER_SIZE_WAVE, size);
-        fixSize(target, size);
-        return HEADER_SIZE_WAVE + size;
-    }
-
-    private void fixSize(byte[] target, int size) {
-        // 总大小，由于不包括RIFF和WAV，所以是44 - 8 = 36，在加上PCM文件大小
-        long totalDataLen = size + 36;
-        // 数据大小
-        target[4] = (byte) (totalDataLen & 0xff);
-        target[5] = (byte) ((totalDataLen >> 8) & 0xff);
-        target[6] = (byte) ((totalDataLen >> 16) & 0xff);
-        target[7] = (byte) ((totalDataLen >> 24) & 0xff);
-        // data
-        target[40] = (byte) (size & 0xff);
-        target[41] = (byte) ((size >> 8) & 0xff);
-        target[42] = (byte) ((size >> 16) & 0xff);
-        target[43] = (byte) ((size >> 24) & 0xff);
     }
 
     /**
@@ -139,5 +99,45 @@ public class PcmToWavConverter {
         header[42] = (byte) ((totalAudioLen >> 16) & 0xff);
         header[43] = (byte) ((totalAudioLen >> 24) & 0xff);
         return header;
+    }
+
+    public int converter(short[] pcmData, int size, byte[] target) {
+        // 文件头数据
+        System.arraycopy(header, 0, target, 0, HEADER_SIZE_WAVE);
+        // 将pcm数据输出到target
+        for (int i = 0; i < size; i++) {
+            int it = pcmData[i];
+            // 高8bit内存位
+            target[HEADER_SIZE_WAVE + i++] = (byte) ((it >> 8) & 0xff);
+            // 低8bit内存位
+            target[HEADER_SIZE_WAVE + i++] = (byte) (it & 0xff);
+        }
+        // 修复数据大小
+        fixSize(target, size * 2);
+        return HEADER_SIZE_WAVE + size * 2;
+    }
+
+    public int converter(byte[] pcmData, int size, byte[] target) {
+        // 文件头数据
+        System.arraycopy(header, 0, target, 0, HEADER_SIZE_WAVE);
+        // 将pcm数据输出到target
+        System.arraycopy(pcmData, 0, target, HEADER_SIZE_WAVE, size);
+        fixSize(target, size);
+        return HEADER_SIZE_WAVE + size;
+    }
+
+    private void fixSize(byte[] target, int size) {
+        // 总大小，由于不包括RIFF和WAV，所以是44 - 8 = 36，在加上PCM文件大小
+        long totalDataLen = size + 36;
+        // 数据大小
+        target[4] = (byte) (totalDataLen & 0xff);
+        target[5] = (byte) ((totalDataLen >> 8) & 0xff);
+        target[6] = (byte) ((totalDataLen >> 16) & 0xff);
+        target[7] = (byte) ((totalDataLen >> 24) & 0xff);
+        // data
+        target[40] = (byte) (size & 0xff);
+        target[41] = (byte) ((size >> 8) & 0xff);
+        target[42] = (byte) ((size >> 16) & 0xff);
+        target[43] = (byte) ((size >> 24) & 0xff);
     }
 }

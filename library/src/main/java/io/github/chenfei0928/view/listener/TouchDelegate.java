@@ -19,26 +19,26 @@ public class TouchDelegate extends android.view.TouchDelegate {
     /**
      * View that should receive forwarded touch events
      */
-    private View mDelegateView;
+    private final View mDelegateView;
 
     /**
      * Bounds in local coordinates of the containing view that should be mapped to the delegate
      * view. This rect is used for initial hit testing.
      */
-    private Rect mBounds;
+    private final Rect mBounds;
 
     /**
      * mBounds inflated to include some slop. This rect is to track whether the motion events
      * should be considered to be within the delegate view.
      */
-    private Rect mSlopBounds;
+    private final Rect mSlopBounds;
 
     /**
      * True if the delegate had been targeted on a down event (intersected mBounds).
      */
     private boolean mDelegateTargeted;
 
-    private int mSlop;
+    private final int mSlop;
 
     /**
      * Constructor

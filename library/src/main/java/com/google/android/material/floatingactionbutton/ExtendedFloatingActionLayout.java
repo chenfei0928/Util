@@ -42,11 +42,89 @@ import static java.lang.Math.min;
  */
 public class ExtendedFloatingActionLayout extends FrameLayout implements CoordinatorLayout.AttachedBehavior {
 
+    /**
+     * A Property wrapper around the <code>width</code> functionality handled by the {@link
+     * ViewGroup.LayoutParams#width} value.
+     */
+    static final Property<View, Float> WIDTH =
+            new Property<View, Float>(Float.class, "width") {
+                @Override
+                public void set(@NonNull View object, @NonNull Float value) {
+                    object.getLayoutParams().width = value.intValue();
+                    object.requestLayout();
+                }
+
+                @NonNull
+                @Override
+                public Float get(@NonNull View object) {
+                    return (float) object.getLayoutParams().width;
+                }
+            };
+    /**
+     * A Property wrapper around the <code>height</code> functionality handled by the {@link
+     * ViewGroup.LayoutParams#height} value.
+     */
+    static final Property<View, Float> HEIGHT =
+            new Property<View, Float>(Float.class, "height") {
+                @Override
+                public void set(@NonNull View object, @NonNull Float value) {
+                    object.getLayoutParams().height = value.intValue();
+                    object.requestLayout();
+                }
+
+                @NonNull
+                @Override
+                public Float get(@NonNull View object) {
+                    return (float) object.getLayoutParams().height;
+                }
+            };
+    /**
+     * A Property wrapper around the <code>paddingStart</code> functionality handled by the {@link
+     * ViewCompat#setPaddingRelative(View, int, int, int, int)}.
+     */
+    static final Property<View, Float> PADDING_START =
+            new Property<View, Float>(Float.class, "paddingStart") {
+                @Override
+                public void set(@NonNull View object, @NonNull Float value) {
+                    ViewCompat.setPaddingRelative(
+                            object,
+                            value.intValue(),
+                            object.getPaddingTop(),
+                            ViewCompat.getPaddingEnd(object),
+                            object.getPaddingBottom());
+                }
+
+                @NonNull
+                @Override
+                public Float get(@NonNull View object) {
+                    return (float) ViewCompat.getPaddingStart(object);
+                }
+            };
+    /**
+     * A Property wrapper around the <code>paddingEnd</code> functionality handled by the {@link
+     * ViewCompat#setPaddingRelative(View, int, int, int, int)}.
+     */
+    static final Property<View, Float> PADDING_END =
+            new Property<View, Float>(Float.class, "paddingEnd") {
+                @Override
+                public void set(@NonNull View object, @NonNull Float value) {
+                    ViewCompat.setPaddingRelative(
+                            object,
+                            ViewCompat.getPaddingStart(object),
+                            object.getPaddingTop(),
+                            value.intValue(),
+                            object.getPaddingBottom());
+                }
+
+                @NonNull
+                @Override
+                public Float get(@NonNull View object) {
+                    return (float) ViewCompat.getPaddingEnd(object);
+                }
+            };
     private static final int ANIM_STATE_NONE = 0;
     private static final int ANIM_STATE_HIDING = 1;
     private static final int ANIM_STATE_SHOWING = 2;
-
-    private int animState = ANIM_STATE_NONE;
 
     private final AnimatorTracker changeVisibilityTracker = new AnimatorTracker();
     @NonNull
@@ -54,51 +132,16 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
     private final MotionLayoutStrategy showStrategy = new ExtendedFloatingActionLayout.ShowStrategy(changeVisibilityTracker);
     private final MotionLayoutStrategy hideStrategy = new ExtendedFloatingActionLayout.HideStrategy(changeVisibilityTracker);
     private final int collapsedSize;
+    @NonNull
+    private final CoordinatorLayout.Behavior<ExtendedFloatingActionLayout> behavior;
+    private int animState = ANIM_STATE_NONE;
 
     private int extendedPaddingStart;
     private int extendedPaddingEnd;
 
-    @NonNull
-    private final CoordinatorLayout.Behavior<ExtendedFloatingActionLayout> behavior;
-
     private boolean isExtended = true;
     private boolean isTransforming = false;
     private boolean animateShowBeforeLayout = false;
-
-    /**
-     * Callback to be invoked when the visibility or the state of an ExtendedFloatingActionLayout
-     * changes.
-     */
-    public abstract static class OnChangedCallback {
-
-        /**
-         * Called when a ExtendedFloatingActionLayout has been {@link
-         * #show(ExtendedFloatingActionLayout.OnChangedCallback) shown}.
-         *
-         * @param extendedFab the FloatingActionButton that was shown.
-         */
-        public void onShown(ExtendedFloatingActionLayout extendedFab) {
-        }
-
-        /**
-         * Called when a ExtendedFloatingActionLayout has been {@link
-         * #hide(ExtendedFloatingActionLayout.OnChangedCallback) hidden}.
-         *
-         * @param extendedFab the ExtendedFloatingActionLayout that was hidden.
-         */
-        public void onHidden(ExtendedFloatingActionLayout extendedFab) {
-        }
-
-        /**
-         * Called when a ExtendedFloatingActionLayout has been {@link
-         * #extend(ExtendedFloatingActionLayout.OnChangedCallback) extended} to show the icon and the
-         * text.
-         *
-         * @param extendedFab the ExtendedFloatingActionLayout that was extended.
-         */
-        public void onExtended(ExtendedFloatingActionLayout extendedFab) {
-        }
-    }
 
     public ExtendedFloatingActionLayout(@NonNull Context context) {
         this(context, null);
@@ -180,6 +223,10 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
         return behavior;
     }
 
+    public final boolean isExtended() {
+        return isExtended;
+    }
+
     /**
      * Extends or shrinks the fab depending on the value of {@param extended}.
      */
@@ -194,10 +241,6 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
         }
 
         MotionLayoutStrategy.performNow();
-    }
-
-    public final boolean isExtended() {
-        return isExtended;
     }
 
     /**
@@ -515,90 +558,6 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
     }
 
     /**
-     * A Property wrapper around the <code>width</code> functionality handled by the {@link
-     * ViewGroup.LayoutParams#width} value.
-     */
-    static final Property<View, Float> WIDTH =
-            new Property<View, Float>(Float.class, "width") {
-                @Override
-                public void set(@NonNull View object, @NonNull Float value) {
-                    object.getLayoutParams().width = value.intValue();
-                    object.requestLayout();
-                }
-
-                @NonNull
-                @Override
-                public Float get(@NonNull View object) {
-                    return (float) object.getLayoutParams().width;
-                }
-            };
-
-    /**
-     * A Property wrapper around the <code>height</code> functionality handled by the {@link
-     * ViewGroup.LayoutParams#height} value.
-     */
-    static final Property<View, Float> HEIGHT =
-            new Property<View, Float>(Float.class, "height") {
-                @Override
-                public void set(@NonNull View object, @NonNull Float value) {
-                    object.getLayoutParams().height = value.intValue();
-                    object.requestLayout();
-                }
-
-                @NonNull
-                @Override
-                public Float get(@NonNull View object) {
-                    return (float) object.getLayoutParams().height;
-                }
-            };
-
-    /**
-     * A Property wrapper around the <code>paddingStart</code> functionality handled by the {@link
-     * ViewCompat#setPaddingRelative(View, int, int, int, int)}.
-     */
-    static final Property<View, Float> PADDING_START =
-            new Property<View, Float>(Float.class, "paddingStart") {
-                @Override
-                public void set(@NonNull View object, @NonNull Float value) {
-                    ViewCompat.setPaddingRelative(
-                            object,
-                            value.intValue(),
-                            object.getPaddingTop(),
-                            ViewCompat.getPaddingEnd(object),
-                            object.getPaddingBottom());
-                }
-
-                @NonNull
-                @Override
-                public Float get(@NonNull View object) {
-                    return (float) ViewCompat.getPaddingStart(object);
-                }
-            };
-
-    /**
-     * A Property wrapper around the <code>paddingEnd</code> functionality handled by the {@link
-     * ViewCompat#setPaddingRelative(View, int, int, int, int)}.
-     */
-    static final Property<View, Float> PADDING_END =
-            new Property<View, Float>(Float.class, "paddingEnd") {
-                @Override
-                public void set(@NonNull View object, @NonNull Float value) {
-                    ViewCompat.setPaddingRelative(
-                            object,
-                            ViewCompat.getPaddingStart(object),
-                            object.getPaddingTop(),
-                            value.intValue(),
-                            object.getPaddingBottom());
-                }
-
-                @NonNull
-                @Override
-                public Float get(@NonNull View object) {
-                    return (float) ViewCompat.getPaddingEnd(object);
-                }
-            };
-
-    /**
      * Shrink to the smaller value between paddingStart and paddingEnd, such that when shrunk the icon
      * will be centered.
      */
@@ -611,6 +570,53 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
 
     int getCollapsedPadding() {
         return (getCollapsedSize()) / 2;
+    }
+
+    interface Size {
+        int getWidth();
+
+        int getHeight();
+
+        int getPaddingStart();
+
+        int getPaddingEnd();
+
+        ViewGroup.LayoutParams getLayoutParams();
+    }
+
+    /**
+     * Callback to be invoked when the visibility or the state of an ExtendedFloatingActionLayout
+     * changes.
+     */
+    public abstract static class OnChangedCallback {
+
+        /**
+         * Called when a ExtendedFloatingActionLayout has been {@link
+         * #show(ExtendedFloatingActionLayout.OnChangedCallback) shown}.
+         *
+         * @param extendedFab the FloatingActionButton that was shown.
+         */
+        public void onShown(ExtendedFloatingActionLayout extendedFab) {
+        }
+
+        /**
+         * Called when a ExtendedFloatingActionLayout has been {@link
+         * #hide(ExtendedFloatingActionLayout.OnChangedCallback) hidden}.
+         *
+         * @param extendedFab the ExtendedFloatingActionLayout that was hidden.
+         */
+        public void onHidden(ExtendedFloatingActionLayout extendedFab) {
+        }
+
+        /**
+         * Called when a ExtendedFloatingActionLayout has been {@link
+         * #extend(ExtendedFloatingActionLayout.OnChangedCallback) extended} to show the icon and the
+         * text.
+         *
+         * @param extendedFab the ExtendedFloatingActionLayout that was extended.
+         */
+        public void onExtended(ExtendedFloatingActionLayout extendedFab) {
+        }
     }
 
     /**
@@ -648,6 +654,26 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
             a.recycle();
         }
 
+        private static boolean isBottomSheet(@NonNull View view) {
+            final ViewGroup.LayoutParams lp = view.getLayoutParams();
+            if (lp instanceof CoordinatorLayout.LayoutParams) {
+                return ((CoordinatorLayout.LayoutParams) lp).getBehavior() instanceof BottomSheetBehavior;
+            }
+            return false;
+        }
+
+        /**
+         * Returns whether the associated ExtendedFloatingActionLayout automatically hides when there is
+         * not enough space to be displayed.
+         *
+         * @return true if enabled
+         * @attr ref
+         * com.google.android.material.R.styleable#ExtendedFloatingActionLayout_Behavior_Layout_behavior_autoHide
+         */
+        public boolean isAutoHideEnabled() {
+            return autoHideEnabled;
+        }
+
         /**
          * Sets whether the associated ExtendedFloatingActionLayout automatically hides when there is
          * not enough space to be displayed. This works with {@link AppBarLayout} and {@link
@@ -661,18 +687,6 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
          */
         public void setAutoHideEnabled(boolean autoHide) {
             autoHideEnabled = autoHide;
-        }
-
-        /**
-         * Returns whether the associated ExtendedFloatingActionLayout automatically hides when there is
-         * not enough space to be displayed.
-         *
-         * @return true if enabled
-         * @attr ref
-         * com.google.android.material.R.styleable#ExtendedFloatingActionLayout_Behavior_Layout_behavior_autoHide
-         */
-        public boolean isAutoHideEnabled() {
-            return autoHideEnabled;
         }
 
         @Override
@@ -704,14 +718,6 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
                 updateFabVisibilityForAppBarLayout(parent, (AppBarLayout) dependency, child);
             } else if (isBottomSheet(dependency)) {
                 updateFabVisibilityForBottomSheet(dependency, child);
-            }
-            return false;
-        }
-
-        private static boolean isBottomSheet(@NonNull View view) {
-            final ViewGroup.LayoutParams lp = view.getLayoutParams();
-            if (lp instanceof CoordinatorLayout.LayoutParams) {
-                return ((CoordinatorLayout.LayoutParams) lp).getBehavior() instanceof BottomSheetBehavior;
             }
             return false;
         }
@@ -838,18 +844,6 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
             parent.onLayoutChild(child, layoutDirection);
             return true;
         }
-    }
-
-    interface Size {
-        int getWidth();
-
-        int getHeight();
-
-        int getPaddingStart();
-
-        int getPaddingEnd();
-
-        ViewGroup.LayoutParams getLayoutParams();
     }
 
     class ChangeSizeStrategy extends BaseMotionLayoutStrategy {

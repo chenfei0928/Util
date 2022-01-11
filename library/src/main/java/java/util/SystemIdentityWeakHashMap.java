@@ -17,44 +17,32 @@ public class SystemIdentityWeakHashMap<K, V>
      * The default initial capacity -- MUST be a power of two.
      */
     static final int DEFAULT_INITIAL_CAPACITY = 16;
-
+    /**
+     * The load factor used when none specified in constructor.
+     */
+    static final float DEFAULT_LOAD_FACTOR = 0.75f;
     /**
      * The maximum capacity, used if a higher value is implicitly specified
      * by either of the constructors with arguments.
      * MUST be a power of two <= 1<<30.
      */
     private static final int MAXIMUM_CAPACITY = 1 << 30;
-
     /**
-     * The load factor used when none specified in constructor.
+     * Value representing null keys inside tables.
      */
-    static final float DEFAULT_LOAD_FACTOR = 0.75f;
-
-    /**
-     * The table, resized as necessary. Length MUST Always be a power of two.
-     */
-    Entry<K, V>[] table;
-
-    /**
-     * The number of key-value mappings contained in this weak hash map.
-     */
-    private int size;
-
-    /**
-     * The next size value at which to resize (capacity * load factor).
-     */
-    private int threshold;
-
+    private static final Object NULL_KEY = new Object();
     /**
      * The load factor for the hash table.
      */
     private final float loadFactor;
-
     /**
      * Reference queue for cleared WeakEntries
      */
     private final ReferenceQueue<Object> queue = new ReferenceQueue<>();
-
+    /**
+     * The table, resized as necessary. Length MUST Always be a power of two.
+     */
+    Entry<K, V>[] table;
     /**
      * The number of times this SystemIdentityWeakHashMap has been structurally modified.
      * Structural modifications are those that change the number of
@@ -65,11 +53,15 @@ public class SystemIdentityWeakHashMap<K, V>
      * @see ConcurrentModificationException
      */
     int modCount;
-
-    @SuppressWarnings("unchecked")
-    private Entry<K, V>[] newTable(int n) {
-        return (Entry<K, V>[]) new Entry<?, ?>[n];
-    }
+    transient Set<Map.Entry<K, V>> entrySet;
+    /**
+     * The number of key-value mappings contained in this weak hash map.
+     */
+    private int size;
+    /**
+     * The next size value at which to resize (capacity * load factor).
+     */
+    private int threshold;
 
     /**
      * Constructs a new, empty <tt>SystemIdentityWeakHashMap</tt> with the given initial
@@ -117,6 +109,8 @@ public class SystemIdentityWeakHashMap<K, V>
         this(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR);
     }
 
+    // internal utilities
+
     /**
      * Constructs a new <tt>SystemIdentityWeakHashMap</tt> with the same mappings as the
      * specified map.  The <tt>SystemIdentityWeakHashMap</tt> is created with the default
@@ -133,13 +127,6 @@ public class SystemIdentityWeakHashMap<K, V>
                 DEFAULT_LOAD_FACTOR);
         putAll(m);
     }
-
-    // internal utilities
-
-    /**
-     * Value representing null keys inside tables.
-     */
-    private static final Object NULL_KEY = new Object();
 
     /**
      * Use NULL_KEY for key if it is null.
@@ -164,6 +151,18 @@ public class SystemIdentityWeakHashMap<K, V>
     }
 
     /**
+     * Returns index for hash code h.
+     */
+    private static int indexFor(int h, int length) {
+        return h & (length - 1);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Entry<K, V>[] newTable(int n) {
+        return (Entry<K, V>[]) new Entry<?, ?>[n];
+    }
+
+    /**
      * Retrieve object hash code and applies a supplemental hash function to the
      * result hash, which defends against poor quality hash functions.  This is
      * critical because HashMap uses power-of-two length hash tables, that
@@ -178,13 +177,6 @@ public class SystemIdentityWeakHashMap<K, V>
         // number of collisions (approximately 8 at default load factor).
         h ^= (h >>> 20) ^ (h >>> 12);
         return h ^ (h >>> 7) ^ (h >>> 4);
-    }
-
-    /**
-     * Returns index for hash code h.
-     */
-    private static int indexFor(int h, int length) {
-        return h & (length - 1);
     }
 
     /**
@@ -566,12 +558,31 @@ public class SystemIdentityWeakHashMap<K, V>
     }
 
     /**
+     * Returns a {@link Set} view of the mappings contained in this map.
+     * The set is backed by the map, so changes to the map are
+     * reflected in the set, and vice-versa.  If the map is modified
+     * while an iteration over the set is in progress (except through
+     * the iterator's own <tt>remove</tt> operation, or through the
+     * <tt>setValue</tt> operation on a map entry returned by the
+     * iterator) the results of the iteration are undefined.  The set
+     * supports element removal, which removes the corresponding
+     * mapping from the map, via the <tt>Iterator.remove</tt>,
+     * <tt>Set.remove</tt>, <tt>removeAll</tt>, <tt>retainAll</tt> and
+     * <tt>clear</tt> operations.  It does not support the
+     * <tt>add</tt> or <tt>addAll</tt> operations.
+     */
+    public Set<Map.Entry<K, V>> entrySet() {
+        Set<Map.Entry<K, V>> es = entrySet;
+        return es != null ? es : (entrySet = new EntrySet());
+    }
+
+    /**
      * The entries in this hash table extend WeakReference, using its main ref
      * field as the key.
      */
     static class Entry<K, V> extends WeakReference<Object> implements Map.Entry<K, V> {
-        V value;
         final int hash;
+        V value;
         Entry<K, V> next;
 
         /**
@@ -625,6 +636,8 @@ public class SystemIdentityWeakHashMap<K, V>
             return getKey() + "=" + getValue();
         }
     }
+
+    // Views
 
     abstract class HashIterator<T> implements Iterator<T> {
         private int index;
@@ -703,29 +716,6 @@ public class SystemIdentityWeakHashMap<K, V>
         public Map.Entry<K, V> next() {
             return nextEntry();
         }
-    }
-
-    // Views
-
-    transient Set<Map.Entry<K, V>> entrySet;
-
-    /**
-     * Returns a {@link Set} view of the mappings contained in this map.
-     * The set is backed by the map, so changes to the map are
-     * reflected in the set, and vice-versa.  If the map is modified
-     * while an iteration over the set is in progress (except through
-     * the iterator's own <tt>remove</tt> operation, or through the
-     * <tt>setValue</tt> operation on a map entry returned by the
-     * iterator) the results of the iteration are undefined.  The set
-     * supports element removal, which removes the corresponding
-     * mapping from the map, via the <tt>Iterator.remove</tt>,
-     * <tt>Set.remove</tt>, <tt>removeAll</tt>, <tt>retainAll</tt> and
-     * <tt>clear</tt> operations.  It does not support the
-     * <tt>add</tt> or <tt>addAll</tt> operations.
-     */
-    public Set<Map.Entry<K, V>> entrySet() {
-        Set<Map.Entry<K, V>> es = entrySet;
-        return es != null ? es : (entrySet = new EntrySet());
     }
 
     class EntrySet extends AbstractSet<Map.Entry<K, V>> {

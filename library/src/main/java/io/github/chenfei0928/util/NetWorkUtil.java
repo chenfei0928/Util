@@ -33,13 +33,12 @@ import static android.telephony.TelephonyManager.NETWORK_TYPE_TD_SCDMA;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_UMTS;
 
 public class NetWorkUtil {
-    private static final int NETWORK_TYPE_LTE_CA = 19;
-
     public static final int NETWORK_CLASS_UNKNOWN = 0;
     public static final int NETWORK_CLASS_2_G = 1;
     public static final int NETWORK_CLASS_3_G = 2;
     public static final int NETWORK_CLASS_4_G = 3;
     public static final int NETWORK_CLASS_5_G = 4;
+    private static final int NETWORK_TYPE_LTE_CA = 19;
 
     @RequiresPermission(Manifest.permission.ACCESS_WIFI_STATE)
     public static String getNetworkName(Context context) {
