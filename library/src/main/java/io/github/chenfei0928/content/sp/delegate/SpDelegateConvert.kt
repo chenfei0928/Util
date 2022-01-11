@@ -50,17 +50,33 @@ class IntArraySpConvertSaver(
     }
 }
 
-class GsonSpConvertSaver<T>(
+class GsonNullableSpConvertSaver<T>(
     saver: AbsSpSaver.AbsSpDelegate<String?>,
     private val gson: Gson = io.github.chenfei0928.util.gson.gson,
     private val type: Type
 ) : SpConvertSaver<String?, T?>(saver) {
 
     override fun onRead(value: String?): T? {
-        return gson.fromJson<T>(value, type)
+        return gson.fromJson(value, type)
     }
 
     override fun onSave(value: T?): String? {
+        return gson.toJson(value)
+    }
+}
+
+class GsonSpConvertSaver<T>(
+    saver: AbsSpSaver.AbsSpDelegate<String?>,
+    private val gson: Gson = io.github.chenfei0928.util.gson.gson,
+    private val type: Type,
+    private val defaultValue: T
+) : SpConvertSaver<String?, T>(saver) {
+
+    override fun onRead(value: String?): T {
+        return gson.fromJson<T?>(value, type) ?: defaultValue
+    }
+
+    override fun onSave(value: T): String? {
         return gson.toJson(value)
     }
 }
