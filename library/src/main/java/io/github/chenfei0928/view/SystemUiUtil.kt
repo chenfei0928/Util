@@ -12,8 +12,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
-import io.github.chenfei0928.viewModel.marginBottom
-import io.github.chenfei0928.viewModel.marginTop
 
 fun View.applySystemInsetTopMargin() {
     val originalMarginTop = marginTop

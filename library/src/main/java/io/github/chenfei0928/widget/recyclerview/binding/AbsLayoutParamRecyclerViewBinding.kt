@@ -4,7 +4,7 @@ import android.view.View
 import androidx.collection.SystemIdentityArrayMap
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.holder
-import io.github.chenfei0928.adapter.RecyclerViewHolderModelProvider
+import io.github.chenfei0928.widget.recyclerview.adapter.RecyclerViewHolderModelProvider
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.widget.recyclerview.binding.AbsLayoutParamRecyclerViewBinding.LayoutParams
 

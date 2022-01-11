@@ -5,7 +5,7 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
-import io.github.chenfei0928.util.ToastUtil
+import io.github.chenfei0928.widget.ToastUtil
 
 /**
  * @author chenfei(chenfei0928@gmail.com)

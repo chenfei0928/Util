@@ -5,7 +5,7 @@ import androidx.annotation.CallSuper
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.util.Log
-import io.github.chenfei0928.util.SimpleLifecycleObserver
+import io.github.chenfei0928.lifecycle.SimpleLifecycleObserver
 import io.github.chenfei0928.util.StackTraceLogUtil
 import io.github.chenfei0928.lifecycle.onEvent
 

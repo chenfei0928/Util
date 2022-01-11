@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.databinding.Observable
 import androidx.viewbinding.ViewBinding
-import io.github.chenfei0928.adapter.ViewBindingHolder
+import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.widget.recyclerview.ViewHolderTagDelegate
-import io.github.chenfei0928.util.kotlin.createOnPropertyChanged
+import io.github.chenfei0928.util.createOnPropertyChanged
 
 /**
  * 带有一个环境参数的view更新实现

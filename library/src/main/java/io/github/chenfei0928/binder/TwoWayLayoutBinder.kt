@@ -3,7 +3,7 @@ package io.github.chenfei0928.binder
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
-import io.github.chenfei0928.adapter.ViewBindingHolder
+import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
 
 /**
  * 用于提供接口以支持双向绑定

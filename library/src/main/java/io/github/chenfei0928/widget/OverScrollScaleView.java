@@ -6,9 +6,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import io.github.chenfei0928.util.kotlin.AnimatorKt;
-
 import androidx.core.widget.NestedScrollView;
+import io.github.chenfei0928.animation.AnimatorKt;
 
 /**
  * 支持超量滑动并放大其中一个子View

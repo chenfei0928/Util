@@ -11,7 +11,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
-import io.github.chenfei0928.util.FileUtil
+import io.github.chenfei0928.io.FileUtil
 import io.github.chenfei0928.content.IntentKt
 
 /**

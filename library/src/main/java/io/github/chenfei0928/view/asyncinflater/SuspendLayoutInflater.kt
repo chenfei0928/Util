@@ -8,7 +8,7 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.UiThread
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.util.Log
-import io.github.chenfei0928.util.kotlin.coroutines.coroutineScope
+import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

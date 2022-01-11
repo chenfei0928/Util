@@ -5,7 +5,7 @@ import android.os.Message
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import io.github.chenfei0928.util.safeHandler
+import io.github.chenfei0928.os.safeHandler
 
 /**
  * 基础Fragment，所有含有View的fragment必须继承于此类
@@ -42,7 +42,7 @@ abstract class BaseFragment : Fragment(), FragmentHost {
     }
 
     protected inline fun postDelayed(delayMillis: Long, crossinline action: () -> Unit) =
-            postDelayed({ action() }, delayMillis)
+        postDelayed({ action() }, delayMillis)
 
     protected fun postDelayed(action: Runnable, delayMillis: Long): Boolean {
         if (isDestroyed) {
@@ -54,7 +54,7 @@ abstract class BaseFragment : Fragment(), FragmentHost {
     }
 
     protected inline fun postDelayedWithoutView(delayMillis: Long, crossinline action: () -> Unit) =
-            postDelayedWithoutView({ action() }, delayMillis)
+        postDelayedWithoutView({ action() }, delayMillis)
 
     protected fun postDelayedWithoutView(action: Runnable, delayMillis: Long): Boolean {
         if (mDestroyedView) {

@@ -4,10 +4,10 @@ import android.graphics.drawable.Drawable
 import android.widget.TextView
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
-import io.github.chenfei0928.viewModel.setDrawableBottom
-import io.github.chenfei0928.viewModel.setDrawableEnd
-import io.github.chenfei0928.viewModel.setDrawableStart
-import io.github.chenfei0928.viewModel.setDrawableTop
+import io.github.chenfei0928.widget.setDrawableBottom
+import io.github.chenfei0928.widget.setDrawableEnd
+import io.github.chenfei0928.widget.setDrawableStart
+import io.github.chenfei0928.widget.setDrawableTop
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)

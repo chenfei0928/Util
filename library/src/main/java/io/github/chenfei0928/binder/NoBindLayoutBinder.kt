@@ -3,7 +3,7 @@ package io.github.chenfei0928.binder
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
-import io.github.chenfei0928.adapter.ViewHolder
+import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)

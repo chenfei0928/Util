@@ -4,9 +4,11 @@ import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import io.github.chenfei0928.os.safeHandler
 import java.util.*
 
 /**
+ * 任务队列
  * activity初始化流程中可能需要连续启动多个子activity，
  * 但这些activity可能会有先后顺序，或它们之间不应覆盖，要one by one的显示
  *

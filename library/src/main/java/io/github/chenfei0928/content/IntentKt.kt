@@ -7,7 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
-import io.github.chenfei0928.util.FileUtil
+import io.github.chenfei0928.io.FileUtil
 import java.io.File
 
 /**

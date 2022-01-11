@@ -8,8 +8,8 @@ import android.graphics.drawable.Drawable
 import android.util.Property
 import androidx.annotation.Keep
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import io.github.chenfei0928.util.kotlin.ANIMATE_LAYOUT_CHANGES_DEFAULT_DURATION
-import io.github.chenfei0928.util.kotlin.toProperty
+import io.github.chenfei0928.animation.ANIMATE_LAYOUT_CHANGES_DEFAULT_DURATION
+import io.github.chenfei0928.reflect.toProperty
 import kotlin.reflect.KMutableProperty1
 
 /**

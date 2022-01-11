@@ -5,6 +5,8 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.chenfei0928.reflect.parameterized.ParameterizedTypeReflect1;
+
 import static org.junit.Assert.assertEquals;
 
 /**

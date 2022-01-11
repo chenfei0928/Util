@@ -6,7 +6,7 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import androidx.annotation.RequiresPermission
 import androidx.annotation.WorkerThread
-import io.github.chenfei0928.coroutines.IoScope
+import io.github.chenfei0928.concurrent.coroutines.IoScope
 import io.github.chenfei0928.util.Log
 import kotlinx.coroutines.launch
 import kotlin.math.log10

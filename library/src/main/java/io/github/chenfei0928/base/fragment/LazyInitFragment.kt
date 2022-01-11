@@ -158,6 +158,6 @@ abstract class LazyInitInnerFragment<F : Fragment> : BaseDoubleCheckLazyInitFrag
     abstract fun createFragment(): F
 
     companion object {
-        private const val FRAGMENT_TAG = "fragment"
+        private const val FRAGMENT_TAG = "LazyInitInnerFragment"
     }
 }

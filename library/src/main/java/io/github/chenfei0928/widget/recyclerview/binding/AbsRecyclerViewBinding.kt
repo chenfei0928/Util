@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.drakeet.multitype.MultiTypeAdapter
-import io.github.chenfei0928.adapter.DelegateAdapterDataObserver
+import io.github.chenfei0928.widget.recyclerview.adapter.DelegateAdapterDataObserver
 import io.github.chenfei0928.collection.RecyclerViewAdapterDataSource
 import io.github.chenfei0928.widget.recyclerview.binding.grid.BaseGridSpanRecyclerViewBinderRecorderBinding
 import io.github.chenfei0928.widget.recyclerview.binding.grid.BaseGridSpanRecyclerViewBinding

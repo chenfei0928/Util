@@ -12,7 +12,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.view.updateLayoutParams
-import io.github.chenfei0928.util.ToastUtil
+import io.github.chenfei0928.widget.ToastUtil
 import org.jetbrains.anko.dip
 
 /**

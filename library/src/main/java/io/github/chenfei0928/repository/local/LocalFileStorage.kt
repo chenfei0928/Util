@@ -2,7 +2,7 @@ package io.github.chenfei0928.repository.local
 
 import android.content.Context
 import android.util.Log
-import io.github.chenfei0928.util.ExecutorUtil
+import io.github.chenfei0928.concurrent.ExecutorUtil
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream

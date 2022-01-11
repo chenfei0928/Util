@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import io.github.chenfei0928.base.fragment.BaseFragment
-import io.github.chenfei0928.util.kotlin.removeSelf
+import io.github.chenfei0928.app.fragment.removeSelf
 
 /**
  * 抽离传入参数类型，以便于直接导入为文件或其他类型的解码器

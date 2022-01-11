@@ -2,11 +2,11 @@ package io.github.chenfei0928.repository.storage
 
 import android.os.Build
 import io.github.chenfei0928.util.R
-import io.github.chenfei0928.util.PermissionRequest
-import io.github.chenfei0928.util.kotlin.onPermissionDeniedKt
-import io.github.chenfei0928.util.kotlin.onPermissionNeverAskAgainKt
-import io.github.chenfei0928.util.kotlin.onShowPermissionRationale
-import io.github.chenfei0928.util.kotlin.registerForPermission
+import io.github.chenfei0928.app.result.PermissionRequest
+import io.github.chenfei0928.app.activity.onPermissionDeniedKt
+import io.github.chenfei0928.app.activity.onPermissionNeverAskAgainKt
+import io.github.chenfei0928.app.activity.onShowPermissionRationale
+import io.github.chenfei0928.app.result.registerForPermission
 
 /**
  * 支持权限检查、请求处理的文件导入器

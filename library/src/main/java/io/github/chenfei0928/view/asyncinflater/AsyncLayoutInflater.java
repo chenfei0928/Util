@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import io.github.chenfei0928.util.ExecutorUtil;
+import io.github.chenfei0928.concurrent.ExecutorUtil;
 import io.github.chenfei0928.util.Log;
 
 import androidx.annotation.LayoutRes;

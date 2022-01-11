@@ -3,7 +3,7 @@ package io.github.chenfei0928.content.sp.delegate
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import io.github.chenfei0928.util.ExecutorUtil
+import io.github.chenfei0928.concurrent.ExecutorUtil
 import java.util.*
 
 /**

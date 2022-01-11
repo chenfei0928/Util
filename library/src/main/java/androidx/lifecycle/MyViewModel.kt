@@ -8,9 +8,9 @@ import android.app.Activity
 import android.content.Context
 import androidx.fragment.app.Fragment
 import io.github.chenfei0928.base.ContextProvider
-import io.github.chenfei0928.coroutines.CoroutineAndroidContext
-import io.github.chenfei0928.coroutines.CoroutineAndroidContextImpl
-import io.github.chenfei0928.coroutines.MainScope
+import io.github.chenfei0928.concurrent.coroutines.CoroutineAndroidContext
+import io.github.chenfei0928.concurrent.coroutines.CoroutineAndroidContextImpl
+import io.github.chenfei0928.concurrent.coroutines.MainScope
 import kotlinx.coroutines.*
 import java.io.Closeable
 import kotlin.coroutines.CoroutineContext

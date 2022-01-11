@@ -6,7 +6,7 @@ import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 import io.github.chenfei0928.util.Log;
-import io.github.chenfei0928.util.RunningEnvironmentUtil;
+import io.github.chenfei0928.app.RunningEnvironmentUtil;
 
 /**
  * @author ChenFei(chenfei0928 @ gmail.com)

@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
-import io.github.chenfei0928.adapter.ViewHolder
+import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
 import io.github.chenfei0928.reflect.asType
 import kotlin.reflect.typeOf
 

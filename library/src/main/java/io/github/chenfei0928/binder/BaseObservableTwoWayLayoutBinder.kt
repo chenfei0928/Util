@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.databinding.Observable
 import androidx.viewbinding.ViewBinding
-import io.github.chenfei0928.adapter.ViewBindingHolder
-import io.github.chenfei0928.util.kotlin.BeanExtValDelegate
+import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
+import io.github.chenfei0928.util.BeanExtValDelegate
 
 /**
  * dataBinding [Observable] 的从实例状态回调通知view更新的实现

@@ -11,8 +11,8 @@ import android.webkit.WebChromeClient
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import io.github.chenfei0928.util.Log
-import io.github.chenfei0928.util.ToastUtil
-import io.github.chenfei0928.util.kotlin.removeSelf
+import io.github.chenfei0928.widget.ToastUtil
+import io.github.chenfei0928.app.fragment.removeSelf
 
 /**
  * webView 文件选择器启动者（打火器）

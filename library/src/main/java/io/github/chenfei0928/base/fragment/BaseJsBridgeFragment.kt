@@ -6,8 +6,8 @@ import com.github.lzyzsd.jsbridge.BridgeHandler
 import com.github.lzyzsd.jsbridge.CallBackFunction
 import com.github.lzyzsd.jsbridge.WebViewJavascriptBridge
 import com.github.lzyzsd.jsbridge.send
-import io.github.chenfei0928.util.ExecutorUtil
-import io.github.chenfei0928.util.kotlin.findOrAddChild
+import io.github.chenfei0928.app.fragment.findOrAddChild
+import io.github.chenfei0928.concurrent.ExecutorUtil
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)

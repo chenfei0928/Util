@@ -7,7 +7,7 @@ import androidx.collection.ArrayMap
 import com.google.protobuf.GeneratedMessageLite
 import com.google.protobuf.getParseFrom
 import io.github.chenfei0928.collection.asArrayList
-import io.github.chenfei0928.util.kotlin.deepEquals
+import io.github.chenfei0928.util.deepEquals
 
 fun Intent.putParcelableListExtra(name: String, value: List<Parcelable>?): Intent {
     return putParcelableArrayListExtra(name, value?.asArrayList())
