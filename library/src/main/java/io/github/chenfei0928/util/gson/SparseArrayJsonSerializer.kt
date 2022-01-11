@@ -10,7 +10,8 @@ import java.lang.reflect.Type
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-10-23 17:03
  */
-class SparseArrayJsonSerializer : JsonSerializer<SparseArray<*>>, JsonDeserializer<SparseArray<*>> {
+object SparseArrayJsonSerializer : JsonSerializer<SparseArray<*>>,
+    JsonDeserializer<SparseArray<*>> {
 
     override fun serialize(
         src: SparseArray<*>?, typeOfSrc: Type, context: JsonSerializationContext

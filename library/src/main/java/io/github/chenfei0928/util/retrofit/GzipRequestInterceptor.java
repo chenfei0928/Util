@@ -1,4 +1,4 @@
-package io.github.chenfei0928.retrofitUtil;
+package io.github.chenfei0928.util.retrofit;
 
 import java.io.IOException;
 
@@ -20,6 +20,7 @@ import okio.Okio;
  * @see <a href="https://github.com/square/okhttp/wiki/Interceptors">Github Wiki</a>
  */
 public class GzipRequestInterceptor implements Interceptor {
+    @NonNull
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
         Request originalRequest = chain.request();

@@ -1,4 +1,4 @@
-package io.github.chenfei0928.retrofitUtil;
+package io.github.chenfei0928.util.retrofit;
 
 import org.jetbrains.annotations.NotNull;
 

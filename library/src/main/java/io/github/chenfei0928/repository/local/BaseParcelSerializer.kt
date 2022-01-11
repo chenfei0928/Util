@@ -11,6 +11,7 @@ import java.io.OutputStream
  * @date 2021-11-26 14:18
  */
 abstract class BaseParcelSerializer<T> : LocalSerializer<T> {
+
     override fun save(outputStream: OutputStream, obj: T) {
         outputStream.write(obtainToUse {
             save(this, obj)

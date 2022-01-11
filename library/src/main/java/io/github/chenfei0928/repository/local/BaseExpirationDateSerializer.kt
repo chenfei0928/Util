@@ -31,7 +31,8 @@ abstract class BaseExpirationDateSerializer<T>(
         } else {
             // 抛出异常，通知对数据进行反序列化失败，交由调用处LocalFileModule删除缓存文件
             throw IllegalArgumentException(
-                "本地文件的标记时间是${savedVersionCode.toLong()}，数据已过期")
+                "本地文件的标记时间是${savedVersionCode.toLong()}，数据已过期"
+            )
         }
     }
 
@@ -44,5 +45,16 @@ abstract class BaseExpirationDateSerializer<T>(
             count = count or it.toLong()
         }
         return count
+    }
+}
+
+class ExpirationDateSerializer<T>(
+    serializer: LocalSerializer<T>,
+    private val timeout: Long
+) : BaseExpirationDateSerializer<T>(serializer) {
+
+    override fun check(localSavedTimeMillis: Long): Boolean {
+        val currentTimeMillis = System.currentTimeMillis()
+        return localSavedTimeMillis + timeout >= currentTimeMillis
     }
 }

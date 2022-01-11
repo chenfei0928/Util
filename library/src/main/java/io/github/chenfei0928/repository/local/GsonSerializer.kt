@@ -3,12 +3,12 @@ package io.github.chenfei0928.repository.local
 import android.os.Build
 import android.util.SparseArray
 import android.util.SparseLongArray
-import io.github.chenfei0928.util.gson.SparseArrayJsonSerializer
-import io.github.chenfei0928.util.gson.SparseLongArraySerializer
-import io.github.chenfei0928.reflect.typeOf
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import io.github.chenfei0928.reflect.typeOf
 import io.github.chenfei0928.util.gson.BitSetTypeAdapter
+import io.github.chenfei0928.util.gson.SparseArrayJsonSerializer
+import io.github.chenfei0928.util.gson.SparseLongArraySerializer
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
