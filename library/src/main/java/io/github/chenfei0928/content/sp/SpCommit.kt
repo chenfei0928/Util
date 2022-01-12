@@ -1,4 +1,4 @@
-package io.github.chenfei0928.content.sp.delegate
+package io.github.chenfei0928.content.sp
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)

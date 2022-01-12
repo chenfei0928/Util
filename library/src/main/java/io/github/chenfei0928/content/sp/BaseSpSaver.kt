@@ -1,4 +1,4 @@
-package io.github.chenfei0928.content.sp.delegate
+package io.github.chenfei0928.content.sp
 
 import android.content.Context
 import android.content.SharedPreferences

@@ -1,6 +1,7 @@
 package io.github.chenfei0928.content.sp.delegate
 
 import android.content.SharedPreferences
+import io.github.chenfei0928.content.sp.AbsSpSaver
 import kotlin.reflect.KProperty
 
 /**
@@ -10,7 +11,7 @@ import kotlin.reflect.KProperty
  * @date 2022-01-12 16:39
  */
 class DefaultValueSpDelete<T>(
-    private val saver: AbsSpSaver.AbsSpDelegate0<T>,
+    private val saver: AbsSpSaver.AbsSpDelegate0<T?>,
     private val defaultValue: T
 ) : AbsSpSaver.AbsSpDelegate0<T>() {
 
@@ -27,5 +28,5 @@ class DefaultValueSpDelete<T>(
     }
 }
 
-fun <T> AbsSpSaver.AbsSpDelegate0<T>.defaultValue(defaultValue: T) =
+fun <T> AbsSpSaver.AbsSpDelegate0<T?>.defaultValue(defaultValue: T): DefaultValueSpDelete<T> =
     DefaultValueSpDelete(this, defaultValue)

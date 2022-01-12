@@ -3,6 +3,7 @@ package io.github.chenfei0928.content.sp.delegate
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import io.github.chenfei0928.collection.mapToIntArray
+import io.github.chenfei0928.content.sp.AbsSpSaver
 import io.github.chenfei0928.reflect.typeOf
 import io.github.chenfei0928.repository.local.Base64Serializer
 import io.github.chenfei0928.repository.local.LocalSerializer
@@ -40,7 +41,7 @@ class IntArraySpConvertSaver(
     saver: AbsSpSaver.AbsSpDelegate<String?>
 ) : SpConvertSaver<String?, IntArray?>(saver) {
 
-    constructor(name: String) : this(StringNullableDelegate(name))
+    constructor(key: String) : this(StringDelegate(key))
 
     override fun onRead(value: String?): IntArray? =
         value?.split(",")
@@ -67,8 +68,8 @@ class GsonSpConvertSaver<T>(
     }
 }
 
-inline fun <reified T> GsonSpConvertSaver(name: String) = GsonSpConvertSaver<T>(
-    StringNullableDelegate(name),
+inline fun <reified T> GsonSpConvertSaver(key: String) = GsonSpConvertSaver<T>(
+    StringDelegate(key),
     type = typeOf<T>()
 )
 //</editor-fold>

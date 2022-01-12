@@ -1,4 +1,4 @@
-package io.github.chenfei0928.content.sp.delegate
+package io.github.chenfei0928.content.sp
 
 import android.os.Handler
 import android.os.Looper
@@ -10,7 +10,7 @@ import java.util.*
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-08-18 19:24
  */
-class SpSaverAutoApply(
+internal class SpSaverAutoApply(
     spSaver: AbsSpSaver
 ) {
     private val spApplyTask = Runnable { spSaver.apply() }

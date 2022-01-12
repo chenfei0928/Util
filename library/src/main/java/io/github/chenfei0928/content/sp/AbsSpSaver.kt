@@ -1,7 +1,7 @@
-package io.github.chenfei0928.content.sp.delegate
+package io.github.chenfei0928.content.sp
 
 import android.content.SharedPreferences
-import io.github.chenfei0928.content.sp.delegate.AbsSpSaver.Companion.edit
+import io.github.chenfei0928.content.sp.AbsSpSaver.Companion.edit
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
