@@ -3,6 +3,12 @@ package io.github.chenfei0928.content.sp.delegate
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import io.github.chenfei0928.collection.mapToIntArray
+import io.github.chenfei0928.reflect.typeOf
+import io.github.chenfei0928.repository.local.Base64Serializer
+import io.github.chenfei0928.repository.local.LocalSerializer
+import io.github.chenfei0928.repository.local.base64
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.lang.reflect.Type
 import kotlin.reflect.KProperty
 
@@ -32,25 +38,21 @@ abstract class SpConvertSaver<T, R>(
 
 class IntArraySpConvertSaver(
     saver: AbsSpSaver.AbsSpDelegate<String?>
-) : SpConvertSaver<String?, IntArray>(saver) {
+) : SpConvertSaver<String?, IntArray?>(saver) {
 
     constructor(name: String) : this(StringNullableDelegate(name))
 
-    override fun onRead(value: String?): IntArray {
-        if (value.isNullOrBlank()) {
-            return IntArray(0)
-        }
-        return value
-            .split(",")
-            .mapToIntArray { it.toIntOrNull() ?: -1 }
-    }
+    override fun onRead(value: String?): IntArray? =
+        value?.split(",")
+            ?.mapToIntArray { it.toIntOrNull() ?: -1 }
 
-    override fun onSave(value: IntArray): String {
-        return value.joinToString(",")
+    override fun onSave(value: IntArray?): String? {
+        return value?.joinToString(",")
     }
 }
 
-class GsonNullableSpConvertSaver<T>(
+//<editor-fold defaultstate="collapsed" desc="使用Gson序列化对象">
+class GsonSpConvertSaver<T>(
     saver: AbsSpSaver.AbsSpDelegate<String?>,
     private val gson: Gson = io.github.chenfei0928.util.gson.gson,
     private val type: Type
@@ -65,18 +67,42 @@ class GsonNullableSpConvertSaver<T>(
     }
 }
 
-class GsonSpConvertSaver<T>(
-    saver: AbsSpSaver.AbsSpDelegate<String?>,
-    private val gson: Gson = io.github.chenfei0928.util.gson.gson,
-    private val type: Type,
-    private val defaultValue: T
-) : SpConvertSaver<String?, T>(saver) {
+inline fun <reified T> GsonSpConvertSaver(name: String) = GsonSpConvertSaver<T>(
+    StringNullableDelegate(name),
+    type = typeOf<T>()
+)
+//</editor-fold>
 
-    override fun onRead(value: String?): T {
-        return gson.fromJson<T?>(value, type) ?: defaultValue
+//<editor-fold defaultstate="collapsed" desc="使用LocalSerializer序列化对象">
+class LocalSerializerSpConvertSaver<T>(
+    key: String? = null,
+    serializer: LocalSerializer<T>
+) : AbsSpSaver.AbsSpDelegate<T?>(key) {
+    private val serializer: Base64Serializer<T> = serializer.base64()
+
+    override fun getValue(sp: SharedPreferences, key: String): T? {
+        return ByteArrayInputStream(
+            sp.getString(key, null)?.toByteArray()
+                ?: byteArrayOf()
+        ).let {
+            serializer.onOpenInputStream(it)
+        }.let {
+            serializer.read(it)
+        }
     }
 
-    override fun onSave(value: T): String? {
-        return gson.toJson(value)
+    override fun putValue(editor: SharedPreferences.Editor, key: String, value: T?) {
+        if (value == null) {
+            editor.remove(key)
+            return
+        }
+        val base64Content = ByteArrayOutputStream().let { byteArrayOutputStream ->
+            serializer.onOpenOutStream(byteArrayOutputStream).let {
+                serializer.write(byteArrayOutputStream, value)
+            }
+            String(byteArrayOutputStream.toByteArray())
+        }
+        editor.putString(key, base64Content)
     }
 }
+//</editor-fold>

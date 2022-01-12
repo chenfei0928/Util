@@ -33,7 +33,31 @@ abstract class AbsDefaultValueSpDelegate<T>(
     protected abstract fun putValueImpl(editor: SharedPreferences.Editor, key: String, value: T)
 }
 
-//<editor-fold defaultstate="collapsed" desc="Sp默认的各个支持直接存取的字段类型">
+//<editor-fold defaultstate="collapsed" desc="Sp的String与StringSet可空委托">
+class StringNullableDelegate(
+    key: String? = null
+) : AbsDefaultValueSpDelegate<String?>(key, null) {
+    override fun getValueImpl(sp: SharedPreferences, key: String): String? =
+        sp.getString(key, null)
+
+    override fun putValueImpl(editor: SharedPreferences.Editor, key: String, value: String?) {
+        editor.putString(key, value)
+    }
+}
+
+class StringSetNullableDelegate(
+    key: String? = null
+) : AbsDefaultValueSpDelegate<Set<String>?>(key, null) {
+    override fun getValueImpl(sp: SharedPreferences, key: String): Set<String>? =
+        sp.getStringSet(key, null)
+
+    override fun putValueImpl(editor: SharedPreferences.Editor, key: String, value: Set<String>?) {
+        editor.putStringSet(key, value)
+    }
+}
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="Sp默认的各个支持直接存取的非空字段类型">
 class StringDefaultValueDelegate(
     key: String? = null, defaultValue: String
 ) : AbsDefaultValueSpDelegate<String>(key, defaultValue) {
@@ -57,7 +81,7 @@ class StringSetDefaultValueDelegate(
 }
 
 class IntDefaultValueDelegate(
-    key: String? = null, defaultValue: Int
+    key: String? = null, defaultValue: Int = 0
 ) : AbsDefaultValueSpDelegate<Int>(key, defaultValue) {
     override fun getValueImpl(sp: SharedPreferences, key: String): Int =
         sp.getInt(key, defaultValue)
@@ -68,7 +92,7 @@ class IntDefaultValueDelegate(
 }
 
 class LongDefaultValueDelegate(
-    key: String? = null, defaultValue: Long
+    key: String? = null, defaultValue: Long = 0L
 ) : AbsDefaultValueSpDelegate<Long>(key, defaultValue) {
     override fun getValueImpl(sp: SharedPreferences, key: String): Long =
         sp.getLong(key, defaultValue)
@@ -79,7 +103,7 @@ class LongDefaultValueDelegate(
 }
 
 class BooleanDefaultValueDelegate(
-    key: String? = null, defaultValue: Boolean
+    key: String? = null, defaultValue: Boolean = false
 ) : AbsDefaultValueSpDelegate<Boolean>(key, defaultValue) {
     override fun getValueImpl(sp: SharedPreferences, key: String): Boolean =
         sp.getBoolean(key, defaultValue)
@@ -90,7 +114,7 @@ class BooleanDefaultValueDelegate(
 }
 
 class FloatDefaultValueDelegate(
-    key: String? = null, defaultValue: Float
+    key: String? = null, defaultValue: Float = 0f
 ) : AbsDefaultValueSpDelegate<Float>(key, defaultValue) {
     override fun getValueImpl(sp: SharedPreferences, key: String): Float =
         sp.getFloat(key, defaultValue)
