@@ -59,6 +59,12 @@ class GsonSpConvertSaver<T>(
     private val type: Type
 ) : SpConvertSaver<String?, T?>(saver) {
 
+    constructor(
+        key: String,
+        gson: Gson = io.github.chenfei0928.util.gson.gson,
+        type: Type
+    ) : this(StringDelegate(key), gson, type)
+
     override fun onRead(value: String?): T? {
         return gson.fromJson(value, type)
     }
