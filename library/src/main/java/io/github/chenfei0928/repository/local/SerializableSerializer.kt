@@ -8,7 +8,7 @@ import java.io.*
 class SerializableSerializer<T : Serializable> : LocalSerializer<T>, LocalSerializer.IODecorator {
 
     @Throws(IOException::class)
-    override fun save(outputStream: OutputStream, obj: T) {
+    override fun write(outputStream: OutputStream, obj: T) {
         (outputStream as ObjectOutputStream).run {
             writeObject(obj)
             flush()
@@ -16,7 +16,7 @@ class SerializableSerializer<T : Serializable> : LocalSerializer<T>, LocalSerial
     }
 
     @Throws(IOException::class)
-    override fun load(inputStream: InputStream): T? {
+    override fun read(inputStream: InputStream): T? {
         return (inputStream as ObjectInputStream).run {
             readObject() as T?
         }

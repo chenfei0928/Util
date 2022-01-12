@@ -16,7 +16,7 @@ class GsonSerializer<T>(
 ) : LocalSerializer<T> {
 
     @Throws(IOException::class)
-    override fun save(outputStream: OutputStream, obj: T) {
+    override fun write(outputStream: OutputStream, obj: T) {
         outputStream.bufferedWriter().use {
             gson.toJson(obj, type, it)
             it.flush()
@@ -24,7 +24,7 @@ class GsonSerializer<T>(
     }
 
     @Throws(IOException::class)
-    override fun load(inputStream: InputStream): T? {
+    override fun read(inputStream: InputStream): T? {
         return inputStream.bufferedReader().use {
             gson.fromJson(it, type)
         }

@@ -8,11 +8,11 @@ import java.io.OutputStream
  * @date 2020-08-20 16:28
  */
 class StringSerializer : LocalSerializer<String> {
-    override fun save(outputStream: OutputStream, obj: String) {
+    override fun write(outputStream: OutputStream, obj: String) {
         outputStream.write(obj.toByteArray())
     }
 
-    override fun load(inputStream: InputStream): String? {
+    override fun read(inputStream: InputStream): String? {
         return String(inputStream.readBytes())
     }
 

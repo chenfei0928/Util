@@ -10,13 +10,13 @@ import java.io.OutputStream
 class ByteArraySerializer : LocalSerializer<ByteArray> {
 
     @Throws(IOException::class)
-    override fun save(outputStream: OutputStream, obj: ByteArray) {
+    override fun write(outputStream: OutputStream, obj: ByteArray) {
         outputStream.write(obj)
         outputStream.flush()
     }
 
     @Throws(IOException::class)
-    override fun load(inputStream: InputStream): ByteArray? {
+    override fun read(inputStream: InputStream): ByteArray? {
         return inputStream.readBytes()
     }
 

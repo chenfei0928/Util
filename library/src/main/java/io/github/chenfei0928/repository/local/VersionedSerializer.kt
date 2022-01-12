@@ -26,21 +26,21 @@ class VersionedSerializer<T>(
         )
     }
 
-    override fun save(outputStream: OutputStream, obj: T) {
+    override fun write(outputStream: OutputStream, obj: T) {
         // 写入应用版本号
         outputStream.write(versionCode)
         // 将数据结构版本号写入io流
-        serializer.save(outputStream, obj)
+        serializer.write(outputStream, obj)
     }
 
-    override fun load(inputStream: InputStream): T? {
+    override fun read(inputStream: InputStream): T? {
         // long 类型8字节
         val savedVersionCode = ByteArray(8)
         // 读取本地保存的内容的数据结构版本号
         inputStream.read(savedVersionCode)
         if (versionCode contentEquals savedVersionCode) {
             // 版本号校验一致，读取内容
-            return serializer.load(inputStream)
+            return serializer.read(inputStream)
         } else {
             // 抛出异常，通知对数据进行反序列化失败，交由调用处LocalFileModule删除缓存文件
             throw IllegalArgumentException(

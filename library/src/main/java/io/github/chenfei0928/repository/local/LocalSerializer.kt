@@ -9,17 +9,17 @@ import java.io.*
  */
 interface LocalSerializer<T> {
     @Throws(IOException::class)
-    fun save(outputStream: OutputStream, obj: T)
+    fun write(outputStream: OutputStream, obj: T)
 
     @Throws(IOException::class)
-    fun load(inputStream: InputStream): T?
+    fun read(inputStream: InputStream): T?
 
     fun copy(obj: T): T {
         return ByteArrayOutputStream().use {
-            save(it, obj)
+            write(it, obj)
             it.toByteArray()
         }.let { ByteArrayInputStream(it) }.use {
-            load(it)!!
+            read(it)!!
         }
     }
 
@@ -40,7 +40,7 @@ interface LocalSerializer<T> {
         private val serializer: LocalSerializer<T>
     ) : LocalSerializer<T> by serializer, IODecorator {
 
-        override fun onOpenInputStream(inputStream: InputStream): InputStream {
+        final override fun onOpenInputStream(inputStream: InputStream): InputStream {
             return if (serializer is IODecorator) {
                 serializer.onOpenInputStream(onOpenInputStream1(inputStream))
             } else {
@@ -48,7 +48,7 @@ interface LocalSerializer<T> {
             }
         }
 
-        override fun onOpenOutStream(outputStream: OutputStream): OutputStream {
+        final override fun onOpenOutStream(outputStream: OutputStream): OutputStream {
             return if (serializer is IODecorator) {
                 serializer.onOpenOutStream(onOpenOutStream1(outputStream))
             } else {

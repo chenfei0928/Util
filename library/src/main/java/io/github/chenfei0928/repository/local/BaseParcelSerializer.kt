@@ -12,14 +12,14 @@ import java.io.OutputStream
  */
 abstract class BaseParcelSerializer<T> : LocalSerializer<T> {
 
-    override fun save(outputStream: OutputStream, obj: T) {
+    override fun write(outputStream: OutputStream, obj: T) {
         outputStream.write(obtainToUse {
             save(this, obj)
         })
         outputStream.flush()
     }
 
-    override fun load(inputStream: InputStream): T? {
+    override fun read(inputStream: InputStream): T? {
         return inputStream.readBytes().useByParcel {
             load(this)
         }

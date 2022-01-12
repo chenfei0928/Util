@@ -20,12 +20,12 @@ BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
 
     private val parser = clazz.getParseFrom<MessageType, Any>()
 
-    override fun save(outputStream: OutputStream, obj: MessageType) {
+    override fun write(outputStream: OutputStream, obj: MessageType) {
         obj.writeTo(outputStream)
         outputStream.flush()
     }
 
-    override fun load(inputStream: InputStream): MessageType {
+    override fun read(inputStream: InputStream): MessageType {
         return parser(inputStream)
     }
 

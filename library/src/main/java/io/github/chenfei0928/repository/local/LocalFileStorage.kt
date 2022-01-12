@@ -50,7 +50,7 @@ abstract class LocalFileStorage<T>(
                 file.createNewFile()
                 file.outputStream()
                     .let { serializer.onOpenOutStream(it) }
-                    .use { serializer.save(it, data) }
+                    .use { serializer.write(it, data) }
             } catch (e: Exception) {
                 Log.e(TAG, "loadFromLocalFile: $file, $serializer", e)
                 file.delete()
@@ -67,7 +67,7 @@ abstract class LocalFileStorage<T>(
         } else try {
             file.inputStream()
                 .let { serializer.onOpenInputStream(it) }
-                .use { serializer.load(it) }
+                .use { serializer.read(it) }
         } catch (e: Exception) {
             Log.e(TAG, "loadFromLocalFile: $file, $serializer", e)
             file.delete()
