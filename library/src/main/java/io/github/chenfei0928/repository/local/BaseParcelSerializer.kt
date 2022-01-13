@@ -14,27 +14,27 @@ abstract class BaseParcelSerializer<T> : LocalSerializer<T> {
 
     override fun write(outputStream: OutputStream, obj: T) {
         outputStream.write(obtainToUse {
-            save(this, obj)
+            write(obj)
         })
         outputStream.flush()
     }
 
     override fun read(inputStream: InputStream): T? {
         return inputStream.readBytes().useByParcel {
-            load(this)
+            read()
         }
     }
 
     override fun copy(obj: T): T {
         val parcel = Parcel.obtain()
-        save(parcel, obj)
+        parcel.write(obj)
         parcel.setDataPosition(0) // This is extremely important!
-        val copied = load(parcel)
+        val copied = parcel.read()
         parcel.recycle()
         return copied!!
     }
 
-    abstract fun save(parcel: Parcel, obj: T)
+    abstract fun Parcel.write(obj: T)
 
-    abstract fun load(parcel: Parcel): T?
+    abstract fun Parcel.read(): T?
 }
