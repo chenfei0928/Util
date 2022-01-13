@@ -1,12 +1,14 @@
 package io.github.chenfei0928.repository.local
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.io.ShareFileLockHelper
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.concurrent.atomic.AtomicReference
 
 abstract class LocalFileStorage<T>(
     serializer: LocalSerializer<T>,
@@ -30,6 +32,7 @@ abstract class LocalFileStorage<T>(
     }
 
     //<editor-fold defaultstate="collapsed" desc="通过文件锁读写文件的实现">
+    @Synchronized
     private fun <T> runFileWithLock(context: Context, block: (File) -> T): T {
         return getFile(context, this.fileName + LOCK_FILE_SUFFIX).let {
             ShareFileLockHelper.getFileLock(it)
@@ -37,25 +40,6 @@ abstract class LocalFileStorage<T>(
             getFile(context, this.fileName).let(block)
         }
     }
-
-    /**
-     * 将数据序列化到本地文件
-     */
-    private fun saveToLocalFile(context: Context, data: T): Unit =
-        runFileWithLock(context) { file ->
-            if (file.exists()) {
-                file.delete()
-            }
-            try {
-                file.createNewFile()
-                file.outputStream()
-                    .let { serializer.onOpenOutStream(it) }
-                    .use { serializer.write(it, data) }
-            } catch (e: Exception) {
-                Log.e(TAG, "loadFromLocalFile: $file, $serializer", e)
-                file.delete()
-            }
-        }
 
     /**
      * 从本地文件反序列化
@@ -75,47 +59,62 @@ abstract class LocalFileStorage<T>(
         }
     }
 
-    private fun deleteFile(context: Context) = runFileWithLock(context) { file ->
-        file.delete()
-    }
-
-    private fun saveToLocalFileOrDelete(context: Context, value: T?) {
-        if (value == null) {
-            deleteFile(context)
-        } else {
-            saveToLocalFile(context, value)
+    /**
+     * 将数据序列化到本地文件
+     */
+    private fun saveToLocalFileOrDelete(context: Context, value: T?): Unit =
+        runFileWithLock(context) { file ->
+            if (file.exists()) {
+                file.delete()
+            }
+            if (value == null) {
+                return@runFileWithLock
+            }
+            try {
+                file.createNewFile()
+                file.outputStream()
+                    .let { serializer.onOpenOutStream(it) }
+                    .use { serializer.write(it, value) }
+            } catch (e: Exception) {
+                Log.e(TAG, "loadFromLocalFile: $file, $serializer", e)
+                file.delete()
+            }
         }
-    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="带缓存的快速访问">
-    @Volatile
-    private var cachedValue: T? = null
+    private val cachedValue: AtomicReference<T> = AtomicReference()
 
-    protected var Context.localStorageValue: T?
-        @Synchronized
-        get() = if (memoryCacheable) {
-            cachedValue ?: loadFromLocalFile(this).also { value ->
-                cachedValue = value
+    @Synchronized
+    protected fun getCacheOrLoad(context: Context): T? {
+        return if (!memoryCacheable) {
+            // 不使用内存缓存，每次都从磁盘文件反序列化
+            loadFromLocalFile(context)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // 从缓存中读取，缓存中没有值时从磁盘文件反序列化
+            cachedValue.get() ?: cachedValue.updateAndGet {
+                loadFromLocalFile(context)
             }
-        } else {
-            loadFromLocalFile(this)
+        } else synchronized(this) {
+            // 从缓存中读取，缓存中没有值时从磁盘文件反序列化
+            cachedValue.get() ?: loadFromLocalFile(context)?.also {
+                cachedValue.set(it)
+            }
         }
-        @Synchronized
-        set(value) = write(value, false)
+    }
 
-    protected fun Context.write(value: T?, writeNow: Boolean = true) {
+    protected fun write(context: Context, value: T?, writeNow: Boolean = true) {
         // 读取时会拷贝，此处可以不进行拷贝
         if (memoryCacheable) {
-            cachedValue = value
+            cachedValue.set(value)
         }
         if (memoryCacheable && !writeNow) {
             // 以提交代替同步写入
             ExecutorUtil.postToBg {
-                saveToLocalFileOrDelete(this, value)
+                saveToLocalFileOrDelete(context, value)
             }
         } else {
-            saveToLocalFileOrDelete(this, value)
+            saveToLocalFileOrDelete(context, value)
         }
     }
     //</editor-fold>
