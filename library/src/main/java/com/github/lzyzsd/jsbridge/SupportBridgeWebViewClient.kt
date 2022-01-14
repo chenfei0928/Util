@@ -1,15 +1,20 @@
 package com.github.lzyzsd.jsbridge
 
+import android.content.Context
 import android.webkit.WebView
-import androidx.webkit.WebViewClientCompat
+import android.widget.ProgressBar
 import io.github.chenfei0928.util.Log
+import io.github.chenfei0928.webkit.BaseWebViewClient
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 
 /**
  * Created by bruce on 10/28/15.
  */
-abstract class SupportBridgeWebViewClient : WebViewClientCompat() {
+abstract class SupportBridgeWebViewClient(
+    private val context: Context,
+    private val progressBar: ProgressBar? = null
+) : BaseWebViewClient(context, progressBar) {
     private val TAG = "KW_SBridgeWebViewC"
 
     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {

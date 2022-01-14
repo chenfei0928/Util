@@ -13,7 +13,7 @@ import androidx.annotation.Size
 import androidx.webkit.SafeBrowsingResponseCompat
 import androidx.webkit.WebResourceErrorCompat
 import androidx.webkit.WebViewAssetLoader
-import com.github.lzyzsd.jsbridge.SupportBridgeWebViewClient
+import androidx.webkit.WebViewClientCompat
 import io.github.chenfei0928.util.Log
 import java.io.File
 
@@ -24,7 +24,7 @@ import java.io.File
 open class BaseWebViewClient(
     private val context: Context,
     private val progressBar: ProgressBar? = null
-) : SupportBridgeWebViewClient() {
+) : WebViewClientCompat() {
 
     //<editor-fold defaultstate="collapsed" desc="日志">
     /**
