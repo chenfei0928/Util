@@ -24,3 +24,6 @@ class ParcelSerializer<T>(
         return readValue(classLoader) as T?
     }
 }
+
+inline fun <reified T> ParcelSerializer() =
+    ParcelSerializer<T>(T::class.java.classLoader!!)
