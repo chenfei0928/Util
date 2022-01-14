@@ -18,7 +18,7 @@ import io.github.chenfei0928.util.R
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-14 14:13
  */
-class BaseWebChromeClient(
+open class BaseWebChromeClient(
     private var host: FragmentHost? = null,
     private val clientCallback: WebViewClientCallback? = null,
     private val progressBar: ProgressBar? = null

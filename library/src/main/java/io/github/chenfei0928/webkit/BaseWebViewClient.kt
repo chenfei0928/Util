@@ -21,9 +21,9 @@ import java.io.File
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-14 14:05
  */
-class BaseWebViewClient(
+open class BaseWebViewClient(
     private val context: Context,
-    private val mProgress: ProgressBar? = null
+    private val progressBar: ProgressBar? = null
 ) : SupportBridgeWebViewClient() {
 
     //<editor-fold defaultstate="collapsed" desc="日志">
@@ -178,11 +178,12 @@ class BaseWebViewClient(
         if (debugLog) {
             Log.v(TAG, "onPageStarted: $url")
         }
-        mProgress?.visibility = View.VISIBLE
+        progressBar?.visibility = View.VISIBLE
+        progressBar?.progress = 0
     }
 
     override fun onPageFinished(view: WebView, url: String) {
-        mProgress?.visibility = View.GONE
+        progressBar?.visibility = View.GONE
         if (debugLog) {
             Log.v(TAG, "onPageFinished: $url")
         }
