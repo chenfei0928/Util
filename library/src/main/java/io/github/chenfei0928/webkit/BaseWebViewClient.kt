@@ -3,7 +3,6 @@ package io.github.chenfei0928.webkit
 import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Bitmap
-import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.view.View
@@ -234,41 +233,37 @@ open class BaseWebViewClient(
     val interceptRequest: MutableList<(WebResourceRequestSupport) -> WebResourceResponse?> =
         mutableListOf()
 
-    override fun shouldInterceptRequest(view: WebView?, url: String): WebResourceResponse? {
+    final override fun shouldInterceptRequest(view: WebView, url: String): WebResourceResponse? {
         if (debugLog) {
             Log.i(TAG, "shouldInterceptRequest: $url")
         }
-        val shouldInterceptRequest = assetLoader.shouldInterceptRequest(Uri.parse(url))
-        if (shouldInterceptRequest != null) {
-            return shouldInterceptRequest
-        }
-        interceptRequest.forEach {
-            val response = it(WebResourceRequestSupportBase(url))
-            if (response != null) {
-                return response
-            }
-        }
-        return super.shouldInterceptRequest(view, url)
+        return shouldInterceptRequest(view, WebResourceRequestSupportBase(url))
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    override fun shouldInterceptRequest(
+    final override fun shouldInterceptRequest(
         view: WebView, request: WebResourceRequest
     ): WebResourceResponse? {
         if (debugLog) {
             Log.i(TAG, "shouldInterceptRequest: ${request.toSimpleString()}")
         }
+        return shouldInterceptRequest(view, WebResourceRequestSupportV21(request))
+    }
+
+    open fun shouldInterceptRequest(
+        view: WebView, request: WebResourceRequestSupport
+    ): WebResourceResponse? {
         val shouldInterceptRequest = assetLoader.shouldInterceptRequest(request.url)
         if (shouldInterceptRequest != null) {
             return shouldInterceptRequest
         }
         interceptRequest.forEach {
-            val response = it(WebResourceRequestSupportV21(request))
+            val response = it(request)
             if (response != null) {
                 return response
             }
         }
-        return super.shouldInterceptRequest(view, request)
+        return null
     }
     //</editor-fold>
 
