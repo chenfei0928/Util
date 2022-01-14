@@ -15,7 +15,7 @@ import java.util.zip.GZIPInputStream
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-11-15 16:37
  */
-internal class OsResourcesPathHandler(
+class OsResourcesPathHandler(
     private val context: Context
 ) : WebViewAssetLoader.PathHandler {
     private val resources: Resources = context.resources

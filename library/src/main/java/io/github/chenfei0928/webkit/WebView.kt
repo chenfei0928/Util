@@ -1,5 +1,6 @@
 package io.github.chenfei0928.webkit
 
+import android.net.Uri
 import android.os.Build
 import android.webkit.ConsoleMessage
 import android.webkit.WebResourceRequest
@@ -7,6 +8,7 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import androidx.annotation.RequiresApi
 import androidx.webkit.WebResourceErrorCompat
+import androidx.webkit.WebResourceRequestCompat
 import androidx.webkit.WebViewFeature
 
 /**
@@ -23,8 +25,8 @@ fun WebResourceRequest.toSimpleString(): String {
     var simpleString =
         "uri=${url}; isForMainFrame=${isForMainFrame}; hasGesture=${hasGesture()}; method=${method}; headers=${requestHeaders}"
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        simpleString += "isRedirect=${isRedirect}; "
+    if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_RESOURCE_REQUEST_IS_REDIRECT)) {
+        simpleString += "isRedirect=${WebResourceRequestCompat.isRedirect(this)}; "
     }
     return simpleString
 }
@@ -52,4 +54,46 @@ fun WebResourceResponse.toSimpleString(): String {
 
 fun ConsoleMessage.toSimpleString(): String {
     return "${message()}\nat ${sourceId()}:${lineNumber()}"
+}
+
+sealed interface WebResourceRequestSupport {
+    val url: Uri
+    val isForMainFrame: Boolean
+    val isRedirect: Boolean
+    val hasGesture: Boolean
+    val method: String
+    val requestHeaders: Map<String, String>
+}
+
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+internal class WebResourceRequestSupportV21(
+    private val target: WebResourceRequest
+) : WebResourceRequestSupport {
+    override val url: Uri
+        get() = target.url
+    override val isForMainFrame: Boolean
+        get() = target.isForMainFrame
+    override val isRedirect: Boolean
+        get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_RESOURCE_REQUEST_IS_REDIRECT)) {
+            WebResourceRequestCompat.isRedirect(target)
+        } else {
+            false
+        }
+    override val hasGesture: Boolean
+        get() = target.hasGesture()
+    override val method: String
+        get() = target.method
+    override val requestHeaders: Map<String, String>
+        get() = target.requestHeaders
+}
+
+internal class WebResourceRequestSupportBase(
+    url: String
+) : WebResourceRequestSupport {
+    override val url: Uri = Uri.parse(url)
+    override val isForMainFrame: Boolean = false
+    override val isRedirect: Boolean = false
+    override val hasGesture: Boolean = false
+    override val method: String = "GET"
+    override val requestHeaders: Map<String, String> = emptyMap()
 }

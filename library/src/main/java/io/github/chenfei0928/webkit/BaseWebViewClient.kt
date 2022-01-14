@@ -3,9 +3,12 @@ package io.github.chenfei0928.webkit
 import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
+import android.view.View
 import android.webkit.*
+import android.widget.ProgressBar
 import androidx.annotation.Size
 import androidx.webkit.SafeBrowsingResponseCompat
 import androidx.webkit.WebResourceErrorCompat
@@ -15,25 +18,15 @@ import io.github.chenfei0928.util.Log
 import java.io.File
 
 /**
- * @author ChenFei(chenfei0928@gmail.com)
- * @date 2019-11-15 11:52
+ * @author chenfei(chenfei0928@gmail.com)
+ * @date 2022-01-14 14:05
  */
-open class BaseLogWebViewClient(context: Context) : SupportBridgeWebViewClient() {
-    private val assetLoader: WebViewAssetLoader = WebViewAssetLoader
-        .Builder()
-        // https://appassets.androidplatform.net/assets/index.html
-        .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
-        // https://appassets.androidplatform.net/resources/mipmap/ic_launcher.png
-        .addPathHandler("/resources/", WebViewAssetLoader.ResourcesPathHandler(context))
-        // https://appassets.androidplatform.net/osRes/android/mipmap/sym_def_app_icon.png
-        .addPathHandler("/osRes/", OsResourcesPathHandler(context))
-        .addPathHandler(
-            "/public/", WebViewAssetLoader.InternalStoragePathHandler(
-                context, File(context.filesDir, "webViewPublic")
-            )
-        )
-        .build()
+class BaseWebViewClient(
+    private val context: Context,
+    private val mProgress: ProgressBar? = null
+) : SupportBridgeWebViewClient() {
 
+    //<editor-fold defaultstate="collapsed" desc="日志">
     /**
      * 接收到错误信息时触发
      * [ApiDocs](https://developer.android.com/reference/android/webkit/WebViewClient.html#onReceivedError(android.webkit.WebView,%20android.webkit.WebResourceRequest,%20android.webkit.WebResourceError))
@@ -185,6 +178,15 @@ open class BaseLogWebViewClient(context: Context) : SupportBridgeWebViewClient()
         if (debugLog) {
             Log.v(TAG, "onPageStarted: $url")
         }
+        mProgress?.visibility = View.VISIBLE
+    }
+
+    override fun onPageFinished(view: WebView, url: String) {
+        mProgress?.visibility = View.GONE
+        if (debugLog) {
+            Log.v(TAG, "onPageFinished: $url")
+        }
+        super.onPageFinished(view, url)
     }
 
     override fun onLoadResource(view: WebView?, url: String?) {
@@ -192,16 +194,6 @@ open class BaseLogWebViewClient(context: Context) : SupportBridgeWebViewClient()
         if (debugLog) {
             Log.v(TAG, "onLoadResource: $url")
         }
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    override fun shouldInterceptRequest(
-        view: WebView, request: WebResourceRequest
-    ): WebResourceResponse? {
-        if (debugLog) {
-            Log.i(TAG, "shouldInterceptRequest: ${request.toSimpleString()}")
-        }
-        return assetLoader.shouldInterceptRequest(request.url)
     }
 
     private fun debugMessage(
@@ -221,9 +213,66 @@ open class BaseLogWebViewClient(context: Context) : SupportBridgeWebViewClient()
         }
         Log.d(TAG, sb.toString())
     }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="请求拦截返回">
+    var assetLoader: WebViewAssetLoader = WebViewAssetLoader
+        .Builder()
+        // https://appassets.androidplatform.net/assets/index.html
+        .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
+        // https://appassets.androidplatform.net/resources/mipmap/ic_launcher.png
+        .addPathHandler("/resources/", WebViewAssetLoader.ResourcesPathHandler(context))
+        // https://appassets.androidplatform.net/osRes/android/mipmap/sym_def_app_icon.png
+        .addPathHandler("/osRes/", OsResourcesPathHandler(context))
+        .addPathHandler(
+            "/public/", WebViewAssetLoader.InternalStoragePathHandler(
+                context, File(context.filesDir, "webViewPublic")
+            )
+        )
+        .build()
+    val interceptRequest: MutableList<(WebResourceRequestSupport) -> WebResourceResponse?> =
+        mutableListOf()
+
+    override fun shouldInterceptRequest(view: WebView?, url: String): WebResourceResponse? {
+        if (debugLog) {
+            Log.i(TAG, "shouldInterceptRequest: $url")
+        }
+        val shouldInterceptRequest = assetLoader.shouldInterceptRequest(Uri.parse(url))
+        if (shouldInterceptRequest != null) {
+            return shouldInterceptRequest
+        }
+        interceptRequest.forEach {
+            val response = it(WebResourceRequestSupportBase(url))
+            if (response != null) {
+                return response
+            }
+        }
+        return super.shouldInterceptRequest(view, url)
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    override fun shouldInterceptRequest(
+        view: WebView, request: WebResourceRequest
+    ): WebResourceResponse? {
+        if (debugLog) {
+            Log.i(TAG, "shouldInterceptRequest: ${request.toSimpleString()}")
+        }
+        val shouldInterceptRequest = assetLoader.shouldInterceptRequest(request.url)
+        if (shouldInterceptRequest != null) {
+            return shouldInterceptRequest
+        }
+        interceptRequest.forEach {
+            val response = it(WebResourceRequestSupportV21(request))
+            if (response != null) {
+                return response
+            }
+        }
+        return super.shouldInterceptRequest(view, request)
+    }
+    //</editor-fold>
 
     companion object {
-        private const val TAG = "KW_BaseLogWebViewClient"
+        private const val TAG = "KW_BaseWebViewClient"
         var ignoreSslError = false
         var debugLog = false
     }
