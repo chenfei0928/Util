@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.content.sp.AbsSpSaver
 import io.github.chenfei0928.content.sp.registerOnSharedPreferenceChangeListener
-import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 import kotlin.reflect.jvm.isAccessible
@@ -23,40 +22,46 @@ import kotlin.reflect.jvm.isAccessible
  */
 private inline fun <SpSaver : AbsSpSaver, V> SpSaver.watchSharedPreferenceDelegatePropertyChange(
     owner: LifecycleOwner,
-    property: KProperty<*>,
-    delegate: Any?,
+    key: String,
     crossinline valueGetter: () -> V,
     noinline listener: (V) -> Unit
 ) {
+    // 如果该字段是sp委托，获取其sp存储的key
+    listener(valueGetter())
+    // 监听sp变化并调用回调
+    AbsSpSaver.getSp(this)
+        .registerOnSharedPreferenceChangeListener(owner) {
+            if (it == key) {
+                listener(valueGetter())
+            }
+        }
+}
+
+//<editor-fold desc="SpSaver属性监听器/LiveData，KProperty0的在实例上属性引用" defaultstate="collapsed">
+/**
+ * 通过实例的属性引用获取该sp字段的key
+ */
+fun AbsSpSaver.getPropertySpKeyName(property: KProperty0<*>): String {
+    // 获取该字段的委托
+    property.isAccessible = true
+    val delegate = property.getDelegate()
     // 判断该字段的委托
-    if (delegate !is AbsSpSaver.AbsSpDelegate<*>) {
-        throw IllegalArgumentException("Property($property) must is delegate subclass as AbsSpSaver.AbsSpDelegate: $delegate")
+    if (delegate !is AbsSpSaver.AbsSpDelegate0<*>) {
+        throw IllegalArgumentException("Property($property) must is delegate subclass as AbsSpSaver.AbsSpDelegate0: $delegate")
     } else {
         // 如果该字段是sp委托，获取其sp存储的key
-        val key = delegate.obtainDefaultKey(property)
-        listener(valueGetter())
-        // 监听sp变化并调用回调
-        AbsSpSaver.getSp(this)
-            .registerOnSharedPreferenceChangeListener(owner) {
-                if (it == key) {
-                    listener(valueGetter())
-                }
-            }
+        return delegate.obtainDefaultKey(property)
     }
 }
 
-//<editor-fold desc="KProperty0的委托监听，其使用实例的反射属性引用" defaultstate="collapsed">
 /**
  * 监听sp字段的变化并通知回调进行更新，可以方便的传入字段以保证类型安全和一个监听器只监听一个值的变化
  */
 fun <SpSaver : AbsSpSaver, V> SpSaver.watchSharedPreferenceDelegatePropertyChange(
     owner: LifecycleOwner, property: KProperty0<V>, listener: (V) -> Unit
 ) {
-    // 获取该字段的委托
-    property.isAccessible = true
-    val delegate = property.getDelegate()
     watchSharedPreferenceDelegatePropertyChange(
-        owner, property, delegate, { property.get() }, listener
+        owner, getPropertySpKeyName(property), { property.get() }, listener
     )
 }
 
@@ -87,18 +92,31 @@ fun <SpSaver : AbsSpSaver, V> SpSaver.liveDataPropertyChange(
 ): LiveData<V> = liveDataPropertyChange(owner, property) { it }
 //</editor-fold>
 
-//<editor-fold desc="KProperty1的委托监听，其使用类的反射属性引用" defaultstate="collapsed">
+//<editor-fold desc="SpSaver属性监听器/LiveData，KProperty1的在类上属性引用" defaultstate="collapsed">
+/**
+ * 通过类的属性引用获取该sp字段的key
+ */
+fun <SpSaver : AbsSpSaver> SpSaver.getPropertySpKeyName(property: KProperty1<SpSaver, *>): String {
+    // 获取该字段的委托
+    property.isAccessible = true
+    val delegate = property.getDelegate(this)
+    // 判断该字段的委托
+    if (delegate !is AbsSpSaver.AbsSpDelegate0<*>) {
+        throw IllegalArgumentException("Property($property) must is delegate subclass as AbsSpSaver.AbsSpDelegate0: $delegate")
+    } else {
+        // 如果该字段是sp委托，获取其sp存储的key
+        return delegate.obtainDefaultKey(property)
+    }
+}
+
 /**
  * 监听sp字段的变化并通知回调进行更新，可以方便的传入字段以保证类型安全和一个监听器只监听一个值的变化
  */
 fun <SpSaver : AbsSpSaver, V> SpSaver.watchSharedPreferenceDelegatePropertyChange(
     owner: LifecycleOwner, property: KProperty1<SpSaver, V>, listener: (V) -> Unit
 ) {
-    // 获取该字段的委托
-    property.isAccessible = true
-    val delegate = property.getDelegate(this)
     watchSharedPreferenceDelegatePropertyChange(
-        owner, property, delegate, { property.get(this) }, listener
+        owner, getPropertySpKeyName(property), { property.get(this) }, listener
     )
 }
 

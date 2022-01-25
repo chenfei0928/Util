@@ -14,27 +14,29 @@ import java.lang.reflect.Type
 import kotlin.reflect.KProperty
 
 /**
+ * sp存储转换器，用于将sp不支持的数据结构转换为sp支持的数据结构
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-09-03 13:38
  */
-abstract class SpConvertSaver<T, R>(
-    private val saver: AbsSpSaver.AbsSpDelegate<T>
-) : AbsSpSaver.AbsSpDelegate0<R>() {
+abstract class SpConvertSaver<SpValueType, FieldType>(
+    private val saver: AbsSpSaver.AbsSpDelegate<SpValueType>
+) : AbsSpSaver.AbsSpDelegate0<FieldType>() {
 
     override fun obtainDefaultKey(property: KProperty<*>): String {
         return saver.obtainDefaultKey(property)
     }
 
-    override fun getValue(sp: SharedPreferences, key: String): R {
+    override fun getValue(sp: SharedPreferences, key: String): FieldType {
         return onRead(saver.getValue(sp, key))
     }
 
-    override fun putValue(editor: SharedPreferences.Editor, key: String, value: R) {
+    override fun putValue(editor: SharedPreferences.Editor, key: String, value: FieldType) {
         saver.putValue(editor, key, onSave(value))
     }
 
-    abstract fun onRead(value: T): R
-    abstract fun onSave(value: R): T
+    abstract fun onRead(value: SpValueType): FieldType
+    abstract fun onSave(value: FieldType): SpValueType
 }
 
 class IntArraySpConvertSaver(
@@ -49,6 +51,19 @@ class IntArraySpConvertSaver(
 
     override fun onSave(value: IntArray?): String? {
         return value?.joinToString(",")
+    }
+}
+
+class EnumNameSpConvertSaver<E : Enum<E>>(
+    private val enumValues: Array<E>,
+    saver: AbsSpSaver.AbsSpDelegate<String?>
+) : SpConvertSaver<String?, E?>(saver) {
+    override fun onRead(value: String?): E? {
+        return enumValues.find { value == it.name }
+    }
+
+    override fun onSave(value: E?): String? {
+        return value?.name
     }
 }
 

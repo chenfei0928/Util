@@ -90,7 +90,7 @@ private object AbsSpSaverKProperty1Cache {
 }
 
 /**
- * 监听sp的变化并通知字段变化
+ * 监听sp的变化并通知任何字段变化
  *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-08-05 16:12
