@@ -75,6 +75,31 @@ class EnumNameSpConvertSaver<E : Enum<E>>(
 
 inline fun <reified E : Enum<E>> EnumNameSpConvertSaver(key: String? = null) =
     EnumNameSpConvertSaver(enumValues<E>(), key)
+
+class EnumSetNameSpConvertSaver<E : Enum<E>>(
+    private val enumValues: Array<E>,
+    saver: AbsSpSaver.AbsSpDelegate0<Set<String>?>
+) : SpConvertSaver<Set<String>?, Set<E>?>(saver) {
+
+    constructor(
+        enumValues: Array<E>, key: String? = null
+    ) : this(enumValues, StringSetDelegate(key))
+
+    override fun onRead(value: Set<String>?): Set<E>? {
+        return value?.mapNotNullTo(HashSet()) { item ->
+            enumValues.find { enum ->
+                item == enum.name
+            }
+        }
+    }
+
+    override fun onSave(value: Set<E>?): Set<String>? {
+        return value?.mapTo(HashSet()) { it.name }
+    }
+}
+
+inline fun <reified E : Enum<E>> EnumSetNameSpConvertSaver(key: String? = null) =
+    EnumSetNameSpConvertSaver(enumValues<E>(), key)
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="使用Gson序列化对象">
