@@ -36,8 +36,8 @@ class PreferenceGroupBuilder<SpSaver : AbsSpSaver>(
         builder: PreferenceGroupBuilder<SpSaver>.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> {
         PreferenceCategory(context).apply(block)
-            .apply { PreferenceGroupBuilder(context, spSaver, this).apply(builder) }
             .apply { preferenceGroup.addPreference(this) }
+            .apply { PreferenceGroupBuilder(context, spSaver, this).apply(builder) }
         return this
     }
 
