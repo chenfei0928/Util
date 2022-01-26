@@ -11,9 +11,9 @@ import kotlin.reflect.KProperty
  * @date 2022-01-12 16:39
  */
 class DefaultValueSpDelete<T>(
-    private val saver: AbsSpSaver.AbsSpDelegate0<T?>,
+    private val saver: AbsSpSaver.AbsSpDelegate<T?>,
     private val defaultValue: T
-) : AbsSpSaver.AbsSpDelegate0<T>() {
+) : AbsSpSaver.AbsSpDelegate<T>() {
 
     override fun obtainDefaultKey(property: KProperty<*>): String {
         return saver.obtainDefaultKey(property)
@@ -28,5 +28,5 @@ class DefaultValueSpDelete<T>(
     }
 }
 
-fun <T> AbsSpSaver.AbsSpDelegate0<T?>.defaultValue(defaultValue: T): DefaultValueSpDelete<T> =
+fun <T> AbsSpSaver.AbsSpDelegate<T?>.defaultValue(defaultValue: T): DefaultValueSpDelete<T> =
     DefaultValueSpDelete(this, defaultValue)

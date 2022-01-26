@@ -65,7 +65,7 @@ private object AbsSpSaverKProperty1Cache {
             property.isAccessible = true
             val delegate = property.getDelegate(spSaver)
             // 如果该字段是委托字段，将其key与字段的映射关系保存下来
-            if (delegate is AbsSpSaver.AbsSpDelegate<*>) {
+            if (delegate is AbsSpSaver.AbsSpDelegate0<*>) {
                 cacheOutput[delegate.obtainDefaultKey(property)] = property
             }
         }

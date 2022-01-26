@@ -11,7 +11,7 @@ import io.github.chenfei0928.content.sp.AbsSpSaver
  */
 abstract class AbsDefaultValueSpDelegate<T>(
     key: String?, protected val defaultValue: T
-) : AbsSpSaver.AbsSpDelegate<T>(key) {
+) : AbsSpSaver.AbsSpDelegate0<T>(key) {
 
     override fun getValue(sp: SharedPreferences, key: String): T {
         return if (sp.contains(key)) {

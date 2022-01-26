@@ -16,7 +16,7 @@ abstract class AbsSpSaver : SpCommit {
     protected abstract val sp: SharedPreferences
     protected abstract val editor: SharedPreferences.Editor
 
-    abstract class AbsSpDelegate0<T> : ReadWriteProperty<AbsSpSaver, T> {
+    abstract class AbsSpDelegate<T> : ReadWriteProperty<AbsSpSaver, T> {
 
         abstract fun obtainDefaultKey(property: KProperty<*>): String
 
@@ -39,9 +39,9 @@ abstract class AbsSpSaver : SpCommit {
      * 根据构造器传入的key名或字段名来存取值，字段名将由kotlin负责维护，会在编译期生成而不会受到混淆的影响
      * 本类用来对实现类提供[sp]、[editor]字段
      */
-    abstract class AbsSpDelegate<T>(
+    abstract class AbsSpDelegate0<T>(
         internal val key: String?
-    ) : AbsSpDelegate0<T>() {
+    ) : AbsSpDelegate<T>() {
 
         override fun obtainDefaultKey(property: KProperty<*>): String {
             return key ?: property.name

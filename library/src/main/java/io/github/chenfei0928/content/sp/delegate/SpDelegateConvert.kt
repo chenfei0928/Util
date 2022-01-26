@@ -20,8 +20,8 @@ import kotlin.reflect.KProperty
  * @date 2020-09-03 13:38
  */
 abstract class SpConvertSaver<SpValueType, FieldType>(
-    private val saver: AbsSpSaver.AbsSpDelegate<SpValueType>
-) : AbsSpSaver.AbsSpDelegate0<FieldType>() {
+    private val saver: AbsSpSaver.AbsSpDelegate0<SpValueType>
+) : AbsSpSaver.AbsSpDelegate<FieldType>() {
 
     override fun obtainDefaultKey(property: KProperty<*>): String {
         return saver.obtainDefaultKey(property)
@@ -39,8 +39,9 @@ abstract class SpConvertSaver<SpValueType, FieldType>(
     abstract fun onSave(value: FieldType): SpValueType
 }
 
+//<editor-fold defaultstate="collapsed" desc="Java复合类型">
 class IntArraySpConvertSaver(
-    saver: AbsSpSaver.AbsSpDelegate<String?>
+    saver: AbsSpSaver.AbsSpDelegate0<String?>
 ) : SpConvertSaver<String?, IntArray?>(saver) {
 
     constructor(key: String) : this(StringDelegate(key))
@@ -56,8 +57,13 @@ class IntArraySpConvertSaver(
 
 class EnumNameSpConvertSaver<E : Enum<E>>(
     private val enumValues: Array<E>,
-    saver: AbsSpSaver.AbsSpDelegate<String?>
+    saver: AbsSpSaver.AbsSpDelegate0<String?>
 ) : SpConvertSaver<String?, E?>(saver) {
+
+    constructor(
+        enumValues: Array<E>, key: String? = null
+    ) : this(enumValues, StringDelegate(key))
+
     override fun onRead(value: String?): E? {
         return enumValues.find { value == it.name }
     }
@@ -67,9 +73,13 @@ class EnumNameSpConvertSaver<E : Enum<E>>(
     }
 }
 
+inline fun <reified E : Enum<E>> EnumNameSpConvertSaver(key: String? = null) =
+    EnumNameSpConvertSaver(enumValues<E>(), key)
+//</editor-fold>
+
 //<editor-fold defaultstate="collapsed" desc="使用Gson序列化对象">
 class GsonSpConvertSaver<T>(
-    saver: AbsSpSaver.AbsSpDelegate<String?>,
+    saver: AbsSpSaver.AbsSpDelegate0<String?>,
     private val gson: Gson = io.github.chenfei0928.util.gson.gson,
     private val type: Type
 ) : SpConvertSaver<String?, T?>(saver) {
@@ -99,7 +109,7 @@ inline fun <reified T> GsonSpConvertSaver(key: String) = GsonSpConvertSaver<T>(
 class LocalSerializerSpConvertSaver<T>(
     key: String? = null,
     serializer: LocalSerializer<T>
-) : AbsSpSaver.AbsSpDelegate<T?>(key) {
+) : AbsSpSaver.AbsSpDelegate0<T?>(key) {
     private val serializer: Base64Serializer<T> = serializer.base64()
 
     override fun getValue(sp: SharedPreferences, key: String): T? {
