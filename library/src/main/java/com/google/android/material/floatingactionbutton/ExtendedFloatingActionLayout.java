@@ -890,8 +890,8 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
         @Override
         public int getDefaultMotionSpecResource() {
             return extending
-                    ? R.animator.mtrl_extended_fab_change_size_expand_motion_spec
-                    : R.animator.mtrl_extended_fab_change_size_collapse_motion_spec;
+                    ? com.google.android.material.R.animator.mtrl_extended_fab_change_size_expand_motion_spec
+                    : com.google.android.material.R.animator.mtrl_extended_fab_change_size_collapse_motion_spec;
         }
 
         @NonNull
@@ -976,7 +976,7 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
 
         @Override
         public int getDefaultMotionSpecResource() {
-            return R.animator.mtrl_extended_fab_show_motion_spec;
+            return com.google.android.material.R.animator.mtrl_extended_fab_show_motion_spec;
         }
 
         @Override
@@ -1025,7 +1025,7 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
 
         @Override
         public int getDefaultMotionSpecResource() {
-            return R.animator.mtrl_extended_fab_hide_motion_spec;
+            return com.google.android.material.R.animator.mtrl_extended_fab_hide_motion_spec;
         }
 
         @Override
