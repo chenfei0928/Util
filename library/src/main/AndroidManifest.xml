@@ -2,6 +2,10 @@
     package="io.github.chenfei0928.util">
 
     <application>
+        <activity
+            android:name="io.github.chenfei0928.app.arouter.ARouterIntentBridgeActivity"
+            android:theme="@android:style/Theme.Translucent" />
+
         <provider
             android:name="io.github.chenfei0928.base.ContextProvider"
             android:authorities="${applicationId}.chenfei0928.util.context-provider"
