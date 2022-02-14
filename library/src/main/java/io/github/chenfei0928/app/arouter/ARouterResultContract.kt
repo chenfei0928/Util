@@ -13,7 +13,7 @@ import com.alibaba.android.arouter.facade.Postcard
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-02-11 16:14
  */
-internal class ARouterIntentBridgeActivity : Activity() {
+class ARouterIntentBridgeActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
