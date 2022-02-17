@@ -13,7 +13,7 @@ import kotlin.coroutines.CoroutineContext
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-03-14 17:48
  */
-class CoroutineAndroidContextImpl(
+internal class CoroutineAndroidContextImpl(
     override val androidContext: Context, override val fragmentHost: Fragment?
 ) : CoroutineAndroidContext, AbstractCoroutineContextElement(CoroutineAndroidContext) {
 

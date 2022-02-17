@@ -45,35 +45,25 @@ val ViewModel.coroutineScope: CoroutineScope
  * [博文](https://juejin.im/post/5cfb38f96fb9a07eeb139a00)
  */
 private class UncaughtHandlerCoroutineScope(
-    private val host: Any?
+    host: Any?
 ) : CoroutineScope, Closeable {
     private var job = Job() // 定义job
     override val coroutineContext: CoroutineContext
         get() = SupervisorJob() + Dispatchers.Main.immediate + MainScope.coroutineContext + job + // 生命周期的协程
                 androidContextElement
 
-    private val androidContextElement: CoroutineAndroidContext = run {
-        when (host) {
-            is Fragment -> {
-                CoroutineAndroidContextImpl(
-                    host.activity ?: host.requireContext(), host
-                )
-            }
-            is Activity -> {
-                CoroutineAndroidContextImpl(
-                    host, null
-                )
-            }
-            is Context -> {
-                CoroutineAndroidContextImpl(
-                    host, null
-                )
-            }
-            else -> {
-                CoroutineAndroidContextImpl(
-                    ContextProvider.context, null
-                )
-            }
+    private val androidContextElement: CoroutineAndroidContext = when (host) {
+        is Fragment -> {
+            CoroutineAndroidContextImpl(host.activity ?: host.requireContext(), host)
+        }
+        is Activity -> {
+            CoroutineAndroidContextImpl(host, null)
+        }
+        is Context -> {
+            CoroutineAndroidContextImpl(host, null)
+        }
+        else -> {
+            CoroutineAndroidContextImpl(ContextProvider.context, null)
         }
     }
 

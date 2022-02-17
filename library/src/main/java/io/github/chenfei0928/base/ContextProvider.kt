@@ -14,8 +14,10 @@ import io.github.chenfei0928.widget.ToastUtil
 class ContextProvider : ContentProvider() {
 
     override fun onCreate(): Boolean {
-        ContextProvider.context = context!!.applicationContext as Application
-        ToastUtil.init(context!!)
+        val appContext = context!!.applicationContext as Application
+        ContextProvider.context = appContext
+        ToastUtil.init(appContext)
+        appContext.registerActivityLifecycleCallbacks(ActivityLifecycleCallback)
         return true
     }
 

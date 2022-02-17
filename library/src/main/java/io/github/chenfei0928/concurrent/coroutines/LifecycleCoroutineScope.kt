@@ -3,6 +3,7 @@ package io.github.chenfei0928.concurrent.coroutines
 import android.app.Activity
 import android.content.Context
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentViewLifeCycleAccessor
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -56,8 +57,12 @@ private class LifecycleCoroutineScope(
         }
     }
 
-    private val androidContextElement: CoroutineAndroidContext = run {
-        when (host) {
+    private val androidContextElement: CoroutineAndroidContext =
+        if (FragmentViewLifeCycleAccessor.isInstance(host)) {
+            // 使用fragment的viewLifecycle创建协程实例，通过该方式获取其fragment
+            val fragment = FragmentViewLifeCycleAccessor.getFragmentByViewLifecycleOwner(host)
+            CoroutineAndroidContextImpl(fragment.activity ?: fragment.requireContext(), fragment)
+        } else when (host) {
             is Fragment -> {
                 CoroutineAndroidContextImpl(host.activity ?: host.requireContext(), host)
             }
@@ -71,7 +76,6 @@ private class LifecycleCoroutineScope(
                 CoroutineAndroidContextImpl(ContextProvider.context, null)
             }
         }
-    }
 
     /**
      * 关闭该协程，将自身从缓存中移除，并不再监听宿主的生命周期

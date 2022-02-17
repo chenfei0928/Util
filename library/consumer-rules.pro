@@ -8,3 +8,8 @@
 -assumenosideeffects class * {
     @androidx.annotation.NoSideEffects *;
 }
+
+## 为了可以访问到FragmentViewLifecycleOwner的Fragment
+-keep class androidx.fragment.app.FragmentViewLifecycleOwner {
+    private final androidx.fragment.app.Fragment mFragment;
+}
