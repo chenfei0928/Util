@@ -104,6 +104,8 @@ public class WebViewSettingsUtil {
             ToastUtil.showShort(placeHolder.getContext(), R.string.webViewLoadFailed);
             return null;
         } else {
+            // 更新其id，以兼容相对布局/约束布局依赖viewId布局ui的父View
+            webView.setId(placeHolder.getId());
             // 替换到placeHolder占位View
             int index = parent.indexOfChild(placeHolder);
             parent.removeViewInLayout(placeHolder);
