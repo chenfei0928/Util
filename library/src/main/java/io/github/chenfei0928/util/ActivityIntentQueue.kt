@@ -1,7 +1,7 @@
 package io.github.chenfei0928.util
 
-import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import io.github.chenfei0928.os.safeHandler
@@ -20,8 +20,8 @@ class ActivityIntentQueue : Fragment() {
     private val pendingTaskQueue: Queue<Any> = LinkedList()
     private val activityResultCallback: Queue<Function2<Int, Intent?, Unit>> = LinkedList()
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         emitted = false
         // 防止pendingTask中处理fragment，在此发送message执行
         safeHandler.post {
