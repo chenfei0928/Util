@@ -34,6 +34,7 @@ dependencies {
     implementation(DepsAndroidx.material)
     implementation(DepsAndroidx.recyclerview.core)
     implementation(DepsAndroidx.gridlayout)
+    compileOnly(DepsAndroidx.preference)
     implementation(DepsAndroidx.constraintlayout.core)
     implementation(DepsAndroidx.databinding.viewBinding)
     implementation(DepsAndroidx.databinding.runtime)
