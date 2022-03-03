@@ -34,4 +34,10 @@ internal object FragmentViewLifeCycleAccessor : FragmentManager.FragmentLifecycl
         // view创建之后保存下来viewLifecycleOwner与其所在fragment的映射
         viewLifecycleOwnerFragmentMap[f.viewLifecycleOwner] = f
     }
+
+    override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
+        super.onFragmentViewDestroyed(fm, f)
+        // view销毁之后主动移除viewLifecycleOwner与其所在fragment的映射
+        viewLifecycleOwnerFragmentMap[f.viewLifecycleOwner] = f
+    }
 }
