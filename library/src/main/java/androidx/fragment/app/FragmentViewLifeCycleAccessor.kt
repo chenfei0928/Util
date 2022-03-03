@@ -37,7 +37,9 @@ internal object FragmentViewLifeCycleAccessor : FragmentManager.FragmentLifecycl
 
     override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
         super.onFragmentViewDestroyed(fm, f)
-        // view销毁之后主动移除viewLifecycleOwner与其所在fragment的映射
-        viewLifecycleOwnerFragmentMap[f.viewLifecycleOwner] = f
+        // view销毁之后主动移除该fragment的映射
+        viewLifecycleOwnerFragmentMap.filterValues { it === f }.map {
+            viewLifecycleOwnerFragmentMap.remove(it.key, it.value)
+        }
     }
 }
