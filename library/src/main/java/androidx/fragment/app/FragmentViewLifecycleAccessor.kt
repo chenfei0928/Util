@@ -12,7 +12,7 @@ import java.util.*
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-02-17 17:25
  */
-internal object FragmentViewLifeCycleAccessor : FragmentManager.FragmentLifecycleCallbacks() {
+internal object FragmentViewLifecycleAccessor : FragmentManager.FragmentLifecycleCallbacks() {
     private val viewLifecycleOwnerFragmentMap = WeakHashMap<LifecycleOwner, Fragment>()
 
     private val mFragmentField: Field = FragmentViewLifecycleOwner::class.java

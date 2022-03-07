@@ -17,8 +17,8 @@ import io.github.chenfei0928.os.SafeHandlerKt;
  * @date 2020-08-13 10:16
  */
 public class AppCompatLifecycleOwnerDialog extends AppCompatDialog implements LifecycleOwner {
-    private final Handler mHandler = SafeHandlerKt.getSafeHandler(this);
     private final LifecycleRegistry mLifecycle = new LifecycleRegistry(this);
+    private final Handler mHandler = SafeHandlerKt.getSafeHandler(this);
 
     public AppCompatLifecycleOwnerDialog(Context context) {
         super(context);

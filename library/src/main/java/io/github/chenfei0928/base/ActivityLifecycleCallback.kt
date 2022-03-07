@@ -4,7 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentViewLifeCycleAccessor
+import androidx.fragment.app.FragmentViewLifecycleAccessor
 
 /**
  * @author chenfei(chenfei0928@gmail.com)
@@ -14,7 +14,7 @@ internal object ActivityLifecycleCallback : Application.ActivityLifecycleCallbac
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         if (activity is FragmentActivity) {
             activity.supportFragmentManager.registerFragmentLifecycleCallbacks(
-                FragmentViewLifeCycleAccessor, true
+                FragmentViewLifecycleAccessor, true
             )
         }
     }

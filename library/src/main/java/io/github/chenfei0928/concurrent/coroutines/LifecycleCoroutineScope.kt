@@ -3,7 +3,7 @@ package io.github.chenfei0928.concurrent.coroutines
 import android.app.Activity
 import android.content.Context
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentViewLifeCycleAccessor
+import androidx.fragment.app.FragmentViewLifecycleAccessor
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -58,9 +58,9 @@ private class LifecycleCoroutineScope(
     }
 
     private val androidContextElement: CoroutineAndroidContext =
-        if (FragmentViewLifeCycleAccessor.isInstance(host)) {
+        if (FragmentViewLifecycleAccessor.isInstance(host)) {
             // 使用fragment的viewLifecycle创建协程实例，通过该方式获取其fragment
-            val fragment = FragmentViewLifeCycleAccessor.getFragmentByViewLifecycleOwner(host)
+            val fragment = FragmentViewLifecycleAccessor.getFragmentByViewLifecycleOwner(host)
             CoroutineAndroidContextImpl(fragment.activity ?: fragment.requireContext(), fragment)
         } else when (host) {
             is Fragment -> {
