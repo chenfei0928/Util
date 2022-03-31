@@ -11,17 +11,20 @@ import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
 import io.github.chenfei0928.os.safeHandler
 import io.github.chenfei0928.util.R
-import io.github.chenfei0928.view.asyncinflater.AsyncLayoutInflater
+import io.github.chenfei0928.view.asyncinflater.SuspendLayoutInflater
 
 /**
  * 懒初始化内容的fragment
  */
 abstract class BaseLazyInitFragment : BaseFragment() {
     internal var lazyLoadSavedInstanceState: Bundle? = null
+    internal var isDestroyed = false
+        private set
 
     final override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
+        isDestroyed = false
         this.lazyLoadSavedInstanceState = savedInstanceState
         return FrameLayout(requireContext()).apply {
             id = R.id.lazyInitPlaceHolder
@@ -48,6 +51,11 @@ abstract class BaseLazyInitFragment : BaseFragment() {
         if (checkAllowInflate()) {
             checkInflate()
         }
+    }
+
+    override fun onDestroyView() {
+        isDestroyed = true
+        super.onDestroyView()
     }
 
     /**
@@ -108,13 +116,11 @@ abstract class LazyInitFragment(
                 }
             } else if (!asyncInflateDid) {
                 // 异步子线程加载
-                AsyncLayoutInflater(layout.context).inflate({ layoutInflater, vg ->
+                SuspendLayoutInflater(
+                    layout.context, viewLifecycleOwner
+                ).inflate({ layoutInflater, vg ->
                     onCreateViewImpl(layoutInflater, vg, lazyLoadSavedInstanceState)
                 }, layout, {
-                    // 是否存活的检查
-                    if (isDestroyed || isInflated) {
-                        return@inflate
-                    }
                     layout.addView(it)
                     onViewCreatedImpl(it, lazyLoadSavedInstanceState)
                     lazyLoadSavedInstanceState = null

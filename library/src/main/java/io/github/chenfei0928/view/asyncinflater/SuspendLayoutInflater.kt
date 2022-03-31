@@ -33,7 +33,7 @@ class SuspendLayoutInflater(
     </VG> */
     @UiThread
     fun <VG : ViewGroup> inflate(
-        onCreateView: (LayoutInflater, VG) -> View,
+        onCreateView: (LayoutInflater, VG) -> View?,
         parent: VG,
         callback: (View) -> Unit
     ) {
@@ -51,7 +51,7 @@ class SuspendLayoutInflater(
                     null
                 }
             }
-            callback(view ?: onCreateView(inflater, parent))
+            callback(view ?: onCreateView(inflater, parent)!!)
         }
     }
 
