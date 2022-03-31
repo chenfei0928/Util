@@ -43,10 +43,6 @@ class FixedSizeDrawable(
 ) : DrawableWrapper(drawable) {
     private var mDrawMatrix: Matrix? = Matrix()
 
-    init {
-        configureBounds()
-    }
-
     override fun getIntrinsicWidth(): Int {
         return width
     }
@@ -155,5 +151,9 @@ class FixedSizeDrawable(
     private fun scaleTypeToScaleToFit(st: ImageView.ScaleType): ScaleToFit {
         // ScaleToFit enum to their corresponding Matrix.ScaleToFit values
         return sS2FArray[st]!!
+    }
+
+    init {
+        configureBounds()
     }
 }
