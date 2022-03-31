@@ -59,8 +59,8 @@ public class ShareFileLockHelper implements Closeable {
             //it can just sleep 0, afraid of cpu scheduling
             try {
                 Thread.sleep(LOCK_WAIT_EACH_TIME);
-            } catch (Exception ignore) {
-                Log.e(TAG, "getInfoLock Thread sleep exception", ignore);
+            } catch (Exception e) {
+                Log.e(TAG, "getInfoLock Thread sleep exception", e);
             }
         }
 

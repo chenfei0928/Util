@@ -30,9 +30,11 @@ interface BgTaskExecutor : Executor {
     fun removeBgCallbacks(r: Runnable)
 }
 
-internal class BgTaskExecutorImpl : BgTaskExecutor {
+class BgTaskExecutorImpl(
+    name: String = "bgThreadExecutor"
+) : BgTaskExecutor {
     // 此处不要使用HandlerThread，以直接暴露其运行的Runnable调用Looper.myLooper()导致的错误
-    private val bgThread = BgExecutorThread().apply {
+    private val bgThread = BgExecutorThread(name).apply {
         // 降低后台工作线程的线程优先级
         priority = 2
         start()

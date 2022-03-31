@@ -7,7 +7,9 @@ import java.util.concurrent.ArrayBlockingQueue
  *  参考自[androidx.asynclayoutinflater.view.AsyncLayoutInflater.InflateThread]
  *  移除场景不适用的 InflateRequest 对象池
  */
-internal class BgExecutorThread : Thread("bgThreadExecutor") {
+internal class BgExecutorThread(
+    name: String
+) : Thread(name) {
     private val mQueue = ArrayBlockingQueue<Runnable>(10)
 
     // Extracted to its own method to ensure locals have a constrained liveness

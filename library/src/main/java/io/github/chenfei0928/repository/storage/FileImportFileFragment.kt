@@ -10,7 +10,7 @@ import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.concurrent.coroutines.showWithContext
 import io.github.chenfei0928.content.PictureUriUtil
 import io.github.chenfei0928.io.FileUtil
-import io.github.chenfei0928.io.copyTo
+import io.github.chenfei0928.content.copyTo
 import io.github.chenfei0928.os.safeHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

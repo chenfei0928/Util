@@ -48,12 +48,6 @@ abstract class BaseBindingBinder<T, V : ViewBinding>(
     ): ViewBindingHolder<T, V> {
         return ViewBindingHolder(viewBindingInflater(inflater, parent, false))
     }
-
-    override fun onBindViewHolder(holder: ViewBindingHolder<T, V>, item: T) {
-        onBindViewHolder(holder, holder.viewBinding, item)
-    }
-
-    open fun onBindViewHolder(holder: ViewBindingHolder<T, V>, viewBinding: V, item: T) {}
 }
 
 abstract class BaseBindingClickBinder<T, V : ViewBinding>(

@@ -6,8 +6,14 @@ import android.os.Parcelable
 import androidx.collection.ArrayMap
 import com.google.protobuf.GeneratedMessageLite
 import com.google.protobuf.getParseFrom
+import io.github.chenfei0928.base.ContextProvider
 import io.github.chenfei0928.collection.asArrayList
+import io.github.chenfei0928.repository.local.ParcelableUtils
 import io.github.chenfei0928.util.deepEquals
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
 
 fun Intent.putParcelableListExtra(name: String, value: List<Parcelable>?): Intent {
     return putParcelableArrayListExtra(name, value?.asArrayList())
@@ -72,4 +78,30 @@ fun Bundle.contentEquals(other: Bundle): Boolean {
         }
     }
     return true
+}
+
+fun Intent.zipExtras(): Intent = apply {
+    val bundle = extras ?: return@apply
+    val zipped = ByteArrayOutputStream().use {
+        GZIPOutputStream(it).use {
+            it.write(ParcelableUtils.marshall(bundle))
+        }
+        it.toByteArray()
+    }
+    bundle.keySet().forEach {
+        removeExtra(it)
+    }
+    putExtra("zipped", zipped)
+}
+
+fun Intent.unzipExtras(classLoader: ClassLoader = ContextProvider::class.java.classLoader!!): Bundle {
+    val zipped = getByteArrayExtra("zipped") ?: return Bundle.EMPTY
+    val unzipped = ByteArrayInputStream(zipped).use {
+        GZIPInputStream(it).use {
+            it.readBytes()
+        }
+    }
+    return ParcelableUtils.unmarshall(unzipped, Bundle.CREATOR).apply {
+        this.classLoader = classLoader
+    }
 }

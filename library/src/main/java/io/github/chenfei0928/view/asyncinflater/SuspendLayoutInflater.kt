@@ -10,6 +10,7 @@ import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -45,13 +46,15 @@ class SuspendLayoutInflater(
                     // Probably a Looper failure, retry on the UI thread
                     Log.w(
                         TAG,
-                        "Failed to inflate resource in the background! Retrying on the UI" + " thread",
+                        "Failed to inflate resource in the background! Retrying on the UI thread",
                         ex
                     )
                     null
                 }
+            } ?: onCreateView(inflater, parent)!!
+            if (isActive) {
+                callback(view)
             }
-            callback(view ?: onCreateView(inflater, parent)!!)
         }
     }
 
@@ -77,13 +80,15 @@ class SuspendLayoutInflater(
                     // Probably a Looper failure, retry on the UI thread
                     Log.w(
                         TAG,
-                        "Failed to inflate resource in the background! Retrying on the UI" + " thread",
+                        "Failed to inflate resource in the background! Retrying on the UI thread",
                         ex
                     )
                     null
                 }
+            } ?: inflater.inflate(resId, parent, false)
+            if (isActive) {
+                callback(view)
             }
-            callback(view ?: inflater.inflate(resId, parent, false))
         }
     }
 

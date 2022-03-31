@@ -1,4 +1,4 @@
-package io.github.chenfei0928.io
+package io.github.chenfei0928.content
 
 import android.content.ContentResolver
 import android.content.Context
