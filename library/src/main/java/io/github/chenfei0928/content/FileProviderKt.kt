@@ -31,11 +31,16 @@ class FileProviderKt {
         }
 
         fun createUriFromFile(context: Context, file: File): Uri? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                val fileProviderScheme = findManifestFileProviderScheme(context) ?: ""
-                FileProvider.getUriForFile(context, fileProviderScheme, file)
-            } else {
+            return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                 Uri.fromFile(file)
+            } else {
+                val fileProviderScheme = findManifestFileProviderScheme(context)
+                    ?: return null
+                try {
+                    FileProvider.getUriForFile(context, fileProviderScheme, file)
+                } catch (e: Exception) {
+                    null
+                }
             }
         }
 

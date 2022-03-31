@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import io.github.chenfei0928.app.fragment.removeSelf
 import io.github.chenfei0928.os.safeHandler
 import java.util.*
 
@@ -48,10 +49,7 @@ class ActivityIntentQueue : Fragment() {
         when (val pendingTask = pendingTaskQueue.poll()) {
             null -> {
                 safeHandler.post {
-                    fragmentManager
-                        ?.beginTransaction()
-                        ?.remove(this)
-                        ?.commitAllowingStateLoss()
+                    removeSelf()
                 }
             }
             is Intent -> {

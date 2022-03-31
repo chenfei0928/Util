@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
+import io.github.chenfei0928.content.FileProviderKt
 import io.github.chenfei0928.util.Log
 import java.io.File
 import java.io.IOException
@@ -68,9 +69,11 @@ class FileResolver {
                         writer.write(it)
                     }
                 // 通知媒体库更新一个文件
-                val scanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
-                scanIntent.data = Uri.fromFile(file)
-                context.sendBroadcast(scanIntent)
+                FileProviderKt.createUriFromFile(context, file)?.let { uri ->
+                    val scanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                    scanIntent.data = uri
+                    context.sendBroadcast(scanIntent)
+                }
                 true
             } catch (e: IOException) {
                 Log.e(TAG, "save: $file", e)

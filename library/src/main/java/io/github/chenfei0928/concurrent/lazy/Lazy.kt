@@ -8,14 +8,15 @@ import kotlinx.coroutines.async
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-04-03 13:38
  */
-fun <T> lazyByAutoLoad(initializer: suspend () -> T): Lazy<T> = lazyByAutoLoad(IoScope, initializer)
-
-fun <T> lazyByAutoLoad(scope: CoroutineScope, initializer: suspend () -> T): Lazy<T> {
-    return CoroutineAutoLoadLazy(scope, initializer)
-}
+fun <T> lazyByAutoLoad(
+    scope: CoroutineScope = IoScope,
+    initializer: suspend () -> T
+): Lazy<T> = CoroutineAutoLoadLazy(scope, initializer)
 
 private class CoroutineAutoLoadLazy<T>(
-    scope: CoroutineScope, initializer: suspend () -> T, lock: Any? = null
+    scope: CoroutineScope,
+    initializer: suspend () -> T,
+    lock: Any? = null
 ) : Lazy<T> {
     @Volatile
     private var _value: Any? = UNINITIALIZED_VALUE

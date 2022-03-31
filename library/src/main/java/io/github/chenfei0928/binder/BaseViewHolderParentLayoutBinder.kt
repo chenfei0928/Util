@@ -84,6 +84,7 @@ abstract class BaseViewHolderParentLayoutBinder<T, VH : ViewHolder<T>> :
 
     override fun onBindViewHolder(holder: VH, item: T, payloads: List<Any>) {
         onBindViewHolderIsExecuting = true
+        holder.item = item
         childBinders.forEach {
             it.onBindViewHolder(holder, item, payloads)
         }

@@ -8,7 +8,7 @@ dependencies {
     val kotlinVersion = "1.5.31"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "7.2.0-alpha06"
+    val agpVersion = "7.2.0-beta04"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
     implementation(kotlin("gradle-plugin", kotlinVersion))

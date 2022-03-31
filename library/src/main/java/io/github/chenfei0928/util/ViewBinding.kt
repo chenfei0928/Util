@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.collection.LruCache
 import androidx.viewbinding.ViewBinding
+import com.google.android.material.R
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.github.chenfei0928.reflect.safeInvoke
 import java.lang.reflect.Method
 
@@ -64,8 +66,12 @@ fun <T : ViewBinding> Dialog.setContentViewBinding(
     @LayoutRes layoutId: Int, bindBlock: (View) -> T
 ): T {
     this.setContentView(layoutId)
-    val decorView: View = window!!.decorView
-    val contentView = decorView.findViewById<View>(android.R.id.content) as ViewGroup
+    val contentView: ViewGroup = if (this is BottomSheetDialog) {
+        findViewById(R.id.design_bottom_sheet)!!
+    } else {
+        val decorView: View = window!!.decorView
+        decorView.findViewById(android.R.id.content)
+    }
     return bindToAddedViews(contentView, 0, bindBlock)
 }
 

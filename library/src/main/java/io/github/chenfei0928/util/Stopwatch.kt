@@ -9,7 +9,9 @@ import java.util.*
  * 秒表，提供恢复计时、暂停计时、获取当前计时时间
  * Created by MrFeng on 2018/5/8.
  */
-class Stopwatch {
+class Stopwatch(
+    private val allowTrim: Boolean
+) {
     private val data: MutableList<Node> = LinkedList()
 
     /**
@@ -44,13 +46,19 @@ class Stopwatch {
             return emptyList()
         }
         // 清理空区间的数据（开始时间等于结束时间）、无效数据（开始时间大于结束时间），并保留未记录完成的数据（无结束时间）
-        data.removeAll { it.start >= it.end && it.end > 0 }
+        data.removeAll { it.start < 0 || (it.end > 0 && it.start >= it.end) }
         // 获取到所有有效数据
-        val available = data.takeWhile {
+        val available = data.filter {
             it.end >= 0
         }.toMutableList()
+        if (available.isEmpty()) {
+            return emptyList()
+        }
         available.sort()
 
+        if (!allowTrim) {
+            return available
+        }
         // 清理、合并重复节点范围
         for (i in available.size - 2 downTo 0) {
             val node = available[i]
@@ -64,6 +72,14 @@ class Stopwatch {
                 }
                 available.remove(node1)
                 data.remove(node1)
+            } else if (node.start in node1) {
+                // 如果下一节点结束位置在当前节点的范围外，合并这两个节点再移除下一节点
+                // 否则当前节点完全包含下一节点，直接移除下一节点
+                if (node.end !in node1) {
+                    node1.end = node.end
+                }
+                available.remove(node)
+                data.remove(node)
             }
         }
         return available
