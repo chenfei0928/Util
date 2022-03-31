@@ -36,12 +36,12 @@ fun RecyclerView.smoothMoveToPosition(position: Int) {
  *
  * 在此方法中会计算出列表可视区域范围，之后根据给出的滚动目标位置将列表滑动到其附近
  *
- * @param position [RecyclerView.smoothMoveToPosition]的目标下标
+ * @param targetPosition [RecyclerView.smoothMoveToPosition]的目标下标
  * @param maxOffsetSize 在进行滑动动画前让列表在其范围外最大多少个item位置停靠
  */
-fun RecyclerView.nearToPosition(position: Int, maxOffsetSize: Int = 5) {
+fun RecyclerView.nearToPosition(targetPosition: Int, maxOffsetSize: Int = 5) {
     // 获取其item可见区域范围
-    val visibleRange = when (val lm = layoutManager) {
+    val visibleRange: IntRange = when (val lm = layoutManager) {
         null -> {
             return
         }
@@ -78,18 +78,25 @@ fun RecyclerView.nearToPosition(position: Int, maxOffsetSize: Int = 5) {
     }
     // 如果目标在可见范围外，先计算一个期望的列表滚动动画开始时的下标，防止动画滚动时间太长
     when {
-        position < visibleRange.first -> {
-            min(position + maxOffsetSize, visibleRange.first)
+        targetPosition < visibleRange.first -> {
+            // 目标在当前列表展示范围之上
+            // 实际测试时由上方向下方滑动时，该项目会在顶部。
+            // 预滑动到目标下方的一定位置
+            min(targetPosition + maxOffsetSize, visibleRange.first)
         }
-        position > visibleRange.last -> {
-            max(position - maxOffsetSize, visibleRange.last)
+        targetPosition > visibleRange.last -> {
+            // 目标在当前列表展示范围之下
+            // 实际测试时由下方向上方滑动时，该项目会在低部。
+            // 预滑动到目标上方一定位置
+            max(targetPosition - maxOffsetSize, visibleRange.last)
         }
         else -> {
-            visibleRange.first
+            return
         }
     }.let { scrollAnimationStartPosition ->
         // 如果计算出的动画开始时的下标在可见范围外，将列表滑动到滚动开始时的位置
         if (scrollAnimationStartPosition !in visibleRange) {
+            // 文档说明为只负责滑动到指定位置，但该项目具体位置由LayoutManager实现
             scrollToPosition(scrollAnimationStartPosition)
         }
     }

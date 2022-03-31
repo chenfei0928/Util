@@ -27,14 +27,14 @@ infix fun <T> Collection<T>.and(that: Iterable<T>) = this.filter { it in that }
 fun <T> List<T>.asArrayList(): ArrayList<T> = this as? ArrayList ?: ArrayList(this)
 
 /**
- * 删除一个范围内的数据
+ * 删除一个范围内的数据，包含两端的index，即闭区间
  */
-fun <T> MutableList<T>.removeRange(range: IntProgression) {
+fun <T> MutableList<T>.removeRange(indexRange: IntProgression) {
     // 保证其从大到小排列
-    val downToProcession = if (range.first < range.last) {
-        range.reversed()
+    val downToProcession = if (indexRange.first < indexRange.last) {
+        indexRange.reversed()
     } else {
-        range
+        indexRange
     }
     // 倒序删除项目，此处不使用subList.clear，其内部使用迭代器实现，可能会更为消耗性能
     downToProcession.forEach {
