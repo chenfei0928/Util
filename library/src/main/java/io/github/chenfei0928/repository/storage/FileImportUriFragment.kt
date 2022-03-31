@@ -7,6 +7,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.annotation.UiThread
+import io.github.chenfei0928.os.safeHandler
 
 /**
  * 文件导入处理，返回文件的uri，可能需要使用[Context.getContentResolver]来读取
@@ -31,10 +33,11 @@ open class FileImportUriFragment : BasePermissionFileImportFragment<Uri>(
     /**
      * 忽略回调、权限检查，直接启动文件选择
      */
+    @UiThread
     final override fun launchFileChooseImpl() {
         val mimeType = arguments?.getString(KEY_MIME_TYPE)
         if (mimeType.isNullOrBlank()) {
-            post { removeSelf(null) }
+            safeHandler.post { removeSelf(null) }
             return
         }
         fileUriImportLauncher.launch(mimeType)

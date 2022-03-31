@@ -1,6 +1,7 @@
 package io.github.chenfei0928.repository.storage
 
 import android.os.Build
+import androidx.annotation.UiThread
 import io.github.chenfei0928.app.activity.onPermissionDeniedKt
 import io.github.chenfei0928.app.activity.onPermissionNeverAskAgainKt
 import io.github.chenfei0928.app.activity.onShowPermissionRationale
@@ -37,6 +38,7 @@ abstract class BasePermissionFileImportFragment<T>(
         }
     }
 
+    @UiThread
     protected abstract fun launchFileChooseImpl()
 
     /**

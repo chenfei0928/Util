@@ -4,14 +4,16 @@ import android.Manifest
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import androidx.annotation.UiThread
 import io.github.chenfei0928.app.ProgressDialog
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
+import io.github.chenfei0928.concurrent.coroutines.showWithContext
 import io.github.chenfei0928.content.PictureUriUtil
 import io.github.chenfei0928.io.FileUtil
 import io.github.chenfei0928.io.copyTo
+import io.github.chenfei0928.os.safeHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
@@ -31,6 +33,7 @@ class FileImportFileFragment : BasePermissionFileImportFragment<File>(
     override val permissionName: String
         get() = "存储卡"
 
+    @UiThread
     override fun launchFileChooseImpl() {
         val arguments = arguments
         val implClass = arguments?.getString(KEY_IMPL_CLASS) ?: run {
@@ -55,7 +58,7 @@ class FileImportFileFragment : BasePermissionFileImportFragment<File>(
     }
 
     private fun copyAsFileToRemoveSelf(uri: Uri?) {
-        post {
+        safeHandler.post {
             val context = context
             // 判断系统版本，并复制到缓存文件夹中或解析其原始文件路径
             if (uri == null || context == null) {
@@ -72,9 +75,8 @@ class FileImportFileFragment : BasePermissionFileImportFragment<File>(
                     dialog.setMessage("文件导入中...")
                     dialog.setCanceledOnTouchOutside(false)
                     dialog.setCancelable(false)
-                    dialog.show()
                     // 在io线程中复制文件
-                    val tmpFile = withContext(Dispatchers.IO) {
+                    val tmpFile = dialog.showWithContext(Dispatchers.IO) {
                         // 创建临时文件
                         val extName = FileUtil.getFileExtensionFromUrl(uri.toString())
                         val tmpFile =
@@ -87,7 +89,6 @@ class FileImportFileFragment : BasePermissionFileImportFragment<File>(
                         }
                     }
                     // 通知回调，并移除自身
-                    dialog.dismiss()
                     removeSelf(tmpFile)
                 }
             }

@@ -16,6 +16,8 @@ import androidx.annotation.RequiresPermission
 import io.github.chenfei0928.app.fragment.removeSelf
 import io.github.chenfei0928.app.result.registerForExternalStoragePermission
 import io.github.chenfei0928.base.fragment.BaseFragment
+import io.github.chenfei0928.concurrent.ExecutorUtil
+import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.content.FileProviderKt
 import io.github.chenfei0928.io.FileUtil
@@ -124,14 +126,14 @@ class FileExportFragment : BaseFragment() {
      * 提示用户是否成功保存，并移除自身
      */
     private fun removeSelf(saved: Boolean, uri: Uri? = null) {
-        context?.let { context ->
-            if (saved) {
-                ToastUtil.showShort(context, R.string.toast_extStrong_saved)
-            } else {
-                ToastUtil.showShort(context, R.string.toast_extStrong_failed)
+        ExecutorUtil.runOnUiThread {
+            context?.let { context ->
+                if (saved) {
+                    ToastUtil.showShort(context, R.string.toast_extStrong_saved)
+                } else {
+                    ToastUtil.showShort(context, R.string.toast_extStrong_failed)
+                }
             }
-        }
-        post {
             resultCallback(saved, uri)
             removeSelf()
         }

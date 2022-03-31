@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
+import io.github.chenfei0928.os.safeHandler
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.view.asyncinflater.AsyncLayoutInflater
 
@@ -72,7 +74,7 @@ abstract class BaseDoubleCheckLazyInitFragment : BaseLazyInitFragment() {
                         checkInflateImpl()
                     }
             } else {
-                postDelayed(30) {
+                safeHandler.postDelayed(30L) {
                     checkInflateImpl()
                 }
             }

@@ -5,6 +5,8 @@ import android.net.Uri
 import android.os.Bundle
 import io.github.chenfei0928.app.fragment.removeSelf
 import io.github.chenfei0928.base.fragment.BaseFragment
+import io.github.chenfei0928.concurrent.ExecutorUtil
+import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
 
 /**
  * 抽离传入参数类型，以便于直接导入为文件或其他类型的解码器
@@ -32,7 +34,7 @@ abstract class BaseFileImportFragment<T> : BaseFragment() {
      * 提示用户是否成功保存，并移除自身
      */
     protected open fun removeSelf(uri: T?) {
-        post {
+        ExecutorUtil.runOnUiThread {
             resultCallback?.invoke(uri)
             removeSelf()
         }

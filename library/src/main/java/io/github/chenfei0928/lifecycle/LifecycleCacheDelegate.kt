@@ -3,6 +3,8 @@ package io.github.chenfei0928.lifecycle
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import io.github.chenfei0928.concurrent.ExecutorUtil
+import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
 import java.util.*
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
@@ -33,8 +35,11 @@ class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObserver>
             val observer = valueCreator(thisRef, closeCallback)
             closeCallback.observer = observer
             // 使其监听宿主生命周期变化
-            thisRef.lifecycle.addObserver(observer)
-            thisRef.lifecycle.addObserver(closeCallback)
+            val lifecycle = thisRef.lifecycle
+            ExecutorUtil.runOnUiThread {
+                lifecycle.addObserver(observer)
+                lifecycle.addObserver(closeCallback)
+            }
             observer
         }
     }
