@@ -1,5 +1,6 @@
 package androidx.fragment.app
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.LifecycleOwner
@@ -13,7 +14,7 @@ import java.util.*
  * @date 2022-02-17 17:25
  */
 internal object FragmentViewLifecycleAccessor : FragmentManager.FragmentLifecycleCallbacks() {
-    private val viewLifecycleOwnerFragmentMap = WeakHashMap<LifecycleOwner, Fragment>()
+    private val viewLifecycleOwnerFragmentMap: MutableMap<LifecycleOwner, Fragment> = WeakHashMap()
 
     private val mFragmentField: Field = FragmentViewLifecycleOwner::class.java
         .getDeclaredField("mFragment").apply {
@@ -39,7 +40,11 @@ internal object FragmentViewLifecycleAccessor : FragmentManager.FragmentLifecycl
         super.onFragmentViewDestroyed(fm, f)
         // view销毁之后主动移除该fragment的映射
         viewLifecycleOwnerFragmentMap.filterValues { it === f }.map {
-            viewLifecycleOwnerFragmentMap.remove(it.key, it.value)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                viewLifecycleOwnerFragmentMap.remove(it.key, it.value)
+            } else {
+                viewLifecycleOwnerFragmentMap.remove(it.key)
+            }
         }
     }
 }
