@@ -1,8 +1,6 @@
 package io.github.chenfei0928.preference
 
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.core.content.edit
 import androidx.preference.*
 import io.github.chenfei0928.content.sp.AbsSpSaver
 import io.github.chenfei0928.content.sp.delegate.getPropertySpKeyName
@@ -20,50 +18,6 @@ class PreferenceGroupBuilder<SpSaver : AbsSpSaver>(
     val spSaver: SpSaver,
     val preferenceGroup: PreferenceGroup
 ) {
-
-    //<editor-fold defaultstate="collapsed" desc="默认值检查">
-    inline fun <T> checkDefaultValue(
-        name: String,
-        block: () -> T?,
-        action: SharedPreferences.Editor.(T) -> Unit
-    ) = preferenceGroup.sharedPreferences.run {
-        if (contains(name)) {
-            return
-        }
-        val t = block()
-            ?: return@run
-        edit {
-            action(t)
-        }
-    }
-
-    inline fun checkDefaultBooleanValue(name: String, block: () -> Boolean) =
-        checkDefaultValue(name, block) {
-            putBoolean(name, it)
-        }
-
-    inline fun checkDefaultStringValue(name: String, block: () -> String?) =
-        checkDefaultValue(name, block) {
-            putString(name, it)
-        }
-
-    inline fun checkDefaultIntValue(name: String, block: () -> Int) =
-        checkDefaultValue(name, block) {
-            putInt(name, it)
-        }
-
-    inline fun <reified E> checkDefaultEnumValue(
-        name: String, block: () -> E?
-    ) where E : Enum<E>, E : VisibleNamed = checkDefaultValue(name, block) {
-        putString(name, it.name)
-    }
-
-    inline fun <reified E> checkDefaultEnumSetValue(
-        name: String, block: () -> Set<E>
-    ) where E : Enum<E>, E : VisibleNamed = checkDefaultValue(name, block) {
-        putStringSet(name, it.mapTo(mutableSetOf(), Enum<E>::name))
-    }
-    //</editor-fold>
 
     inline fun <P : Preference> preference(
         preference: P,
@@ -169,63 +123,49 @@ class PreferenceGroupBuilder<SpSaver : AbsSpSaver>(
         property: KProperty0<Boolean>,
         block: CheckBoxPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultBooleanValue(name) { property.get() }
-        return checkBoxPreference(name, block)
+        return checkBoxPreference(spSaver.getPropertySpKeyName(property), block)
     }
 
     inline fun <reified E> dropDownPreference(
         property: KProperty0<E>,
         block: DropDownPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> where E : Enum<E>, E : VisibleNamed {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultEnumValue(name) { property.get() }
-        return dropDownPreference<E>(name, block)
+        return dropDownPreference<E>(spSaver.getPropertySpKeyName(property), block)
     }
 
     inline fun editTextPreference(
         property: KProperty0<String?>,
         block: EditTextPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultStringValue(name) { property.get() }
-        return editTextPreference(name, block)
+        return editTextPreference(spSaver.getPropertySpKeyName(property), block)
     }
 
     inline fun <reified E> listPreference(
         property: KProperty0<E>,
         block: ListPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> where E : Enum<E>, E : VisibleNamed {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultEnumValue(name) { property.get() }
-        return listPreference<E>(name, block)
+        return listPreference<E>(spSaver.getPropertySpKeyName(property), block)
     }
 
     inline fun <reified E> multiSelectListPreference(
         property: KProperty0<Set<E>>,
         block: MultiSelectListPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> where E : Enum<E>, E : VisibleNamed {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultEnumSetValue(name) { property.get() }
-        return multiSelectListPreference<E>(name, block)
+        return multiSelectListPreference<E>(spSaver.getPropertySpKeyName(property), block)
     }
 
     inline fun seekBarPreference(
         property: KProperty0<Int>,
         block: SeekBarPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultIntValue(name) { property.get() }
-        return seekBarPreference(name, block)
+        return seekBarPreference(spSaver.getPropertySpKeyName(property), block)
     }
 
     inline fun switchPreference(
         property: KProperty0<Boolean>,
         block: SwitchPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultBooleanValue(name) { property.get() }
-        return switchPreference(name, block)
+        return switchPreference(spSaver.getPropertySpKeyName(property), block)
     }
     //</editor-fold>
 
@@ -234,63 +174,49 @@ class PreferenceGroupBuilder<SpSaver : AbsSpSaver>(
         property: KProperty1<SpSaver, Boolean>,
         block: CheckBoxPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultBooleanValue(name) { property.get(spSaver) }
-        return checkBoxPreference(name, block)
+        return checkBoxPreference(spSaver.getPropertySpKeyName(property), block)
     }
 
     inline fun <reified E> dropDownPreference(
         property: KProperty1<SpSaver, E>,
         block: DropDownPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> where E : Enum<E>, E : VisibleNamed {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultEnumValue(name) { property.get(spSaver) }
-        return dropDownPreference<E>(name, block)
+        return dropDownPreference<E>(spSaver.getPropertySpKeyName(property), block)
     }
 
     inline fun editTextPreference(
         property: KProperty1<SpSaver, String?>,
         block: EditTextPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultStringValue(name) { property.get(spSaver) }
-        return editTextPreference(name, block)
+        return editTextPreference(spSaver.getPropertySpKeyName(property), block)
     }
 
     inline fun <reified E> listPreference(
         property: KProperty1<SpSaver, E>,
         block: ListPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> where E : Enum<E>, E : VisibleNamed {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultEnumValue(name) { property.get(spSaver) }
-        return listPreference<E>(name, block)
+        return listPreference<E>(spSaver.getPropertySpKeyName(property), block)
     }
 
     inline fun <reified E> multiSelectListPreference(
         property: KProperty1<SpSaver, Set<E>>,
         block: MultiSelectListPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> where E : Enum<E>, E : VisibleNamed {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultEnumSetValue(name) { property.get(spSaver) }
-        return multiSelectListPreference<E>(name, block)
+        return multiSelectListPreference<E>(spSaver.getPropertySpKeyName(property), block)
     }
 
     inline fun seekBarPreference(
         property: KProperty1<SpSaver, Int>,
         block: SeekBarPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultIntValue(name) { property.get(spSaver) }
-        return seekBarPreference(name, block)
+        return seekBarPreference(spSaver.getPropertySpKeyName(property), block)
     }
 
     inline fun switchPreference(
         property: KProperty1<SpSaver, Boolean>,
         block: SwitchPreference.() -> Unit
     ): PreferenceGroupBuilder<SpSaver> {
-        val name = spSaver.getPropertySpKeyName(property)
-        checkDefaultBooleanValue(name) { property.get(spSaver) }
-        return switchPreference(name, block)
+        return switchPreference(spSaver.getPropertySpKeyName(property), block)
     }
     //</editor-fold>
 }
