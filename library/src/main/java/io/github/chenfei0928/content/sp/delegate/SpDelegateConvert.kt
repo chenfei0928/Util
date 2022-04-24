@@ -20,7 +20,7 @@ import kotlin.reflect.KProperty
  * @date 2020-09-03 13:38
  */
 abstract class SpConvertSaver<SpValueType, FieldType>(
-    private val saver: AbsSpSaver.AbsSpDelegate0<SpValueType>
+    internal val saver: AbsSpSaver.AbsSpDelegate<SpValueType>
 ) : AbsSpSaver.AbsSpDelegate<FieldType>() {
 
     override fun obtainDefaultKey(property: KProperty<*>): String {
@@ -132,34 +132,63 @@ inline fun <reified T> GsonSpConvertSaver(key: String) = GsonSpConvertSaver<T>(
 
 //<editor-fold defaultstate="collapsed" desc="使用LocalSerializer序列化对象">
 class LocalSerializerSpConvertSaver<T>(
-    key: String? = null,
+    saver: AbsSpSaver.AbsSpDelegate0<String?>,
     serializer: LocalSerializer<T>
-) : AbsSpSaver.AbsSpDelegate0<T?>(key) {
+) : SpConvertSaver<String?, T?>(saver) {
+
+    constructor(
+        key: String,
+        serializer: LocalSerializer<T>
+    ) : this(StringDelegate(key), serializer)
+
     private val serializer: Base64Serializer<T> = serializer.base64()
 
-    override fun getValue(sp: SharedPreferences, key: String): T? {
+    override fun onRead(value: String?): T? {
         return ByteArrayInputStream(
-            sp.getString(key, null)?.toByteArray()
-                ?: byteArrayOf()
+            value?.toByteArray() ?: byteArrayOf()
         ).let {
             serializer.onOpenInputStream(it)
-        }.let {
+        }.use {
             serializer.read(it)
         }
     }
 
-    override fun putValue(editor: SharedPreferences.Editor, key: String, value: T?) {
-        if (value == null) {
-            editor.remove(key)
-            return
-        }
-        val base64Content = ByteArrayOutputStream().let { byteArrayOutputStream ->
-            serializer.onOpenOutStream(byteArrayOutputStream).let {
-                serializer.write(byteArrayOutputStream, value)
+    override fun onSave(value: T?): String? {
+        return if (value == null) {
+            null
+        } else {
+            ByteArrayOutputStream().use { byteArrayOutputStream ->
+                serializer.onOpenOutStream(byteArrayOutputStream).use {
+                    serializer.write(byteArrayOutputStream, value)
+                }
+                String(byteArrayOutputStream.toByteArray())
             }
-            String(byteArrayOutputStream.toByteArray())
         }
-        editor.putString(key, base64Content)
     }
 }
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="空安全，添加默认值">
+/**
+ * 使nullable的字段委托拥有默认值的装饰器
+ *
+ * @author chenfei(chenfei0928@gmail.com)
+ * @date 2022-01-12 16:39
+ */
+class DefaultValueSpDelete<T>(
+    saver: AbsSpSaver.AbsSpDelegate<T?>,
+    internal val defaultValue: T
+) : SpConvertSaver<T?, T>(saver) {
+
+    override fun onRead(value: T?): T {
+        return value ?: defaultValue
+    }
+
+    override fun onSave(value: T): T? {
+        return value
+    }
+}
+
+fun <T> AbsSpSaver.AbsSpDelegate<T?>.defaultValue(defaultValue: T): DefaultValueSpDelete<T> =
+    DefaultValueSpDelete(this, defaultValue)
 //</editor-fold>
