@@ -108,7 +108,7 @@ private fun AbsSpSaver.findMutablePropertyField(property0: KMutableProperty0<*>)
                         delegate.getValue(this, property0) ?: defaultValue
                     },
                     setter = {
-                        delegate.setValue(this, property0, it ?: defaultValue)
+                        delegate.setValue(this, property0, it)
                     }
                 )
             }

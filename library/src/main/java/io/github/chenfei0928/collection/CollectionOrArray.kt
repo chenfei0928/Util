@@ -33,3 +33,15 @@ inline fun <T> Collection<T>.mapToIntArray(transform: (T) -> Int): IntArray {
     }
     return output
 }
+
+inline fun <T> List<T>.mapToIntArray(transform: (T) -> Int): IntArray {
+    return IntArray(size) {
+        transform(this[it])
+    }
+}
+
+inline fun <T> Array<T>.mapToIntArray(transform: (T) -> Int): IntArray {
+    return IntArray(size) {
+        transform(this[it])
+    }
+}
