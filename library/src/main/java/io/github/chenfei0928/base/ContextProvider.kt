@@ -16,7 +16,6 @@ class ContextProvider : ContentProvider() {
     override fun onCreate(): Boolean {
         val appContext = context!!.applicationContext as Application
         ContextProvider.context = appContext
-        ToastUtil.init(appContext)
         appContext.registerActivityLifecycleCallbacks(ActivityLifecycleCallback)
         return true
     }
@@ -53,6 +52,7 @@ class ContextProvider : ContentProvider() {
     }
 
     companion object {
+        @JvmStatic
         lateinit var context: Application
             private set
     }
