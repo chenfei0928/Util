@@ -46,14 +46,6 @@ internal class SpSaverAutoApply(
         }
     }
 
-    private fun containInLooper(looper: Looper, r: Runnable): Boolean {
-        return if (looper == Looper.getMainLooper()) {
-            ExecutorUtil.containInUi(spApplyTask)
-        } else {
-            getOrCreateHandler(looper).hasMessages(r.hashCode())
-        }
-    }
-
     companion object {
         private val handlerCache = WeakHashMap<Looper, Handler>()
 

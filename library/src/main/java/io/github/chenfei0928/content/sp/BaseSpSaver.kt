@@ -2,6 +2,8 @@ package io.github.chenfei0928.content.sp
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * 提供[SharedPreferences]保存、编辑器获取的实现
@@ -18,17 +20,13 @@ open class BaseSpSaver(
         context: Context, name: String, mode: Int = Context.MODE_PRIVATE
     ) : this(context.getSharedPreferences(name, mode))
 
-    @Volatile
-    private var _editor: SharedPreferences.Editor? = null
+    private val editorAtomicReference = AtomicReference<SharedPreferences.Editor?>()
     override val editor: SharedPreferences.Editor
-        get() {
-            return _editor ?: sp
-                .edit()
-                .also {
-                    _editor = it
-                    spAutoApply?.autoSave()
-                }
-        }
+        get() = editorAtomicReference.get() ?: (editorAtomicReference.updateAndGetCompat {
+            it ?: sp.edit()
+        }!!.apply {
+            spAutoApply?.autoSave()
+        })
 
     fun setEnableAutoApply(enable: Boolean) {
         spAutoApply = if (enable) {
@@ -45,13 +43,31 @@ open class BaseSpSaver(
     }
 
     override fun commit(): Boolean {
-        val result = _editor?.commit() ?: false
-        _editor = null
-        return result
+        val editor = editorAtomicReference.get() ?: return false
+        val result = editor.commit()
+        val compareAndSet = editorAtomicReference.compareAndSet(editor, null)
+        return result && compareAndSet
     }
 
     override fun apply() {
-        _editor?.apply()
-        _editor = null
+        val editor = editorAtomicReference.get() ?: return
+        editor.apply()
+        editorAtomicReference.compareAndSet(editor, null)
+    }
+
+    private inline fun <T> AtomicReference<T>.updateAndGetCompat(
+        crossinline updateFunction: (T) -> T
+    ): T {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            updateAndGet { updateFunction(it) }
+        } else {
+            var prev: T?
+            var next: T
+            do {
+                prev = get()
+                next = prev ?: updateFunction(prev)
+            } while (!compareAndSet(prev, next))
+            next
+        }
     }
 }
