@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Build;
+import android.view.Display;
+import android.view.WindowMetrics;
 
 /**
  * 屏幕、显示器工具类
@@ -50,10 +53,21 @@ public class DisplayUtil {
     public static Point getDisplaySize(Activity activity) {
         // 宽>高为横屏,反正为竖屏
         Point point = new Point();
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            activity.getWindowManager().getDefaultDisplay().getRealSize(point);
+        Display display;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            display = activity.getDisplay();
         } else {
-            activity.getWindowManager().getDefaultDisplay().getSize(point);
+            display = activity.getWindowManager().getDefaultDisplay();
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            WindowMetrics currentWindowMetrics = activity.getWindowManager().getCurrentWindowMetrics();
+            Rect bounds = currentWindowMetrics.getBounds();
+            point.x = bounds.right - bounds.left;
+            point.y = bounds.bottom - bounds.top;
+        } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            display.getRealSize(point);
+        } else {
+            display.getSize(point);
         }
         return point;
     }
