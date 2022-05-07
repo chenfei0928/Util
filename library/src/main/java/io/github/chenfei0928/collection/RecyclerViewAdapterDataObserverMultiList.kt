@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-09-16 16:16
  */
-class RecyclerViewAdapterDataObserverMultiList<E>(
+open class RecyclerViewAdapterDataObserverMultiList<E>(
     private val list: MutableList<E> = ArrayList()
 ) : MutableList<E> by list, RecyclerView.AdapterDataObserver(), RecyclerViewAdapterDataSource {
     override var adapterDataObserver: RecyclerView.AdapterDataObserver? = null
