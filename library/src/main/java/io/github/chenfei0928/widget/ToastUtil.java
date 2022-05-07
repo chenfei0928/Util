@@ -144,18 +144,18 @@ public class ToastUtil {
             // 11以下缓存toastView，以提升toast创建的性能
             // 10 以上添加了 LayoutInflater#tryInflatePrecompiled 来优化layoutInflater性能，但10中并没有启用
             Toast toast = new Toast(context);
-            toast.setView(getToastView());
+            toast.setView(getToastView(context));
             toast.setText(text);
             return toast;
         }
 
         @SuppressLint("ShowToast")
-        private View getToastView() {
+        private View getToastView(Context context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 return null;
             }
             if (sToastView == null) {
-                sToastView = Toast.makeText(ContextProvider.getContext(), "", Toast.LENGTH_SHORT).getView();
+                sToastView = Toast.makeText(context.getApplicationContext(), "", Toast.LENGTH_SHORT).getView();
             }
             return sToastView;
         }

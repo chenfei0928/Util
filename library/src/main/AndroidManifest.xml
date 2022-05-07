@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="io.github.chenfei0928.util">
 
     <application>
@@ -7,8 +8,14 @@
             android:theme="@android:style/Theme.Translucent" />
 
         <provider
-            android:name="io.github.chenfei0928.base.ContextProvider"
-            android:authorities="${applicationId}.chenfei0928.util.context-provider"
-            android:exported="false" />
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+
+            <meta-data
+                android:name="io.github.chenfei0928.base.ContextProvider"
+                android:value="androidx.startup" />
+        </provider>
     </application>
 </manifest>

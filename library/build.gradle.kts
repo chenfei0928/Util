@@ -29,6 +29,7 @@ dependencies {
     implementation(DepsAndroidx.webkit)
     implementation(DepsAndroidx.activity)
     implementation(DepsAndroidx.fragment)
+    implementation(DepsAndroidx.startup)
     implementation(DepsAndroidx.lifecycle.runtime)
     implementation(DepsAndroidx.lifecycle.viewModel)
     implementation(DepsAndroidx.material)
