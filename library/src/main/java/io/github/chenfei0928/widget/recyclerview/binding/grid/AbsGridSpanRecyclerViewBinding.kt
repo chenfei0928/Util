@@ -59,9 +59,7 @@ abstract class AbsGridSpanRecyclerViewBinding<LP : AbsGridSpanRecyclerViewBindin
      * 生成布局参数，如果之类扩展了自己的布局参数[LP]，也要提供一个用于生成子类布局参数的接口
      */
     override fun generateDefaultLayoutParams(): LP {
-        return LayoutParams(
-            spanCount, NONE
-        ) as LP
+        return LayoutParams(spanCount, NONE) as LP
     }
 
     companion object {
