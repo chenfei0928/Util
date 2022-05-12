@@ -21,12 +21,16 @@ abstract class TwoWayLayoutBinder<Bean, V : ViewBinding>(
         super.onBindViewHolder(holder, item, payloads)
         // 同步view状态
         syncBeanChanged(holder, true)
+    }
+
+    override fun onViewAttachedToWindow(holder: ViewBindingHolder<Bean, V>) {
+        super.onViewAttachedToWindow(holder)
         // 绑定view到bean
         bindTwoWayCallback(holder)
     }
 
-    override fun onViewRecycled(holder: ViewBindingHolder<Bean, V>) {
-        super.onViewRecycled(holder)
+    override fun onViewDetachedFromWindow(holder: ViewBindingHolder<Bean, V>) {
+        super.onViewDetachedFromWindow(holder)
         // 解除bean到view的绑定
         unbindTwoWayCallback(holder)
     }
