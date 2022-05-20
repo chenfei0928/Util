@@ -1,6 +1,7 @@
 package io.github.chenfei0928.concurrent.coroutines
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentViewLifecycleAccessor
@@ -63,6 +64,9 @@ private class LifecycleCoroutineScope(
             val fragment = FragmentViewLifecycleAccessor.getFragmentByViewLifecycleOwner(host)
             CoroutineAndroidContextImpl(fragment.activity ?: fragment.requireContext(), fragment)
         } else when (host) {
+            is Dialog -> {
+                CoroutineAndroidContextImpl(host.context, null)
+            }
             is Fragment -> {
                 CoroutineAndroidContextImpl(host.activity ?: host.requireContext(), host)
             }
