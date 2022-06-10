@@ -3,12 +3,11 @@ package io.github.chenfei0928.graphics.drawable
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.graphics.Canvas
+import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.util.Property
-import androidx.annotation.Keep
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import io.github.chenfei0928.animation.ANIMATE_LAYOUT_CHANGES_DEFAULT_DURATION
 import io.github.chenfei0928.reflect.toProperty
 import kotlin.reflect.KMutableProperty1
 
@@ -16,8 +15,9 @@ import kotlin.reflect.KMutableProperty1
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-11-23 13:16
  */
-@Keep
-class AnimatedDrawable(dr: Drawable) : DrawableWrapper(dr), Animatable, Animatable2Compat {
+class AnimatedDrawable(
+    dr: Drawable
+) : DrawableWrapper(dr), Animatable, Animatable2Compat {
     var scaleX = 1f
     var scaleY = 1f
     var translateX = 0f
@@ -65,8 +65,10 @@ class AnimatedDrawable(dr: Drawable) : DrawableWrapper(dr), Animatable, Animatab
         }
     }
     val animate = AnimatorSet().apply {
-        duration = ANIMATE_LAYOUT_CHANGES_DEFAULT_DURATION
         addListener(lis)
+    }
+
+    override fun onBoundsChange(bounds: Rect?) {
     }
 
     override fun start() {

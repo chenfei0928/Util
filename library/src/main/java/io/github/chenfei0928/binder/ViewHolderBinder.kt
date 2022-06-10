@@ -14,7 +14,7 @@ import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
  * Date: 2019-03-21
  * Time: 17:05
  */
-abstract class BaseViewHolderLayoutBinder<T, VH : ViewHolder<T>> : ItemViewBinder<T, VH>() {
+abstract class BaseViewHolderBinder<T, VH : ViewHolder<T>> : ItemViewBinder<T, VH>() {
 
     override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): VH {
         val holder = onCreateViewHolderImpl(inflater, parent)
@@ -41,7 +41,7 @@ abstract class BaseViewHolderLayoutBinder<T, VH : ViewHolder<T>> : ItemViewBinde
 
 abstract class BaseBindingBinder<T, V : ViewBinding>(
     private val viewBindingInflater: (LayoutInflater, ViewGroup, Boolean) -> V
-) : BaseViewHolderLayoutBinder<T, ViewBindingHolder<T, V>>() {
+) : BaseViewHolderBinder<T, ViewBindingHolder<T, V>>() {
 
     final override fun onCreateViewHolderImpl(
         inflater: LayoutInflater, parent: ViewGroup

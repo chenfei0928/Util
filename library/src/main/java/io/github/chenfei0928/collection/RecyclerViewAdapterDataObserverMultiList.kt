@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
  */
 open class RecyclerViewAdapterDataObserverMultiList<E>(
     private val list: MutableList<E> = ArrayList()
-) : MutableList<E> by list, RecyclerView.AdapterDataObserver(), RecyclerViewAdapterDataSource {
+) : MutableList<E> by list, RecyclerViewAdapterDataSource {
     override var adapterDataObserver: RecyclerView.AdapterDataObserver? = null
 
     override fun add(element: E): Boolean {

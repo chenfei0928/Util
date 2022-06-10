@@ -20,12 +20,45 @@ class DrawableCrossFadeTransition(
 ) : Transition<Drawable> {
 
     override fun transition(current: Drawable, adapter: Transition.ViewAdapter): Boolean {
-        val previous = adapter.currentDrawable?.mutate()?.let {
+        val previous = adapter.currentDrawable?.mutate()?.let { currentDrawable ->
             val imageView = adapter.view as? ImageView
-            FixedSizeDrawable(
-                it, current.intrinsicHeight, current.intrinsicWidth,
-                imageView?.scaleType ?: ImageView.ScaleType.CENTER_CROP
-            )
+            if (imageView == null) {
+                // 目标view不是ImageView
+                FixedSizeDrawable(
+                    currentDrawable, current.intrinsicHeight, current.intrinsicWidth,
+                    ImageView.ScaleType.CENTER_CROP
+                )
+            } else if (imageView.scaleType !== ImageView.ScaleType.MATRIX) {
+                // 非Matrix方式缩放加载的图片
+                FixedSizeDrawable(
+                    currentDrawable, current.intrinsicHeight, current.intrinsicWidth,
+                    imageView.scaleType
+                )
+            } else {
+                // Matrix方式加载的图片，Matrix认为是目标图片的Matrix
+                // 将现有图片的Matrix反向操作到目标Matrix
+                FixedSizeDrawable(
+                    currentDrawable, current.intrinsicHeight, current.intrinsicWidth,
+                    ImageView.ScaleType.MATRIX
+                ).configMatrix {
+                    val imageMatrixValues = FloatArray(9).apply {
+                        imageView.imageMatrix.getValues(this)
+                        this[Matrix.MSCALE_X] = 1 / this[Matrix.MSCALE_X]
+                        this[Matrix.MSKEW_X] = -this[Matrix.MSKEW_X]
+                        this[Matrix.MTRANS_X] = -this[Matrix.MTRANS_X]
+                        this[Matrix.MSKEW_Y] = -this[Matrix.MSKEW_Y]
+                        this[Matrix.MSCALE_Y] = 1 / this[Matrix.MSCALE_Y]
+                        this[Matrix.MTRANS_Y] = -this[Matrix.MTRANS_Y]
+                        this[Matrix.MPERSP_0] = -this[Matrix.MPERSP_0]
+                        this[Matrix.MPERSP_1] = -this[Matrix.MPERSP_1]
+                        this[Matrix.MPERSP_2] = 1 / this[Matrix.MPERSP_2]
+                    }
+                    currentDrawable.setBounds(
+                        0, 0, imageView.measuredWidth, imageView.measuredHeight
+                    )
+                    it.setValues(imageMatrixValues)
+                }
+            }
         } ?: ColorDrawable(Color.TRANSPARENT)
         val transitionDrawable = TransitionDrawable(arrayOf(previous, current))
         transitionDrawable.isCrossFadeEnabled = isCrossFadeEnabled
@@ -90,7 +123,7 @@ class FixedSizeDrawable(
             drawable.setBounds(0, 0, dwidth, dheight)
             if (ImageView.ScaleType.MATRIX == mScaleType) {
                 // Use the specified matrix as-is.
-                mDrawMatrix = null
+                // use mDrawMatrix
             } else if (fits) {
                 // The bitmap fits exactly, no transform needed.
                 mDrawMatrix = null
@@ -155,5 +188,12 @@ class FixedSizeDrawable(
 
     init {
         configureBounds()
+    }
+
+    fun configMatrix(block: (Matrix) -> Unit): FixedSizeDrawable = apply {
+        if (mScaleType != ImageView.ScaleType.MATRIX) {
+            return@apply
+        }
+        mDrawMatrix?.let(block)
     }
 }

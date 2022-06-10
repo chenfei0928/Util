@@ -18,7 +18,7 @@ import kotlin.reflect.typeOf
  * @date 2021-01-12 18:10
  */
 abstract class BaseViewHolderParentLayoutBinder<T, VH : ViewHolder<T>> :
-    BaseViewHolderLayoutBinder<T, VH>() {
+    BaseViewHolderBinder<T, VH>() {
 
     private val childBinders: MutableList<ChildBinderInfo<T, VH, Any, RecyclerView.ViewHolder>> =
         ArrayList()
@@ -128,7 +128,7 @@ abstract class BaseViewHolderParentLayoutBinder<T, VH : ViewHolder<T>> :
     override fun onViewHolderCreated(holder: VH, parent: ViewGroup) {
         super.onViewHolderCreated(holder, parent)
         childBinders.forEach {
-            if (it.childBinder is BaseViewHolderLayoutBinder) {
+            if (it.childBinder is BaseViewHolderBinder) {
                 val childHolder = it.childHolderField(holder)
                 it.childBinder.onViewHolderCreated(
                     childHolder, childHolder.itemView.parent.asType() ?: parent

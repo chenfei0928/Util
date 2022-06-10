@@ -5,10 +5,10 @@ plugins {
 
 dependencies {
     // https://github.com/JetBrains/kotlin
-    val kotlinVersion = "1.5.31"
+    val kotlinVersion = "1.6.21"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "7.2.0-beta04"
+    val agpVersion = "7.2.1"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
     implementation(kotlin("gradle-plugin", kotlinVersion))
@@ -25,7 +25,7 @@ dependencies {
     // 代码工具类库插件
     // 反射
     // https://github.com/jOOQ/jOOR
-    implementation("org.jooq:joor:0.9.13")
+    implementation("org.jooq:joor:0.9.14")
 
     // 参与编译打包流程，但不参与代码编写
     // 增加 protobuf-gradle-plugin 插件
