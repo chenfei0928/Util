@@ -65,7 +65,7 @@ inline fun LayerDrawable.forEachLayer(block: (index: Int, drawable: Drawable) ->
  * @param tint  着色颜色
  * @return      添加着色支持的Drawable，或如果其已经支持着色返回this
  */
-fun Drawable.setTintCompat(@ColorInt tint: Int): Drawable? {
+fun Drawable.setTintCompat(@ColorInt tint: Int): Drawable {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         this.setTint(tint)
         this

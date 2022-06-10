@@ -43,28 +43,22 @@ fun Long.formatDateTime(pattern: String): String = this
 fun Date.toString(pattern: String, locale: Locale = Locale.US): String =
     SimpleDateFormat(pattern, locale).format(this)
 
+/**
+ * [Arrays.deepEquals]
+ */
 fun Any?.deepEquals(b: Any?): Boolean {
     return when {
         this === b -> true
         this == null || b == null -> false
-        else -> deepEquals0(this, b)
-    }
-}
-
-/**
- * [Arrays.deepEquals]
- */
-private fun deepEquals0(e1: Any?, e2: Any): Boolean {
-    return when {
-        e1 is Array<*> && e2 is Array<*> -> Arrays.deepEquals(e1, e2)
-        e1 is ByteArray && e2 is ByteArray -> Arrays.equals(e1, e2)
-        e1 is ShortArray && e2 is ShortArray -> Arrays.equals(e1, e2)
-        e1 is IntArray && e2 is IntArray -> Arrays.equals(e1, e2)
-        e1 is LongArray && e2 is LongArray -> Arrays.equals(e1, e2)
-        e1 is CharArray && e2 is CharArray -> Arrays.equals(e1, e2)
-        e1 is FloatArray && e2 is FloatArray -> Arrays.equals(e1, e2)
-        e1 is DoubleArray && e2 is DoubleArray -> Arrays.equals(e1, e2)
-        e1 is BooleanArray && e2 is BooleanArray -> Arrays.equals(e1, e2)
-        else -> e1 == e2
+        this is Array<*> && b is Array<*> -> this.contentDeepEquals(b)
+        this is ByteArray && b is ByteArray -> this.contentEquals(b)
+        this is ShortArray && b is ShortArray -> this.contentEquals(b)
+        this is IntArray && b is IntArray -> this.contentEquals(b)
+        this is LongArray && b is LongArray -> this.contentEquals(b)
+        this is CharArray && b is CharArray -> this.contentEquals(b)
+        this is FloatArray && b is FloatArray -> this.contentEquals(b)
+        this is DoubleArray && b is DoubleArray -> this.contentEquals(b)
+        this is BooleanArray && b is BooleanArray -> this.contentEquals(b)
+        else -> this == b
     }
 }
