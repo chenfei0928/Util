@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.util.Property
+import androidx.annotation.Keep
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import io.github.chenfei0928.reflect.toProperty
 import kotlin.reflect.KMutableProperty1
@@ -15,7 +16,8 @@ import kotlin.reflect.KMutableProperty1
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-11-23 13:16
  */
-class AnimatedDrawable(
+@Keep
+open class AnimatedDrawable(
     dr: Drawable
 ) : DrawableWrapper(dr), Animatable, Animatable2Compat {
     var scaleX = 1f

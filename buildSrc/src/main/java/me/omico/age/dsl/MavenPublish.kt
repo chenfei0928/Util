@@ -81,6 +81,7 @@ fun Project.withKotlinMavenPublication(
     signed: Boolean = true,
 ) {
     withJavaSourcesJar()
+    withJavadocJar()
     configureMavenPublication(
         mavenPublicationName = mavenPublicationName,
         versionName = versionName,
@@ -88,6 +89,7 @@ fun Project.withKotlinMavenPublication(
     ) {
         from(components["kotlin"])
         artifact(tasks["sourcesJar"])
+        artifact(tasks["javadocJar"])
     }
 }
 

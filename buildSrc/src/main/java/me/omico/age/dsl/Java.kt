@@ -35,3 +35,11 @@ fun Project.withJavaSourcesJar() {
         }
     }
 }
+
+fun Project.withJavadocJar() {
+    withJava {
+        configure<JavaPluginExtension> {
+            withJavadocJar()
+        }
+    }
+}

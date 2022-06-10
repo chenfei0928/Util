@@ -37,7 +37,7 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
     /**
      * 使用在[RecyclerView]中的子视图获取指定显示内容的布局参数
      */
-    internal fun getLayoutParams(view: View): LP? {
+    protected fun getLayoutParams(view: View): LP? {
         val lp = view.layoutParams as RecyclerView.LayoutParams
         // 先检查viewHolder，如果viewHolder内保存了显示的数据，这直接使用其数据来获取布局参数
         val holder = lp.holder
