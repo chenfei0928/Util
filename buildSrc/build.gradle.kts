@@ -3,9 +3,15 @@ plugins {
     `kotlin-dsl`
 }
 
+tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + listOf("-Xskip-metadata-version-check")
+    }
+}
+
 dependencies {
     // https://github.com/JetBrains/kotlin
-    val kotlinVersion = "1.6.21"
+    val kotlinVersion = "1.7.0"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
     val agpVersion = "7.2.1"

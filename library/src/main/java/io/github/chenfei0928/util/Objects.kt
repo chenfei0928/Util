@@ -25,9 +25,7 @@ infix fun Int.anyIn(other: Int): Boolean {
     return other and this != 0
 }
 
-fun Long.toDate() = Date(this)
-fun Long.formatDateTime(pattern: String): String = this
-    .toDate()
+fun Long.formatDateTime(pattern: String): String = Date(this)
     .toString(pattern)
 
 /**

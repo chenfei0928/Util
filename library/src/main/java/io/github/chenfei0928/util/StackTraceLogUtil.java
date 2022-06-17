@@ -6,7 +6,9 @@ import java.util.Locale;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.NoSideEffects;
-import io.github.chenfei0928.util.lambdaFunction.Action1;
+import androidx.annotation.NonNull;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * @author ChenFei(chenfei0928 @ gmail.com)
@@ -16,10 +18,14 @@ public class StackTraceLogUtil {
     private static final String TAG = "KW_StackTraceLogUtil";
     private static final String customTagPrefix = "KW_";
 
+    @NonNull
     @CheckResult
-    public static Action1<Throwable> onError(int level) {
+    public static Function1<Throwable, Unit> onError(int level) {
         String strings = generateTags(level);
-        return throwable -> Log.w(TAG, strings + "\ndefaultOnErrorHandler: ", throwable);
+        return throwable -> {
+            Log.w(TAG, strings + "\ndefaultOnErrorHandler: ", throwable);
+            return Unit.INSTANCE;
+        };
     }
 
     /**

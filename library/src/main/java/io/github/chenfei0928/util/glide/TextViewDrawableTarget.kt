@@ -1,18 +1,18 @@
 package io.github.chenfei0928.util.glide
 
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
-import io.github.chenfei0928.widget.setDrawableBottom
-import io.github.chenfei0928.widget.setDrawableEnd
-import io.github.chenfei0928.widget.setDrawableStart
-import io.github.chenfei0928.widget.setDrawableTop
+import io.github.chenfei0928.widget.updateDrawableRelative
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-07-23 10:16
  */
+@RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 open class TextViewDrawableTarget
 @JvmOverloads constructor(
     view: TextView, private val place: Int = TOP
@@ -31,25 +31,25 @@ open class TextViewDrawableTarget
 
     protected open fun setDrawable(drawable: Drawable?) {
         when (place) {
-            LEFT -> {
-                view.setDrawableStart(drawable)
+            START -> {
+                view.updateDrawableRelative(start = drawable)
             }
             TOP -> {
-                view.setDrawableTop(drawable)
+                view.updateDrawableRelative(top = drawable)
             }
-            RIGHT -> {
-                view.setDrawableEnd(drawable)
+            END -> {
+                view.updateDrawableRelative(end = drawable)
             }
             BOTTOM -> {
-                view.setDrawableBottom(drawable)
+                view.updateDrawableRelative(bottom = drawable)
             }
         }
     }
 
     companion object {
-        const val LEFT = 0
+        const val START = 0
         const val TOP = 1
-        const val RIGHT = 2
+        const val END = 2
         const val BOTTOM = 3
     }
 }

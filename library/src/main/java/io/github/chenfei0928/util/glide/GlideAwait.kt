@@ -1,24 +1,15 @@
 package io.github.chenfei0928.util.glide
 
-import android.graphics.Bitmap
+import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.ImageViewTargetFactory
-import com.bumptech.glide.request.target.SizeReadyCallback
-import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide.request.transition.Transition
-import io.github.chenfei0928.util.Log
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.util.concurrent.ExecutionException
+import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-
-private const val TAG = "KW_GlideAwait"
 
 /**
  * 通过协程返回Glide加载结果
@@ -26,52 +17,62 @@ private const val TAG = "KW_GlideAwait"
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-03-12 16:37
  */
-private class GlideAwait<T>(
-    private val continuation: CancellableContinuation<T>, width: Int, height: Int
-) : CustomTarget<T>(width, height), RequestListener<T> {
+private class GlideAwait(
+    private val continuation: CancellableContinuation<Drawable>, view: ImageView
+) : ViewTarget<ImageView, Drawable>(view), Transition.ViewAdapter {
+    private var animatable: Animatable? = null
 
-    override fun onLoadFailed(
-        e: GlideException?, model: Any?, target: Target<T>?, isFirstResource: Boolean
-    ): Boolean {
-        Log.w(TAG, "onLoadFailed: $model", e)
-        continuation.resumeWithException(ExecutionException(e))
-        return false
+    override fun onLoadStarted(placeholder: Drawable?) {
+        super.onLoadStarted(placeholder)
+        setResourceInternal(null)
+        view.setImageDrawable(placeholder)
     }
 
-    override fun onResourceReady(
-        resource: T,
-        model: Any?,
-        target: Target<T>?,
-        dataSource: DataSource?,
-        isFirstResource: Boolean
-    ): Boolean {
-        continuation.resumeWith(Result.success(resource))
-        return false
-    }
-
-    override fun onResourceReady(resource: T, transition: Transition<in T>?) {
-        continuation.resumeWith(Result.success(resource))
+    override fun onLoadFailed(errorDrawable: Drawable?) {
+        super.onLoadFailed(errorDrawable)
+        setResourceInternal(null)
+        view.setImageDrawable(errorDrawable)
+        continuation.resumeWithException(RuntimeException("onLoadFailed"))
     }
 
     override fun onLoadCleared(placeholder: Drawable?) {
+        super.onLoadCleared(placeholder)
+        animatable?.stop()
+        setResourceInternal(null)
+        view.setImageDrawable(placeholder)
     }
-}
 
-/**
- * 通过协程获取Glide加载到的图片资源
- *
- * @param T 资源类型
- * @param width 宽
- * @param height 高
- * @return 加载到的图片资源
- */
-suspend fun <T> RequestBuilder<T>.await(width: Int, height: Int): T {
-    return suspendCancellableCoroutine { continuation ->
-        val glideAwait = GlideAwait(continuation, width, height)
-        into(glideAwait)
-        continuation.invokeOnCancellation {
-            Log.d(TAG, "await: invokeOnCancellation $this", it)
-            glideAwait.request?.clear()
+    override fun getCurrentDrawable(): Drawable? {
+        return view.drawable
+    }
+
+    override fun setDrawable(drawable: Drawable?) {
+        if (drawable != null) {
+            continuation.resume(drawable)
+        }
+    }
+
+    override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
+        if (transition == null || !transition.transition(resource, this)) {
+            setResourceInternal(resource)
+        } else {
+            maybeUpdateAnimatable(resource)
+        }
+    }
+
+    private fun setResourceInternal(resource: Drawable?) {
+        // Order matters here. Set the resource first to make sure that the Drawable has a valid and
+        // non-null Callback before starting it.
+        view.setImageDrawable(resource)
+        maybeUpdateAnimatable(resource)
+    }
+
+    private fun maybeUpdateAnimatable(resource: Drawable?) {
+        if (resource is Animatable) {
+            animatable = resource
+            resource.start()
+        } else {
+            animatable = null
         }
     }
 }
@@ -83,22 +84,13 @@ suspend fun <T> RequestBuilder<T>.await(width: Int, height: Int): T {
  * @param view 目标ImageView
  * @return 加载到的图片资源
  */
-suspend fun <T> RequestBuilder<T>.await(view: ImageView): T {
+suspend fun RequestBuilder<Drawable>.await(view: ImageView): Drawable {
     return suspendCancellableCoroutine { continuation ->
-        val target = ImageViewTargetFactory().buildTarget(view, Bitmap::class.java)
         // 获取view尺寸后开启加载过程
-        val sizeReadyCallback = SizeReadyCallback { width, height ->
-            val glideAwait = GlideAwait(continuation, width, height)
-            into(glideAwait)
-            continuation.invokeOnCancellation {
-                glideAwait.request?.clear()
-            }
-        }
-        // 获取尺寸
-        target.waitForLayout()
-        target.getSize(sizeReadyCallback)
+        val glideAwait = GlideAwait(continuation, view)
+        into(glideAwait)
         continuation.invokeOnCancellation {
-            target.removeCallback(sizeReadyCallback)
+            glideAwait.request?.clear()
         }
     }
 }

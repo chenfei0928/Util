@@ -98,10 +98,3 @@ var View.marginBottom: Int
             }
         }
     }
-
-inline fun <reified Lp : ViewGroup.LayoutParams> View.updateLayoutParamsIfNeed(block: Lp.() -> Boolean) {
-    val requestLayout = block(layoutParams as Lp)
-    if (requestLayout) {
-        layoutParams = layoutParams
-    }
-}

@@ -43,6 +43,7 @@ dependencies {
 
     // https://github.com/bumptech/glide
     implementation(Deps.glide.core)
+    compileOnly(Deps.glide.transformations)
     // https://github.com/google/gson
     implementation(Deps.lib.gson)
     compileOnly(Deps.lib.zxing.core)

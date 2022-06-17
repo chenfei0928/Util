@@ -21,7 +21,7 @@ object ExecutorUtil : BgTaskExecutor by BgTaskExecutorImpl(),
                 }
             } catch (t: Throwable) {
                 try {
-                    throwableAction.call(t)
+                    throwableAction(t)
                 } catch (ignore: Exception) {
                 }
             }

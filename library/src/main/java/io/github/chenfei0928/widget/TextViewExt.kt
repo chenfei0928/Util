@@ -12,12 +12,6 @@ private fun setIntrinsicBounds(drawable: Drawable?) {
     drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
 }
 
-fun TextView.setDrawableBottom(drawable: Drawable?) {
-    setIntrinsicBounds(drawable)
-    val drawables = this.compoundDrawables
-    this.setCompoundDrawables(drawables[0], drawables[1], drawables[2], drawable)
-}
-
 @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 fun TextView.updateDrawableRelative(
     start: Drawable? = compoundDrawablesRelative[0],
@@ -25,67 +19,19 @@ fun TextView.updateDrawableRelative(
     end: Drawable? = compoundDrawablesRelative[2],
     bottom: Drawable? = compoundDrawablesRelative[3]
 ) {
+    if (start != compoundDrawablesRelative[0]) {
+        setIntrinsicBounds(start)
+    }
+    if (top != compoundDrawablesRelative[1]) {
+        setIntrinsicBounds(top)
+    }
+    if (end != compoundDrawablesRelative[2]) {
+        setIntrinsicBounds(end)
+    }
+    if (bottom != compoundDrawablesRelative[3]) {
+        setIntrinsicBounds(bottom)
+    }
     setCompoundDrawablesRelative(start, top, end, bottom)
-}
-
-@Deprecated(
-    message = "use setDrawableStart insert",
-    replaceWith = ReplaceWith(
-        expression = "setDrawableStart(drawable)",
-        imports = ["io.github.chenfei0928.widget.setDrawableStart"]
-    )
-)
-fun TextView.setDrawableLeft(drawable: Drawable?) {
-    setIntrinsicBounds(drawable)
-    val drawables = this.compoundDrawables
-    this.setCompoundDrawables(drawable, drawables[1], drawables[2], drawables[3])
-}
-
-@Deprecated(
-    message = "use setDrawableEnd insert",
-    replaceWith = ReplaceWith(
-        expression = "setDrawableEnd(drawable)",
-        imports = ["io.github.chenfei0928.widget.setDrawableEnd"]
-    )
-)
-fun TextView.setDrawableRight(drawable: Drawable?) {
-    setIntrinsicBounds(drawable)
-    val drawables = this.compoundDrawables
-    this.setCompoundDrawables(
-        drawables[0], drawables[1], drawable,
-        drawables[3]
-    )
-}
-
-fun TextView.setDrawableTop(drawable: Drawable?) {
-    setIntrinsicBounds(drawable)
-    val drawables = this.compoundDrawables
-    this.setCompoundDrawables(
-        drawables[0], drawable, drawables[2],
-        drawables[3]
-    )
-}
-
-fun TextView.setDrawableStart(drawable: Drawable?) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        @Suppress("DEPRECATION")
-        setDrawableLeft(drawable)
-    } else {
-        setIntrinsicBounds(drawable)
-        val drawables = this.compoundDrawablesRelative
-        this.setCompoundDrawablesRelative(drawable, drawables[1], drawables[2], drawables[3])
-    }
-}
-
-fun TextView.setDrawableEnd(drawable: Drawable?) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        @Suppress("DEPRECATION")
-        setDrawableRight(drawable)
-    } else {
-        setIntrinsicBounds(drawable)
-        val drawables = this.compoundDrawablesRelative
-        this.setCompoundDrawablesRelative(drawables[0], drawables[1], drawable, drawables[3])
-    }
 }
 
 @JvmOverloads
