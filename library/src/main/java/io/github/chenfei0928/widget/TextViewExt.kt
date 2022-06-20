@@ -19,16 +19,16 @@ fun TextView.updateDrawableRelative(
     end: Drawable? = compoundDrawablesRelative[2],
     bottom: Drawable? = compoundDrawablesRelative[3]
 ) {
-    if (start != compoundDrawablesRelative[0]) {
+    if (start !== compoundDrawablesRelative[0]) {
         setIntrinsicBounds(start)
     }
-    if (top != compoundDrawablesRelative[1]) {
+    if (top !== compoundDrawablesRelative[1]) {
         setIntrinsicBounds(top)
     }
-    if (end != compoundDrawablesRelative[2]) {
+    if (end !== compoundDrawablesRelative[2]) {
         setIntrinsicBounds(end)
     }
-    if (bottom != compoundDrawablesRelative[3]) {
+    if (bottom !== compoundDrawablesRelative[3]) {
         setIntrinsicBounds(bottom)
     }
     setCompoundDrawablesRelative(start, top, end, bottom)

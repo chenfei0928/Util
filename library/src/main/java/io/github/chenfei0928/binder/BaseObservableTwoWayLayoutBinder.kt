@@ -17,17 +17,20 @@ import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
  * @date 2019-09-06 11:12
  */
 abstract class BaseObservableTwoWayLayoutBinder<Bean, V : ViewBinding>(
+    environments: Array<Observable>,
     viewBindingInflater: (LayoutInflater, ViewGroup, Boolean) -> V,
-) : TwoWayLayoutBinder<Bean, V>(viewBindingInflater) {
+) : BaseEnvironmentTwoWayLayoutBinder<Bean, V>(environments, viewBindingInflater) {
 
     @CallSuper
     override fun bindTwoWayCallback(holder: ViewBindingHolder<Bean, V>) {
+        super.bindTwoWayCallback(holder)
         // 绑定view到bean
         holder.item?.viewObservable?.holder = holder
     }
 
     @CallSuper
     override fun unbindTwoWayCallback(holder: ViewBindingHolder<Bean, V>) {
+        super.unbindTwoWayCallback(holder)
         // 解除bean到view的绑定
         holder.item?.viewObservable?.holder = null
     }
@@ -37,17 +40,17 @@ abstract class BaseObservableTwoWayLayoutBinder<Bean, V : ViewBinding>(
      * 获取当前 可删除状态标记实例Bean 的 其状态变化时更新view回调 的get方法委托
      */
     private val Bean.viewObservable: ObservableBindToViewHolderCallback<Bean, V>
-            by BeanViewObservable(this)
+            by object : BeanExtValDelegate<Bean, ObservableBindToViewHolderCallback<Bean, V>>() {
 
-    private class BeanViewObservable<Bean, V : ViewBinding>(
-        private val binder: BaseObservableTwoWayLayoutBinder<Bean, V>,
-    ) : BeanExtValDelegate<Bean, ObservableBindToViewHolderCallback<Bean, V>>() {
-        override fun create(thisRef: Bean): ObservableBindToViewHolderCallback<Bean, V> {
-            val observable = ObservableBindToViewHolderCallback(binder)
-            binder.setBeanPropertyChangedNeedViewUpdateCallback(thisRef, observable)
-            return observable
-        }
-    }
+                override fun create(thisRef: Bean): ObservableBindToViewHolderCallback<Bean, V> {
+                    val observable =
+                        ObservableBindToViewHolderCallback(this@BaseObservableTwoWayLayoutBinder)
+                    this@BaseObservableTwoWayLayoutBinder.setBeanPropertyChangedNeedViewUpdateCallback(
+                        thisRef, observable
+                    )
+                    return observable
+                }
+            }
 
     /**
      * 某个Bean被标记为准备删除状态变化时到view点选图标状态的监听器
@@ -68,7 +71,7 @@ abstract class BaseObservableTwoWayLayoutBinder<Bean, V : ViewBinding>(
      * 对[bean]的可监听属性设置监听，当其更改后要通过[callback]通知view更新
      * 在字段值变化时通知给定的回调，回调中将会调用[syncBeanChanged]来更新view
      */
-    abstract fun setBeanPropertyChangedNeedViewUpdateCallback(
-        bean: Bean, callback: Observable.OnPropertyChangedCallback,
+    protected abstract fun setBeanPropertyChangedNeedViewUpdateCallback(
+        bean: Bean, callback: Observable.OnPropertyChangedCallback
     )
 }

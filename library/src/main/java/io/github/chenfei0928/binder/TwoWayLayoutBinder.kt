@@ -8,6 +8,10 @@ import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
 /**
  * 用于提供接口以支持双向绑定
  *
+ * 只用来提供接口，不作为对外使用，外部使用时根据使用场景继承
+ * [BaseEnvironmentTwoWayLayoutBinder]（当Bean没有ObserverField，只有外部监听时）
+ * 或[BaseObservableTwoWayLayoutBinder]（当Bean有ObserverField时，同时提供外部监听）
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-09-06 09:50
  */

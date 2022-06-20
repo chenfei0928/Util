@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
+import io.github.chenfei0928.collection.getContainOrPut
 import io.github.chenfei0928.io.FileUtil
 import java.io.File
 
@@ -22,9 +23,9 @@ object FileProviderUtil {
 
     fun <F : FileProvider> findManifestFileProviderScheme(
         context: Context, clazz: Class<F>
-    ): String? = schemeCache.getOrPut(clazz) {
+    ): String? = schemeCache.getContainOrPut(clazz) {
         val fileProviderClassName = clazz::class.java.name
-        return@getOrPut context.packageManager.getPackageInfo(
+        return@getContainOrPut context.packageManager.getPackageInfo(
             context.packageName, PackageManager.GET_PROVIDERS
         ).providers.find {
             it.name == fileProviderClassName

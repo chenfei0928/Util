@@ -29,7 +29,7 @@ abstract class BaseJsBridgeFragment : Fragment() {
 
     protected abstract fun handler(name: String, data: String?, function: CallBackFunction)
 
-    fun safeJsBridgeSend(
+    protected fun safeJsBridgeSend(
         handlerName: String, data: String?, responseCallback: CallBackFunction? = null
     ) {
         ExecutorUtil.postToUiThread {
