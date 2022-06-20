@@ -1,7 +1,7 @@
 package io.github.chenfei0928.concurrent.coroutines
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -13,7 +13,7 @@ import kotlin.coroutines.CoroutineContext
 open class JobCoroutineScope(
     private val constructorCoroutineContext: CoroutineContext
 ) : CoroutineScope {
-    val job = Job() // 定义job
+    val job = SupervisorJob() // 定义job
 
     override val coroutineContext: CoroutineContext
         get() = constructorCoroutineContext + job

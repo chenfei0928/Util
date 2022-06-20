@@ -20,4 +20,4 @@ suspend fun <T1, T2, R> zip(
 
 suspend fun <T1, T2> zip(
     block1: suspend CoroutineScope.() -> T1, block2: suspend CoroutineScope.() -> T2
-): Pair<T1, T2> = zip(block1, block2) { t1, t2 -> Pair(t1, t2) }
+): Pair<T1, T2> = zip(block1, block2, ::Pair)

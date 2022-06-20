@@ -31,30 +31,30 @@ dependencies {
     implementation(DepsAndroidx.fragment)
     implementation(DepsAndroidx.startup)
     implementation(DepsAndroidx.lifecycle.runtime)
+    implementation(DepsAndroidx.lifecycle.runtimeKtx)
     implementation(DepsAndroidx.lifecycle.viewModel)
-    implementation(DepsAndroidx.material)
-    implementation(DepsAndroidx.recyclerview.core)
-    implementation(DepsAndroidx.gridlayout)
+    compileOnly(DepsAndroidx.material)
+    compileOnly(DepsAndroidx.recyclerview.core)
+    compileOnly(DepsAndroidx.gridlayout)
     compileOnly(DepsAndroidx.preference)
-    implementation(DepsAndroidx.constraintlayout.core)
-    implementation(DepsAndroidx.databinding.viewBinding)
-    implementation(DepsAndroidx.databinding.runtime)
-    implementation(DepsAndroidx.ads)
+    compileOnly(DepsAndroidx.databinding.viewBinding)
+    compileOnly(DepsAndroidx.databinding.runtime)
+    compileOnly(DepsAndroidx.ads)
 
     // https://github.com/bumptech/glide
-    implementation(Deps.glide.core)
+    compileOnly(Deps.glide.core)
     compileOnly(Deps.glide.transformations)
     // https://github.com/google/gson
-    implementation(Deps.lib.gson)
+    compileOnly(Deps.lib.gson)
     compileOnly(Deps.lib.zxing.core)
     compileOnly(Deps.network.okhttp)
     compileOnly(Deps.network.retrofit.core)
     compileOnly(Deps.lib.protobuf.java)
 
     // ARouter
-    implementation(Deps.lib.aRouter.api)
+    compileOnly(Deps.lib.aRouter.api)
 
-    implementation(Deps.widget.recyclerView.multiType)
-    implementation(Deps.widget.flexbox)
+    compileOnly(Deps.widget.recyclerView.multiType)
+    compileOnly(Deps.widget.flexbox)
     implementation(Deps.widget.jsBridge)
 }

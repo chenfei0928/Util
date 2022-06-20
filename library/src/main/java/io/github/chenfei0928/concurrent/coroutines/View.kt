@@ -12,12 +12,13 @@ import io.github.chenfei0928.view.findParentFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import java.io.Closeable
+import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 /**
  * 生命周期宿主的协程领域缓存
  */
-private val viewOwnerCoroutineScopeCache: MutableMap<View, ViewCoroutineScope> = mutableMapOf()
+private val viewOwnerCoroutineScopeCache: MutableMap<View, ViewCoroutineScope> = WeakHashMap()
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
