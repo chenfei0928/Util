@@ -6,10 +6,11 @@ package io.github.chenfei0928.widget
 
 import android.graphics.Rect
 import android.os.Build
+import android.view.Gravity
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.view.updatePadding
-import io.github.chenfei0928.view.applySystemInsetTopPadding
+import io.github.chenfei0928.view.applySystemInsetPadding
 
 fun View.onMeasure(fitStatusBar: Boolean) {
     if (fitStatusBar) {
@@ -19,7 +20,7 @@ fun View.onMeasure(fitStatusBar: Boolean) {
                 top = rootWindowInsets.systemWindowInsetTop
             )
         } else {
-            applySystemInsetTopPadding()
+            applySystemInsetPadding(direction = Gravity.TOP)
         }
     }
 }

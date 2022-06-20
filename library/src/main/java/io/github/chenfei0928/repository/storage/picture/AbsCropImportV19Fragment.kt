@@ -14,7 +14,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
-import io.github.chenfei0928.content.FileProviderKt
+import io.github.chenfei0928.content.FileProviderUtil
 import io.github.chenfei0928.repository.storage.BaseFileImportUriFragment
 import java.io.File
 
@@ -71,7 +71,7 @@ internal abstract class AbsCropImportV19Fragment : BaseFileImportUriFragment() {
      */
     protected fun obtainPicturePathUri(context: Context): Uri {
         val authority =
-            FileProviderKt.findManifestFileProviderScheme(context) ?: context.packageName
+            FileProviderUtil.findManifestFileProviderScheme(context) ?: context.packageName
         return FileProvider.getUriForFile(context, authority, obtainPictureFile(context))
     }
 

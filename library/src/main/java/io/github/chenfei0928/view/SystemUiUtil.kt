@@ -5,51 +5,115 @@
 package io.github.chenfei0928.view
 
 import android.os.Build
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.graphics.Insets
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.doOnPreDraw
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
+import androidx.core.view.*
+import io.github.chenfei0928.util.contains
 
-fun View.applySystemInsetTopMargin() {
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+private val supportRelativeDirection = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+
+fun View.applySystemInsetMargin(direction: Int) {
+    val originalMarginLeft = marginLeft
     val originalMarginTop = marginTop
-    setOnApplyWindowInsetsCompatListener { _, top, _, _ ->
-        marginTop = originalMarginTop + top
-    }
-}
-
-fun View.applySystemInsetTopPadding() {
-    val originalPaddingTop = paddingTop
-    val lpMode = View.MeasureSpec.getMode(layoutParams.height)
-    val lpHeight = View.MeasureSpec.getSize(layoutParams.height)
-    setOnApplyWindowInsetsCompatListener { _, top, _, _ ->
-        updatePadding(top = originalPaddingTop + top)
-        if (lpMode != ViewGroup.LayoutParams.WRAP_CONTENT) {
-            updateLayoutParams {
-                height = lpHeight + top
+    val originalMarginRight = marginRight
+    val originalMarginBottom = marginBottom
+    val originalMarginStart = marginStart
+    val originalMarginEnd = marginEnd
+    setOnApplyWindowInsetsCompatListener { left, top, right, bottom ->
+        updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            if (supportRelativeDirection && Gravity.RELATIVE_LAYOUT_DIRECTION in direction) {
+                val absoluteGravity = Gravity.getAbsoluteGravity(direction, layoutDirection)
+                val start = if (Gravity.LEFT in absoluteGravity) left else right
+                val end = if (Gravity.RIGHT in absoluteGravity) right else left
+                updateMarginsRelative(
+                    start = originalMarginStart +
+                            (start.takeIf { Gravity.START in direction } ?: 0),
+                    top = originalMarginTop +
+                            (top.takeIf { Gravity.TOP in direction } ?: 0),
+                    end = originalMarginEnd +
+                            (end.takeIf { Gravity.END in direction } ?: 0),
+                    bottom = originalMarginBottom +
+                            (bottom.takeIf { Gravity.BOTTOM in direction } ?: 0)
+                )
+            } else {
+                updateMargins(
+                    left = originalMarginLeft +
+                            (left.takeIf { Gravity.LEFT in direction } ?: 0),
+                    top = originalMarginTop +
+                            (top.takeIf { Gravity.TOP in direction } ?: 0),
+                    right = originalMarginRight +
+                            (right.takeIf { Gravity.RIGHT in direction } ?: 0),
+                    bottom = originalMarginBottom +
+                            (bottom.takeIf { Gravity.BOTTOM in direction } ?: 0)
+                )
             }
         }
     }
 }
 
-fun View.applySystemInsetBottomMargin() {
-    val originalMarginBottom = marginBottom
-    setOnApplyWindowInsetsCompatListener { _, _, _, bottom ->
-        marginBottom = originalMarginBottom + bottom
-    }
-}
-
-fun View.applySystemInsetBottomPadding() {
+fun View.applySystemInsetPadding(direction: Int) {
+    val originalPaddingLeft = paddingLeft
+    val originalPaddingTop = paddingTop
+    val originalPaddingRight = paddingRight
     val originalPaddingBottom = paddingBottom
-    val lpMode = View.MeasureSpec.getMode(layoutParams.height)
+    val originalPaddingStart = if (supportRelativeDirection)
+        paddingStart else 0
+    val originalPaddingEnd = if (supportRelativeDirection)
+        paddingEnd else 0
+    val lpHeightMode = View.MeasureSpec.getMode(layoutParams.height)
     val lpHeight = View.MeasureSpec.getSize(layoutParams.height)
-    setOnApplyWindowInsetsCompatListener { _, _, _, bottom ->
-        updatePadding(bottom = originalPaddingBottom + bottom)
-        if (lpMode != ViewGroup.LayoutParams.WRAP_CONTENT) {
+    val lpWidthMode = View.MeasureSpec.getMode(layoutParams.width)
+    val lpWidth = View.MeasureSpec.getSize(layoutParams.width)
+    setOnApplyWindowInsetsCompatListener { left, top, right, bottom ->
+        if (supportRelativeDirection && Gravity.RELATIVE_LAYOUT_DIRECTION in direction) {
+            val absoluteGravity = Gravity.getAbsoluteGravity(direction, layoutDirection)
+            val start = if (Gravity.LEFT in absoluteGravity) left else right
+            val end = if (Gravity.RIGHT in absoluteGravity) right else left
+            updatePaddingRelative(
+                start = originalPaddingStart +
+                        (start.takeIf { Gravity.START in direction } ?: 0),
+                top = originalPaddingTop +
+                        (top.takeIf { Gravity.TOP in direction } ?: 0),
+                end = originalPaddingEnd +
+                        (end.takeIf { Gravity.END in direction } ?: 0),
+                bottom = originalPaddingBottom +
+                        (bottom.takeIf { Gravity.BOTTOM in direction } ?: 0)
+            )
+            if (lpWidthMode != ViewGroup.LayoutParams.WRAP_CONTENT) {
+                updateLayoutParams {
+                    width = lpWidth +
+                            (start.takeIf { Gravity.START in direction } ?: 0) +
+                            (end.takeIf { Gravity.END in direction } ?: 0)
+                }
+            }
+        } else {
+            updatePadding(
+                left = originalPaddingLeft +
+                        (left.takeIf { Gravity.LEFT in direction } ?: 0),
+                top = originalPaddingTop +
+                        (top.takeIf { Gravity.TOP in direction } ?: 0),
+                right = originalPaddingRight +
+                        (right.takeIf { Gravity.RIGHT in direction } ?: 0),
+                bottom = originalPaddingBottom +
+                        (bottom.takeIf { Gravity.BOTTOM in direction } ?: 0)
+            )
+            if (lpWidthMode != ViewGroup.LayoutParams.WRAP_CONTENT) {
+                updateLayoutParams {
+                    width = lpWidth +
+                            (left.takeIf { Gravity.TOP in direction } ?: 0) +
+                            (right.takeIf { Gravity.BOTTOM in direction } ?: 0)
+                }
+            }
+        }
+        if (lpHeightMode != ViewGroup.LayoutParams.WRAP_CONTENT) {
             updateLayoutParams {
-                height = lpHeight + bottom
+                height = lpHeight +
+                        (top.takeIf { Gravity.TOP in direction } ?: 0) +
+                        (bottom.takeIf { Gravity.BOTTOM in direction } ?: 0)
             }
         }
     }

@@ -36,11 +36,8 @@ fun Context.findActivity(): Activity? {
 val Context.packageInfo: PackageInfo
     get() = this.packageManager.getPackageInfo(this.packageName, 0)
 
-val Context.versionName: String
-    get() = packageInfo.versionName
-
-val Context.versionCodeLong: Long
-    get() = PackageInfoCompat.getLongVersionCode(packageInfo)
+val PackageInfo.versionCodeLong: Long
+    get() = PackageInfoCompat.getLongVersionCode(this)
 
 fun Context.getMetaDataString(name: String): String? {
     return this.packageManager.getPackageInfo(

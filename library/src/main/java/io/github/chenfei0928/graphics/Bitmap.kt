@@ -1,6 +1,7 @@
 package io.github.chenfei0928.graphics
 
 import android.graphics.Bitmap
+import android.os.Build
 import io.github.chenfei0928.util.Log
 import java.io.File
 import java.io.FileOutputStream
@@ -35,8 +36,12 @@ private fun getCompressFormat(
             Bitmap.CompressFormat.JPEG  // JPEG 2000
         "png", "pns" ->
             Bitmap.CompressFormat.PNG   // PNG
-        "webp" ->
-            Bitmap.CompressFormat.WEBP  // WEBP
+        "webp" ->  // WEBP
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                Bitmap.CompressFormat.WEBP_LOSSLESS
+            } else {
+                Bitmap.CompressFormat.WEBP
+            }
         else ->
             default
     }

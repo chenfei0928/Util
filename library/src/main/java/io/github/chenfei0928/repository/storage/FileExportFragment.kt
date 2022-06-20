@@ -19,7 +19,7 @@ import io.github.chenfei0928.base.fragment.BaseFragment
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
-import io.github.chenfei0928.content.FileProviderKt
+import io.github.chenfei0928.content.FileProviderUtil
 import io.github.chenfei0928.io.FileUtil
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.widget.ToastUtil
@@ -117,7 +117,7 @@ class FileExportFragment : BaseFragment() {
             }
             val file = File(targetFile)
             val saved = FileResolver.save(context, file, writer)
-            val uri = FileProviderKt.createUriFromFile(context, file)
+            val uri = FileProviderUtil.createUriFromFile(context, file)
             removeSelf(saved, uri)
         }
     }

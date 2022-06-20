@@ -159,7 +159,7 @@ private constructor(
 
         // 2012-10-03 23:41:31.123
         private fun getDateEn(): String {
-            return dateEn.format(System.currentTimeMillis().toDate())
+            return dateEn.format(Date(System.currentTimeMillis()))
         }
     }
 }

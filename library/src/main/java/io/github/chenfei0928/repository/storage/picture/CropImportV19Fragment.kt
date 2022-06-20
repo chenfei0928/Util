@@ -11,7 +11,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
-import io.github.chenfei0928.content.FileProviderKt
+import io.github.chenfei0928.content.FileProviderUtil
 import io.github.chenfei0928.io.FileUtil
 
 /**
@@ -65,7 +65,7 @@ internal class PictureCropImportV19Fragment : AbsCropImportV19Fragment() {
                 val tmpFile = obtainPictureFile(context)
                 FileUtil.copyUriToDestFile(context, uri, tmpFile)
                 val authority =
-                    FileProviderKt.findManifestFileProviderScheme(context) ?: context.packageName
+                    FileProviderUtil.findManifestFileProviderScheme(context) ?: context.packageName
                 // 将导入的临时文件返回
                 FileProvider.getUriForFile(context, authority, tmpFile)
             } else {

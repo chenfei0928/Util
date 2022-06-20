@@ -1,7 +1,6 @@
 package io.github.chenfei0928.content
 
 import android.annotation.TargetApi
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -27,10 +26,6 @@ fun Context.openNotificationSetting() {
     if (packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null) {
         startActivity(intent)
     }
-}
-
-fun Activity.gotoSystemSettings(action: String, requestCode: Int) {
-    startActivityForResult(createSystemSettingsIntent(action), requestCode)
 }
 
 fun Context.createSystemSettingsIntent(action: String): Intent {
