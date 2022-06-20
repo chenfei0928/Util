@@ -1,6 +1,5 @@
 package io.github.chenfei0928.lifecycle
 
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.concurrent.ExecutorUtil
@@ -17,10 +16,10 @@ import kotlin.reflect.KProperty
  */
 class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObserver>(
     /**
-     * 传入宿主与值对象的关闭回调以创建值。
-     * 值可以直接监听宿主生命周期变化以清理资源
-     * （此时可通知回调，也可以不通知回调，因为关闭回调自身也会监听生命周期变化）
-     * 值也可以在自己提前被关闭时调用回调通知委托移除它
+     * 传入宿主与值对象的关闭回调以创建值 [V]。
+     *
+     * 返回值必须直接监听宿主生命周期变化以清理资源。
+     * 也允许返回值在自己提前被关闭时调用回调通知委托移除它
      */
     private val valueCreator: (owner: Owner, closeCallback: () -> Unit) -> V
 ) : ReadOnlyProperty<Owner, V> {
@@ -38,7 +37,6 @@ class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObserver>
             val lifecycle = thisRef.lifecycle
             ExecutorUtil.runOnUiThread {
                 lifecycle.addObserver(observer)
-                lifecycle.addObserver(closeCallback)
             }
             observer
         }
@@ -46,7 +44,7 @@ class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObserver>
 
     private inner class CloseCallback(
         private val owner: LifecycleOwner
-    ) : () -> Unit, LifecycleEventObserver {
+    ) : () -> Unit {
         lateinit var observer: LifecycleEventObserver
 
         override fun invoke() {
@@ -54,14 +52,6 @@ class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObserver>
                 cache.remove(owner, observer)
             } else {
                 cache.remove(owner)
-            }
-            owner.lifecycle.removeObserver(observer)
-            owner.lifecycle.removeObserver(this)
-        }
-
-        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-            if (event == Lifecycle.Event.ON_DESTROY) {
-                invoke()
             }
         }
     }
