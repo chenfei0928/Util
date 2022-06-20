@@ -37,6 +37,7 @@ dependencies {
     compileOnly(DepsAndroidx.recyclerview.core)
     compileOnly(DepsAndroidx.gridlayout)
     compileOnly(DepsAndroidx.preference)
+    compileOnly(DepsAndroidx.datastore.core)
     compileOnly(DepsAndroidx.databinding.viewBinding)
     compileOnly(DepsAndroidx.databinding.runtime)
     compileOnly(DepsAndroidx.ads)

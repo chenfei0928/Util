@@ -2,6 +2,7 @@ package io.github.chenfei0928.repository.local
 
 import android.os.Parcel
 import android.os.Parcelable
+import io.github.chenfei0928.os.PARCELABLE_CREATOR
 
 /**
  * 对[Parcelable]进行序列化和反序列化

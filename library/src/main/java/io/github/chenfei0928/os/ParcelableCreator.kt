@@ -1,4 +1,4 @@
-package io.github.chenfei0928.repository.local
+package io.github.chenfei0928.os
 
 import android.os.BadParcelableException
 import android.os.Parcelable
