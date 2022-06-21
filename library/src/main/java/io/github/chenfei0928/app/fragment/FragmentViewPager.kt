@@ -34,11 +34,11 @@ fun ViewPager.findFragment(fm: FragmentManager, position: Int = currentItem): Fr
         adapter == null -> null
         adapter.count == 0 -> null
         adapter.count <= position -> {
-            Log.e(
-                TAG, "findFragment: ", IndexOutOfBoundsException(
+            Log.e(TAG, "findFragment: ", run {
+                IndexOutOfBoundsException(
                     "adapter.count less to viewPager.currentItem: $adapter ${adapter.count}, $position"
                 )
-            )
+            })
             return null
         }
         adapter is FragmentPagerAdapter -> findCurrentFragmentByAdapter(adapter, fm, position)

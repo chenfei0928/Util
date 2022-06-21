@@ -86,7 +86,7 @@ private inline fun <T> MultiTypeAdapter.registerWithTypeRecord(
         // 获取该item所使用的binder类
         val binderClazz = viewTypeRecorder(item)
         if (binderClazz == null) {
-            Log.w(TAG, "registerWithTypeRecordClassMap: item not found binder class.\n$item")
+            Log.w(TAG, "registerWithTypeRecordClassMap: item not found binderClass.\n$item")
             return@linker 0
         }
         // 查找第几个是该binder类的实例
@@ -96,10 +96,12 @@ private inline fun <T> MultiTypeAdapter.registerWithTypeRecord(
         return@linker if (index != -1) {
             index
         } else {
-            Log.w(
-                TAG,
-                "registerWithTypeRecordClassMap: item binder class not found binder instance.\n$item"
-            )
+            Log.w(TAG, buildString {
+                append("registerWithTypeRecordClassMap: ")
+                append("item's binder instance not found by binderClass.")
+                appendLine()
+                append(item)
+            })
             0
         }
     }

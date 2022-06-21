@@ -12,8 +12,8 @@ import java.net.URLDecoder
  * Created by bruce on 10/28/15.
  */
 abstract class SupportBridgeWebViewClient(
-    private val context: Context,
-    private val progressBar: ProgressBar? = null
+    context: Context,
+    progressBar: ProgressBar? = null
 ) : BaseWebViewClient(context, progressBar) {
     private val TAG = "KW_SBridgeWebViewC"
 

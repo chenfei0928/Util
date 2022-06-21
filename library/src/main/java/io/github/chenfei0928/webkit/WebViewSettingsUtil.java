@@ -163,7 +163,7 @@ public class WebViewSettingsUtil {
             WebViewCompat.setWebViewRenderProcessClient(webView, new WebViewRenderProcessClient() {
                 @Override
                 public void onRenderProcessUnresponsive(@NonNull WebView view, @Nullable WebViewRenderProcess renderer) {
-                    Log.i(TAG, "onRenderProcessUnresponsive: ");
+                    Log.w(TAG, "onRenderProcessUnresponsive: ");
                     if (renderer != null && WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_TERMINATE)) {
                         renderer.terminate();
                     } else {
@@ -173,7 +173,7 @@ public class WebViewSettingsUtil {
 
                 @Override
                 public void onRenderProcessResponsive(@NonNull WebView view, @Nullable WebViewRenderProcess renderer) {
-                    Log.i(TAG, "onRenderProcessResponsive: ");
+                    Log.v(TAG, "onRenderProcessResponsive: ");
                 }
             });
         }
@@ -241,7 +241,7 @@ public class WebViewSettingsUtil {
         }
 
         webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
-            Log.i(TAG, "onDownloadStart: " + url
+            Log.v(TAG, "onDownloadStart: " + url
                     + " userAgent " + userAgent
                     + " contentDisposition " + contentDisposition
                     + " mimetype " + mimetype
@@ -281,7 +281,7 @@ public class WebViewSettingsUtil {
                             .addProxyRule(proxy)
                             .build(),
                     ExecutorUtil.INSTANCE,
-                    () -> Log.i(TAG, "setWebViewProxy: success"));
+                    () -> Log.d(TAG, "setWebViewProxy: success"));
         }
     }
 

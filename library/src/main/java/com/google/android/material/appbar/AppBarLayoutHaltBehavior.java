@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 
 import java.lang.reflect.Field;
 
+import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import io.github.chenfei0928.util.Log;
 
@@ -37,7 +38,7 @@ public class AppBarLayoutHaltBehavior extends AppBarLayout.Behavior {
     }
 
     @Override
-    public boolean onInterceptTouchEvent(CoordinatorLayout parent, AppBarLayout child, MotionEvent ev) {
+    public boolean onInterceptTouchEvent(@NonNull CoordinatorLayout parent, @NonNull AppBarLayout child, MotionEvent ev) {
         if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
             Runnable runnable = getFlingRunnable();
             // 根据Fling动画Runnable是否存在判断是否是在自动滑动中，如果是则需要拦截此次滑动事件
@@ -59,7 +60,7 @@ public class AppBarLayoutHaltBehavior extends AppBarLayout.Behavior {
     }
 
     @Override
-    void onFlingFinished(CoordinatorLayout parent, AppBarLayout layout) {
+    void onFlingFinished(@NonNull CoordinatorLayout parent, @NonNull AppBarLayout layout) {
         super.onFlingFinished(parent, layout);
         // 清空该字段，以标记自动滑动完成
         clearFlingRunnable();

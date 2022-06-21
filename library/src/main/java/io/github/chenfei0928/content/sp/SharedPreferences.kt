@@ -17,10 +17,11 @@ fun SharedPreferences.registerOnSharedPreferenceChangeListener(
     owner: LifecycleOwner, callback: SharedPreferences.(key: String) -> Unit
 ) {
     if (owner is Fragment) {
-        Log.w(
-            TAG,
-            "registerOnSharedPreferenceChangeListener: owner($owner) is a Fragment, use viewLifecycleOwner as LifecycleOwner in Fragment."
-        )
+        Log.w(TAG, buildString {
+            append("registerOnSharedPreferenceChangeListener: ")
+            append("owner($owner) is a Fragment, ")
+            append("use viewLifecycleOwner as LifecycleOwner in Fragment.")
+        })
     }
     val changeListener = SharedPreferencesOnSharedPreferenceChangeListener(owner, this, callback)
     owner.lifecycle.addObserver(changeListener)

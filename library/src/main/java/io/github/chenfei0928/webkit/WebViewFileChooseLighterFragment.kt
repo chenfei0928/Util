@@ -42,14 +42,14 @@ class WebViewFileChooseLighterFragment : Fragment() {
             startActivityForResult(intent, REQUEST_CODE)
         } catch (e: ActivityNotFoundException) {
             ToastUtil.showShort(context, "打开文件选择器失败")
-            Log.w(
-                TAG, "启动文件选择器失败：title: ${fileChooserParams.title}, " +
+            Log.w(TAG, run {
+                "启动文件选择器失败：title: ${fileChooserParams.title}, " +
                         "filenameHint:  ${fileChooserParams.filenameHint}, " +
                         "acceptTypes: ${fileChooserParams.acceptTypes?.contentToString()}, " +
                         "isCaptureEnabled: ${fileChooserParams.isCaptureEnabled}, " +
                         "mode: ${fileChooserParams.mode}, " +
-                        "intent: $intent", e
-            )
+                        "intent: $intent"
+            }, e)
             removeSelf()
         }
     }

@@ -65,7 +65,7 @@ public class ToastUtil {
     public static void showShort(Context context, @StringRes int message) {
         if (context == null) {
             context = ContextProvider.getContext();
-            Log.i(TAG, "showShort: context is null", new NullPointerException());
+            Log.w(TAG, "showShort: context is null", new NullPointerException());
         }
         showShort(context, context.getString(message));
     }
@@ -88,7 +88,7 @@ public class ToastUtil {
         }
         if (context == null) {
             context = ContextProvider.getContext();
-            Log.i(TAG, "showShort: ", new NullPointerException("context is null"));
+            Log.w(TAG, "showShort: ", new NullPointerException("context is null"));
         }
         cancel();
         if (Looper.myLooper() != Looper.getMainLooper()) {

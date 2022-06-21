@@ -44,11 +44,9 @@ class SuspendLayoutInflater(
                     onCreateView(inflater, parent)
                 } catch (ex: RuntimeException) {
                     // Probably a Looper failure, retry on the UI thread
-                    Log.w(
-                        TAG,
-                        "Failed to inflate resource in the background! Retrying on the UI thread",
-                        ex
-                    )
+                    Log.w(TAG, run {
+                        "Failed to inflate resource in the background! Retrying on the UI thread"
+                    }, ex)
                     null
                 }
             } ?: onCreateView(inflater, parent)!!
@@ -78,11 +76,9 @@ class SuspendLayoutInflater(
                     inflater.inflate(resId, parent, false)
                 } catch (ex: RuntimeException) {
                     // Probably a Looper failure, retry on the UI thread
-                    Log.w(
-                        TAG,
-                        "Failed to inflate resource in the background! Retrying on the UI thread",
-                        ex
-                    )
+                    Log.w(TAG, run {
+                        "Failed to inflate resource in the background! Retrying on the UI thread"
+                    }, ex)
                     null
                 }
             } ?: inflater.inflate(resId, parent, false)

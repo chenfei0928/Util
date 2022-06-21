@@ -98,22 +98,21 @@ private object AbsSpSaverKProperty1Cache {
 fun <SpSaver : AbsSpSaver> SpSaver.registerOnSharedPreferenceChangeListener(
     owner: LifecycleOwner, callback: (key: KProperty1<SpSaver, *>) -> Unit
 ) {
+    val spSaver = this
     AbsSpSaverKProperty1Cache.prepare(owner, this)
     AbsSpSaver.getSp(this)
         .registerOnSharedPreferenceChangeListener(owner) { key ->
             owner.coroutineScope.launch {
                 // 根据key获取其对应的AbsSpSaver字段
-                val property = AbsSpSaverKProperty1Cache.findSpKProperty1BySpKey(
-                    this@registerOnSharedPreferenceChangeListener, key
-                )
+                val property = AbsSpSaverKProperty1Cache
+                    .findSpKProperty1BySpKey(spSaver, key)
                 // 找得到属性，回调通知该字段被更改
                 if (property == null) {
-                    val simpleName =
-                        this@registerOnSharedPreferenceChangeListener.javaClass.simpleName
-                    Log.d(
-                        TAG,
-                        "registerOnSharedPreferenceChangeListener: cannot found property of the key($key) in class $simpleName"
-                    )
+                    Log.d(TAG, buildString {
+                        append("registerOnSharedPreferenceChangeListener: ")
+                        append("cannot found property of the key($key) in class ")
+                        append(spSaver.javaClass.simpleName)
+                    })
                 } else {
                     callback(property)
                 }
