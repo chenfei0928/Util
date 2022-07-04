@@ -18,8 +18,8 @@ import androidx.annotation.RequiresApi;
  * @date 2020-07-29 16:04
  */
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class SystemIdentityWeakHashMapN<K, V>
-        extends SystemIdentityWeakHashMap<K, V> {
+class SystemIdentityWeakHashMapN<K, V>
+        extends BaseSystemIdentityWeakHashMap<K, V> {
 
     transient Set<K> keySet;
     transient Collection<V> values;
@@ -521,7 +521,7 @@ public class SystemIdentityWeakHashMapN<K, V>
         }
     }
 
-    private class EntrySet extends SystemIdentityWeakHashMap<K, V>.EntrySet {
+    private class EntrySet extends BaseSystemIdentityWeakHashMap<K, V>.EntrySet {
 
         @NotNull
         @Override

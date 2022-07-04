@@ -9,7 +9,7 @@ import java.lang.ref.WeakReference;
  * @author ChenFei(chenfei0928 @ gmail.com)
  * @date 2020-07-29 16:04
  */
-public class SystemIdentityWeakHashMap<K, V>
+class BaseSystemIdentityWeakHashMap<K, V>
         extends AbstractMap<K, V>
         implements Map<K, V> {
 
@@ -72,7 +72,7 @@ public class SystemIdentityWeakHashMap<K, V>
      * @throws IllegalArgumentException if the initial capacity is negative,
      *                                  or if the load factor is nonpositive.
      */
-    public SystemIdentityWeakHashMap(int initialCapacity, float loadFactor) {
+    public BaseSystemIdentityWeakHashMap(int initialCapacity, float loadFactor) {
         if (initialCapacity < 0)
             throw new IllegalArgumentException("Illegal Initial Capacity: " +
                     initialCapacity);
@@ -97,7 +97,7 @@ public class SystemIdentityWeakHashMap<K, V>
      * @param initialCapacity The initial capacity of the <tt>SystemIdentityWeakHashMap</tt>
      * @throws IllegalArgumentException if the initial capacity is negative
      */
-    public SystemIdentityWeakHashMap(int initialCapacity) {
+    public BaseSystemIdentityWeakHashMap(int initialCapacity) {
         this(initialCapacity, DEFAULT_LOAD_FACTOR);
     }
 
@@ -105,7 +105,7 @@ public class SystemIdentityWeakHashMap<K, V>
      * Constructs a new, empty <tt>SystemIdentityWeakHashMap</tt> with the default initial
      * capacity (16) and load factor (0.75).
      */
-    public SystemIdentityWeakHashMap() {
+    public BaseSystemIdentityWeakHashMap() {
         this(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR);
     }
 
@@ -121,7 +121,7 @@ public class SystemIdentityWeakHashMap<K, V>
      * @throws NullPointerException if the specified map is null
      * @since 1.3
      */
-    public SystemIdentityWeakHashMap(Map<? extends K, ? extends V> m) {
+    public BaseSystemIdentityWeakHashMap(Map<? extends K, ? extends V> m) {
         this(Math.max((int) (m.size() / DEFAULT_LOAD_FACTOR) + 1,
                         DEFAULT_INITIAL_CAPACITY),
                 DEFAULT_LOAD_FACTOR);
@@ -599,7 +599,7 @@ public class SystemIdentityWeakHashMap<K, V>
 
         @SuppressWarnings("unchecked")
         public K getKey() {
-            return (K) SystemIdentityWeakHashMap.unmaskNull(get());
+            return (K) BaseSystemIdentityWeakHashMap.unmaskNull(get());
         }
 
         public V getValue() {
@@ -704,7 +704,7 @@ public class SystemIdentityWeakHashMap<K, V>
             if (modCount != expectedModCount)
                 throw new ConcurrentModificationException();
 
-            SystemIdentityWeakHashMap.this.remove(currentKey);
+            BaseSystemIdentityWeakHashMap.this.remove(currentKey);
             expectedModCount = modCount;
             lastReturned = null;
             currentKey = null;
@@ -736,11 +736,11 @@ public class SystemIdentityWeakHashMap<K, V>
         }
 
         public int size() {
-            return SystemIdentityWeakHashMap.this.size();
+            return BaseSystemIdentityWeakHashMap.this.size();
         }
 
         public void clear() {
-            SystemIdentityWeakHashMap.this.clear();
+            BaseSystemIdentityWeakHashMap.this.clear();
         }
 
         private List<Map.Entry<K, V>> deepCopy() {

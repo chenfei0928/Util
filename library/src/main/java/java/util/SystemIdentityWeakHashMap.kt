@@ -1,8 +1,6 @@
-package io.github.chenfei0928.collection
+package java.util
 
 import android.os.Build
-import java.util.*
-import java.util.SystemIdentityWeakHashMap
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -12,6 +10,6 @@ class SystemIdentityWeakHashMap<K, V>(
     private val map: MutableMap<K, V> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         SystemIdentityWeakHashMapN<K, V>()
     } else {
-        SystemIdentityWeakHashMap<K, V>()
+        BaseSystemIdentityWeakHashMap<K, V>()
     }
 ) : MutableMap<K, V> by map

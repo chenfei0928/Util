@@ -8,19 +8,15 @@ import java.io.OutputStream
  * @date 2020-08-12 13:54
  */
 class IoRedirectThread(
-    private val source: InputStream, private val target: OutputStream, bufferSize: Int = 8192
+    private val source: InputStream,
+    private val target: OutputStream,
+    private val bufferSize: Int = DEFAULT_BUFFER_SIZE
 ) : Thread() {
-    private val buffer = ByteArray(bufferSize)
+    init {
+        name = "IoRedirectThread-$id"
+    }
 
     override fun run() {
-        source.use {
-            target.use {
-                var size = source.read(buffer)
-                while (size > 0) {
-                    target.write(buffer, 0, size)
-                    size = source.read(buffer)
-                }
-            }
-        }
+        source.copyTo(target, bufferSize)
     }
 }

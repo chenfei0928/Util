@@ -1,4 +1,4 @@
-package io.github.chenfei0928.binder
+package io.github.chenfei0928.widget.recyclerview.binder
 
 import android.os.Looper
 import android.view.LayoutInflater
