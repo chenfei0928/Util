@@ -6,6 +6,8 @@ import android.content.res.ColorStateList
 import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
+import androidx.resourceinspection.annotation.AppCompatShadowedAttributes
+import androidx.resourceinspection.annotation.Attribute
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.util.R
 
@@ -13,24 +15,29 @@ import io.github.chenfei0928.util.R
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-01-25 17:21
  */
+@AppCompatShadowedAttributes
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class BorderImageView
 @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : OutlineClipImageView(context, attrs, defStyleAttr) {
-    private var mBorderColor: ColorStateList? = null
+
+    @get:Attribute(value = "io.github.chenfei0928:biv_borderColor")
+    var borderColor: ColorStateList? = null
         set(value) {
             field = value
-            mBorderPaint.color = mBorderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
+            mBorderPaint.color = borderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
                 ?: DEFAULT_BORDER_COLOR
         }
     private val mBorderPaint = Paint().apply {
         style = Paint.Style.STROKE
         isAntiAlias = true
-        color = mBorderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
+        color = borderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
             ?: DEFAULT_BORDER_COLOR
     }
-    private var borderWidth: Float
+
+    @get:Attribute(value = "io.github.chenfei0928:biv_borderWidth")
+    var borderWidth: Float
         set(value) {
             mBorderPaint.strokeWidth = value
         }
@@ -38,14 +45,14 @@ class BorderImageView
 
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.BorderImageView, defStyleAttr, 0)
-        borderWidth = a.getDimension(R.styleable.BorderImageView_biv_border_width, 0f)
-        mBorderColor = a.getColorStateList(R.styleable.BorderImageView_biv_border_color)
+        borderWidth = a.getDimension(R.styleable.BorderImageView_biv_borderWidth, 0f)
+        borderColor = a.getColorStateList(R.styleable.BorderImageView_biv_borderColor)
         a.recycle()
     }
 
     override fun drawableStateChanged() {
         super.drawableStateChanged()
-        val newColor = mBorderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
+        val newColor = borderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
             ?: DEFAULT_BORDER_COLOR
         if (mBorderPaint.color != newColor) {
             mBorderPaint.color = newColor

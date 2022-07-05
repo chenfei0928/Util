@@ -4,6 +4,7 @@ plugins {
     `android-library`
     `kotlin-android`
     `kotlin-parcelize`
+    `kotlin-kapt`
     `maven-publish`
     signing
 }
@@ -33,6 +34,9 @@ dependencies {
     implementation(DepsAndroidx.lifecycle.runtime)
     implementation(DepsAndroidx.lifecycle.runtimeKtx)
     implementation(DepsAndroidx.lifecycle.viewModel)
+    compileOnly(DepsAndroidx.resourceInspection.annotation)
+    annotationProcessor(DepsAndroidx.resourceInspection.processor)
+    kapt(DepsAndroidx.resourceInspection.processor)
     compileOnly(DepsAndroidx.material)
     compileOnly(DepsAndroidx.recyclerview.core)
     compileOnly(DepsAndroidx.gridlayout)

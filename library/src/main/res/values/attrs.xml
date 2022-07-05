@@ -44,7 +44,7 @@
     </declare-styleable>
 
     <declare-styleable name="BorderImageView">
-        <attr name="biv_border_width" format="dimension"/>
-        <attr name="biv_border_color" format="color"/>
+        <attr name="biv_borderWidth" format="dimension"/>
+        <attr name="biv_borderColor" format="color"/>
     </declare-styleable>
 </resources>

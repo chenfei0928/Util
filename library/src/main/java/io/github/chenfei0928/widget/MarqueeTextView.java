@@ -12,12 +12,15 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
 
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.resourceinspection.annotation.AppCompatShadowedAttributes;
+import androidx.resourceinspection.annotation.Attribute;
 import io.github.chenfei0928.util.R;
 
 /**
  * @author ChenFei(chenfei0928 @ gmail.com)
  * @date 2020-09-18 17:06
  */
+@AppCompatShadowedAttributes
 public class MarqueeTextView extends AppCompatTextView {
 
     /**
@@ -253,6 +256,7 @@ public class MarqueeTextView extends AppCompatTextView {
     /**
      * 获取滚动一次的时间(文本的宽度刚好和控件的宽度相等时的时间)
      */
+    @Attribute("io.github.chenfei0928:mtv_scrollInterval")
     public int getRndDuration() {
         return mRollingInterval;
     }
@@ -272,6 +276,7 @@ public class MarqueeTextView extends AppCompatTextView {
     /**
      * 获取滚动模式
      */
+    @Attribute("io.github.chenfei0928:mtv_scrollMode")
     public int getScrollMode() {
         return this.mScrollMode;
     }
@@ -286,6 +291,7 @@ public class MarqueeTextView extends AppCompatTextView {
     /**
      * 获取第一次滚动延迟
      */
+    @Attribute("io.github.chenfei0928:mtv_scrollFirstDelay")
     public int getScrollFirstDelay() {
         return mFirstScrollDelay;
     }

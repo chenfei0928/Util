@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewOutlineProvider
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.resourceinspection.annotation.AppCompatShadowedAttributes
+import androidx.resourceinspection.annotation.Attribute
 import io.github.chenfei0928.util.R
 import kotlin.math.max
 
@@ -19,22 +21,28 @@ import kotlin.math.max
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-01-25 11:10
  */
+@AppCompatShadowedAttributes
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 open class OutlineClipImageView
 @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : AppCompatImageView(context, attrs, defStyleAttr) {
+
+    @get:Attribute(value = "io.github.chenfei0928:olciv_oval")
     var isOval: Boolean = false
         set(value) {
             field = value
             invalidate()
         }
+
+    @get:Attribute(value = "io.github.chenfei0928:olciv_cornerRadius")
     var cornerRadius = DEFAULT_RADIUS
         set(value) {
             field = value
             invalidate()
         }
 
+    @get:Attribute(value = "io.github.chenfei0928:olciv_clipToBackground")
     var clipToBackground: Boolean
         get() = outlineProvider == ViewOutlineProvider.BACKGROUND
         set(value) {
