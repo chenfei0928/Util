@@ -25,9 +25,6 @@ infix fun Int.anyIn(other: Int): Boolean {
     return other and this != 0
 }
 
-fun Long.formatDateTime(pattern: String): String = Date(this)
-    .toString(pattern)
-
 /**
  * 规则字符串内如果要使用模式字母，将非匹配规则内的字符以单引号括住
  * 在单引号内的模式字母不会被认为是规则，如要输出单引号本身，则使用两个单引号
