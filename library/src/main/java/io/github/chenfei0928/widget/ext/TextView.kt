@@ -2,7 +2,7 @@
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-07-16 10:03
  */
-package io.github.chenfei0928.widget
+package io.github.chenfei0928.widget.ext
 
 import android.annotation.SuppressLint
 import android.graphics.Paint

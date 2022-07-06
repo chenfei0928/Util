@@ -12,13 +12,13 @@ import java.util.concurrent.atomic.AtomicReference
 
 abstract class LocalFileStorage<T>(
     serializer: LocalSerializer<T>,
-    protected val fileName: String,
+    private val fileName: String,
     private val cacheDir: Boolean = false,
     private val memoryCacheable: Boolean = true
 ) {
     private val serializer = NoopIODecorator(serializer)
 
-    private fun getFile(context: Context, fileName: String = this.fileName): File {
+    private fun getFile(context: Context, fileName: String): File {
         val dir = if (cacheDir) {
             context.cacheDir
         } else {

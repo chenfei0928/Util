@@ -2,27 +2,12 @@ package io.github.chenfei0928.util
 
 import org.json.JSONArray
 import org.json.JSONObject
-import org.json.JSONStringer
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 operator fun JSONObject.set(name: String, value: Any?): JSONObject {
     putOpt(name, value)
     return this
-}
-
-fun JSONStringer.put(name: String, value: String?): JSONStringer = key(name).value(value)
-fun JSONStringer.put(name: String, value: Int): JSONStringer = key(name).value(value)
-fun JSONStringer.put(name: String, value: Long): JSONStringer = key(name).value(value)
-fun JSONStringer.put(name: String, value: Double): JSONStringer = key(name).value(value)
-fun JSONStringer.put(name: String, value: Boolean): JSONStringer = key(name).value(value)
-inline fun JSONStringer.newJsonObject(
-    name: String, block: JSONStringer.() -> Unit
-): JSONStringer = apply {
-    key(name)
-    `object`()
-    block(this)
-    endObject()
 }
 
 inline fun JSONObject.newJsonObject(name: String, action: JSONObject.() -> Unit): JSONObject {

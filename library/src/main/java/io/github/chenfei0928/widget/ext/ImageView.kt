@@ -2,7 +2,7 @@
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-11 11:25
  */
-package io.github.chenfei0928.widget
+package io.github.chenfei0928.widget.ext
 
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable

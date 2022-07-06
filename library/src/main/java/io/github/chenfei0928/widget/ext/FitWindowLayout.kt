@@ -2,7 +2,7 @@
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-08-30 14:49
  */
-package io.github.chenfei0928.widget
+package io.github.chenfei0928.widget.ext
 
 import android.graphics.Rect
 import android.os.Build

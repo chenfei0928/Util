@@ -34,9 +34,7 @@ open class NestedScrollingWebView
     }
 
     override fun onOverScrolled(scrollX: Int, scrollY: Int, clampedX: Boolean, clampedY: Boolean) {
-        dumpMessage(
-            "onOverScrolled scrollX=" + scrollX + ";scrollY=" + scrollY + ";clampedX=" + clampedX + ";clampedY=" + clampedY
-        )
+        dumpMessage("onOverScrolled scrollX=$scrollX;scrollY=$scrollY;clampedX=$clampedX;clampedY=$clampedY")
         if (clampedX) {
             val viewParent = findViewParentIfNeeds(this)
             viewParent?.requestDisallowInterceptTouchEvent(false)
@@ -44,7 +42,7 @@ open class NestedScrollingWebView
         super.onOverScrolled(scrollX, scrollY, clampedX, clampedY)
     }
 
-    internal fun findViewParentIfNeeds(tag: View): ViewParent? {
+    private fun findViewParentIfNeeds(tag: View): ViewParent? {
         val parent = tag.parent
         if (parent == null) {
             return parent

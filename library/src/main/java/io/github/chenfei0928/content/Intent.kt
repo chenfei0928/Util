@@ -2,26 +2,16 @@ package io.github.chenfei0928.content
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.collection.ArrayMap
 import com.google.protobuf.GeneratedMessageLite
 import com.google.protobuf.getParseFrom
 import io.github.chenfei0928.base.ContextProvider
-import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.repository.local.ParcelableUtils
 import io.github.chenfei0928.util.deepEquals
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
-
-fun Intent.putParcelableListExtra(name: String, value: List<Parcelable>?): Intent {
-    return putParcelableArrayListExtra(name, value?.asArrayList())
-}
-
-fun Bundle.putParcelableList(name: String, value: List<Parcelable>?) {
-    putParcelableArrayList(name, value?.asArrayList())
-}
 
 fun Intent.putExtra(name: String, value: GeneratedMessageLite<*, *>) {
     putExtra(name, value.toByteArray())
@@ -96,10 +86,8 @@ fun Intent.zipExtras(): Intent = apply {
 
 fun Intent.unzipExtras(classLoader: ClassLoader = ContextProvider::class.java.classLoader!!): Bundle {
     val zipped = getByteArrayExtra("zipped") ?: return Bundle.EMPTY
-    val unzipped = ByteArrayInputStream(zipped).use {
-        GZIPInputStream(it).use {
-            it.readBytes()
-        }
+    val unzipped = GZIPInputStream(ByteArrayInputStream(zipped)).use {
+        it.readBytes()
     }
     return ParcelableUtils.unmarshall(unzipped, Bundle.CREATOR).apply {
         this.classLoader = classLoader

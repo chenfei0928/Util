@@ -6,8 +6,6 @@ import android.content.res.ColorStateList
 import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
-import androidx.resourceinspection.annotation.AppCompatShadowedAttributes
-import androidx.resourceinspection.annotation.Attribute
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.util.R
 
@@ -15,14 +13,12 @@ import io.github.chenfei0928.util.R
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-01-25 17:21
  */
-@AppCompatShadowedAttributes
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class BorderImageView
 @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : OutlineClipImageView(context, attrs, defStyleAttr) {
 
-    @get:Attribute(value = "io.github.chenfei0928:biv_borderColor")
     var borderColor: ColorStateList? = null
         set(value) {
             field = value
@@ -36,7 +32,6 @@ class BorderImageView
             ?: DEFAULT_BORDER_COLOR
     }
 
-    @get:Attribute(value = "io.github.chenfei0928:biv_borderWidth")
     var borderWidth: Float
         set(value) {
             mBorderPaint.strokeWidth = value

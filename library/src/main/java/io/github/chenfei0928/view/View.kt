@@ -1,11 +1,8 @@
 package io.github.chenfei0928.view
 
-import android.os.Build
-import android.view.Choreographer
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
-import androidx.annotation.RequiresApi
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -14,13 +11,6 @@ import io.github.chenfei0928.content.findActivity
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
-
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-inline fun Choreographer.postFrameCallbackDelayed(
-    delayMillis: Long, crossinline block: (Long) -> Unit
-) {
-    postFrameCallbackDelayed({ block(it) }, delayMillis)
-}
 
 fun <T : View> ViewGroup.findChildById(id: Int): T? {
     forEach {

@@ -1,4 +1,4 @@
-package io.github.chenfei0928.widget
+package io.github.chenfei0928.widget.ext
 
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable

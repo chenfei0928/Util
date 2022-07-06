@@ -113,7 +113,7 @@ public class NestedScrollingViewPager extends ViewPager implements NestedScrolli
     // NestedScrollingParent
 
     @Override
-    public boolean onStartNestedScroll(@NonNull View child, View target, int nestedScrollAxes) {
+    public boolean onStartNestedScroll(@NonNull View child, @NonNull View target, int nestedScrollAxes) {
         return (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
     }
 
