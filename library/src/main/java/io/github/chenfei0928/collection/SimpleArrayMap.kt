@@ -12,8 +12,7 @@ import androidx.collection.SimpleArrayMap
 fun <K, V> Map<K, V>.asSimpleArrayMap(): SimpleArrayMap<K, V> = if (this is SimpleArrayMap<*, *>) {
     this as SimpleArrayMap<K, V>
 } else {
-    SimpleArrayMap<K, V>().also {
-        it.ensureCapacity(it.size() + size)
+    SimpleArrayMap<K, V>(size).also {
         this.forEach { (k, v) ->
             it.put(k, v)
         }

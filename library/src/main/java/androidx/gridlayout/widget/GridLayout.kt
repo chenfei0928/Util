@@ -10,13 +10,13 @@ var GridLayout.defaultGap: Int
         invalidate()
     }
 
-fun GridLayout.LayoutParams.column(block: GridLayoutLayoutParamsSpecBuilder.() -> Unit) {
+inline fun GridLayout.LayoutParams.column(block: GridLayoutLayoutParamsSpecBuilder.() -> Unit) {
     val builder = GridLayoutLayoutParamsSpecBuilder.createFrom(columnSpec, true)
     block(builder)
     columnSpec = builder.build()
 }
 
-fun GridLayout.LayoutParams.row(block: GridLayoutLayoutParamsSpecBuilder.() -> Unit) {
+inline fun GridLayout.LayoutParams.row(block: GridLayoutLayoutParamsSpecBuilder.() -> Unit) {
     val builder = GridLayoutLayoutParamsSpecBuilder.createFrom(rowSpec, false)
     block(builder)
     rowSpec = builder.build()

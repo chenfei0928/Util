@@ -34,7 +34,10 @@ suspend fun <T> LiveData<T>.nextValue(): T? {
     }
 }
 
-fun <T> LiveData<T>.filter(lifecycleOwner: LifecycleOwner, filter: (T) -> Boolean): LiveData<T> {
+inline fun <T> LiveData<T>.filter(
+    lifecycleOwner: LifecycleOwner,
+    crossinline filter: (T) -> Boolean
+): LiveData<T> {
     val mutableLiveData = MutableLiveData<T>()
     this.observe(lifecycleOwner) {
         if (filter(it)) {

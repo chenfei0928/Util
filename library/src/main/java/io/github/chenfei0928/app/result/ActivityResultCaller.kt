@@ -47,13 +47,13 @@ fun <I, O> ActivityResultCaller.registerForActivityResult(
 }
 
 internal class ActivityResultCallerLauncher<I, O>(
-    val launcher: ActivityResultLauncher<I>,
-    val callerContract: ActivityResultContract<I, O>,
-    val input: () -> I
+    private val launcher: ActivityResultLauncher<I>,
+    private val callerContract: ActivityResultContract<I, O>,
+    private val input: () -> I
 ) : ActivityResultLauncher<Unit>() {
-    val resultContract: ActivityResultContract<Unit, O> by lazy {
+    private val resultContract: ActivityResultContract<Unit, O> by lazy {
         object : ActivityResultContract<Unit, O>() {
-            override fun createIntent(context: Context, void: Unit?): Intent {
+            override fun createIntent(context: Context, input: Unit): Intent {
                 return callerContract.createIntent(context, input())
             }
 
