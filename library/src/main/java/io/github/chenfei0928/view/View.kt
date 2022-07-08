@@ -71,7 +71,7 @@ private fun findAllSupportFragmentsWithViews(
     }
 }
 
-inline fun <R> View.getTagOrPut(id: Int, creator: (View) -> R): R {
+inline fun <V : View, R> V.getTagOrPut(id: Int, creator: (V) -> R): R {
     val tag = this.getTag(id)
     return if (tag != null) {
         tag as R
@@ -100,11 +100,11 @@ class ViewTagDelegate<R>(
 /**
  * 字段委托类，通过viewTag来实现为viewHolder扩展字段
  */
-class ViewTagValDelegate<R>(
-    @IdRes private val id: Int, private val creator: (View) -> R
-) : ReadOnlyProperty<View, R> {
+class ViewTagValDelegate<V : View, R>(
+    @IdRes private val id: Int, private val creator: (V) -> R
+) : ReadOnlyProperty<V, R> {
 
-    override fun getValue(thisRef: View, property: KProperty<*>): R {
+    override fun getValue(thisRef: V, property: KProperty<*>): R {
         return thisRef.getTagOrPut(id, creator)
     }
 }

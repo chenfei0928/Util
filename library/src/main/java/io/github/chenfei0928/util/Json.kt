@@ -2,8 +2,6 @@ package io.github.chenfei0928.util
 
 import org.json.JSONArray
 import org.json.JSONObject
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
 
 operator fun JSONObject.set(name: String, value: Any?): JSONObject {
     putOpt(name, value)
@@ -39,13 +37,3 @@ inline fun JSONArray.newJsonArray(action: JSONArray.() -> Unit): JSONArray {
 }
 
 inline operator fun JSONObject.contains(key: String) = has(key)
-
-class JsonDelegate : ReadWriteProperty<JSONObject, Any?> {
-    override fun getValue(thisRef: JSONObject, property: KProperty<*>): Any? {
-        return thisRef[property.name]
-    }
-
-    override fun setValue(thisRef: JSONObject, property: KProperty<*>, value: Any?) {
-        thisRef[property.name] = value
-    }
-}
