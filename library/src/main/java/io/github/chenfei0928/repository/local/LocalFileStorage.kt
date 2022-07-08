@@ -5,9 +5,7 @@ import android.os.Build
 import android.util.Log
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.io.ShareFileLockHelper
-import java.io.File
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import java.util.concurrent.atomic.AtomicReference
 
 abstract class LocalFileStorage<T>(
@@ -45,13 +43,6 @@ abstract class LocalFileStorage<T>(
      * 从本地文件反序列化
      */
     private fun loadFromLocalFile(context: Context): T? = runFileWithLock(context) { file ->
-        // 如果备份文件存在，说明上次的保存没有成功，删除未成功保存的文件，读取备份文件
-        makeBackupFile(file).let { backupFile ->
-            if (backupFile.exists()) {
-                file.delete()
-                backupFile.renameTo(file)
-            }
-        }
         // 文件不存在，直接返回空
         if (!file.exists()) {
             null
@@ -71,31 +62,26 @@ abstract class LocalFileStorage<T>(
      */
     private fun saveToLocalFileOrDelete(context: Context, value: T?): Unit =
         runFileWithLock(context) { file ->
-            val backupFile = makeBackupFile(file)
-            // 如果备份文件存在，将主文件删除后写入主文件
-            // 备份文件在主文件写入成功前不会被删除，即备份文件总是曾经有效的某次写入
-            if (backupFile.exists()) {
+            if (value == null) {
                 file.delete()
-            } else if (!file.renameTo(backupFile)) {
-                // 备份文件不存在，并将主文件重命名为备份文件时失败，不写入，以防写入失败后数据彻底损坏
-                Log.e(TAG, "Couldn't rename file $file to backup file $backupFile")
                 return@runFileWithLock
             }
-            // 上方已将主文件重命名或删除，主文件已不存在，此时需要写入空数据时，直接删除备份文件返回
-            if (value == null) {
-                backupFile.delete()
-                return@runFileWithLock
+            // 先将文件写入临时文件，然后将临时文件更名
+            val tmpFile = makeTmpFile(file)
+            if (tmpFile.exists()) {
+                tmpFile.delete()
             }
             try {
-                file.createNewFile()
-                file.outputStream()
-                    .let { serializer.onOpenOutStream(it) }
-                    .use { serializer.write(it, value) }
-                // 保存成功后，删除备份文件
-                backupFile.delete()
+                tmpFile.createNewFile()
+                serializer.onOpenOutStream(FileSyncOutputStream(tmpFile)).use {
+                    serializer.write(it, value)
+                    it.flush()
+                }
+                // 保存成功后，重命名备份文件
+                tmpFile.renameTo(file)
             } catch (e: Exception) {
-                Log.e(TAG, "loadFromLocalFile: $file, $serializer", e)
-                file.delete()
+                Log.e(TAG, "saveToLocalFileOrDelete: $tmpFile, $serializer", e)
+                tmpFile.delete()
             }
         }
     //</editor-fold>
@@ -148,8 +134,8 @@ abstract class LocalFileStorage<T>(
         protected const val TAG = "KW_LocalJsonStorage"
         private const val LOCK_FILE_SUFFIX = "_lock"
 
-        private fun makeBackupFile(prefsFile: File): File {
-            return File(prefsFile.path + ".bak")
+        private fun makeTmpFile(prefsFile: File): File {
+            return File(prefsFile.path + ".tmp")
         }
     }
 
@@ -162,6 +148,19 @@ abstract class LocalFileStorage<T>(
 
         override fun onOpenOutStream1(outputStream: OutputStream): OutputStream {
             return outputStream
+        }
+    }
+
+    private class FileSyncOutputStream : FileOutputStream {
+        constructor(name: String) : super(name)
+        constructor(name: String, append: Boolean) : super(name, append)
+        constructor(file: File) : super(file)
+        constructor(file: File, append: Boolean) : super(file, append)
+        constructor(fdObj: FileDescriptor) : super(fdObj)
+
+        override fun close() {
+            fd.sync()
+            super.close()
         }
     }
 }
