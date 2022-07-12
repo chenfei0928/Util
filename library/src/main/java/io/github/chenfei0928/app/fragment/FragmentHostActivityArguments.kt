@@ -2,7 +2,7 @@ package io.github.chenfei0928.app.fragment
 
 import android.os.Parcelable
 import androidx.fragment.app.Fragment
-import io.github.chenfei0928.content.putParcelableList
+import io.github.chenfei0928.collection.asArrayList
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -73,7 +73,7 @@ class FragmentHostActivityParcelableListDelegate<T : Parcelable>(
 
     override fun setValue(thisRef: Fragment, property: KProperty<*>, value: List<T>) {
         thisRef.applyArgumentBundle {
-            putParcelableList(name, value)
+            putParcelableArrayList(name, value.asArrayList())
         }
     }
 }

@@ -57,15 +57,15 @@ open class FileImportUriFragment : BasePermissionFileImportFragment<Uri>(
 
     private class FileUriImportContract : ActivityResultContract<String, Uri?>() {
 
-        override fun createIntent(context: Context, mimeType: String?): Intent {
+        override fun createIntent(context: Context, input: String): Intent {
             val intent = Intent()
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                 intent.action = Intent.ACTION_GET_CONTENT
-                intent.type = mimeType
+                intent.type = input
             } else {
                 intent.action = Intent.ACTION_OPEN_DOCUMENT
                 intent.addCategory(Intent.CATEGORY_OPENABLE)
-                intent.type = mimeType
+                intent.type = input
             }
             return Intent.createChooser(intent, "选择要导入的文件")
         }
