@@ -136,6 +136,14 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
         super.clear()
     }
 
+    override val partAccessor: BindingAccessor = object : BindingAccessor by super.partAccessor {
+        override fun addSingleItem(position: Int, item: Any) {
+            this@AbsLayoutParamRecyclerViewBinding.addSingleItem(
+                position, item, generateDefaultLayoutParams()
+            )
+        }
+    }
+
     open class LayoutParams
 
     companion object {

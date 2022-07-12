@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.github.chenfei0928.collection.removeRange
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.widget.recyclerview.binding.AbsRecyclerViewBinding
-import io.github.chenfei0928.widget.recyclerview.binding.RecyclerViewBindingUtil
+import io.github.chenfei0928.widget.recyclerview.binding.BindingAccessor
 
 /**
  * 局部可替换的 AbsRecyclerViewBinding 扩展支持。
@@ -17,7 +17,7 @@ import io.github.chenfei0928.widget.recyclerview.binding.RecyclerViewBindingUtil
  * 使用时建议在宿主 RecyclerViewBinding 内存放，并在其 RecyclerViewBinding 中注册[Replaceable]的binder。
  */
 abstract class BaseReplaceableSpanBinding<Replaceable : ReplaceableSection<T>, T>(
-    private val binding: AbsRecyclerViewBinding
+    private val binding: BindingAccessor
 ) {
 
     /**
@@ -30,7 +30,7 @@ abstract class BaseReplaceableSpanBinding<Replaceable : ReplaceableSection<T>, T
      * 数据更新时使用局部刷新，不使用[RecyclerView.Adapter.notifyDataSetChanged]，以达到局部刷新的样式
      */
     fun replaceSection(section: Replaceable, data: List<T>) {
-        val list = RecyclerViewBindingUtil.getList(binding)
+        val list = binding.list
         // 不使用其data（bean的子列表）进行移除，而根据title与换一换的下标来找到子列表的范围以进行删除：
         // 其刷新返回的数据有可能会和列表已有数据内容重复，导致删除时删除错项目（removeAll方法）
         val firstBeanIndex = list.indexOf(section.section) + 1
@@ -44,7 +44,7 @@ abstract class BaseReplaceableSpanBinding<Replaceable : ReplaceableSection<T>, T
         // 不要在此移除layoutParamRecord，notifyItemRangeInserted之后动画第一帧时仍然在展示旧的数据，需要其layoutParam
         list.removeRange(lastBeanIndex downTo firstBeanIndex)
         // 通知适配器从这个位置开始移除了多少个子项目
-        val adapter = RecyclerViewBindingUtil.getAdapter(binding)
+        val adapter = binding.adapter
         adapter.notifyItemRangeRemoved(firstBeanIndex, lastBeanIndex - firstBeanIndex + 1)
         // 替换数据
         section.data = data

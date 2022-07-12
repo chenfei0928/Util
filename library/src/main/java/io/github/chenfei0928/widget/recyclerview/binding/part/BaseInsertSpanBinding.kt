@@ -2,7 +2,7 @@ package io.github.chenfei0928.widget.recyclerview.binding.part
 
 import androidx.recyclerview.widget.RecyclerView
 import io.github.chenfei0928.widget.recyclerview.binding.AbsRecyclerViewBinding
-import io.github.chenfei0928.widget.recyclerview.binding.RecyclerViewBindingUtil
+import io.github.chenfei0928.widget.recyclerview.binding.BindingAccessor
 
 /**
  * 局部追加/加载更多的 AbsRecyclerViewBinding 扩展支持。
@@ -13,7 +13,7 @@ import io.github.chenfei0928.widget.recyclerview.binding.RecyclerViewBindingUtil
  * @date 2021-10-13 22:16
  */
 abstract class BaseInsertSpanBinding<Section, InsertData>(
-    private val binding: AbsRecyclerViewBinding
+    private val binding: BindingAccessor
 ) {
     /**
      * 追加区块内容
@@ -21,8 +21,8 @@ abstract class BaseInsertSpanBinding<Section, InsertData>(
      * 数据更新时使用局部刷新，不使用[RecyclerView.Adapter.notifyDataSetChanged]，以达到局部刷新的样式
      */
     fun insertSectionContentData(firstBeanIndex: Int, section: Section, data: InsertData) {
-        val list = RecyclerViewBindingUtil.getList(binding)
-        val adapter = RecyclerViewBindingUtil.getAdapter(binding)
+        val list = binding.list
+        val adapter = binding.adapter
         // 通知适配器从这个位置开始移除了被展开区块
         val oldSize = list.size
         // 添加数据到列表展示

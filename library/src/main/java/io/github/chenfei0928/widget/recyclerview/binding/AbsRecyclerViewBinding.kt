@@ -83,4 +83,15 @@ abstract class AbsRecyclerViewBinding(
     protected open fun clear() {
         _list.clear()
     }
+
+    protected open val partAccessor: BindingAccessor = object : BindingAccessor {
+        override val adapter: MultiTypeAdapter
+            get() = this@AbsRecyclerViewBinding.adapter
+        override val list: MutableList<Any>
+            get() = this@AbsRecyclerViewBinding._list
+
+        override fun addSingleItem(position: Int, item: Any) {
+            this@AbsRecyclerViewBinding.addSingleItem(position, item)
+        }
+    }
 }
