@@ -1,3 +1,5 @@
+package io.github.chenfei0928
+
 /**
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-07-19 15:44
@@ -61,10 +63,10 @@ object DepsAndroidx {
 
     // https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-adapters/maven-metadata.xml
     object databinding {
-        val adapters: String get() = "androidx.databinding:databinding-adapters:${Env.agp}"
-        val runtime: String get() = "androidx.databinding:databinding-runtime:${Env.agp}"
-        val common: String get() = "androidx.databinding:databinding-common:${Env.agp}"
-        val viewBinding: String get() = "androidx.databinding:viewbinding:${Env.agp}"
+        val adapters: String get() = "androidx.databinding:databinding-adapters:${Env.agpVersion}"
+        val runtime: String get() = "androidx.databinding:databinding-runtime:${Env.agpVersion}"
+        val common: String get() = "androidx.databinding:databinding-common:${Env.agpVersion}"
+        val viewBinding: String get() = "androidx.databinding:viewbinding:${Env.agpVersion}"
     }
 
     //<editor-fold defaultstate="collapsed" desc="Utils">
@@ -164,12 +166,6 @@ object DepsAndroidx {
 
         // Jetpack Compose Integration
         val compose = "androidx.navigation:navigation-compose:2.4.0-alpha10"
-    }
-
-    // https://developer.android.com/jetpack/androidx/releases/resourceinspection
-    object resourceInspection {
-        const val annotation = "androidx.resourceinspection:resourceinspection-annotation:1.0.1"
-        const val processor = "androidx.resourceinspection:resourceinspection-processor:1.0.1"
     }
     //</editor-fold>
 
@@ -274,7 +270,7 @@ object DepsAndroidx {
     // https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/maven-metadata.xml
     object lifecycle {
         // https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/maven-metadata.xml
-          const val lifecycleVer = "2.5.0"
+        private const val lifecycleVer = "2.5.0"
 
         const val common = "androidx.lifecycle:lifecycle-common:$lifecycleVer"
         const val commonJ8 = "androidx.lifecycle:lifecycle-common-java8:$lifecycleVer"

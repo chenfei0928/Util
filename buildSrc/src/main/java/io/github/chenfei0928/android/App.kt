@@ -1,16 +1,19 @@
+package io.github.chenfei0928.android
+
+import io.github.chenfei0928.Contract
+import io.github.chenfei0928.Env
+import io.github.chenfei0928.util.*
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.dependencies
 import java.io.File
 
 /**
+ * 通用配置，用于任何Android的Application
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-07-30 16:18
  */
 fun Project.applyApp() {
     applyCommon()
-    applyKotlin()
-    applyVersion()
-    applyTest()
 
     buildSrcAndroid<com.android.build.gradle.AppExtension> {
         signingConfigs {
@@ -28,25 +31,23 @@ fun Project.applyApp() {
                 keyPassword = "android"
             }
         }
-
         defaultConfig {
-            // 启用多Dex文件支持
+            minSdk = Contract.minSdkVersion
+            targetSdk = Contract.targetSdkVersion
+
+            versionCode = Env.vcsVersionCode
+
             multiDexEnabled = true
             // 使用矢量图
             vectorDrawables.useSupportLibrary = true
-            targetSdk = Env.targetSdkVersion
         }
 
-        /**
-         * 编译类型
-         * {@link com.android.build.gradle.internal.dsl.BuildType}
-         */
         buildTypes {
             // release正式包
-            named("release") {
+            release {
                 // 签名
                 signingConfig = signingConfigs.getByName("config")
-
+                // 后处理，对编译完成后的资源、代码文件进行处理
                 postprocessing {
                     // 启用自动过滤删除无用res资源文件，依赖于 isMinifyEnabled
                     // 但不清楚keep混淆R文件是否会影响该效果
@@ -55,29 +56,25 @@ fun Project.applyApp() {
                     isObfuscate = true
                     isOptimizeCode = true
                     isRemoveUnusedCode = true
-                    // 混淆文件
-                    proguardFile("proguard-rules.pro")
-                    // 添加文件夹下的混淆配置文件
-                    fileTree("proguard-rules").forEach { file ->
-                        if (file.path.endsWith(".pro")) {
-                            proguardFile(file)
-                        }
-                    }
                 }
             }
-            // abTest灰度测试包
-            named("abtest") {
+            // PreRelease灰度测试包（预上线）
+            prerelease {
+                // 在release基础上添加允许debug开关
+                this.initWith(getByName("release"))
+
                 isDebuggable = true
-                // abTest灰度测试添加后缀
-                applicationIdSuffix = ".abtest"
-                // 签名
-                signingConfig = signingConfigs.getByName("debug")
             }
-            // debug测试运行、包
-            named("debug") {
+            // qaTest质量测试包（Quality Assurance）
+            qatest {
+                // 在release基础上添加允许debug开关
+                this.initWith(getByName("release"))
+
                 isDebuggable = true
-                // debug添加后缀
-                applicationIdSuffix = ".debug"
+            }
+            // debug开发测试运行、包
+            debug {
+                isDebuggable = true
                 // 签名
                 signingConfig = signingConfigs.getByName("debug")
             }
@@ -97,6 +94,7 @@ fun Project.applyApp() {
         // 如果出现META-INF重复的问题 - 友盟社会化登录、分享
         // 打包时排除一些文件
         packagingOptions {
+            resources.excludes.add("META-INF/beans.xml")
             // support支持库
             resources.excludes.add("META-INF/*.version")
             resources.excludes.add("androidsupportmultidexversion.txt")
@@ -108,30 +106,7 @@ fun Project.applyApp() {
             // 部分sdk的混淆文件
             resources.excludes.add("META-INF/proguard/**")
         }
-    }
 
-    // DI依赖注入、Debug调试工具、运行时权限处理依赖
-    dependencies {
-        implementation(DepsAndroidx.multidex.core)
-
-        // RxJava 响应式编程
-        implementation(Deps.rx.android)
-        implementation(Deps.rx.core)
-        // Rx生命周期，用于协调Activity生命周期变化取消订阅
-        implementation(Deps.rx.lifecycle)
-
-        // 网络
-        implementation(Deps.network.okhttp)
-        implementation(Deps.network.retrofit.core)
-        implementation(Deps.network.retrofit.rxjava2)
-        implementation(Deps.network.retrofit.gson)
-        // Glide 图片加载库
-        implementation(Deps.glide.core)
-    }
-}
-
-fun Project.applyAppAfter() {
-    buildSrcAndroid<com.android.build.gradle.AppExtension> {
         // Debug时禁用Multi APK
         if (!Env.containsReleaseBuild) {
             splits.abi.isEnable = false
@@ -140,8 +115,8 @@ fun Project.applyAppAfter() {
 
         // Debug时不编译不必要的资源
         if (!Env.containsReleaseBuild) {
-            productFlavors.forEach {
-                it.resourceConfigurations.addAll(
+            productFlavors.all {
+                resourceConfigurations.addAll(
                     arrayOf("zh", "zh-rCN", "xxhdpi")
                 )
             }

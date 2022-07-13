@@ -1,17 +1,19 @@
+import io.github.chenfei0928.Deps
+import io.github.chenfei0928.DepsAndroidx
+import io.github.chenfei0928.android.applyLibrary
+import io.github.chenfei0928.android.applyTest
+import io.github.chenfei0928.compiler.applyKotlin
 import me.omico.age.dsl.withKotlinAndroidMavenPublication
 
 plugins {
     `android-library`
-    `kotlin-android`
-    `kotlin-parcelize`
-    `kotlin-kapt`
     `maven-publish`
     signing
 }
 
 applyLibrary(appendBuildConfig = false)
 applyTest()
-applyKotlin()
+applyKotlin(parcelize = true, kapt = true)
 withKotlinAndroidMavenPublication(
     versionName = "1.1-SNAPSHOT",
     signed = true,

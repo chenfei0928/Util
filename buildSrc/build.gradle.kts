@@ -32,6 +32,10 @@ dependencies {
     // 反射
     // https://github.com/jOOQ/jOOR
     implementation("org.jooq:joor:0.9.14")
+    // ErrorProne
+    // https://github.com/tbroyer/gradle-errorprone-plugin
+    // https://github.com/google/error-prone
+    implementation("net.ltgt.gradle:gradle-errorprone-plugin:2.0.2")
 
     // 参与编译打包流程，但不参与代码编写
     // 增加 protobuf-gradle-plugin 插件

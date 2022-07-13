@@ -1,5 +1,10 @@
+package io.github.chenfei0928.android
+
 import com.android.build.gradle.internal.plugins.AppPlugin
 import com.android.build.gradle.internal.plugins.LibraryPlugin
+import io.github.chenfei0928.DepsAndroidx
+import io.github.chenfei0928.util.buildSrcAndroid
+import io.github.chenfei0928.util.implementation
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 
@@ -13,27 +18,8 @@ fun Project.applyComponent() {
     } else if (plugins.hasPlugin(LibraryPlugin::class.java)) {
         applyLibrary()
     }
-    applyVersion()
 
     buildSrcAndroid<com.android.build.gradle.BaseExtension> {
-        defaultConfig {
-            minSdk = 21
-        }
-
-        /**
-         * 编译类型
-         * {@link com.android.build.gradle.internal.dsl.BuildType}
-         */
-        buildTypes {
-            // release正式包
-            maybeCreate("release").apply {
-                postprocessing {
-                    // 混淆文件
-                    proguardFile("proguard-rules.pro")
-                }
-            }
-        }
-
         buildFeatures.run {
             viewBinding = true
         }
@@ -52,10 +38,6 @@ fun Project.applyComponent() {
 
     // DI依赖注入、Debug调试工具、运行时权限处理依赖
     dependencies {
-        implementation(project(":thirdExt:lib_LibraryHelper"))
-        implementation(project(":lib:lib_util"))
-        implementation(project(":lib:lib_base"))
-
         implementation(DepsAndroidx.multidex.core)
     }
 }

@@ -1,3 +1,6 @@
+package io.github.chenfei0928.android
+
+import io.github.chenfei0928.util.buildSrcAndroid
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.dependencies
