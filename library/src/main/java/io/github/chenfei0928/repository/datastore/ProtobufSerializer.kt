@@ -24,5 +24,6 @@ class ProtobufSerializer<MessageType : GeneratedMessageLite<MessageType, *>>(
 
     override suspend fun writeTo(t: MessageType, output: OutputStream) {
         t.writeTo(output)
+        output.flush()
     }
 }

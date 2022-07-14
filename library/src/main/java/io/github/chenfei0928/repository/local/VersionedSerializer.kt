@@ -10,9 +10,9 @@ import java.io.OutputStream
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-09-05 15:20
  */
-class VersionedSerializer<T>(
+internal class VersionedSerializer<T>(
     private val serializer: LocalSerializer<T>, versionCodeLong: Long
-) : LocalSerializer<T> by serializer {
+) : LocalSerializer.NoopIODecorator<T>(serializer) {
     private val versionCode: ByteArray = versionCodeLong.run {
         byteArrayOf(
             (this shr 56).toByte(),
@@ -26,14 +26,14 @@ class VersionedSerializer<T>(
         )
     }
 
-    override fun write(outputStream: OutputStream, obj: T) {
+    override fun write(outputStream: OutputStream, obj: T & Any) {
         // 写入应用版本号
         outputStream.write(versionCode)
         // 将数据结构版本号写入io流
         serializer.write(outputStream, obj)
     }
 
-    override fun read(inputStream: InputStream): T? {
+    override fun read(inputStream: InputStream): T {
         // long 类型8字节
         val savedVersionCode = ByteArray(8)
         // 读取本地保存的内容的数据结构版本号
@@ -59,7 +59,7 @@ class VersionedSerializer<T>(
     }
 }
 
-fun <T> LocalSerializer<T>.versioned(versionCodeInt: Long): VersionedSerializer<T> =
+fun <T> LocalSerializer<T>.versioned(versionCodeInt: Long): LocalSerializer<T> =
     if (this is VersionedSerializer) {
         this
     } else {

@@ -20,6 +20,8 @@ BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
 
     private val parser = clazz.getParseFrom<MessageType, Any>()
 
+    override val defaultValue: MessageType = parser(null)
+
     override fun write(outputStream: OutputStream, obj: MessageType) {
         obj.writeTo(outputStream)
         outputStream.flush()

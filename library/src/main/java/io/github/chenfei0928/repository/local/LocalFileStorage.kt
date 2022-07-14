@@ -5,7 +5,9 @@ import android.os.Build
 import android.util.Log
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.io.ShareFileLockHelper
-import java.io.*
+import java.io.File
+import java.io.FileDescriptor
+import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicReference
 
 abstract class LocalFileStorage<T>(
@@ -14,7 +16,7 @@ abstract class LocalFileStorage<T>(
     private val cacheDir: Boolean = false,
     private val memoryCacheable: Boolean = true
 ) {
-    private val serializer = NoopIODecorator(serializer)
+    private val serializer = LocalSerializer.NoopIODecorator(serializer)
 
     private fun getFile(context: Context, fileName: String): File {
         val dir = if (cacheDir) {
@@ -42,10 +44,10 @@ abstract class LocalFileStorage<T>(
     /**
      * 从本地文件反序列化
      */
-    private fun loadFromLocalFile(context: Context): T? = runFileWithLock(context) { file ->
+    private fun loadFromLocalFile(context: Context): T = runFileWithLock(context) { file ->
         // 文件不存在，直接返回空
         if (!file.exists()) {
-            null
+            serializer.defaultValue
         } else try {
             file.inputStream()
                 .let { serializer.onOpenInputStream(it) }
@@ -53,7 +55,7 @@ abstract class LocalFileStorage<T>(
         } catch (e: Exception) {
             Log.e(TAG, "loadFromLocalFile: $file, $serializer", e)
             file.delete()
-            null
+            serializer.defaultValue
         }
     }
 
@@ -89,7 +91,7 @@ abstract class LocalFileStorage<T>(
     //<editor-fold defaultstate="collapsed" desc="带缓存的快速访问">
     private val cachedValue: AtomicReference<T> = AtomicReference()
 
-    protected fun getCacheOrLoad(context: Context): T? {
+    protected fun getCacheOrLoad(context: Context): T {
         return if (!memoryCacheable) {
             // 不使用内存缓存，每次都从磁盘文件反序列化
             loadFromLocalFile(context)
@@ -100,7 +102,7 @@ abstract class LocalFileStorage<T>(
             }
         } else synchronized(this) {
             // 从缓存中读取，缓存中没有值时从磁盘文件反序列化
-            cachedValue.get() ?: loadFromLocalFile(context)?.also {
+            cachedValue.get() ?: loadFromLocalFile(context).also {
                 cachedValue.set(it)
             }
         }
@@ -126,7 +128,7 @@ abstract class LocalFileStorage<T>(
      * 当子类返回的数据后会对实例进行修改，可能会污染缓存时，
      * 使用实例自身的clone或copy方法，或使用该方法获得一个新的实例后在返回
      */
-    protected fun T.serializerCopy(): T {
+    protected fun <Tn : T & Any> Tn.serializerCopy(): T & Any {
         return serializer.copy(this)
     }
 
@@ -136,18 +138,6 @@ abstract class LocalFileStorage<T>(
 
         private fun makeTmpFile(prefsFile: File): File {
             return File(prefsFile.path + ".tmp")
-        }
-    }
-
-    private class NoopIODecorator<T>(
-        serializer: LocalSerializer<T>
-    ) : LocalSerializer.BaseIODecorator<T>(serializer) {
-        override fun onOpenInputStream1(inputStream: InputStream): InputStream {
-            return inputStream
-        }
-
-        override fun onOpenOutStream1(outputStream: OutputStream): OutputStream {
-            return outputStream
         }
     }
 

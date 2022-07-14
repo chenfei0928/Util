@@ -12,18 +12,20 @@ import android.os.Parcelable
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-13 18:35
  */
-class ParcelSerializer<T>(
+class ParcelSerializer<T : Any>(
     private val classLoader: ClassLoader = ParcelSerializer::class.java.classLoader!!
-) : BaseParcelSerializer<T>() {
+) : BaseParcelSerializer<T?>() {
+
+    override val defaultValue: T? = null
 
     override fun Parcel.write(obj: T) {
         writeValue(obj)
     }
 
-    override fun Parcel.read(): T? {
-        return readValue(classLoader) as T?
+    override fun Parcel.read(): T {
+        return readValue(classLoader) as T
     }
 }
 
-inline fun <reified T> ParcelSerializer() =
+inline fun <reified T : Any> ParcelSerializer() =
     ParcelSerializer<T>(T::class.java.classLoader!!)

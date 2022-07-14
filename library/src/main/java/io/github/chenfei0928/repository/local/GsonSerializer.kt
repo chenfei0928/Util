@@ -13,7 +13,7 @@ import java.lang.reflect.Type
  */
 class GsonSerializer<T>(
     gson: Gson = io.github.chenfei0928.util.gson.gson,
-    typeToken: TypeToken<T>
+    private val typeToken: TypeToken<T>
 ) : LocalSerializer<T> {
     private val typeAdapter: TypeAdapter<T> = gson.getAdapter(typeToken) as TypeAdapter<T>
 
@@ -22,8 +22,12 @@ class GsonSerializer<T>(
         type: Type
     ) : this(gson = gson, typeToken = TypeToken.get(type) as TypeToken<T>)
 
+    override val defaultValue: T by lazy {
+        typeToken.rawType.newInstance() as T
+    }
+
     @Throws(IOException::class)
-    override fun write(outputStream: OutputStream, obj: T) {
+    override fun write(outputStream: OutputStream, obj: T & Any) {
         outputStream.bufferedWriter().use {
             typeAdapter.toJson(it, obj)
             it.flush()
@@ -31,15 +35,15 @@ class GsonSerializer<T>(
     }
 
     @Throws(IOException::class)
-    override fun read(inputStream: InputStream): T? {
+    override fun read(inputStream: InputStream): T {
         return inputStream.bufferedReader().use {
             typeAdapter.fromJson(it)
         }
     }
 
-    override fun copy(obj: T): T {
+    override fun copy(obj: T & Any): T & Any {
         val json = typeAdapter.toJson(obj)
-        return typeAdapter.fromJson(json)
+        return typeAdapter.fromJson(json)!!
     }
 
     companion object {

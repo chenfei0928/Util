@@ -10,15 +10,17 @@ import io.github.chenfei0928.os.PARCELABLE_CREATOR
  */
 class ParcelableSerializer<T : Parcelable>(
     private val creator: Parcelable.Creator<T>
-) : BaseParcelSerializer<T>() {
+) : BaseParcelSerializer<T?>() {
 
     constructor(clazz: Class<T>) : this(clazz.PARCELABLE_CREATOR)
+
+    override val defaultValue: T? = null
 
     override fun Parcel.write(obj: T) {
         obj.writeToParcel(this, 0)
     }
 
-    override fun Parcel.read(): T? {
+    override fun Parcel.read(): T {
         return creator.createFromParcel(this)
     }
 }

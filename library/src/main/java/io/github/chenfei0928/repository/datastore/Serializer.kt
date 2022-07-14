@@ -9,12 +9,12 @@ import java.io.OutputStream
  * @author chenfei()
  * @date 2022-06-20 15:10
  */
-fun <T> LocalSerializer<T>.toDatastore(defaultValue: T) = object : Serializer<T> {
+fun <T : Any> LocalSerializer<T>.toDatastore() = object : Serializer<T> {
     override val defaultValue: T
-        get() = defaultValue
+        get() = this@toDatastore.defaultValue
 
     override suspend fun readFrom(input: InputStream): T {
-        return this@toDatastore.read(input) ?: defaultValue
+        return this@toDatastore.read(input)
     }
 
     override suspend fun writeTo(t: T, output: OutputStream) {

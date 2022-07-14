@@ -8,13 +8,15 @@ import java.io.*
  * @date 2019-09-05 12:06
  */
 interface LocalSerializer<T> {
-    @Throws(IOException::class)
-    fun write(outputStream: OutputStream, obj: T)
+    val defaultValue: T
 
     @Throws(IOException::class)
-    fun read(inputStream: InputStream): T?
+    fun write(outputStream: OutputStream, obj: T & Any)
 
-    fun copy(obj: T): T {
+    @Throws(IOException::class)
+    fun read(inputStream: InputStream): T
+
+    fun copy(obj: T & Any): T & Any {
         return ByteArrayOutputStream().use {
             write(it, obj)
             it.toByteArray()
@@ -39,6 +41,8 @@ interface LocalSerializer<T> {
     abstract class BaseIODecorator<T>(
         private val serializer: LocalSerializer<T>
     ) : LocalSerializer<T> by serializer, IODecorator {
+        override val defaultValue: T
+            get() = serializer.defaultValue
 
         final override fun onOpenInputStream(inputStream: InputStream): InputStream {
             return if (serializer is IODecorator) {
@@ -61,5 +65,26 @@ interface LocalSerializer<T> {
 
         @Throws(IOException::class)
         abstract fun onOpenOutStream1(outputStream: OutputStream): OutputStream
+    }
+
+    open class NoopIODecorator<T>(
+        private val serializer: LocalSerializer<T>
+    ) : LocalSerializer<T> by serializer, IODecorator {
+
+        override fun onOpenInputStream(inputStream: InputStream): InputStream {
+            return if (serializer is IODecorator) {
+                serializer.onOpenInputStream(inputStream)
+            } else {
+                inputStream
+            }
+        }
+
+        override fun onOpenOutStream(outputStream: OutputStream): OutputStream {
+            return if (serializer is IODecorator) {
+                serializer.onOpenOutStream(outputStream)
+            } else {
+                outputStream
+            }
+        }
     }
 }

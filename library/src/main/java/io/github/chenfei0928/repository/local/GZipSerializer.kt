@@ -11,7 +11,7 @@ import java.util.zip.GZIPOutputStream
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-08-19 16:48
  */
-class GZipSerializer<T>(
+internal class GZipSerializer<T>(
     serializer: LocalSerializer<T>
 ) : LocalSerializer.BaseIODecorator<T>(serializer) {
 
@@ -24,7 +24,7 @@ class GZipSerializer<T>(
     }
 }
 
-fun <T> LocalSerializer<T>.gzip(): GZipSerializer<T> {
+fun <T> LocalSerializer<T>.gzip(): LocalSerializer<T> {
     return if (this is GZipSerializer) {
         this
     } else {

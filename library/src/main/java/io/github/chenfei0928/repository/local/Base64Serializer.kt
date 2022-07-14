@@ -10,7 +10,7 @@ import java.io.OutputStream
  * @author chenfei(chenfei@gmail.com)
  * @date 2022-01-12 10:25
  */
-class Base64Serializer<T>(
+internal class Base64Serializer<T>(
     serializer: LocalSerializer<T>
 ) : LocalSerializer.BaseIODecorator<T>(serializer) {
     override fun onOpenInputStream1(inputStream: InputStream): InputStream {
@@ -22,7 +22,7 @@ class Base64Serializer<T>(
     }
 }
 
-fun <T> LocalSerializer<T>.base64() = if (this is Base64Serializer) {
+fun <T> LocalSerializer<T>.base64(): LocalSerializer<T> = if (this is Base64Serializer) {
     this
 } else {
     Base64Serializer(this)

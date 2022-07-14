@@ -15,12 +15,15 @@ class ProtobufV3Serializer<MessageType : GeneratedMessageV3>(
     private val parser: Parser<MessageType>
 ) : LocalSerializer<MessageType> {
 
+    override val defaultValue: MessageType
+        get() = parser.parseFrom(byteArrayOf())
+
     override fun write(outputStream: OutputStream, obj: MessageType) {
         obj.writeTo(outputStream)
         outputStream.flush()
     }
 
-    override fun read(inputStream: InputStream): MessageType? {
+    override fun read(inputStream: InputStream): MessageType {
         return parser.parseFrom(inputStream)
     }
 

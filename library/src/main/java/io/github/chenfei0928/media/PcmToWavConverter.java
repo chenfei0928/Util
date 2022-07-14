@@ -34,7 +34,7 @@ public class PcmToWavConverter {
      */
     private static byte[] createHeader(long totalAudioLen, int sampleRate, byte channels, byte bitNum) {
         // 采样字节byte率
-        long byteRate = sampleRate * channels * bitNum / 8;
+        long byteRate = (long) sampleRate * channels * bitNum / 8;
         // 总大小，由于不包括RIFF和WAV，所以是44 - 8 = 36，在加上PCM文件大小
         long totalDataLen = totalAudioLen + 36;
         byte[] header = new byte[HEADER_SIZE_WAVE];

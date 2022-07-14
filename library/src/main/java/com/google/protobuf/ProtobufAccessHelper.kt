@@ -7,7 +7,7 @@ import java.nio.ByteBuffer
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2021-11-24 17:01
  */
-fun <T : GeneratedMessageLite<T, *>, Source> Class<T>.getParseFrom(): (Source) -> T {
+fun <T : GeneratedMessageLite<T, *>, Source> Class<T>.getParseFrom(): (Source?) -> T {
     val defaultInstance: T = GeneratedMessageLite.getDefaultInstance(this)
     return { source ->
         when (source) {

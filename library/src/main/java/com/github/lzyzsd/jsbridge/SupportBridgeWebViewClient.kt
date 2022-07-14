@@ -28,16 +28,16 @@ abstract class SupportBridgeWebViewClient(
             e.printStackTrace()
         }
 
-        if (url.startsWith(BridgeUtil.YY_RETURN_DATA)) { // 如果是返回数据
+        return if (url.startsWith(BridgeUtil.YY_RETURN_DATA)) { // 如果是返回数据
             Log.i(TAG, "shouldOverrideUrlLoading: return $url")
             webView.handlerReturnData(url)
-            return true
+            true
         } else if (url.startsWith(BridgeUtil.YY_OVERRIDE_SCHEMA)) { //
             Log.i(TAG, "shouldOverrideUrlLoading: load jsBridge")
             webView.flushMessageQueue()
-            return true
+            true
         } else {
-            return super.shouldOverrideUrlLoading(view, url)
+            super.shouldOverrideUrlLoading(view, url)
         }
     }
 
@@ -46,11 +46,8 @@ abstract class SupportBridgeWebViewClient(
         val webView = view as? BridgeWebView
             ?: return
 
-        if (BridgeWebView.toLoadJs != null) {
-            BridgeUtil.webViewLoadLocalJs(view, BridgeWebView.toLoadJs)
-        }
+        BridgeUtil.webViewLoadLocalJs(view, BridgeWebView.toLoadJs)
 
-        //
         if (webView.startupMessage != null) {
             for (m in webView.startupMessage) {
                 webView.dispatchMessage(m)
