@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.annotation.AnyThread
 import androidx.annotation.LayoutRes
 import androidx.annotation.MainThread
+import io.github.chenfei0928.util.R
 
 /**
  * User: ChenFei(chenfei0928@gmail.com)
@@ -22,6 +23,10 @@ class LikeListViewInjector {
     interface Adapter<VG : ViewGroup, Bean> : BasicAdapter<VG, Bean> {
         @MainThread
         fun onCreateView(inflater: LayoutInflater, parent: VG): View
+
+        override fun isView(view: View): Boolean {
+            return view.getTag(R.id.viewTag_injectorClassName) == this.javaClass.name
+        }
     }
 
     /**
@@ -33,11 +38,16 @@ class LikeListViewInjector {
      * @param Bean 实例类型
      */
     interface AsyncAdapter<VG : ViewGroup, Bean> : BasicAdapter<VG, Bean> {
+
         @AnyThread
         fun onCreateView(inflater: LayoutInflater, parent: VG): View
 
         @MainThread
         fun onViewCreated(view: View)
+
+        override fun isView(view: View): Boolean {
+            return view.getTag(R.id.viewTag_injectorClassName) == this.javaClass.name
+        }
     }
 
     companion object {
@@ -59,6 +69,8 @@ class LikeListViewInjector {
                 beanIterator.forEach { bean ->
                     // 在主线程直接加载布局、加入ViewGroup并绑定数据
                     val view = adapter.onCreateView(inflater, viewGroup)
+                    // 记录binder类名，防止绑定视图错误
+                    view.setTag(R.id.viewTag_injectorClassName, adapter.javaClass.name)
                     viewGroup.addView(view)
                     adapter.onBindView(view, bean)
                 }
@@ -88,6 +100,8 @@ class LikeListViewInjector {
                 beanIterator.forEach { bean ->
                     // 通过异步布局加载器加载子布局
                     asyncLayoutInflater.inflate(layoutId, viewGroup) { view ->
+                        // 记录binder类名，防止绑定视图错误
+                        view.setTag(R.id.viewTag_injectorClassName, adapter.javaClass.name)
                         // 布局已加载，通知初始化、加入ViewGroup并绑定数据
                         adapter.onViewCreated(view)
                         viewGroup.addView(view)
@@ -116,6 +130,8 @@ class LikeListViewInjector {
                 beanIterator.forEach { bean ->
                     // 通过异步布局加载器加载子布局
                     asyncLayoutInflater.inflate(adapter::onCreateView, viewGroup) { view ->
+                        // 记录binder类名，防止绑定视图错误
+                        view.setTag(R.id.viewTag_injectorClassName, adapter.javaClass.name)
                         // 布局已加载，通知初始化、加入ViewGroup并绑定数据
                         adapter.onViewCreated(view)
                         viewGroup.addView(view)

@@ -2,11 +2,8 @@
 <resources>
     <item name="onPropertyChanged" type="id"/>
     <item name="toolbar" type="id"/>
-    <item name="multiAdapterId_adapter" type="id"/>
-    <item name="multiAdapterId_realViewType" type="id"/>
     <item name="glide_id" type="id"/>
     <item name="lazyInitPlaceHolder" type="id"/>
-    <item name="viewTag_dataBinding" type="id"/>
     <item name="viewTag_viewHolder" type="id"/>
     <item name="viewTag_injectorClassName" type="id"/>
 </resources>
