@@ -103,7 +103,7 @@ private class PermissionLauncher(
     override fun getContract(): ActivityResultContract<Unit?, Map<String, Boolean>> {
         val requestMultiplePermissions = ActivityResultContracts.RequestMultiplePermissions()
         return object : ActivityResultContract<Unit?, Map<String, Boolean>>() {
-            override fun createIntent(context: Context, void: Unit?): Intent {
+            override fun createIntent(context: Context, input: Unit?): Intent {
                 return requestMultiplePermissions.createIntent(context, permissions)
             }
 
