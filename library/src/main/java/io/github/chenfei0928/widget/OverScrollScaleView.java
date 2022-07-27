@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.core.widget.NestedScrollView;
 import io.github.chenfei0928.animation.AnimatorKt;
 
@@ -45,7 +46,7 @@ public class OverScrollScaleView extends NestedScrollView {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean onTouchEvent(@NonNull MotionEvent ev) {
         if (mLastY == -1) {
             mLastY = ev.getY();
         }

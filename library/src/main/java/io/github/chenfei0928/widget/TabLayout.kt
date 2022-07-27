@@ -28,14 +28,12 @@ class TabLayout : LinearLayout {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
-        context, attrs, defStyleAttr
-    )
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
+            : super(context, attrs, defStyleAttr)
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(
-        context, attrs, defStyleAttr, defStyleRes
-    )
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int)
+            : super(context, attrs, defStyleAttr, defStyleRes)
 
     //<editor-fold desc="ViewPager1" defaultstate="collapsed">
     private var viewPager: ViewPager? = null

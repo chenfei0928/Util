@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.Gravity
 import android.widget.TextView
+import androidx.annotation.GravityInt
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
@@ -16,7 +17,7 @@ import io.github.chenfei0928.util.contains
 @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 open class TextViewDrawableTarget
 @JvmOverloads constructor(
-    view: TextView, private val direction: Int = Gravity.TOP
+    view: TextView, @GravityInt private val direction: Int = Gravity.TOP
 ) : CustomViewTarget<TextView, Drawable>(view) {
     override fun onLoadFailed(errorDrawable: Drawable?) {
         setDrawable(errorDrawable)

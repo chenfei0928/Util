@@ -36,7 +36,7 @@ public class RecyclerViewFastScroller extends LinearLayoutCompat {
     private int height;
     private final RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
         @Override
-        public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
+        public void onScrolled(@NonNull final RecyclerView recyclerView, final int dx, final int dy) {
             updateBubbleAndHandlePosition();
         }
     };

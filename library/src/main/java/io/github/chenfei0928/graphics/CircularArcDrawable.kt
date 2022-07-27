@@ -7,6 +7,8 @@ import android.os.Build
 import android.util.Property
 import android.view.Gravity
 import androidx.annotation.ColorInt
+import androidx.annotation.GravityInt
+import androidx.annotation.Px
 import kotlin.math.min
 
 /**
@@ -17,11 +19,15 @@ import kotlin.math.min
  */
 class CircularArcDrawable : PaintDrawable() {
     private val oval = RectF()
+
+    @GravityInt
     var gravity = Gravity.LEFT
         set(value) {
             field = value
             resetR()
         }
+
+    @Px
     var radius: Float = 0f
         set(value) {
             if (value != field) {

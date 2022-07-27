@@ -83,8 +83,7 @@ public class TouchDelegate extends android.view.TouchDelegate {
             case MotionEvent.ACTION_MOVE:
                 sendToDelegate = mDelegateTargeted;
                 if (sendToDelegate) {
-                    Rect slopBounds = mSlopBounds;
-                    if (!slopBounds.contains(x, y)) {
+                    if (!mSlopBounds.contains(x, y)) {
                         hit = false;
                     }
                 }
@@ -97,7 +96,7 @@ public class TouchDelegate extends android.view.TouchDelegate {
         if (sendToDelegate) {
             if (hit) {
                 // Offset event coordinates to be inside the target view
-                event.setLocation(mDelegateView.getWidth() / 2, mDelegateView.getHeight() / 2);
+                event.setLocation(mDelegateView.getWidth() / 2f, mDelegateView.getHeight() / 2f);
             } else {
                 // Offset event coordinates to be outside the target view (in case it does
                 // something like tracking pressed state)

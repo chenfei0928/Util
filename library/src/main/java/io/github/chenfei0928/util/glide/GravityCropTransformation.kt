@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.RectF
 import android.util.Log
 import android.view.Gravity
+import androidx.annotation.GravityInt
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
 import jp.wasabeef.glide.transformations.BitmapTransformation
 import java.security.MessageDigest
@@ -22,6 +23,7 @@ import java.security.MessageDigest
 class GravityCropTransformation(
     private val width: Int,
     private val height: Int,
+    @GravityInt
     private val gravity: Int = Gravity.CENTER
 ) : BitmapTransformation() {
 
@@ -125,7 +127,7 @@ class GravityCropTransformation(
         /**
          * @hide
          */
-        fun toString(gravity: Int): String {
+        fun toString(@GravityInt gravity: Int): String {
             val result = StringBuilder()
             if (gravity and Gravity.FILL == Gravity.FILL) {
                 result.append("FILL").append(' ')

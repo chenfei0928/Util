@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.text.style.ReplacementSpan
 import android.view.Gravity
 import androidx.annotation.ColorInt
+import androidx.annotation.GravityInt
 import androidx.annotation.Px
 import kotlin.math.max
 
@@ -22,7 +23,7 @@ class AdvanceBadgeDrawableBackgroundSpan(
     private val background: Drawable,
     @Px private val textSize: Float,
     @ColorInt private val textColor: Int,
-    private val gravity: Int
+    @GravityInt private val gravity: Int
 ) : ReplacementSpan() {
     private val bgPaddingRect = Rect().apply {
         background.getPadding(this)

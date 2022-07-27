@@ -28,14 +28,6 @@ fun View?.removeSelfFromParent() {
     viewGroup.removeView(this)
 }
 
-inline fun View.updateTranslationY(block: (translationY: Float) -> Float) {
-    val oldTranslationY = translationY
-    val newTranslationY = block(oldTranslationY)
-    if (oldTranslationY != newTranslationY) {
-        translationY = newTranslationY
-    }
-}
-
 /**
  * 根据view查找距离其最近的fragment
  * [com.bumptech.glide.manager.RequestManagerRetriever.findSupportFragment]

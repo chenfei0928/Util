@@ -9,6 +9,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ChecksSdkIntAtLeast
+import androidx.annotation.GravityInt
 import androidx.core.graphics.Insets
 import androidx.core.view.*
 import io.github.chenfei0928.util.contains
@@ -16,7 +17,7 @@ import io.github.chenfei0928.util.contains
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
 private val supportRelativeDirection = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
 
-fun View.applySystemInsetMargin(direction: Int) {
+fun View.applySystemInsetMargin(@GravityInt direction: Int) {
     val originalMarginLeft = marginLeft
     val originalMarginTop = marginTop
     val originalMarginRight = marginRight
@@ -55,7 +56,7 @@ fun View.applySystemInsetMargin(direction: Int) {
     }
 }
 
-fun View.applySystemInsetPadding(direction: Int) {
+fun View.applySystemInsetPadding(@GravityInt direction: Int) {
     val originalPaddingLeft = paddingLeft
     val originalPaddingTop = paddingTop
     val originalPaddingRight = paddingRight

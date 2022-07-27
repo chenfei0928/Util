@@ -33,6 +33,7 @@ dependencies {
     implementation(DepsAndroidx.activity)
     implementation(DepsAndroidx.fragment)
     implementation(DepsAndroidx.startup)
+    implementation(DepsAndroidx.annotation)
     implementation(DepsAndroidx.lifecycle.runtime)
     implementation(DepsAndroidx.lifecycle.runtimeKtx)
     implementation(DepsAndroidx.lifecycle.viewModel)
