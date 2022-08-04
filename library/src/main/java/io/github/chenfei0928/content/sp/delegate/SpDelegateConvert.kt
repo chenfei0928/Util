@@ -108,6 +108,8 @@ class GsonSpConvertSaver<T>(
     private val gson: Gson = io.github.chenfei0928.util.gson.gson,
     private val type: Type
 ) : SpConvertSaver<String?, T?>(saver) {
+    @Volatile
+    private var cacheValue: Any? = this
 
     constructor(
         key: String,
@@ -116,10 +118,18 @@ class GsonSpConvertSaver<T>(
     ) : this(StringDelegate(key), gson, type)
 
     override fun onRead(value: String?): T? {
-        return gson.fromJson(value, type)
+        if (cacheValue == this) {
+            synchronized(this) {
+                if (cacheValue == this) {
+                    cacheValue = gson.fromJson(value, type)
+                }
+            }
+        }
+        return cacheValue as T?
     }
 
     override fun onSave(value: T?): String? {
+        cacheValue = value
         return gson.toJson(value)
     }
 }
@@ -141,7 +151,7 @@ class LocalSerializerSpConvertSaver<T>(
         serializer: LocalSerializer<T>
     ) : this(StringDelegate(key), serializer)
 
-    private val serializer: Base64Serializer<T> = serializer.base64()
+    private val serializer: Base64Serializer<T> = serializer.base64() as Base64Serializer<T>
 
     override fun onRead(value: String?): T? {
         return ByteArrayInputStream(

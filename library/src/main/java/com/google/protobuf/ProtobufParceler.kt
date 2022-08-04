@@ -1,6 +1,7 @@
 package com.google.protobuf
 
 import android.os.Parcel
+import androidx.collection.LruCache
 import kotlinx.parcelize.Parceler
 import kotlin.reflect.full.createInstance
 
@@ -25,11 +26,20 @@ private class ProtobufParcelerImpl<MessageType, BuilderType> : Parceler<MessageT
 MessageType : GeneratedMessageLite<MessageType, BuilderType>,
 BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
 
+    private val defaultInstanceCache = object :
+        LruCache<String, (ByteArray?) -> GeneratedMessageLite<MessageType, BuilderType>>(10) {
+
+        override fun create(key: String): ((ByteArray?) -> GeneratedMessageLite<MessageType, BuilderType>) {
+            val messageType = Class.forName(key) as Class<MessageType>
+            GeneratedMessageLite.getDefaultInstance(messageType)
+            return messageType.getParseFrom<MessageType, ByteArray?>()
+        }
+    }
+
     override fun create(parcel: Parcel): MessageType? {
         val className = parcel.readString() ?: return null
-        val messageType = Class.forName(className) as Class<MessageType>
-        GeneratedMessageLite.getDefaultInstance(messageType)
-        val parseFrom = messageType.getParseFrom<MessageType, ByteArray?>()
+        val parseFrom = defaultInstanceCache[className]
+                as (ByteArray?) -> MessageType
         return parcel.createByteArray().let(parseFrom)
     }
 
