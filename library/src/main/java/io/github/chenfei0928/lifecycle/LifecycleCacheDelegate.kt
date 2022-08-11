@@ -14,7 +14,7 @@ import kotlin.reflect.KProperty
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2021-11-11 15:09
  */
-class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObserver>(
+open class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObserver>(
     /**
      * 传入宿主与值对象的关闭回调以创建值 [V]。
      *
