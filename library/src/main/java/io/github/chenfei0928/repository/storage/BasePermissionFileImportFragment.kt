@@ -2,8 +2,8 @@ package io.github.chenfei0928.repository.storage
 
 import android.os.Build
 import androidx.annotation.UiThread
-import io.github.chenfei0928.app.activity.onPermissionDeniedKt
-import io.github.chenfei0928.app.activity.onPermissionNeverAskAgainKt
+import io.github.chenfei0928.app.activity.onPermissionDenied
+import io.github.chenfei0928.app.activity.onPermissionNeverAskAgain
 import io.github.chenfei0928.app.activity.onShowPermissionRationale
 import io.github.chenfei0928.app.result.PermissionRequest
 import io.github.chenfei0928.app.result.registerForPermission
@@ -56,7 +56,7 @@ abstract class BasePermissionFileImportFragment<T>(
      * 当权限被拒绝
      */
     private fun onPermissionDenied() {
-        requireActivity().onPermissionDeniedKt(getString(R.string.permissionDenied, permissionName),
+        requireActivity().onPermissionDenied(getString(R.string.permissionDenied, permissionName),
             { _, _ -> removeSelf(null) },
             { _, _ -> removeSelf(null) })
     }
@@ -65,7 +65,7 @@ abstract class BasePermissionFileImportFragment<T>(
      * 当前线被不再提醒
      */
     private fun onPermissionNeverAskAgain() {
-        requireActivity().onPermissionNeverAskAgainKt(
+        requireActivity().onPermissionNeverAskAgain(
             getString(
                 R.string.permissionNeverAskAgain, permissionName
             )

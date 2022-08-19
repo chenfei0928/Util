@@ -36,7 +36,7 @@ fun Activity.onShowPermissionRationale(msg: CharSequence, request: PermissionReq
 fun Activity.onPermissionDenied(
     @StringRes msg: Int,
     onPositiveAction: DialogInterface.OnClickListener,
-    onNegativeAction: DialogInterface.OnClickListener?
+    onNegativeAction: DialogInterface.OnClickListener? = null
 ) {
     onPermissionDenied(getString(msg), onPositiveAction, onNegativeAction)
 }
@@ -47,7 +47,7 @@ fun Activity.onPermissionDenied(
 fun Activity.onPermissionDenied(
     msg: CharSequence,
     onPositiveAction: DialogInterface.OnClickListener,
-    onNegativeAction: DialogInterface.OnClickListener?
+    onNegativeAction: DialogInterface.OnClickListener? = null
 ) {
     AlertDialog
         .Builder(this)
@@ -60,38 +60,12 @@ fun Activity.onPermissionDenied(
 }
 
 /**
- * 当某项权限被拒绝（当某项权限被用户否决，但未不再提示）
- */
-inline fun Activity.onPermissionDeniedKt(
-    @StringRes msg: Int,
-    crossinline onPositiveAction: (DialogInterface, Int) -> Unit,
-    crossinline onNegativeAction: (DialogInterface, Int) -> Unit = { _, _ -> }
-) {
-    onPermissionDeniedKt(getString(msg), onPositiveAction, onNegativeAction)
-}
-
-/**
- * 当某项权限被拒绝（当某项权限被用户否决，但未不再提示）
- */
-inline fun Activity.onPermissionDeniedKt(
-    msg: CharSequence,
-    crossinline onPositiveAction: (DialogInterface, Int) -> Unit,
-    crossinline onNegativeAction: (DialogInterface, Int) -> Unit = { _, _ -> }
-) {
-    onPermissionDenied(msg, DialogInterface.OnClickListener { dialog, which ->
-        onPositiveAction(dialog, which)
-    }, DialogInterface.OnClickListener { dialog, which ->
-        onNegativeAction(dialog, which)
-    })
-}
-
-/**
  * 当权限被拒绝并不再提醒，提示用户允许权限
  */
 fun Activity.onPermissionNeverAskAgain(
-    @StringRes msg: Int, onNegativeAction: DialogInterface.OnClickListener?
+    @StringRes msg: Int, onNegativeAction: DialogInterface.OnClickListener? = null
 ) {
-    onPermissionDenied(msg, DialogInterface.OnClickListener { _, _ ->
+    onPermissionDenied(msg, { _, _ ->
         startActivity(
             Intent(
                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")
@@ -104,35 +78,13 @@ fun Activity.onPermissionNeverAskAgain(
  * 当权限被拒绝并不再提醒，提示用户允许权限
  */
 fun Activity.onPermissionNeverAskAgain(
-    msg: CharSequence, onNegativeAction: DialogInterface.OnClickListener?
+    msg: CharSequence, onNegativeAction: DialogInterface.OnClickListener? = null
 ) {
-    onPermissionDenied(msg, DialogInterface.OnClickListener { _, _ ->
+    onPermissionDenied(msg, { _, _ ->
         startActivity(
             Intent(
                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")
             )
         )
     }, onNegativeAction)
-}
-
-/**
- * 当权限被拒绝并不再提醒，提示用户允许权限
- */
-inline fun Activity.onPermissionNeverAskAgainKt(
-    @StringRes msg: Int, crossinline onNegativeAction: (DialogInterface, Int) -> Unit = { _, _ -> }
-) {
-    onPermissionNeverAskAgain(msg, DialogInterface.OnClickListener { dialog, which ->
-        onNegativeAction(dialog, which)
-    })
-}
-
-/**
- * 当权限被拒绝并不再提醒，提示用户允许权限
- */
-inline fun Activity.onPermissionNeverAskAgainKt(
-    msg: CharSequence, crossinline onNegativeAction: (DialogInterface, Int) -> Unit = { _, _ -> }
-) {
-    onPermissionNeverAskAgain(msg, DialogInterface.OnClickListener { dialog, which ->
-        onNegativeAction(dialog, which)
-    })
 }

@@ -11,8 +11,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
-import io.github.chenfei0928.app.activity.onPermissionDeniedKt
-import io.github.chenfei0928.app.activity.onPermissionNeverAskAgainKt
+import io.github.chenfei0928.app.activity.onPermissionDenied
+import io.github.chenfei0928.app.activity.onPermissionNeverAskAgain
 import io.github.chenfei0928.app.activity.onShowPermissionRationale
 import io.github.chenfei0928.util.R
 
@@ -57,12 +57,12 @@ fun ActivityResultCaller.registerForExternalStoragePermission(
             callback(true)
         },
         onDenied = {
-            context().onPermissionDeniedKt(R.string.permissionDenied_sdCard,
+            context().onPermissionDenied(R.string.permissionDenied_sdCard,
                 { _, _ -> onNeedRetry() },
                 { _, _ -> callback(false) })
         },
         onNeverAskAgain = {
-            context().onPermissionNeverAskAgainKt(R.string.permissionNeverAskAgain_sdCard) { _, _ ->
+            context().onPermissionNeverAskAgain(R.string.permissionNeverAskAgain_sdCard) { _, _ ->
                 callback(false)
             }
         })
