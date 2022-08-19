@@ -25,24 +25,14 @@ import androidx.core.app.ActivityOptionsCompat
 fun <I, O> ActivityResultCaller.registerForActivityResult(
     contract: ActivityResultContract<I, O>,
     input: () -> I,
-    registry: ActivityResultRegistry,
+    registry: ActivityResultRegistry? = null,
     callback: (O) -> Unit
 ): ActivityResultLauncher<Unit> {
-    val resultLauncher = registerForActivityResult(contract, registry) { callback(it) }
-    return ActivityResultCallerLauncher(resultLauncher, contract, input)
-}
-
-/**
- * A version of [ActivityResultCaller.registerForActivityResult]
- * that additionally takes an input right away, producing a launcher that doesn't take any
- * additional input when called.
- *
- * @see ActivityResultCaller.registerForActivityResult
- */
-fun <I, O> ActivityResultCaller.registerForActivityResult(
-    contract: ActivityResultContract<I, O>, input: () -> I, callback: (O) -> Unit
-): ActivityResultLauncher<Unit> {
-    val resultLauncher = registerForActivityResult(contract) { callback(it) }
+    val resultLauncher = if (registry != null) {
+        registerForActivityResult(contract, registry) { callback(it) }
+    } else {
+        registerForActivityResult(contract) { callback(it) }
+    }
     return ActivityResultCallerLauncher(resultLauncher, contract, input)
 }
 
