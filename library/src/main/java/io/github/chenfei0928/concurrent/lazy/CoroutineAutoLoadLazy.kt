@@ -2,6 +2,7 @@ package io.github.chenfei0928.concurrent.lazy
 
 import io.github.chenfei0928.concurrent.coroutines.IoScope
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
 
 /**
@@ -10,11 +11,13 @@ import kotlinx.coroutines.async
  */
 fun <T> lazyByAutoLoad(
     scope: CoroutineScope = IoScope,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
     initializer: suspend () -> T
-): Lazy<T> = CoroutineAutoLoadLazy(scope, initializer)
+): Lazy<T> = CoroutineAutoLoadLazy(scope, start, initializer)
 
 private class CoroutineAutoLoadLazy<T>(
     scope: CoroutineScope,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
     initializer: suspend () -> T,
     lock: Any? = null
 ) : Lazy<T> {
@@ -25,7 +28,7 @@ private class CoroutineAutoLoadLazy<T>(
     private val lock: Any = lock ?: this
 
     init {
-        val async = scope.async {
+        val async = scope.async(start = start) {
             _value = initializer.invoke()
             notifyLock()
         }
