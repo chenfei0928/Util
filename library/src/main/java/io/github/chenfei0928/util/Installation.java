@@ -59,18 +59,22 @@ public class Installation {
 
     private static String getAdId(Context context) {
         // 优先获取广告id
-        if (AdvertisingIdClient.isAdvertisingIdProviderAvailable(context)) {
-            long l = System.currentTimeMillis();
-            try {
-                AdvertisingIdInfo advertisingIdInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
-                        .get(300L, TimeUnit.MILLISECONDS);
-                Log.d(TAG, "getAdId: " + (System.currentTimeMillis() - l) + advertisingIdInfo);
-                return advertisingIdInfo.getId();
-            } catch (ExecutionException | InterruptedException | TimeoutException e) {
-                Log.e(TAG, "getAdId: " + (System.currentTimeMillis() - l), e);
+        try {
+            if (AdvertisingIdClient.isAdvertisingIdProviderAvailable(context)) {
+                long l = System.currentTimeMillis();
+                try {
+                    AdvertisingIdInfo advertisingIdInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
+                            .get(300L, TimeUnit.MILLISECONDS);
+                    Log.d(TAG, "getAdId: " + (System.currentTimeMillis() - l) + advertisingIdInfo);
+                    return advertisingIdInfo.getId();
+                } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                    Log.e(TAG, "getAdId: " + (System.currentTimeMillis() - l), e);
+                }
+            } else {
+                Log.d(TAG, "getAdId: AdvertisingId 不可用");
             }
-        } else {
-            Log.d(TAG, "getAdId: AdvertisingId 不可用");
+        } catch (Throwable ignore) {
+            Log.d(TAG, "getAdId: 不使用 Google AdvertisingId 库");
         }
         // 如果获取到的是模拟器ID，使用生成的随机id
         return UUID.randomUUID().toString();

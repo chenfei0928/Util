@@ -53,7 +53,7 @@ abstract class BaseEnvironmentTwoWayLayoutBinder<Bean, V : ViewBinding>(
                     emptyArray()
                 } else environments.mapToArray {
                     it.createOnPropertyChanged {
-                        syncBeanChanged(holder, false)
+                        syncBeanChanged(holder, this, it)
                     }
                 }
             }
