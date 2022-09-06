@@ -134,7 +134,7 @@ class GsonSpConvertSaver<T>(
     }
 }
 
-inline fun <reified T> GsonSpConvertSaver(key: String) = GsonSpConvertSaver<T>(
+inline fun <reified T> GsonSpConvertSaver(key: String? = null) = GsonSpConvertSaver<T>(
     StringDelegate(key),
     type = typeOf<T>()
 )
