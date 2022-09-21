@@ -96,12 +96,12 @@ public class WebViewSettingsUtil {
             }
         } catch (Throwable e) {
             Log.w(TAG, "installWebView: webView 创建失败", e);
-            ToastUtil.showShort(placeHolder.getContext(), R.string.webViewLoadFailed);
+            ToastUtil.INSTANCE.showShort(placeHolder.getContext(), R.string.webViewLoadFailed);
             return null;
         }
         // 检查是否创建成功
         if (webView == null) {
-            ToastUtil.showShort(placeHolder.getContext(), R.string.webViewLoadFailed);
+            ToastUtil.INSTANCE.showShort(placeHolder.getContext(), R.string.webViewLoadFailed);
             return null;
         } else {
             // 更新其id，以兼容相对布局/约束布局依赖viewId布局ui的父View
