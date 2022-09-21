@@ -10,8 +10,9 @@ import io.github.chenfei0928.base.ContextProvider
 import io.github.chenfei0928.content.findActivity
 import io.github.chenfei0928.view.findParentFragment
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
-import java.io.Closeable
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
@@ -26,21 +27,32 @@ private val viewOwnerCoroutineScopeCache: MutableMap<View, ViewCoroutineScope> =
  */
 val View.attachedCoroutineScope: CoroutineScope
     get() = viewOwnerCoroutineScopeCache.getOrPut(this) {
-        ViewCoroutineScope(this)
+        ViewCoroutineScope(this).init()
     }
 
 private class ViewCoroutineScope(
     private val view: View
-) : JobCoroutineScope(MainScope.coroutineContext), Closeable {
+) : JobCoroutineScope(MainScope.coroutineContext) {
     override val coroutineContext: CoroutineContext
         get() = super.coroutineContext + // 生命周期的协程
                 androidContextElement
 
-    init {
+    fun init(): ViewCoroutineScope = apply {
         view.doOnAttach {
             job.start()
             view.doOnDetach {
                 cancel()
+            }
+        }
+        launch {
+            try {
+                awaitCancellation()
+            } finally {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    viewOwnerCoroutineScopeCache.remove(view, this)
+                } else {
+                    viewOwnerCoroutineScopeCache.remove(view)
+                }
             }
         }
     }
@@ -59,18 +71,6 @@ private class ViewCoroutineScope(
             else -> {
                 CoroutineAndroidContextImpl(ContextProvider.context, null)
             }
-        }
-    }
-
-    /**
-     * 关闭该协程，将自身从缓存中移除，并不再监听宿主的生命周期
-     */
-    override fun close() {
-        job.cancel()
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            viewOwnerCoroutineScopeCache.remove(view, this)
-        } else {
-            viewOwnerCoroutineScopeCache.remove(view)
         }
     }
 }

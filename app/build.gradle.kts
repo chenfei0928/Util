@@ -13,6 +13,8 @@ applyTest()
 applyKotlin()
 
 android {
+    namespace = "io.github.chenfei0928.util"
+
     defaultConfig {
         applicationId = "io.github.chenfei0928.util"
         versionName = "1.0"

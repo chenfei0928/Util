@@ -21,6 +21,8 @@ withKotlinAndroidMavenPublication(
 )
 
 android {
+    namespace = "io.github.chenfei0928.util"
+
     buildFeatures {
         buildConfig = false
     }

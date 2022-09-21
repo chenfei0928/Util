@@ -13,7 +13,9 @@ import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
 import io.github.chenfei0928.lifecycle.LifecycleCacheDelegate
 import io.github.chenfei0928.lifecycle.isAlive
 import kotlinx.coroutines.CoroutineScope
-import java.io.Closeable
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -32,7 +34,7 @@ private val cancelledCoroutineScope by lazy(LazyThreadSafetyMode.NONE) {
 val LifecycleOwner.coroutineScope: CoroutineScope by LifecycleCacheDelegate { owner, closeCallback ->
     if (owner.lifecycle.isAlive) {
         // 宿主存活时，创建或从缓存中获取一个与该宿主生命周期绑定的协程实例
-        LifecycleCoroutineScope(owner, closeCallback)
+        LifecycleCoroutineScope(owner, closeCallback).init()
     } else {
         // 宿主已经不在存活，其不应该再被执行任何任务
         cancelledCoroutineScope
@@ -46,15 +48,25 @@ val LifecycleOwner.coroutineScope: CoroutineScope by LifecycleCacheDelegate { ow
 private class LifecycleCoroutineScope(
     host: LifecycleOwner,
     private val closeCallback: () -> Unit
-) : JobCoroutineScope(MainScope.coroutineContext), LifecycleEventObserver, Closeable {
+) : JobCoroutineScope(MainScope.coroutineContext), LifecycleEventObserver {
     override val coroutineContext: CoroutineContext
         get() = super.coroutineContext + // 生命周期的协程
                 androidContextElement
 
+    fun init(): LifecycleCoroutineScope = apply {
+        launch {
+            try {
+                awaitCancellation()
+            } finally {
+                closeCallback()
+            }
+        }
+    }
+
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         if (event == Lifecycle.Event.ON_DESTROY) {
             // 关闭页面后，结束所有协程任务
-            close()
+            cancel()
         }
     }
 
@@ -80,12 +92,4 @@ private class LifecycleCoroutineScope(
                 CoroutineAndroidContextImpl(ContextProvider.context, null)
             }
         }
-
-    /**
-     * 关闭该协程，将自身从缓存中移除，并不再监听宿主的生命周期
-     */
-    override fun close() {
-        job.cancel()
-        closeCallback()
-    }
 }
