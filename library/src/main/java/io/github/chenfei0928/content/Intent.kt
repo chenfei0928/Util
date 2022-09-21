@@ -17,13 +17,13 @@ fun Intent.putExtra(name: String, value: GeneratedMessageLite<*, *>) {
     putExtra(name, value.toByteArray())
 }
 
-fun <T : GeneratedMessageLite<*, *>> Intent.getExtra(
+fun <T : GeneratedMessageLite<*, *>> Intent.getProtobufExtra(
     name: String, parse: (ByteArray) -> T
 ): T? {
     return getByteArrayExtra(name)?.let(parse)
 }
 
-inline fun <reified T : GeneratedMessageLite<T, *>> Intent.getExtra(name: String): T? {
+inline fun <reified T : GeneratedMessageLite<T, *>> Intent.getProtobufExtra(name: String): T? {
     return getByteArrayExtra(name)?.let(T::class.java.getParseFrom())
 }
 
