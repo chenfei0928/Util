@@ -49,7 +49,7 @@ private class ViewCoroutineScope(
                 awaitCancellation()
             } finally {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    viewOwnerCoroutineScopeCache.remove(view, this)
+                    viewOwnerCoroutineScopeCache.remove(view, this@ViewCoroutineScope)
                 } else {
                     viewOwnerCoroutineScopeCache.remove(view)
                 }
