@@ -23,12 +23,12 @@ import androidx.fragment.app.Fragment
  * @param onDenied      当权限被拒绝，给予用户提示，是否重试
  * @param onNeverAskAgain   当权限被拒绝并不再提示，给予用户提示并取消操作
  */
-fun Fragment.registerForPermission(
+inline fun Fragment.registerForPermission(
     permissions: Array<String>,
-    onRationale: (request: PermissionRequest) -> Unit,
-    @SuppressLint("MissingPermission") onAgree: () -> Unit,
-    onDenied: () -> Unit,
-    onNeverAskAgain: () -> Unit
+    crossinline onRationale: (request: PermissionRequest) -> Unit,
+    @SuppressLint("MissingPermission") crossinline onAgree: () -> Unit,
+    crossinline onDenied: () -> Unit,
+    crossinline onNeverAskAgain: () -> Unit
 ): ActivityResultLauncher<Unit?> = registerForPermission(
     this::requireActivity, permissions, onRationale, onAgree, onDenied, onNeverAskAgain
 )
@@ -44,12 +44,12 @@ fun Fragment.registerForPermission(
  * @param onDenied      当权限被拒绝，给予用户提示，是否重试
  * @param onNeverAskAgain   当权限被拒绝并不再提示，给予用户提示并取消操作
  */
-fun ComponentActivity.registerForPermission(
+inline fun ComponentActivity.registerForPermission(
     permissions: Array<String>,
-    onRationale: (request: PermissionRequest) -> Unit,
-    @SuppressLint("MissingPermission") onAgree: () -> Unit,
-    onDenied: () -> Unit,
-    onNeverAskAgain: () -> Unit
+    crossinline onRationale: (request: PermissionRequest) -> Unit,
+    @SuppressLint("MissingPermission") crossinline onAgree: () -> Unit,
+    crossinline onDenied: () -> Unit,
+    crossinline onNeverAskAgain: () -> Unit
 ): ActivityResultLauncher<Unit?> = registerForPermission(
     { this }, permissions, onRationale, onAgree, onDenied, onNeverAskAgain
 )
@@ -65,21 +65,43 @@ fun ComponentActivity.registerForPermission(
  * @param onDenied      当权限被拒绝，给予用户提示，是否重试
  * @param onNeverAskAgain   当权限被拒绝并不再提示，给予用户提示并取消操作
  */
-fun ActivityResultCaller.registerForPermission(
-    context: () -> Activity,
+inline fun ActivityResultCaller.registerForPermission(
+    crossinline context: () -> Activity,
     permissions: Array<String>,
-    onRationale: (request: PermissionRequest) -> Unit,
-    @SuppressLint("MissingPermission") onAgree: () -> Unit,
-    onDenied: () -> Unit,
-    onNeverAskAgain: () -> Unit
+    crossinline onRationale: (request: PermissionRequest) -> Unit,
+    @SuppressLint("MissingPermission") crossinline onAgree: () -> Unit,
+    crossinline onDenied: () -> Unit,
+    crossinline onNeverAskAgain: () -> Unit
 ): ActivityResultLauncher<Unit?> {
-    val resultCallback = PermissionResultCallback(
-        context, permissions, onAgree, onDenied, onNeverAskAgain
-    )
+    val resultCallback = object : PermissionResultCallback(permissions) {
+        override fun context(): Activity {
+            return context()
+        }
+
+        override fun onAgree() {
+            onAgree()
+        }
+
+        override fun onDenied() {
+            onDenied()
+        }
+
+        override fun onNeverAskAgain() {
+            onNeverAskAgain()
+        }
+    }
     val registerForActivityResult = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(), resultCallback
     )
-    return PermissionLauncher(
-        context, permissions, registerForActivityResult, resultCallback, onRationale, onDenied
-    )
+    return object : PermissionLauncher(
+        permissions, registerForActivityResult, resultCallback
+    ) {
+        override fun context(): Activity {
+            return context()
+        }
+
+        override fun onRationale(request: PermissionRequest) {
+            onRationale(request)
+        }
+    }
 }

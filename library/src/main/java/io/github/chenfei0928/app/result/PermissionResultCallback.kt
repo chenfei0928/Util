@@ -7,18 +7,10 @@ import permissions.dispatcher.PermissionUtils
 /**
  * 权限申请结果回调
  *
- * @param context       应用会话上下文，用于检查权限授予情况
  * @param permissions   要申请的权限列表
- * @param onAgree       权限已授权的回调
- * @param onDenied      权限被拒绝的回调
- * @param onNeverAskAgain   权限被拒绝且不再提示的回调
  */
-internal class PermissionResultCallback(
-    private val context: () -> Activity,
+abstract class PermissionResultCallback(
     private val permissions: Array<String>,
-    private val onAgree: () -> Unit,
-    private val onDenied: () -> Unit,
-    private val onNeverAskAgain: () -> Unit
 ) : ActivityResultCallback<Map<String, Boolean>> {
 
     override fun onActivityResult(result: Map<String, Boolean>?) {
@@ -37,4 +29,21 @@ internal class PermissionResultCallback(
             }
         }
     }
+
+    protected abstract fun context(): Activity
+
+    /**
+     * 权限已授权的回调
+     */
+    protected abstract fun onAgree()
+
+    /**
+     * 权限被拒绝的回调
+     */
+    internal abstract fun onDenied()
+
+    /**
+     * 权限被拒绝且不再提示的回调
+     */
+    protected abstract fun onNeverAskAgain()
 }
