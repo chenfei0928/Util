@@ -10,9 +10,7 @@
     <string name="permissionDenied">%1$s权限被拒绝，请允许权限后才能继续</string>
     <string name="permissionNeverAskAgain">%1$s权限被拒绝，请允许权限后才能继续</string>
 
-    <string name="permissionRationale_sdCard">该功能需要扩展卡权限</string>
-    <string name="permissionDenied_sdCard">扩展卡权限被拒绝，请允许权限后才能继续</string>
-    <string name="permissionNeverAskAgain_sdCard">扩展卡权限被拒绝，请允许权限后才能继续</string>
+    <string name="permissionName_sdcard">扩展卡</string>
 
     <string name="toast_extStrong_saved">已保存到本地</string>
     <string name="toast_extStrong_failed">保存到本地失败</string>

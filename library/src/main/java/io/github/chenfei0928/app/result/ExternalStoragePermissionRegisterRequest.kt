@@ -7,6 +7,7 @@ package io.github.chenfei0928.app.result
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.ActivityResultLauncher
@@ -40,30 +41,77 @@ fun ComponentActivity.registerForExternalStoragePermission(
  */
 fun ActivityResultCaller.registerForExternalStoragePermission(
     context: () -> Activity,
-    callback: (isHasPermission: Boolean) -> Unit
+    @SuppressLint("MissingPermission") callback: (isHasPermission: Boolean) -> Unit
+): ActivityResultLauncher<Unit?> = registerForPermission(
+    context = context,
+    permissions = arrayOf(
+        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
+    ),
+    permissionName = { getString(R.string.permissionName_sdcard) },
+    callback = callback
+)
+
+/**
+ * 快速请求并处理某项权限
+ * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
+ */
+fun Fragment.registerForPermission(
+    permissions: Array<String>,
+    permissionName: Context.() -> String,
+    @SuppressLint("MissingPermission") callback: (isHasPermission: Boolean) -> Unit
+): ActivityResultLauncher<Unit?> =
+    registerForPermission(this::requireActivity, permissions, permissionName, callback)
+
+/**
+ * 快速请求并处理某项权限
+ * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
+ */
+fun ComponentActivity.registerForPermission(
+    permissions: Array<String>,
+    permissionName: Context.() -> String,
+    @SuppressLint("MissingPermission") callback: (isHasPermission: Boolean) -> Unit
+): ActivityResultLauncher<Unit?> =
+    registerForPermission({ this }, permissions, permissionName, callback)
+
+/**
+ * 快速请求并处理某项权限
+ * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
+ */
+fun ActivityResultCaller.registerForPermission(
+    context: () -> Activity,
+    permissions: Array<String>,
+    permissionName: Context.() -> String,
+    @SuppressLint("MissingPermission") callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> {
     var onNeedRetry = {}
     val registerForPermission = registerForPermission(
         context = context,
-        permissions = arrayOf(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
-        ),
+        permissions = permissions,
         onRationale = {
-            context().onShowPermissionRationale(
-                R.string.permissionRationale_sdCard, it
-            )
+            context().run {
+                onShowPermissionRationale(
+                    getString(R.string.permissionRationale, permissionName()), it
+                )
+            }
         },
         onAgree = {
             callback(true)
         },
         onDenied = {
-            context().onPermissionDenied(R.string.permissionDenied_sdCard,
-                { _, _ -> onNeedRetry() },
-                { _, _ -> callback(false) })
+            context().run {
+                onPermissionDenied(
+                    getString(R.string.permissionDenied, permissionName()),
+                    { _, _ -> onNeedRetry() },
+                    { _, _ -> callback(false) })
+            }
         },
         onNeverAskAgain = {
-            context().onPermissionNeverAskAgain(R.string.permissionNeverAskAgain_sdCard) { _, _ ->
-                callback(false)
+            context().run {
+                onPermissionNeverAskAgain(
+                    getString(R.string.permissionNeverAskAgain, permissionName())
+                ) { _, _ ->
+                    callback(false)
+                }
             }
         })
     onNeedRetry = {

@@ -47,7 +47,7 @@ fun Fragment.registerForPermission(
 fun ComponentActivity.registerForPermission(
     permissions: Array<String>,
     onRationale: (request: PermissionRequest) -> Unit,
-    onAgree: () -> Unit,
+    @SuppressLint("MissingPermission") onAgree: () -> Unit,
     onDenied: () -> Unit,
     onNeverAskAgain: () -> Unit
 ): ActivityResultLauncher<Unit?> = registerForPermission(
@@ -69,7 +69,7 @@ fun ActivityResultCaller.registerForPermission(
     context: () -> Activity,
     permissions: Array<String>,
     onRationale: (request: PermissionRequest) -> Unit,
-    onAgree: () -> Unit,
+    @SuppressLint("MissingPermission") onAgree: () -> Unit,
     onDenied: () -> Unit,
     onNeverAskAgain: () -> Unit
 ): ActivityResultLauncher<Unit?> {
