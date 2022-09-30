@@ -25,6 +25,7 @@ class FragmentParcelableDelegate<T : Parcelable>(
     }
 
     override fun setValue(thisRef: Fragment, property: KProperty<*>, value: T) {
+        this.value = value
         thisRef.applyArgumentBundle {
             putParcelable(name, value)
         }
@@ -46,6 +47,7 @@ class FragmentParcelableNullableDelegate<T : Parcelable>(
     }
 
     override fun setValue(thisRef: Fragment, property: KProperty<*>, value: T?) {
+        this.value = value
         thisRef.applyArgumentBundle {
             putParcelable(name, value)
         }
@@ -67,6 +69,7 @@ class FragmentParcelableListDelegate<T : Parcelable>(
     }
 
     override fun setValue(thisRef: Fragment, property: KProperty<*>, value: List<T>) {
+        this.value = value
         thisRef.applyArgumentBundle {
             putParcelableArrayList(name, value.asArrayList())
         }
@@ -88,6 +91,7 @@ class FragmentStringDelegate(
     }
 
     override fun setValue(thisRef: Fragment, property: KProperty<*>, value: String) {
+        this.value = value
         thisRef.applyArgumentBundle {
             putString(name, value)
         }
@@ -109,6 +113,7 @@ class FragmentIntDelegate(
     }
 
     override fun setValue(thisRef: Fragment, property: KProperty<*>, value: Int) {
+        this.value = value
         thisRef.applyArgumentBundle {
             putInt(name, value)
         }
@@ -130,6 +135,7 @@ class FragmentBooleanDelegate(
     }
 
     override fun setValue(thisRef: Fragment, property: KProperty<*>, value: Boolean) {
+        this.value = value
         thisRef.applyArgumentBundle {
             putBoolean(name, value)
         }

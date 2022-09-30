@@ -9,6 +9,7 @@ package io.github.chenfei0928.app.result
 
 import android.content.Context
 import android.content.Intent
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
@@ -22,24 +23,27 @@ import androidx.core.app.ActivityOptionsCompat
  *
  * @see ActivityResultCaller.registerForActivityResult
  */
-fun <I, O> ActivityResultCaller.registerForActivityResult(
+inline fun <I, O> ActivityResultCaller.registerForActivityResult(
     contract: ActivityResultContract<I, O>,
-    input: () -> I,
+    crossinline input: () -> I,
     registry: ActivityResultRegistry? = null,
-    callback: (O) -> Unit
+    callback: ActivityResultCallback<O>
 ): ActivityResultLauncher<Unit> {
     val resultLauncher = if (registry != null) {
-        registerForActivityResult(contract, registry) { callback(it) }
+        registerForActivityResult(contract, registry, callback)
     } else {
-        registerForActivityResult(contract) { callback(it) }
+        registerForActivityResult(contract, callback)
     }
-    return ActivityResultCallerLauncher(resultLauncher, contract, input)
+    return object : ActivityResultCallerLauncher<I, O>(resultLauncher, contract) {
+        override fun input(): I {
+            return input()
+        }
+    }
 }
 
-internal class ActivityResultCallerLauncher<I, O>(
+abstract class ActivityResultCallerLauncher<I, O>(
     private val launcher: ActivityResultLauncher<I>,
     private val callerContract: ActivityResultContract<I, O>,
-    private val input: () -> I
 ) : ActivityResultLauncher<Unit>() {
     private val resultContract: ActivityResultContract<Unit, O> by lazy {
         object : ActivityResultContract<Unit, O>() {
@@ -64,4 +68,6 @@ internal class ActivityResultCallerLauncher<I, O>(
     override fun getContract(): ActivityResultContract<Unit, O> {
         return resultContract
     }
+
+    protected abstract fun input(): I
 }
