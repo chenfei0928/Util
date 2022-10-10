@@ -14,7 +14,7 @@ public class DrawableCrossFadeFactory extends com.bumptech.glide.request.transit
     private final int duration;
     private DrawableCrossFadeTransition resourceTransition;
 
-    DrawableCrossFadeFactory(int duration) {
+    public DrawableCrossFadeFactory(int duration) {
         super(duration, true);
         this.duration = duration;
     }
