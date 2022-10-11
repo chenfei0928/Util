@@ -2,6 +2,7 @@ package io.github.chenfei0928.util.retrofit
 
 import android.content.Context
 import android.net.Uri
+import android.webkit.MimeTypeMap
 import androidx.documentfile.provider.DocumentFile
 import io.github.chenfei0928.io.FileUtil
 import okhttp3.MediaType
@@ -16,27 +17,21 @@ import java.io.IOException
  *
  * Created by MrFeng on 2017/5/8.
  */
-internal class UriRequestBody(
-    private val context: Context, private val uri: Uri
+class UriRequestBody(
+    private val context: Context,
+    private val uri: Uri
 ) : RequestBody() {
 
     override fun contentType(): MediaType? {
-        val documentUriMediaType =
-            DocumentFile.fromSingleUri(context, uri)?.type?.toMediaTypeOrNull()
-        return documentUriMediaType ?: FileUtil
-            .getFileExtensionFromUrl(uri.toString())
-            .toMediaTypeOrNull()
+        return DocumentFile.fromSingleUri(context, uri)?.type?.toMediaTypeOrNull()
+            ?: MimeTypeMap.getSingleton()
+                .getMimeTypeFromExtension(FileUtil.getFileExtensionFromUrl(uri.toString()))
+                ?.toMediaTypeOrNull()
     }
 
     @Throws(IOException::class)
     override fun contentLength(): Long {
-        return context.contentResolver
-            .openInputStream(uri)
-            ?.use {
-                it
-                    .available()
-                    .toLong()
-            } ?: super.contentLength()
+        return uri.getLength(context)
     }
 
     @Throws(IOException::class)
