@@ -3,7 +3,6 @@ package com.google.protobuf
 import android.os.Parcel
 import androidx.collection.LruCache
 import kotlinx.parcelize.Parceler
-import kotlin.reflect.full.createInstance
 
 /**
  * 使Protobuf对象支持Parcelable的序列化支持
@@ -19,7 +18,7 @@ import kotlin.reflect.full.createInstance
 object ProtobufParceler :
     Parceler<GeneratedMessageLite<*, *>?>
     by
-    ProtobufParcelerImpl::class.createInstance() as Parceler<GeneratedMessageLite<*, *>?>
+    ProtobufParcelerImpl::class.java.newInstance() as Parceler<GeneratedMessageLite<*, *>?>
 
 private class ProtobufParcelerImpl<MessageType, BuilderType> : Parceler<MessageType?>
         where

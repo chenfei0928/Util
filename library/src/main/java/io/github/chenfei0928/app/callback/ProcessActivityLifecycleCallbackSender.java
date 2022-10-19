@@ -53,7 +53,9 @@ class ProcessActivityLifecycleCallbackSender implements Application.ActivityLife
         ActivityInfo activityInfo = new ActivityInfo(
                 RunningEnvironmentUtil.getProcessName(activity),
                 activity.getPackageName(),
-                activity.getClass().getName());
-        activity.sendBroadcast(activityInfo.toIntent(event));
+                activity.getClass().getName(),
+                event
+        );
+        activity.sendBroadcast(activityInfo.toIntent());
     }
 }

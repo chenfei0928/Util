@@ -5,6 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import io.github.chenfei0928.content.IntentFilterBroadcastReceiver
 import io.github.chenfei0928.reflect.asType
 import kotlinx.parcelize.Parcelize
@@ -17,46 +20,42 @@ import kotlinx.parcelize.Parcelize
 data class ActivityInfo(
     @JvmField val processName: String,
     @JvmField val packageName: String,
-    @JvmField val activityClassName: String
+    @JvmField val activityClassName: String,
+    @JvmField val event: Lifecycle.Event,
 ) : Parcelable {
 
-    fun toIntent(event: Lifecycle.Event) = Intent(ACTION).apply {
+    fun toIntent() = Intent(ACTION).apply {
         `package` = packageName
-        putExtra(EVENT, event)
         putExtra(ACTIVITY_INFO, this@ActivityInfo)
     }
 
     companion object {
-        internal const val EVENT = "event"
         internal const val ACTIVITY_INFO = "activityInfo"
         internal const val ACTION =
             "io.github.chenfei0928.util.MULTI_PROCESS_ACTIVITY_LIFECYCLE_CALLBACK"
     }
 }
 
-interface MultiProcessActivityLifecycleCallback {
-    fun onActivityEvent(activityInfo: ActivityInfo, event: Lifecycle.Event)
-}
-
 object ActivityInfoReceiver : IntentFilterBroadcastReceiver(ActivityInfo.ACTION) {
-    private val lifecycleCallback: MutableSet<MultiProcessActivityLifecycleCallback> =
-        mutableSetOf()
+    private val lifecycleLiveData = MutableLiveData<ActivityInfo>()
 
-    fun registerCallback(callback: MultiProcessActivityLifecycleCallback) =
-        lifecycleCallback.add(callback)
+    fun observe(owner: LifecycleOwner, observer: Observer<ActivityInfo>) =
+        lifecycleLiveData.observe(owner, observer)
 
-    fun unregisterCallback(callback: MultiProcessActivityLifecycleCallback) =
-        lifecycleCallback.remove(callback)
+    fun observeForever(observer: Observer<ActivityInfo>) =
+        lifecycleLiveData.observeForever(observer)
+
+    fun removeObserver(observer: Observer<ActivityInfo>) =
+        lifecycleLiveData.removeObserver(observer)
+
+    fun removeObservers(owner: LifecycleOwner) =
+        lifecycleLiveData.removeObservers(owner)
 
     override fun onReceive(context: Context, intent: Intent) {
-        val event: Lifecycle.Event =
-            intent.getSerializableExtra(ActivityInfo.EVENT) as? Lifecycle.Event ?: return
         val activityInfo =
             intent.getParcelableExtra<ActivityInfo>(ActivityInfo.ACTIVITY_INFO) ?: return
 
-        lifecycleCallback.forEach {
-            it.onActivityEvent(activityInfo, event)
-        }
+        lifecycleLiveData.value = activityInfo
     }
 
     override fun register(context: Context) {
