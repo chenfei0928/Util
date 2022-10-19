@@ -2,6 +2,7 @@ package io.github.chenfei0928.app.callback;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,8 @@ import io.github.chenfei0928.app.RunningEnvironmentUtil;
  * @date 2021-01-13 16:10
  */
 class ProcessActivityLifecycleCallbackSender implements Application.ActivityLifecycleCallbacks {
+    static final String ACTIVITY_INFO = "activityInfo";
+    static final String ACTION = "io.github.chenfei0928.util.MULTI_PROCESS_ACTIVITY_LIFECYCLE_CALLBACK";
 
     @Override
     public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
@@ -54,8 +57,12 @@ class ProcessActivityLifecycleCallbackSender implements Application.ActivityLife
                 RunningEnvironmentUtil.getProcessName(activity),
                 activity.getPackageName(),
                 activity.getClass().getName(),
+                System.identityHashCode(activity),
                 event
         );
-        activity.sendBroadcast(activityInfo.toIntent());
+        Intent intent = new Intent(ACTION);
+        intent.setPackage(activity.getPackageName());
+        intent.putExtra(ACTIVITY_INFO, activityInfo);
+        activity.sendBroadcast(intent);
     }
 }
