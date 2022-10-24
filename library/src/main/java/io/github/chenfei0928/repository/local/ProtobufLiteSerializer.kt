@@ -1,7 +1,9 @@
 package io.github.chenfei0928.repository.local
 
 import com.google.protobuf.GeneratedMessageLite
-import com.google.protobuf.getParseFrom
+import com.google.protobuf.Parser
+import com.google.protobuf.getProtobufDefaultInstance
+import com.google.protobuf.getProtobufParserForType
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -12,15 +14,15 @@ import java.io.OutputStream
  * @date 2021-11-22 16:03
  */
 class ProtobufLiteSerializer<MessageType, BuilderType>(
-    clazz: Class<MessageType>
+    messageType: Class<MessageType>
 ) : LocalSerializer<MessageType>
         where
 MessageType : GeneratedMessageLite<MessageType, BuilderType>,
 BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
 
-    private val parser = clazz.getParseFrom<MessageType, Any>()
+    private val parser: Parser<MessageType> = messageType.getProtobufParserForType()
 
-    override val defaultValue: MessageType = parser(null)
+    override val defaultValue: MessageType = messageType.getProtobufDefaultInstance()
 
     override fun write(outputStream: OutputStream, obj: MessageType) {
         obj.writeTo(outputStream)
@@ -28,7 +30,7 @@ BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
     }
 
     override fun read(inputStream: InputStream): MessageType {
-        return parser(inputStream)
+        return parser.parseFrom(inputStream)
     }
 
     override fun copy(obj: MessageType): MessageType {

@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.collection.ArrayMap
 import com.google.protobuf.GeneratedMessageLite
-import com.google.protobuf.getParseFrom
+import com.google.protobuf.getProtobufParserForType
 import io.github.chenfei0928.base.ContextProvider
 import io.github.chenfei0928.repository.local.ParcelableUtils
 import io.github.chenfei0928.util.deepEquals
@@ -24,7 +24,7 @@ fun <T : GeneratedMessageLite<*, *>> Intent.getProtobufExtra(
 }
 
 inline fun <reified T : GeneratedMessageLite<T, *>> Intent.getProtobufExtra(name: String): T? {
-    return getByteArrayExtra(name)?.let(T::class.java.getParseFrom())
+    return getByteArrayExtra(name)?.let(T::class.java.getProtobufParserForType()::parseFrom)
 }
 
 fun Intent.getAllExtras() = extras?.getAll() ?: emptyMap()

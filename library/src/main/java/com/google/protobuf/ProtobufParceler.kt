@@ -26,20 +26,18 @@ MessageType : GeneratedMessageLite<MessageType, BuilderType>,
 BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
 
     private val defaultInstanceCache = object :
-        LruCache<String, (ByteArray?) -> GeneratedMessageLite<MessageType, BuilderType>>(10) {
+        LruCache<String, Parser<MessageType>>(10) {
 
-        override fun create(key: String): ((ByteArray?) -> GeneratedMessageLite<MessageType, BuilderType>) {
+        override fun create(key: String): Parser<MessageType> {
             val messageType = Class.forName(key) as Class<MessageType>
-            GeneratedMessageLite.getDefaultInstance(messageType)
-            return messageType.getParseFrom<MessageType, ByteArray?>()
+            return messageType.getProtobufParserForType()
         }
     }
 
     override fun create(parcel: Parcel): MessageType? {
         val className = parcel.readString() ?: return null
-        val parseFrom = defaultInstanceCache[className]
-                as (ByteArray?) -> MessageType
-        return parcel.createByteArray().let(parseFrom)
+        val parseFrom = defaultInstanceCache[className]!!
+        return parcel.createByteArray().let(parseFrom::parseFrom)
     }
 
     override fun MessageType?.write(parcel: Parcel, flags: Int) {
