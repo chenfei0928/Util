@@ -25,7 +25,7 @@ private class ProtobufParcelerImpl<MessageType, BuilderType> : Parceler<MessageT
 MessageType : GeneratedMessageLite<MessageType, BuilderType>,
 BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
 
-    private val defaultInstanceCache = object :
+    private val parserCache = object :
         LruCache<String, Parser<MessageType>>(10) {
 
         override fun create(key: String): Parser<MessageType> {
@@ -36,8 +36,8 @@ BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
 
     override fun create(parcel: Parcel): MessageType? {
         val className = parcel.readString() ?: return null
-        val parseFrom = defaultInstanceCache[className]!!
-        return parcel.createByteArray().let(parseFrom::parseFrom)
+        val parser = parserCache[className]!!
+        return parcel.createByteArray().let(parser::parseFrom)
     }
 
     override fun MessageType?.write(parcel: Parcel, flags: Int) {
