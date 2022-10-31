@@ -2,6 +2,6 @@
 
 ```groovy
 dependencies {
-  implementation 'io.github.chenfei0928:util:1.0'
+  implementation 'io.github.chenfei0928:util:1.1'
 }
 ```
