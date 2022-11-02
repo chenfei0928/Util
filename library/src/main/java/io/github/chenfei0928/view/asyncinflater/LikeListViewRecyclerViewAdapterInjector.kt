@@ -10,6 +10,10 @@ import io.github.chenfei0928.util.R
 /**
  * 使用adapter方式注入子view
  *
+ * 注意：由于无法监听父 [ViewGroup] 的 [View.onDetachedFromWindow] 事件，
+ * 所以同时不会回调 adapter 的 [RecyclerView.Adapter.onViewAttachedToWindow]、
+ * [RecyclerView.Adapter.onViewDetachedFromWindow]。
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-07-22 17:01
  */

@@ -17,6 +17,10 @@ import kotlinx.coroutines.withContext
 /**
  * 使用binder方式注入子view
  *
+ * 注意：由于无法监听父 [ViewGroup] 的 [View.onDetachedFromWindow] 事件，
+ * 所以同时不会回调 binder 的 [ItemViewDelegate.onViewAttachedToWindow]、
+ * [ItemViewDelegate.onViewDetachedFromWindow]。
+ *
  * User: ChenFei(chenfei0928@gmail.com)
  * Date: 2019-04-13
  * Time: 16:39
