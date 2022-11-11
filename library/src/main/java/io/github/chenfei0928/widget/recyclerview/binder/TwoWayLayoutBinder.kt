@@ -1,10 +1,7 @@
 package io.github.chenfei0928.widget.recyclerview.binder
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.databinding.Observable
-import androidx.viewbinding.ViewBinding
-import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
+import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
 
 /**
  * 用于提供接口以支持双向绑定
@@ -16,25 +13,24 @@ import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-09-06 09:50
  */
-abstract class TwoWayLayoutBinder<Bean, V : ViewBinding>(
-    viewBindingInflater: (LayoutInflater, ViewGroup, Boolean) -> V,
-) : BaseBindingBinder<Bean, V>(viewBindingInflater) {
+abstract class TwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>
+    : BaseViewHolderBinder<Bean, VH>() {
 
     override fun onBindViewHolder(
-        holder: ViewBindingHolder<Bean, V>, item: Bean, payloads: List<Any>,
+        holder: VH, item: Bean, payloads: List<Any>,
     ) {
         super.onBindViewHolder(holder, item, payloads)
         // 同步view状态
         syncBeanChanged(holder, null, -1)
     }
 
-    override fun onViewAttachedToWindow(holder: ViewBindingHolder<Bean, V>) {
+    override fun onViewAttachedToWindow(holder: VH) {
         super.onViewAttachedToWindow(holder)
         // 绑定view到bean
         bindTwoWayCallback(holder)
     }
 
-    override fun onViewDetachedFromWindow(holder: ViewBindingHolder<Bean, V>) {
+    override fun onViewDetachedFromWindow(holder: VH) {
         super.onViewDetachedFromWindow(holder)
         // 解除bean到view的绑定
         unbindTwoWayCallback(holder)
@@ -50,18 +46,18 @@ abstract class TwoWayLayoutBinder<Bean, V : ViewBinding>(
      * @param propertyId [Observable.OnPropertyChangedCallback.onPropertyChanged]
      */
     protected abstract fun syncBeanChanged(
-        holder: ViewBindingHolder<Bean, V>, sourceObservable: Observable?, propertyId: Int,
+        holder: VH, sourceObservable: Observable?, propertyId: Int,
     )
 
     /**
      * 添加双向绑定回调
      * 当viewHolder被添加到window或进行填充内容时回调，通知该item将要被显示，需要对其状态进行监听
      */
-    protected abstract fun bindTwoWayCallback(holder: ViewBindingHolder<Bean, V>)
+    protected abstract fun bindTwoWayCallback(holder: VH)
 
     /**
      * 解除双向绑定回调
      * 在viewHolder被回收或从window中移除时会回调，以通知该item不在显示中
      */
-    protected abstract fun unbindTwoWayCallback(holder: ViewBindingHolder<Bean, V>)
+    protected abstract fun unbindTwoWayCallback(holder: VH)
 }

@@ -1,15 +1,12 @@
 package io.github.chenfei0928.widget.recyclerview.binder
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.databinding.Observable
-import androidx.viewbinding.ViewBinding
 import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.util.createOnPropertyChanged
 import io.github.chenfei0928.widget.recyclerview.ViewHolderTagValDelegate
-import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
+import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
 
 /**
  * 带有一个环境参数的view更新实现
@@ -17,13 +14,12 @@ import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-09-06 13:58
  */
-abstract class BaseEnvironmentTwoWayLayoutBinder<Bean, V : ViewBinding>(
+abstract class BaseEnvironmentTwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>(
     private val environments: Array<Observable>,
-    viewBindingInflater: (LayoutInflater, ViewGroup, Boolean) -> V,
-) : TwoWayLayoutBinder<Bean, V>(viewBindingInflater) {
+) : TwoWayLayoutBinder<Bean, VH>() {
 
     @CallSuper
-    override fun bindTwoWayCallback(holder: ViewBindingHolder<Bean, V>) {
+    override fun bindTwoWayCallback(holder: VH) {
         if (environments.isEmpty()) {
             return
         }
@@ -34,7 +30,7 @@ abstract class BaseEnvironmentTwoWayLayoutBinder<Bean, V : ViewBinding>(
     }
 
     @CallSuper
-    override fun unbindTwoWayCallback(holder: ViewBindingHolder<Bean, V>) {
+    override fun unbindTwoWayCallback(holder: VH) {
         if (environments.isEmpty()) {
             return
         }
@@ -47,7 +43,7 @@ abstract class BaseEnvironmentTwoWayLayoutBinder<Bean, V : ViewBinding>(
     /**
      * View与切环境变化的监听
      */
-    private val ViewBindingHolder<Bean, V>.onEnvironmentChanged: Array<Observable.OnPropertyChangedCallback>
+    private val VH.onEnvironmentChanged: Array<Observable.OnPropertyChangedCallback>
             by ViewHolderTagValDelegate(R.id.onPropertyChanged) { holder ->
                 if (environments.isEmpty()) {
                     emptyArray()
