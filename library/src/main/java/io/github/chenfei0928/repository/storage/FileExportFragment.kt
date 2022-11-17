@@ -21,8 +21,6 @@ import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.content.FileProviderUtil
 import io.github.chenfei0928.io.FileUtil
-import io.github.chenfei0928.util.R
-import io.github.chenfei0928.widget.ToastUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -127,13 +125,6 @@ class FileExportFragment : BaseFragment() {
      */
     private fun removeSelf(saved: Boolean, uri: Uri? = null) {
         ExecutorUtil.runOnUiThread {
-            context?.let { context ->
-                if (saved) {
-                    ToastUtil.showShort(context, R.string.toast_extStrong_saved)
-                } else {
-                    ToastUtil.showShort(context, R.string.toast_extStrong_failed)
-                }
-            }
             resultCallback(saved, uri)
             removeSelf()
         }
