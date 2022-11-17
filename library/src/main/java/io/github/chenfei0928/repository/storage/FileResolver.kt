@@ -27,9 +27,27 @@ class FileResolver {
         fun save(
             context: Context, uri: Uri, contentValues: ContentValues, writer: ContentValuesWriter
         ): Uri? {
-            // 标记文件为即将到来
-            contentValues.put(MediaStore.Images.Media.IS_PENDING, 1)
             val resolver = context.contentResolver
+
+            val existUri = resolver.query(
+                uri,
+                arrayOf(MediaStore.MediaColumns._ID),
+                "${MediaStore.MediaColumns.DISPLAY_NAME} = ?",
+                arrayOf(contentValues.getAsString(MediaStore.MediaColumns.DISPLAY_NAME)),
+                null
+            )?.use {
+                if (it.moveToFirst()) {
+                    uri.buildUpon().appendPath(it.getLong(0).toString()).build()
+                } else {
+                    null
+                }
+            }
+            if (existUri != null) {
+                return existUri
+            }
+
+            // 标记文件为即将到来
+            contentValues.put(MediaStore.MediaColumns.IS_PENDING, 1)
             val insertUri = resolver.insert(uri, contentValues)
             Log.i(TAG, "insertUri: $insertUri")
 
@@ -46,7 +64,7 @@ class FileResolver {
                 }
                 // 写入完成后，清除文件未完成即将到来的标记
                 contentValues.clear()
-                contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
+                contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
                 resolver.update(insertUri, contentValues, null, null)
                 return insertUri
             } catch (e: IOException) {
@@ -61,6 +79,9 @@ class FileResolver {
         }
 
         fun save(context: Context, file: File, writer: ContentValuesWriter): Boolean {
+            if (file.exists()) {
+                return true
+            }
             return try {
                 // 写入数据
                 file
