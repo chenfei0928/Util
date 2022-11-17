@@ -26,7 +26,7 @@ class FileResolver {
 
         fun save(
             context: Context, uri: Uri, contentValues: ContentValues, writer: ContentValuesWriter
-        ): Boolean {
+        ): Uri? {
             // 标记文件为即将到来
             contentValues.put(MediaStore.Images.Media.IS_PENDING, 1)
             val resolver = context.contentResolver
@@ -34,20 +34,21 @@ class FileResolver {
             Log.i(TAG, "insertUri: $insertUri")
 
             if (insertUri == null) {
-                return false
+                return null
             }
             try {
                 val outputStream = resolver
                     .openOutputStream(insertUri)
-                    ?.buffered() ?: return false
+                    ?.buffered()
+                    ?: throw IOException()
                 outputStream.use {
                     writer.write(it)
-                    // 写入完成后，清除文件未完成即将到来的标记
-                    contentValues.clear()
-                    contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
-                    resolver.update(insertUri, contentValues, null, null)
-                    return true
                 }
+                // 写入完成后，清除文件未完成即将到来的标记
+                contentValues.clear()
+                contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
+                resolver.update(insertUri, contentValues, null, null)
+                return insertUri
             } catch (e: IOException) {
                 Log.e(TAG, "save: $insertUri", e)
                 // 写入失败时，删除文件
@@ -55,7 +56,7 @@ class FileResolver {
                     resolver.delete(insertUri, null, null)
                 } catch (e: Exception) {
                 }
-                return false
+                return null
             }
         }
 

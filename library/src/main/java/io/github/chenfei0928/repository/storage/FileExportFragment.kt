@@ -91,7 +91,7 @@ class FileExportFragment : BaseFragment() {
         }
         // 写入数据
         val saved = FileResolver.save(context, uri, contentValues, writer)
-        removeSelf(saved, uri)
+        removeSelf(saved != null, saved)
     }
 
     /**
