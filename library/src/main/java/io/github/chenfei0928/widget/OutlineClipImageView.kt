@@ -73,10 +73,21 @@ open class OutlineClipImageView
                 outline.alpha = view.alpha
                 when {
                     view.isOval -> {
-                        outline.setOval(0, 0, view.width, view.height)
+                        outline.setOval(
+                            view.paddingLeft,
+                            view.paddingTop,
+                            view.width - view.paddingRight,
+                            view.height - view.paddingBottom
+                        )
                     }
                     view.cornerRadius != DEFAULT_RADIUS -> {
-                        outline.setRoundRect(0, 0, view.width, view.height, view.cornerRadius)
+                        outline.setRoundRect(
+                            view.paddingLeft,
+                            view.paddingTop,
+                            view.width - view.paddingRight,
+                            view.height - view.paddingBottom,
+                            view.cornerRadius
+                        )
                     }
                 }
             }
