@@ -24,7 +24,7 @@ object FileProviderUtil {
     fun <F : FileProvider> findManifestFileProviderScheme(
         context: Context, clazz: Class<F>
     ): String? = schemeCache.getContainOrPut(clazz) {
-        val fileProviderClassName = clazz::class.java.name
+        val fileProviderClassName = clazz.name
         return@getContainOrPut context.packageManager.getPackageInfo(
             context.packageName, PackageManager.GET_PROVIDERS
         ).providers.find {
