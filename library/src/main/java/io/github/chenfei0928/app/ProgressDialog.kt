@@ -9,6 +9,7 @@ import android.text.SpannableString
 import android.text.style.StyleSpan
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatDialog
 import io.github.chenfei0928.util.R
 import java.text.NumberFormat
 
@@ -18,7 +19,7 @@ import java.text.NumberFormat
  */
 open class ProgressDialog(
     context: Context
-) : AppCompatLifecycleOwnerDialog(context) {
+) : AppCompatDialog(context) {
     private var mProgressStyle = STYLE_SPINNER
     private var mProgressNumber: TextView? = null
     private var mProgressNumberFormat: String? = null
