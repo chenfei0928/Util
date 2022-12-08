@@ -2,6 +2,7 @@ package io.github.chenfei0928.view.asyncinflater
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.EmptySuper
 import androidx.annotation.MainThread
 
 /**
@@ -17,4 +18,12 @@ interface BasicAdapter<VG : ViewGroup, Bean> {
 
     @MainThread
     fun onBindView(view: View, bean: Bean)
+
+    @EmptySuper
+    fun onAddOrShow(view: View) {
+    }
+
+    @EmptySuper
+    fun onRemoveOrHide(view: View) {
+    }
 }

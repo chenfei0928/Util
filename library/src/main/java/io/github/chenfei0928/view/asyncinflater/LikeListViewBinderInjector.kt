@@ -17,9 +17,8 @@ import kotlinx.coroutines.withContext
 /**
  * 使用binder方式注入子view
  *
- * 注意：由于无法监听父 [ViewGroup] 的 [View.onDetachedFromWindow] 事件，
- * 所以同时不会回调 binder 的 [ItemViewDelegate.onViewAttachedToWindow]、
- * [ItemViewDelegate.onViewDetachedFromWindow]。
+ * [ItemViewDelegate.onViewDetachedFromWindow]、[ItemViewDelegate.onViewRecycled]
+ * 回调时并不意味着其被从父viewGroup中移除，只是它将被隐藏或将要被更新数据。
  *
  * User: ChenFei(chenfei0928@gmail.com)
  * Date: 2019-04-13
@@ -52,6 +51,7 @@ class LikeListViewBinderInjector {
                     // 加入viewGroup并设置数据
                     viewGroup.addView(holder.itemView)
                     binder.onBindViewHolder(holder, bean, emptyList())
+                    binder.onViewAttachedToWindow(holder)
                 }
             }
         }
@@ -82,11 +82,10 @@ class LikeListViewBinderInjector {
                     }, viewGroup, { itemView ->
                         // 加入viewGroup并设置数据
                         viewGroup.addView(itemView)
-                        @Suppress("UNCHECKED_CAST") binder.onBindViewHolder(
-                            itemView.getTag(R.id.viewTag_viewHolder) as ViewHolder,
-                            bean,
-                            emptyList()
-                        )
+                        @Suppress("UNCHECKED_CAST")
+                        val holder = itemView.getTag(R.id.viewTag_viewHolder) as ViewHolder
+                        binder.onBindViewHolder(holder, bean, emptyList())
+                        binder.onViewAttachedToWindow(holder)
                     })
                 }
             }
@@ -120,11 +119,10 @@ class LikeListViewBinderInjector {
                     }, viewGroup, { itemView ->
                         // 加入viewGroup并设置数据
                         viewGroup.addView(itemView)
-                        @Suppress("UNCHECKED_CAST") binder.onBindViewHolder(
-                            itemView.getTag(R.id.viewTag_viewHolder) as ViewHolder,
-                            bean,
-                            emptyList()
-                        )
+                        @Suppress("UNCHECKED_CAST")
+                        val holder = itemView.getTag(R.id.viewTag_viewHolder) as ViewHolder
+                        binder.onBindViewHolder(holder, bean, emptyList())
+                        binder.onViewAttachedToWindow(holder)
                     })
                 }
             }
@@ -152,6 +150,7 @@ class LikeListViewBinderInjector {
                     // 加入viewGroup并设置数据
                     viewGroup.addView(holder.itemView)
                     binder.onBindViewHolder(holder, bean, emptyList())
+                    binder.onViewAttachedToWindow(holder)
                 }
             }
         }
@@ -180,11 +179,10 @@ class LikeListViewBinderInjector {
                     }, { itemView ->
                         // 加入viewGroup并设置数据
                         viewGroup.addView(itemView)
-                        @Suppress("UNCHECKED_CAST") binder.onBindViewHolder(
-                            itemView.getTag(R.id.viewTag_viewHolder) as ViewHolder,
-                            bean,
-                            emptyList()
-                        )
+                        @Suppress("UNCHECKED_CAST")
+                        val holder = itemView.getTag(R.id.viewTag_viewHolder) as ViewHolder
+                        binder.onBindViewHolder(holder, bean, emptyList())
+                        binder.onViewAttachedToWindow(holder)
                     })
                 }
             }
@@ -219,11 +217,10 @@ class LikeListViewBinderInjector {
                         }
                         // 加入viewGroup并设置数据
                         viewGroup.addView(itemView)
-                        @Suppress("UNCHECKED_CAST") binder.onBindViewHolder(
-                            itemView.getTag(R.id.viewTag_viewHolder) as ViewHolder,
-                            bean,
-                            emptyList()
-                        )
+                        @Suppress("UNCHECKED_CAST")
+                        val holder = itemView.getTag(R.id.viewTag_viewHolder) as ViewHolder
+                        binder.onBindViewHolder(holder, bean, emptyList())
+                        binder.onViewAttachedToWindow(holder)
                     }
                 }
             }
@@ -251,9 +248,22 @@ class LikeListViewBinderInjector {
 
                     @Suppress("UNCHECKED_CAST")
                     override fun onBindView(view: View, bean: Bean) {
-                        binder.onBindViewHolder(
-                            view.getTag(R.id.viewTag_viewHolder) as ViewHolder, bean, emptyList()
-                        )
+                        val holder = view.getTag(R.id.viewTag_viewHolder) as ViewHolder
+                        binder.onViewDetachedFromWindow(holder)
+                        binder.onViewRecycled(holder)
+                        binder.onBindViewHolder(holder, bean, emptyList())
+                        binder.onViewAttachedToWindow(holder)
+                    }
+
+                    override fun onAddOrShow(view: View) {
+                        val holder = view.getTag(R.id.viewTag_viewHolder) as ViewHolder
+                        binder.onViewAttachedToWindow(holder)
+                    }
+
+                    override fun onRemoveOrHide(view: View) {
+                        val holder = view.getTag(R.id.viewTag_viewHolder) as ViewHolder
+                        binder.onViewDetachedFromWindow(holder)
+                        binder.onViewRecycled(holder)
                     }
                 }, viewCreator
             )

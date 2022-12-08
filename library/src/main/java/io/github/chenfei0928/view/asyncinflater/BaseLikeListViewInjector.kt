@@ -69,11 +69,14 @@ class BaseLikeListViewInjector {
                         viewIterator.remove()
                     } else if (beanIterator.hasNext()) {
                         // 如果是目标itemView，并且有一个要适配到的bean
+                        adapter.onRemoveOrHide(next)
                         next.visibility = View.VISIBLE
                         adapter.onBindView(next, beanIterator.next())
+                        adapter.onAddOrShow(next)
                     } else {
                         // 如果没有要适配到的bean，隐藏当前行
                         next.visibility = View.GONE
+                        adapter.onRemoveOrHide(next)
                     }
                 }
             }
