@@ -13,7 +13,6 @@ import android.provider.MediaStore
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.RequiresApi
-import androidx.core.content.FileProvider
 import io.github.chenfei0928.content.FileProviderUtil
 import io.github.chenfei0928.repository.storage.BaseFileImportUriFragment
 import java.io.File
@@ -70,9 +69,7 @@ internal abstract class AbsCropImportV19Fragment : BaseFileImportUriFragment() {
      * @return 缓存目录
      */
     protected fun obtainPicturePathUri(context: Context): Uri {
-        val authority =
-            FileProviderUtil.findManifestFileProviderScheme(context) ?: context.packageName
-        return FileProvider.getUriForFile(context, authority, obtainPictureFile(context))
+        return FileProviderUtil.createUriFromFile(context, obtainPictureFile(context))
     }
 
     private class CropImageContract(

@@ -16,33 +16,29 @@ import java.io.File
  * @date 2019-11-19 13:32
  */
 object FileProviderUtil {
+    var fileProviderClass: Class<out FileProvider> = FileProvider::class.java
     private val schemeCache = LinkedHashMap<Class<out FileProvider>, String?>()
 
-    fun findManifestFileProviderScheme(context: Context): String? =
-        findManifestFileProviderScheme(context, FileProvider::class.java)
+    fun findManifestFileProviderScheme(context: Context): String =
+        findManifestFileProviderScheme(context, fileProviderClass)
 
     fun <F : FileProvider> findManifestFileProviderScheme(
         context: Context, clazz: Class<F>
-    ): String? = schemeCache.getContainOrPut(clazz) {
+    ): String = schemeCache.getContainOrPut(clazz) {
         val fileProviderClassName = clazz.name
         return@getContainOrPut context.packageManager.getPackageInfo(
             context.packageName, PackageManager.GET_PROVIDERS
         ).providers.find {
             it.name == fileProviderClassName
         }?.authority
-    }
+    } ?: throw IllegalArgumentException("未找到 AndroidManifest.xml 组件注册：$fileProviderClass")
 
-    fun createUriFromFile(context: Context, file: File): Uri? {
+    fun createUriFromFile(context: Context, file: File): Uri {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             Uri.fromFile(file)
         } else {
             val fileProviderScheme = findManifestFileProviderScheme(context)
-                ?: return null
-            try {
-                FileProvider.getUriForFile(context, fileProviderScheme, file)
-            } catch (e: Exception) {
-                null
-            }
+            FileProvider.getUriForFile(context, fileProviderScheme, file)
         }
     }
 

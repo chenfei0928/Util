@@ -10,7 +10,6 @@ import android.provider.MediaStore
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.RequiresApi
-import androidx.core.content.FileProvider
 import io.github.chenfei0928.content.FileProviderUtil
 import io.github.chenfei0928.io.FileUtil
 
@@ -64,10 +63,8 @@ internal class PictureCropImportV19Fragment : AbsCropImportV19Fragment() {
                 // 将获取到的文件复制到缓存目录，以修复部分魅族9.0的设备对转发过去的uri无法授予权限的bug
                 val tmpFile = obtainPictureFile(context)
                 FileUtil.copyUriToDestFile(context, uri, tmpFile)
-                val authority =
-                    FileProviderUtil.findManifestFileProviderScheme(context) ?: context.packageName
                 // 将导入的临时文件返回
-                FileProvider.getUriForFile(context, authority, tmpFile)
+                FileProviderUtil.createUriFromFile(context, tmpFile)
             } else {
                 // 获取到了图片，进行裁剪
                 uri
