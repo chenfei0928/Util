@@ -1,7 +1,7 @@
 package io.github.chenfei0928.lifecycle
 
-import androidx.lifecycle.GenericLifecycleObserver
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 
 val Lifecycle.isAlive
@@ -10,16 +10,16 @@ val Lifecycle.isAlive
 val Lifecycle.isResumed
     get() = currentState == Lifecycle.State.RESUMED
 
-inline fun Lifecycle.onEvent(crossinline action: (Lifecycle.Event) -> Unit): GenericLifecycleObserver {
-    val observer = GenericLifecycleObserver { _, e -> action(e) }
+inline fun Lifecycle.onEvent(crossinline action: (Lifecycle.Event) -> Unit): LifecycleEventObserver {
+    val observer = LifecycleEventObserver { _, e -> action(e) }
     this.addObserver(observer)
     return observer
 }
 
 inline fun Lifecycle.bindUntilFirstEvent(
     event: Lifecycle.Event, crossinline action: (Lifecycle.Event) -> Unit
-): GenericLifecycleObserver {
-    val observer = object : GenericLifecycleObserver {
+): LifecycleEventObserver {
+    val observer = object : LifecycleEventObserver {
         override fun onStateChanged(l: LifecycleOwner, e: Lifecycle.Event) {
             if (e == event) {
                 action(e)
