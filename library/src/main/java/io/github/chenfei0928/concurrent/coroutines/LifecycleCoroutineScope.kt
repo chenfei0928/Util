@@ -30,6 +30,9 @@ private val cancelledCoroutineScope by lazy(LazyThreadSafetyMode.NONE) {
 /**
  * 使用生命周期宿主获取与该生命周期绑定的协程实例，其会根据宿主的生命周期结束时被取消。
  * 在宿主生命周期结束后再获取协程时，将返回一个被取消的协程实例，在该实例上创建的协程子任务将不会被执行。
+ *
+ * 在 [Fragment] 中使用时，需要额外留意 [LifecycleOwner] 是 [Fragment] 本体还是 [Fragment.getViewLifecycleOwner]。
+ * 会影响返回的协程作用域的生命周期而导致内存泄漏。
  */
 val LifecycleOwner.coroutineScope: CoroutineScope by LifecycleCacheDelegate { owner, closeCallback ->
     if (owner.lifecycle.isAlive) {
