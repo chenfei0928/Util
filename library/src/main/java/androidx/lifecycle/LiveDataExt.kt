@@ -35,14 +35,13 @@ suspend fun <T> LiveData<T>.nextValue(): T? {
 }
 
 inline fun <T> LiveData<T>.filter(
-    lifecycleOwner: LifecycleOwner,
     crossinline filter: (T) -> Boolean
 ): LiveData<T> {
-    val mutableLiveData = MutableLiveData<T>()
-    this.observe(lifecycleOwner) {
+    val mediatorLiveData = MediatorLiveData<T>()
+    mediatorLiveData.addSource(this) {
         if (filter(it)) {
-            mutableLiveData.value = it
+            mediatorLiveData.value = it
         }
     }
-    return mutableLiveData
+    return mediatorLiveData
 }
