@@ -7,9 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelLazy
 import androidx.lifecycle.ViewModelProvider
 
-private val factory = ViewModelProvider.NewInstanceFactory()
-val factoryProducer = { factory }
-
 inline fun <reified VM : ViewModel> ComponentActivity.viewModels(
     key: String? = null, noinline factoryProducerBlock: (() -> VM)? = null
 ): Lazy<VM> {
@@ -21,7 +18,7 @@ inline fun <reified VM : ViewModel> ComponentActivity.viewModels(
                 }
             }
         }
-    } ?: factoryProducer
+    } ?: { defaultViewModelProviderFactory }
     return if (key.isNullOrBlank()) {
         ViewModelLazy(VM::class, { this.viewModelStore }, factoryPromise)
     } else {
@@ -40,7 +37,7 @@ inline fun <reified VM : ViewModel> Fragment.viewModels(
                 }
             }
         }
-    } ?: factoryProducer
+    } ?: { requireActivity().defaultViewModelProviderFactory }
     return if (key.isNullOrBlank()) {
         ViewModelLazy(VM::class, { requireActivity().viewModelStore }, factoryPromise)
     } else {
@@ -53,11 +50,15 @@ fun <VM : ViewModel> Fragment.viewModels(
 ): Lazy<VM> {
     return lazy {
         ViewModelProvider(
-            requireActivity().viewModelStore, factoryProducer()
+            requireActivity().viewModelStore, requireActivity().defaultViewModelProviderFactory
         ).get(key, clazz)
     }
 }
 
 inline fun <reified VM : ViewModel> Fragment.viewModelsOnSelf(): Lazy<VM> {
-    return ViewModelLazy(VM::class, { this.viewModelStore }, factoryProducer)
+    return ViewModelLazy(
+        VM::class,
+        { this.viewModelStore },
+        { requireActivity().defaultViewModelProviderFactory }
+    )
 }
