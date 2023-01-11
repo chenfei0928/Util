@@ -1,14 +1,8 @@
 package io.github.chenfei0928.concurrent.coroutines
 
-import android.app.Activity
-import android.content.Context
 import android.view.View
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
-import androidx.fragment.app.Fragment
-import io.github.chenfei0928.base.ContextProvider
-import io.github.chenfei0928.content.findActivity
-import io.github.chenfei0928.view.findParentFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
@@ -57,20 +51,6 @@ private class ViewCoroutineScope(
         }
     }
 
-    private val androidContextElement: CoroutineAndroidContext = run {
-        when (val host = view.findParentFragment() ?: view.context.findActivity() ?: view.context) {
-            is Fragment -> {
-                CoroutineAndroidContextImpl(host.activity ?: host.requireContext(), host)
-            }
-            is Activity -> {
-                CoroutineAndroidContextImpl(host, null)
-            }
-            is Context -> {
-                CoroutineAndroidContextImpl(host, null)
-            }
-            else -> {
-                CoroutineAndroidContextImpl(ContextProvider.context, null)
-            }
-        }
-    }
+    private val androidContextElement: CoroutineAndroidContext =
+        CoroutineAndroidContextImpl.newInstance(view)
 }

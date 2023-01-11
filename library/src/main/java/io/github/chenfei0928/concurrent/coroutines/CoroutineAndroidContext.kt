@@ -1,9 +1,17 @@
 package io.github.chenfei0928.concurrent.coroutines
 
+import android.app.Activity
+import android.app.Dialog
 import android.content.Context
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentViewLifecycleAccessor
+import androidx.lifecycle.LifecycleOwner
+import io.github.chenfei0928.base.ContextProvider
+import io.github.chenfei0928.content.findActivity
+import io.github.chenfei0928.view.findParentFragment
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
@@ -19,6 +27,40 @@ internal class CoroutineAndroidContextImpl(
 
     override fun toString(): String {
         return "CoroutineAndroidContextImpl(androidContext=$androidContext, fragmentHost=$fragmentHost)"
+    }
+
+    companion object {
+        fun newInstance(host: Any?): CoroutineAndroidContext {
+            return if (host is LifecycleOwner && FragmentViewLifecycleAccessor.isInstance(host)) {
+                // 使用fragment的viewLifecycle创建协程实例，通过该方式获取其fragment
+                val fragment = FragmentViewLifecycleAccessor.getFragmentByViewLifecycleOwner(host)
+                CoroutineAndroidContextImpl(
+                    fragment.activity ?: fragment.requireContext(),
+                    fragment
+                )
+            } else when (host) {
+                is View -> {
+                    newInstance(
+                        host.findParentFragment() ?: host.context.findActivity() ?: host.context
+                    )
+                }
+                is Dialog -> {
+                    CoroutineAndroidContextImpl(host.context, null)
+                }
+                is Fragment -> {
+                    CoroutineAndroidContextImpl(host.activity ?: host.requireContext(), host)
+                }
+                is Activity -> {
+                    CoroutineAndroidContextImpl(host, null)
+                }
+                is Context -> {
+                    CoroutineAndroidContextImpl(host, null)
+                }
+                else -> {
+                    CoroutineAndroidContextImpl(ContextProvider.context, null)
+                }
+            }
+        }
     }
 }
 
