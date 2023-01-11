@@ -4,6 +4,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
+import java.io.Closeable
 import java.util.*
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
@@ -21,7 +22,7 @@ open class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObse
      * 返回值必须直接监听宿主生命周期变化以清理资源。
      * 也允许返回值在自己提前被关闭时调用回调通知委托移除它
      */
-    private val valueCreator: (owner: Owner, closeCallback: () -> Unit) -> V
+    private val valueCreator: (owner: Owner, closeCallback: Closeable) -> V
 ) : ReadOnlyProperty<Owner, V> {
     // 通过虚引用HashMap来持有键值对，其将自动移除GC不可访问的key和其所对应的value
     private val cache: MutableMap<Owner, V> = WeakHashMap()
@@ -44,10 +45,10 @@ open class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObse
 
     private inner class CloseCallback(
         private val owner: LifecycleOwner
-    ) : () -> Unit {
+    ) : Closeable {
         lateinit var observer: LifecycleEventObserver
 
-        override fun invoke() {
+        override fun close() {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 cache.remove(owner, observer)
             } else {

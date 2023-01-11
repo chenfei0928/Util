@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentViewLifecycleAccessor
  * @date 2022-02-17 17:52
  */
 internal object ActivityLifecycleCallback : Application.ActivityLifecycleCallbacks {
+
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         if (activity is FragmentActivity) {
             activity.supportFragmentManager.registerFragmentLifecycleCallbacks(
