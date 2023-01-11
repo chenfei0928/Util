@@ -10,6 +10,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.lifecycle.LifecycleCacheDelegate
 import io.github.chenfei0928.lifecycle.isAlive
+import java.io.Closeable
 
 /**
  * 与宿主生命周期绑定的Handler，会在处理消息前，判断当前生命周期是否可用。
@@ -46,7 +47,7 @@ import io.github.chenfei0928.lifecycle.isAlive
  */
 private class SafeHandler(
     owner: LifecycleOwner,
-    private val closeCallback: () -> Unit
+    private val closeCallback: Closeable
 ) : Handler(Looper.getMainLooper()), LifecycleEventObserver {
     private var mIsAlive = !owner.lifecycle.isAlive
 
@@ -60,7 +61,7 @@ private class SafeHandler(
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         if (event == Lifecycle.Event.ON_DESTROY) {
             removeCallbacksAndMessages(null)
-            closeCallback()
+            closeCallback.close()
             mIsAlive = false
         } else if (event == Lifecycle.Event.ON_CREATE) {
             mIsAlive = true

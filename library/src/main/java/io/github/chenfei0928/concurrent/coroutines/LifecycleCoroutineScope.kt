@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.io.Closeable
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -45,7 +46,7 @@ val LifecycleOwner.coroutineScope: CoroutineScope by LifecycleCacheDelegate { ow
  */
 private class LifecycleCoroutineScope(
     host: LifecycleOwner,
-    private val closeCallback: () -> Unit
+    private val closeCallback: Closeable
 ) : JobCoroutineScope(MainScope.coroutineContext), LifecycleEventObserver {
     override val coroutineContext: CoroutineContext
         get() = super.coroutineContext + // 生命周期的协程
@@ -53,10 +54,8 @@ private class LifecycleCoroutineScope(
 
     fun init(): LifecycleCoroutineScope = apply {
         launch {
-            try {
+            closeCallback.use {
                 awaitCancellation()
-            } finally {
-                closeCallback()
             }
         }
     }
