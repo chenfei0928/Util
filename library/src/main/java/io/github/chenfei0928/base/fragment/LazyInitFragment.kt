@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
 import io.github.chenfei0928.os.safeHandler
+import io.github.chenfei0928.reflect.parameterized.getParentParameterizedTypeClassDefinedImplInChild
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.view.asyncinflater.SuspendLayoutInflater
 
@@ -146,9 +147,14 @@ abstract class LazyInitFragment(
  * 子fragment的懒加载fragment，只会延时载入子fragment
  * 子fragment的view加载由fragment框架负责在主线程中初始化
  */
-abstract class LazyInitInnerFragment<F : Fragment> : BaseDoubleCheckLazyInitFragment() {
+abstract class LazyInitInnerFragment<F : Fragment>(
+    childFragmentClass: Class<F>? = null
+) : BaseDoubleCheckLazyInitFragment() {
     val fragment: F by lazy {
-        childFragmentManager.findFragmentByTag(FRAGMENT_TAG) as? F ?: createFragment()
+        childFragmentManager.findFragmentByTag(FRAGMENT_TAG) as? F
+            ?: createFragment()
+            ?: (childFragmentClass ?: getParentParameterizedTypeClassDefinedImplInChild(0))
+                .newInstance()
     }
 
     final override fun checkInflateImpl() {
@@ -163,7 +169,7 @@ abstract class LazyInitInnerFragment<F : Fragment> : BaseDoubleCheckLazyInitFrag
     override val isInflated: Boolean
         get() = fragment.isAdded
 
-    abstract fun createFragment(): F
+    protected open fun createFragment(): F? = null
 
     companion object {
         private const val FRAGMENT_TAG = "LazyInitInnerFragment"
