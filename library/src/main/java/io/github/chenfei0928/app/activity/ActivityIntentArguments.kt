@@ -10,13 +10,13 @@ import kotlin.reflect.KProperty
  * @date 2020-07-23 15:46
  */
 class ActivityNullableParcelableDelegate<T : Parcelable>(
-    private val name: String
+    private val name: String? = null
 ) : ReadOnlyProperty<Activity, T?> {
     private var value: T? = null
 
     override fun getValue(thisRef: Activity, property: KProperty<*>): T? {
         return value ?: thisRef.intent
-            .getParcelableExtra<T>(name)
+            .getParcelableExtra<T>(name ?: property.name)
             ?.also {
                 value = it
             }
@@ -24,13 +24,13 @@ class ActivityNullableParcelableDelegate<T : Parcelable>(
 }
 
 class ActivityParcelableListDelegate<T : Parcelable>(
-    private val name: String
+    private val name: String? = null
 ) : ReadOnlyProperty<Activity, List<T>> {
     private var value: List<T>? = null
 
     override fun getValue(thisRef: Activity, property: KProperty<*>): List<T> {
         return value ?: thisRef.intent
-            .getParcelableArrayListExtra<T>(name)
+            .getParcelableArrayListExtra<T>(name ?: property.name)
             ?.also {
                 value = it
             } ?: emptyList()
@@ -38,13 +38,13 @@ class ActivityParcelableListDelegate<T : Parcelable>(
 }
 
 class ActivityStringDelegate(
-    private val name: String
+    private val name: String? = null
 ) : ReadOnlyProperty<Activity, String> {
     private var value: String? = null
 
     override fun getValue(thisRef: Activity, property: KProperty<*>): String {
         return value ?: thisRef.intent
-            .getStringExtra(name)
+            .getStringExtra(name ?: property.name)
             ?.also {
                 value = it
             } ?: ""
@@ -52,13 +52,14 @@ class ActivityStringDelegate(
 }
 
 class ActivityIntDelegate(
-    private val name: String, private val defaultValue: Int = 0
+    private val name: String? = null,
+    private val defaultValue: Int = 0
 ) : ReadOnlyProperty<Activity, Int> {
     private var value: Int? = null
 
     override fun getValue(thisRef: Activity, property: KProperty<*>): Int {
         return value ?: thisRef.intent
-            .getIntExtra(name, defaultValue)
+            .getIntExtra(name ?: property.name, defaultValue)
             .also {
                 value = it
             }
@@ -66,13 +67,14 @@ class ActivityIntDelegate(
 }
 
 class ActivityFloatDelegate(
-    private val name: String, private val defaultValue: Float = 0f
+    private val name: String? = null,
+    private val defaultValue: Float = 0f
 ) : ReadOnlyProperty<Activity, Float> {
     private var value: Float? = null
 
     override fun getValue(thisRef: Activity, property: KProperty<*>): Float {
         return value ?: thisRef.intent
-            .getFloatExtra(name, defaultValue)
+            .getFloatExtra(name ?: property.name, defaultValue)
             .also {
                 value = it
             }
@@ -80,13 +82,13 @@ class ActivityFloatDelegate(
 }
 
 class ActivityBooleanDelegate(
-    private val name: String
+    private val name: String? = null
 ) : ReadOnlyProperty<Activity, Boolean> {
     private var value: Boolean? = null
 
     override fun getValue(thisRef: Activity, property: KProperty<*>): Boolean {
         return value ?: thisRef.intent
-            .getBooleanExtra(name, false)
+            .getBooleanExtra(name ?: property.name, false)
             .also {
                 value = it
             }

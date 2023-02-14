@@ -18,9 +18,6 @@ import kotlin.coroutines.CoroutineContext
 private const val CONTEXT_KEY = "io.github.chenfei0928.util.kotlin.CONTEXT_KEY"
 private const val SCOPE_KEY = "androidx.lifecycle.UncaughtHandlerCoroutineScope.JOB_KEY"
 
-val AndroidViewModel.context: Context
-    get() = getTag(CONTEXT_KEY) ?: this.getApplication()
-
 var ViewModel.context: Context?
     get() = getTag(CONTEXT_KEY) ?: this.asType<AndroidViewModel>()?.getApplication()
     set(value) {
