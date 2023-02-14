@@ -27,7 +27,7 @@ abstract class BaseGridSpanRecyclerViewBinderRecorderBinding(
     @Deprecated(
         level = DeprecationLevel.HIDDEN,
         replaceWith = ReplaceWith("generateTypedDefaultLayoutParams()"),
-        message = "use generateTypedDefaultLayoutParams function"
+        message = "use generateTypedDefaultLayoutParams function, because its has generic information."
     )
     final override fun generateDefaultLayoutParams(): LayoutParams<*> {
         return generateTypedDefaultLayoutParams<Any>()
@@ -53,7 +53,7 @@ abstract class BaseGridSpanRecyclerViewBinderRecorderBinding(
     @Deprecated(
         level = DeprecationLevel.HIDDEN,
         replaceWith = ReplaceWith("addTypedListItems(position, data, layoutParamsGenerator)"),
-        message = "use addTypedListItems function"
+        message = "use addTypedListItems function, because its 'layoutParamsGenerator' parameter has generic information."
     )
     override fun <E : Any> addListItems(
         position: Int,
@@ -66,7 +66,7 @@ abstract class BaseGridSpanRecyclerViewBinderRecorderBinding(
     @Deprecated(
         level = DeprecationLevel.HIDDEN,
         replaceWith = ReplaceWith("addTypedSingleItem(position, item, layoutParams)"),
-        message = "use addTypedSingleItem function"
+        message = "use addTypedSingleItem function, because its 'layoutParamsGenerator' parameter has generic information."
     )
     override fun addSingleItem(position: Int, item: Any, layoutParams: LayoutParams<*>) {
         super.addSingleItem(position, item, layoutParams)

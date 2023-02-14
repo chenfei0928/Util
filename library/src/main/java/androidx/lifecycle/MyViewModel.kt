@@ -18,9 +18,11 @@ import kotlin.coroutines.CoroutineContext
 private const val CONTEXT_KEY = "io.github.chenfei0928.util.kotlin.CONTEXT_KEY"
 private const val SCOPE_KEY = "androidx.lifecycle.UncaughtHandlerCoroutineScope.JOB_KEY"
 
-fun ViewModel.setContext(context: Context) {
-    setTagIfAbsent(CONTEXT_KEY, context)
-}
+var ViewModel.context: Context?
+    get() = getTag(CONTEXT_KEY) ?: this.asType<AndroidViewModel>()?.getApplication()
+    set(value) {
+        setTagIfAbsent(CONTEXT_KEY, value)
+    }
 
 /**
  * 提供异常处理
@@ -32,8 +34,6 @@ val ViewModel.coroutineScope: CoroutineScope
         if (scope != null) {
             return scope
         }
-        val context: Context? = getTag(CONTEXT_KEY)
-            ?: this.asType<AndroidViewModel>()?.getApplication()
         return setTagIfAbsent(
             SCOPE_KEY, UncaughtHandlerCoroutineScope(context)
         )
