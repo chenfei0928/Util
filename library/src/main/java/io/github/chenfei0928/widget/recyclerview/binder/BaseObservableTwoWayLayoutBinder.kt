@@ -14,7 +14,7 @@ import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
  * @date 2019-09-06 11:12
  */
 abstract class BaseObservableTwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>(
-    environments: Array<Observable>,
+    environments: Array<Any>,
 ) : BaseEnvironmentTwoWayLayoutBinder<Bean, VH>(environments) {
 
     @CallSuper

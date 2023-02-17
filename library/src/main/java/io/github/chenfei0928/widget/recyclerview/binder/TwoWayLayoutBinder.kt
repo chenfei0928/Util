@@ -1,6 +1,6 @@
 package io.github.chenfei0928.widget.recyclerview.binder
 
-import androidx.databinding.Observable
+import androidx.databinding.*
 import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
 
 /**
@@ -21,7 +21,7 @@ abstract class TwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>
     ) {
         super.onBindViewHolder(holder, item, payloads)
         // 同步view状态
-        syncBeanChanged(holder, null, -1)
+        syncBeanChanged(holder, null, null)
     }
 
     override fun onViewAttachedToWindow(holder: VH) {
@@ -41,12 +41,18 @@ abstract class TwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>
      * 由于binder的设计思想为双向绑定（当bean数据刷新后view自然被同步更新），故调用方在修改bean状态后可能不会通知适配器刷新，
      * 需要在此将bean的数据同步到view上。
      *
-     * @param sourceObservable 如果是来自于某项观察的属性发生了变化，则为变化了值的[Observable]。
+     * @param sourceObservable 如果是来自于某项观察的属性发生了变化，则为变化了值的
+     * [Observable]/[ObservableList]/[ObservableMap]。
      * 如果是[holder]其加载出来时同步状态则为[null]
-     * @param propertyId [Observable.OnPropertyChangedCallback.onPropertyChanged]
+     *
+     * @param propertyId 根据[sourceObservable]类型不同：
+     * - [null]时为[null]；
+     * - [Observable.OnPropertyChangedCallback.onPropertyChanged]的propertyId；
+     * - [ObservableList.OnListChangedCallback]为参数封装的[ListChanges]；
+     * - [ObservableMap.OnMapChangedCallback.onMapChanged]的key。
      */
     protected abstract fun syncBeanChanged(
-        holder: VH, sourceObservable: Observable?, propertyId: Int,
+        holder: VH, sourceObservable: Any?, propertyId: Any?,
     )
 
     /**
