@@ -7,10 +7,12 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-fun ProgressDialog.launchWithShow(block: suspend CoroutineScope.() -> Unit) {
+inline fun ProgressDialog.launchWithShow(
+    crossinline block: suspend CoroutineScope.(ProgressDialog) -> Unit
+) {
     coroutineScope.launch {
         try {
-            block()
+            block(this@launchWithShow)
         } finally {
             dismiss()
         }
@@ -18,14 +20,15 @@ fun ProgressDialog.launchWithShow(block: suspend CoroutineScope.() -> Unit) {
     show()
 }
 
-suspend fun <T> ProgressDialog.showWithContext(
-    context: CoroutineContext = EmptyCoroutineContext, block: suspend CoroutineScope.() -> T
+suspend inline fun <T> ProgressDialog.showWithContext(
+    context: CoroutineContext = EmptyCoroutineContext,
+    crossinline block: suspend CoroutineScope.(ProgressDialog) -> T
 ): T {
     show()
     return try {
-        withContext(
-            context = coroutineScope.coroutineContext + context, block = block
-        )
+        withContext(coroutineScope.coroutineContext + context) {
+            block(this@showWithContext)
+        }
     } finally {
         dismiss()
     }
