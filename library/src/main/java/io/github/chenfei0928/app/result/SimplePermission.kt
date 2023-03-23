@@ -18,11 +18,11 @@ import io.github.chenfei0928.util.R
  * 快速请求并处理某项权限
  * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
  */
-fun Fragment.registerForPermission(
+fun Fragment.registerForSimplePermission(
     permissions: Array<String>,
     @StringRes permissionName: Int,
     @SuppressLint("MissingPermission") callback: (isHasPermission: Boolean) -> Unit
-): ActivityResultLauncher<Unit?> = registerForPermission(
+): ActivityResultLauncher<Unit?> = registerForSimplePermission(
     this::requireActivity, permissions, { getString(permissionName) }, callback
 )
 
@@ -30,11 +30,11 @@ fun Fragment.registerForPermission(
  * 快速请求并处理某项权限
  * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
  */
-fun ComponentActivity.registerForPermission(
+fun ComponentActivity.registerForSimplePermission(
     permissions: Array<String>,
     @StringRes permissionName: Int,
     @SuppressLint("MissingPermission") callback: (isHasPermission: Boolean) -> Unit
-): ActivityResultLauncher<Unit?> = registerForPermission(
+): ActivityResultLauncher<Unit?> = registerForSimplePermission(
     { this }, permissions, { getString(permissionName) }, callback
 )
 
@@ -42,29 +42,29 @@ fun ComponentActivity.registerForPermission(
  * 快速请求并处理某项权限
  * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
  */
-inline fun Fragment.registerForPermission(
+inline fun Fragment.registerForSimplePermission(
     permissions: Array<String>,
     crossinline permissionName: Context.() -> String,
     @SuppressLint("MissingPermission") noinline callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> =
-    registerForPermission(this::requireActivity, permissions, permissionName, callback)
+    registerForSimplePermission(this::requireActivity, permissions, permissionName, callback)
 
 /**
  * 快速请求并处理某项权限
  * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
  */
-inline fun ComponentActivity.registerForPermission(
+inline fun ComponentActivity.registerForSimplePermission(
     permissions: Array<String>,
     crossinline permissionName: Context.() -> String,
     @SuppressLint("MissingPermission") noinline callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> =
-    registerForPermission({ this }, permissions, permissionName, callback)
+    registerForSimplePermission({ this }, permissions, permissionName, callback)
 
 /**
  * 快速请求并处理某项权限
  * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
  */
-inline fun ActivityResultCaller.registerForPermission(
+inline fun ActivityResultCaller.registerForSimplePermission(
     crossinline context: () -> Activity,
     permissions: Array<String>,
     crossinline permissionName: Context.() -> String,

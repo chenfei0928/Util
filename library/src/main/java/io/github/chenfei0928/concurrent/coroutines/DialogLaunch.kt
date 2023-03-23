@@ -1,15 +1,17 @@
 package io.github.chenfei0928.concurrent.coroutines
 
-import io.github.chenfei0928.app.ProgressDialog
+import android.app.Dialog
+import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-inline fun ProgressDialog.launchWithShow(
-    crossinline block: suspend CoroutineScope.(ProgressDialog) -> Unit
-) {
+inline fun <D> D.launchWithShow(
+    crossinline block: suspend CoroutineScope.(D) -> Unit
+) where D : Dialog, D : LifecycleOwner {
     coroutineScope.launch {
         try {
             block(this@launchWithShow)
@@ -20,13 +22,13 @@ inline fun ProgressDialog.launchWithShow(
     show()
 }
 
-suspend inline fun <T> ProgressDialog.showWithContext(
+suspend inline fun <D : Dialog, T> D.showWithContext(
     context: CoroutineContext = EmptyCoroutineContext,
-    crossinline block: suspend CoroutineScope.(ProgressDialog) -> T
+    crossinline block: suspend CoroutineScope.(D) -> T
 ): T {
     show()
     return try {
-        withContext(coroutineScope.coroutineContext + context) {
+        withContext(currentCoroutineContext() + context) {
             block(this@showWithContext)
         }
     } finally {

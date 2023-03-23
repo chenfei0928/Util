@@ -38,7 +38,7 @@ fun ComponentActivity.registerForExternalStoragePermission(
 inline fun ActivityResultCaller.registerForExternalStoragePermission(
     crossinline context: () -> Activity,
     @SuppressLint("MissingPermission") noinline callback: (isHasPermission: Boolean) -> Unit
-): ActivityResultLauncher<Unit?> = registerForPermission(
+): ActivityResultLauncher<Unit?> = registerForSimplePermission(
     context = context,
     permissions = arrayOf(
         Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
