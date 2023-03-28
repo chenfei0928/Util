@@ -6,7 +6,7 @@ import io.github.chenfei0928.app.activity.onPermissionDenied
 import io.github.chenfei0928.app.activity.onPermissionNeverAskAgain
 import io.github.chenfei0928.app.activity.onShowPermissionRationale
 import io.github.chenfei0928.app.result.PermissionRequest
-import io.github.chenfei0928.app.result.registerForSimplePermission
+import io.github.chenfei0928.app.result.registerForPermission
 import io.github.chenfei0928.util.R
 
 /**
@@ -21,7 +21,7 @@ abstract class BasePermissionFileImportFragment<T>(
     open val permissionMaxSdkVersion: Int = Int.MAX_VALUE
     abstract val permissionName: String
 
-    private val sdCardPermissionLauncher = registerForSimplePermission(
+    private val sdCardPermissionLauncher = registerForPermission(
         permissions = requestPermission,
         onRationale = ::showRationaleForPermission,
         onAgree = ::launchFileChooseImpl,

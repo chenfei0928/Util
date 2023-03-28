@@ -2,8 +2,8 @@ package io.github.chenfei0928.repository.local
 
 import com.google.protobuf.GeneratedMessageLite
 import com.google.protobuf.Parser
-import com.google.protobuf.getProtobufDefaultInstance
-import com.google.protobuf.getProtobufParserForType
+import com.google.protobuf.getProtobufLiteDefaultInstance
+import com.google.protobuf.getProtobufLiteParserForType
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -20,9 +20,9 @@ class ProtobufLiteSerializer<MessageType, BuilderType>(
 MessageType : GeneratedMessageLite<MessageType, BuilderType>,
 BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
 
-    private val parser: Parser<MessageType> = messageType.getProtobufParserForType()
+    private val parser: Parser<MessageType> = messageType.getProtobufLiteParserForType()
 
-    override val defaultValue: MessageType = messageType.getProtobufDefaultInstance()
+    override val defaultValue: MessageType = messageType.getProtobufLiteDefaultInstance()
 
     override fun write(outputStream: OutputStream, obj: MessageType) {
         obj.writeTo(outputStream)

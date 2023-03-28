@@ -13,3 +13,7 @@
 -keep class androidx.fragment.app.FragmentViewLifecycleOwner {
     private final androidx.fragment.app.Fragment mFragment;
 }
+
+-keepnames class * extends com.google.protobuf.GeneratedMessageV3 {
+    public static * getDefaultInstance();
+}
