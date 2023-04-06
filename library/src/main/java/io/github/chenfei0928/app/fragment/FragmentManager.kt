@@ -17,7 +17,9 @@ inline fun <reified F> FragmentManager.forEachFragmentWithChildByType(noinline b
 @Suppress("UNCHECKED_CAST")
 fun <F> FragmentManager.forEachFragmentWithChildByType(clazz: Class<F>, block: (F) -> Unit) {
     fragments.forEach {
-        if (clazz.isInstance(it)) {
+        if (it.host == null) {
+            return@forEach
+        } else if (clazz.isInstance(it)) {
             block(it as F)
         }
         it.childFragmentManager.forEachFragmentWithChildByType(clazz, block)
@@ -43,7 +45,9 @@ inline fun <reified F> FragmentManager.findFragmentWithChildByType(): F? {
  */
 @Suppress("UNCHECKED_CAST")
 fun <F> Fragment.findFragmentWithChildByType(clazz: Class<F>): F? {
-    if (clazz.isInstance(this)) {
+    if (host == null) {
+        return null
+    } else if (clazz.isInstance(this)) {
         return this as F
     } else {
         childFragmentManager.fragments.forEach {
