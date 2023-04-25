@@ -1,7 +1,5 @@
 package io.github.chenfei0928.util;
 
-import android.text.TextUtils;
-
 import java.util.Locale;
 
 import androidx.annotation.CheckResult;
@@ -37,11 +35,9 @@ public class StackTraceLogUtil {
         String callerClazzName = caller.getClassName();
         callerClazzName = callerClazzName.substring(callerClazzName.lastIndexOf(".") + 1);
 
-        String title = String.format(Locale.getDefault(), "%s.%s(%s:%d)",
+        return String.format(Locale.getDefault(), "%s.%s(%s:%d)",
                 callerClazzName, caller.getMethodName(),
                 caller.getFileName(), caller.getLineNumber());
-        String tag = TextUtils.isEmpty(customTagPrefix) ? title : customTagPrefix + callerClazzName;
-        return tag + " " + title;
     }
 
     /**
