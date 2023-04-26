@@ -1,6 +1,7 @@
 package io.github.chenfei0928.widget.recyclerview.binder
 
 import androidx.databinding.*
+import androidx.lifecycle.LiveData
 import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
 
 /**
@@ -49,7 +50,8 @@ abstract class TwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>
      * - [null]时为[null]；
      * - [Observable.OnPropertyChangedCallback.onPropertyChanged]的propertyId；
      * - [ObservableList.OnListChangedCallback]为参数封装的[ListChanges]；
-     * - [ObservableMap.OnMapChangedCallback.onMapChanged]的key。
+     * - [ObservableMap.OnMapChangedCallback.onMapChanged]的key；
+     * - [LiveData]时为[null]；
      */
     protected abstract fun syncBeanChanged(
         holder: VH, sourceObservable: Any?, propertyId: Any?,

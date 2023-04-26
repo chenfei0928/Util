@@ -5,6 +5,8 @@ import androidx.databinding.ListChanges
 import androidx.databinding.Observable
 import androidx.databinding.ObservableList
 import androidx.databinding.ObservableMap
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.widget.recyclerview.ViewHolderTagValDelegate
@@ -69,8 +71,15 @@ abstract class BaseEnvironmentTwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>(
                                 syncBeanChanged(holder, observer, key)
                             }
                         }
-                        else -> throw IllegalArgumentException()
+                        is LiveData<*> -> Observer<Any> {
+                            syncBeanChanged(holder, observer, null)
+                        }
+                        else -> createCallback(observer) ?: throw IllegalArgumentException()
                     }
                 }
             }
+
+    protected open fun createCallback(observer: Any): Any? {
+        return null
+    }
 }
