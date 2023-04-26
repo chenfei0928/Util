@@ -19,6 +19,10 @@ android {
         applicationId = "io.github.chenfei0928.util"
         versionName = "1.0"
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
