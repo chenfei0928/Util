@@ -45,3 +45,20 @@ inline fun <T> LiveData<T>.filter(
     }
     return mediatorLiveData
 }
+
+inline fun <T> LiveData<T>.observeWithOldValue(
+    owner: LifecycleOwner,
+    crossinline observer: (T?, T) -> Unit
+) {
+    var oldValue: Pair<Int, T?> = versionKt to value
+    observe(owner, Observer {
+        val old = oldValue
+        if (old.first != versionKt) {
+            oldValue = versionKt to it
+        }
+        observer(old.second, it)
+    })
+}
+
+val <T> LiveData<T>.versionKt
+    get() = version
