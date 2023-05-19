@@ -27,6 +27,7 @@ class Debug {
             msg: String = "",
             block: () -> T
         ): T {
+            Log.v(tag, "$msg, currentTimeMillis: ${System.currentTimeMillis()}")
             val l = System.nanoTime()
             val t = block()
             val timeUsed = System.nanoTime() - l
