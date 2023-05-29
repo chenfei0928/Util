@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
 import io.github.chenfei0928.lifecycle.LifecycleCacheDelegate
 import io.github.chenfei0928.lifecycle.isAlive
@@ -29,6 +30,8 @@ private val cancelledCoroutineScope by lazy(LazyThreadSafetyMode.NONE) {
  *
  * 在 [Fragment] 中使用时，需要额外留意 [LifecycleOwner] 是 [Fragment] 本体还是 [Fragment.getViewLifecycleOwner]。
  * 会影响返回的协程作用域的生命周期而导致内存泄漏。
+ *
+ * 相较 [lifecycleScope] 多 [UncaughtCoroutineExceptionHandler] 和 [CoroutineAndroidContext]
  */
 val LifecycleOwner.coroutineScope: CoroutineScope by LifecycleCacheDelegate { owner, closeCallback ->
     if (owner.lifecycle.isAlive) {
