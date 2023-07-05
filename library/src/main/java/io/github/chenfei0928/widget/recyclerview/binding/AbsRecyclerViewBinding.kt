@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.drakeet.multitype.MultiTypeAdapter
 import io.github.chenfei0928.collection.RecyclerViewAdapterDataSource
 import io.github.chenfei0928.widget.recyclerview.adapter.DelegateAdapterDataObserver
+import io.github.chenfei0928.widget.recyclerview.adapter.IMultiTypeAdapterStringer
 import io.github.chenfei0928.widget.recyclerview.binding.grid.BaseGridSpanRecyclerViewBinderRecorderBinding
 import io.github.chenfei0928.widget.recyclerview.binding.grid.BaseGridSpanRecyclerViewBinding
 
@@ -38,7 +39,8 @@ abstract class AbsRecyclerViewBinding(
      * 添加操作使用本类提供的[addSingleItem]、[addListItems]进行添加操作
      */
     protected val list: List<Any> = _list
-    protected val adapter = MultiTypeAdapter(_list).apply {
+    protected val adapter = IMultiTypeAdapterStringer.IMultiTypeAdapter(_list).apply {
+        binding = this@AbsRecyclerViewBinding
         if (_list is RecyclerViewAdapterDataSource) {
             _list.adapterDataObserver = DelegateAdapterDataObserver(this)
         }
