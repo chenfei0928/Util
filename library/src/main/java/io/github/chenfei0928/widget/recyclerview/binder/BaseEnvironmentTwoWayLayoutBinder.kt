@@ -47,37 +47,38 @@ abstract class BaseEnvironmentTwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>(
     /**
      * View与切环境变化的监听
      */
-    private val VH.onEnvironmentChanged: Array<Any>
-            by ViewHolderTagValDelegate(R.id.onPropertyChanged) { holder ->
-                if (environments.isEmpty()) {
-                    emptyArray()
-                } else environments.mapToArray { observer ->
-                    when (observer) {
-                        is Observable -> object : Observable.OnPropertyChangedCallback() {
-                            override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-                                syncBeanChanged(holder, observer, propertyId)
-                            }
-                        }
-                        is ObservableList<*> -> object : ListChanges.ListCallback() {
-                            override fun onNotifyCallback(
-                                sender: ObservableList<Any>, changes: ListChanges
-                            ) {
-                                syncBeanChanged(holder, observer, changes)
-                            }
-                        }
-                        is ObservableMap<*, *> -> object :
-                            ObservableMap.OnMapChangedCallback<ObservableMap<Any, Any>, Any, Any>() {
-                            override fun onMapChanged(sender: ObservableMap<Any, Any>?, key: Any?) {
-                                syncBeanChanged(holder, observer, key)
-                            }
-                        }
-                        is LiveData<*> -> Observer<Any> {
-                            syncBeanChanged(holder, observer, null)
-                        }
-                        else -> createCallback(observer) ?: throw IllegalArgumentException()
+    private val VH.onEnvironmentChanged: Array<Any> by ViewHolderTagValDelegate(
+        R.id.onPropertyChanged
+    ) { holder ->
+        if (environments.isEmpty()) {
+            emptyArray()
+        } else environments.mapToArray { observer ->
+            when (observer) {
+                is Observable -> object : Observable.OnPropertyChangedCallback() {
+                    override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+                        syncBeanChanged(holder, observer, propertyId)
                     }
                 }
+                is ObservableList<*> -> object : ListChanges.ListCallback() {
+                    override fun onNotifyCallback(
+                        sender: ObservableList<Any>, changes: ListChanges
+                    ) {
+                        syncBeanChanged(holder, observer, changes)
+                    }
+                }
+                is ObservableMap<*, *> -> object :
+                    ObservableMap.OnMapChangedCallback<ObservableMap<Any, Any>, Any, Any>() {
+                    override fun onMapChanged(sender: ObservableMap<Any, Any>?, key: Any?) {
+                        syncBeanChanged(holder, observer, key)
+                    }
+                }
+                is LiveData<*> -> Observer<Any> {
+                    syncBeanChanged(holder, observer, null)
+                }
+                else -> createCallback(observer) ?: throw IllegalArgumentException()
             }
+        }
+    }
 
     protected open fun createCallback(observer: Any): Any? {
         return null

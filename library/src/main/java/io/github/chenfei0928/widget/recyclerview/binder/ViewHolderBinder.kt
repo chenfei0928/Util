@@ -29,7 +29,7 @@ abstract class BaseViewHolderBinder<T, VH : ViewHolder<T>> : ItemViewBinder<T, V
         return holder
     }
 
-    abstract fun onCreateViewHolderImpl(inflater: LayoutInflater, parent: ViewGroup): VH
+    protected abstract fun onCreateViewHolderImpl(inflater: LayoutInflater, parent: ViewGroup): VH
 
     open fun onViewHolderCreated(holder: VH, parent: ViewGroup) {}
 

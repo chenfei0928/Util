@@ -31,5 +31,5 @@ abstract class RecyclerViewScrollPositionOutOfIndexListener : RecyclerView.OnScr
         }
     }
 
-    abstract fun onPositionOutOfFocusIndex(outOfIndex: Boolean)
+    protected abstract fun onPositionOutOfFocusIndex(outOfIndex: Boolean)
 }

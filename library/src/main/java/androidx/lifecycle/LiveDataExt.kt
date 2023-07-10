@@ -48,7 +48,7 @@ inline fun <T> LiveData<T>.filter(
 
 inline fun <T> LiveData<T>.observeWithOldValue(
     owner: LifecycleOwner,
-    crossinline observer: (T?, T) -> Unit
+    crossinline observer: (oldValue: T?, newValue: T) -> Unit
 ) {
     var oldValue: Pair<Int, T?> = versionKt to value
     observe(owner, Observer {

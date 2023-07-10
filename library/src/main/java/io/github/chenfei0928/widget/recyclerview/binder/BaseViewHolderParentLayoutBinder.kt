@@ -36,7 +36,7 @@ abstract class BaseViewHolderParentLayoutBinder<T, VH : ViewHolder<T>> :
      * @param childHolderField 子binder进行bind时所用viewHolder获取器
      * @param childBinder 子binder
      */
-    inline fun <reified ChildT, ChildViewHolder : RecyclerView.ViewHolder> registerChildBinder(
+    protected inline fun <reified ChildT, ChildViewHolder : RecyclerView.ViewHolder> registerChildBinder(
         noinline childBeanField: (T) -> ChildT?,
         noinline childHolderField: (VH) -> ChildViewHolder,
         childBinder: ItemViewDelegate<ChildT, ChildViewHolder>
@@ -52,7 +52,7 @@ abstract class BaseViewHolderParentLayoutBinder<T, VH : ViewHolder<T>> :
      * @param childHolderField 子binder进行bind时所用viewHolder获取器
      * @param childBinder 子binder
      */
-    fun <CT, CVH : RecyclerView.ViewHolder> registerChildBinderImpl(
+    protected fun <CT, CVH : RecyclerView.ViewHolder> registerChildBinderImpl(
         childBeanField: (T) -> CT?,
         childHolderField: (VH) -> CVH,
         childBinder: ItemViewDelegate<CT, CVH>,
