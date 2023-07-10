@@ -1,6 +1,5 @@
-package io.github.chenfei0928.widget.recyclerview.binding
+package io.github.chenfei0928.widget.recyclerview.binding.sorted
 
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.drakeet.multitype.MultiTypeAdapter
@@ -12,29 +11,27 @@ import io.github.chenfei0928.widget.recyclerview.adapter.IMultiTypeAdapterString
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2022-09-19 10:54
  */
-abstract class RecyclerViewSortedBinding<E : Any>(
-    contentView: RecyclerView,
+abstract class BaseSortedBinding<E : Any>(
     protected val adapter: MultiTypeAdapter = IMultiTypeAdapterStringer.IMultiTypeAdapter()
 ) {
     private val klass: Class<E> = getParentParameterizedTypeClassDefinedImplInChild(0)
     private val callback: SortedList.Callback<E> = object : SortedListAdapterCallback<E>(adapter) {
         override fun compare(o1: E, o2: E): Int {
-            return this@RecyclerViewSortedBinding.compare(o1, o2)
+            return this@BaseSortedBinding.compare(o1, o2)
         }
 
         override fun areContentsTheSame(oldItem: E, newItem: E): Boolean {
-            return this@RecyclerViewSortedBinding.areContentsTheSame(oldItem, newItem)
+            return this@BaseSortedBinding.areContentsTheSame(oldItem, newItem)
         }
 
         override fun areItemsTheSame(item1: E, item2: E): Boolean {
-            return this@RecyclerViewSortedBinding.areItemsTheSame(item1, item2)
+            return this@BaseSortedBinding.areItemsTheSame(item1, item2)
         }
     }
     protected val list: SortedList<E> = SortedList(klass, callback)
 
     init {
         adapter.items = SortedListList(list)
-        contentView.adapter = adapter
         if (adapter is IMultiTypeAdapterStringer) {
             adapter.binding = this
         }
