@@ -2,6 +2,7 @@ package io.github.chenfei0928.widget.recyclerview.binding.sorted
 
 import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.MultiTypeAdapter
+import io.github.chenfei0928.widget.recyclerview.adapter.IMultiTypeAdapterStringer
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -9,7 +10,7 @@ import com.drakeet.multitype.MultiTypeAdapter
  */
 abstract class RecyclerViewSortedBinding<E : Any>(
     contentView: RecyclerView,
-    adapter: MultiTypeAdapter
+    adapter: MultiTypeAdapter = IMultiTypeAdapterStringer.IMultiTypeAdapter()
 ) : BaseSortedBinding<E>(adapter) {
 
     init {

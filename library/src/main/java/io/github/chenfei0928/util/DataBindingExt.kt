@@ -57,29 +57,20 @@ inline fun <T : ViewDataBinding> T.doOnBound(
 }.apply { addOnRebindCallback(this) }
 
 inline fun <T : Observable> T.observeForever(
-    crossinline block: T.(Int) -> Unit
-) = observeForever { _, property -> block(property) }
-
-inline fun <T : Observable> T.observeForever(
-    crossinline block: Observable.OnPropertyChangedCallback.(T, propertyId: Int) -> Unit
+    crossinline block: Observable.OnPropertyChangedCallback.(propertyId: Int) -> Unit
 ): Observable.OnPropertyChangedCallback = object : Observable.OnPropertyChangedCallback() {
     override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-        block(this@observeForever, propertyId)
+        block(propertyId)
     }
 }.apply { addOnPropertyChangedCallback(this) }
 
 inline fun <T : Observable> T.observe(
     owner: LifecycleOwner,
-    crossinline block: T.(Int) -> Unit
-): Observable.OnPropertyChangedCallback = observe(owner) { _, property -> block(property) }
-
-inline fun <T : Observable> T.observe(
-    owner: LifecycleOwner,
-    crossinline block: Observable.OnPropertyChangedCallback.(T, propertyId: Int) -> Unit
+    crossinline block: Observable.OnPropertyChangedCallback.(propertyId: Int) -> Unit
 ): Observable.OnPropertyChangedCallback {
     val callback = object : LifecycleOnPropertyChangedCallback(this) {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            block(this@observe, propertyId)
+            block(propertyId)
         }
     }
     if (owner.lifecycle.currentState == Lifecycle.State.DESTROYED) {

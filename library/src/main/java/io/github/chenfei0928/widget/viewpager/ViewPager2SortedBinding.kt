@@ -2,6 +2,7 @@ package io.github.chenfei0928.widget.viewpager
 
 import androidx.viewpager2.widget.ViewPager2
 import com.drakeet.multitype.MultiTypeAdapter
+import io.github.chenfei0928.widget.recyclerview.adapter.IMultiTypeAdapterStringer
 import io.github.chenfei0928.widget.recyclerview.binding.sorted.BaseSortedBinding
 
 /**
@@ -10,7 +11,7 @@ import io.github.chenfei0928.widget.recyclerview.binding.sorted.BaseSortedBindin
  */
 abstract class ViewPager2SortedBinding<E : Any>(
     contentView: ViewPager2,
-    adapter: MultiTypeAdapter
+    adapter: MultiTypeAdapter = IMultiTypeAdapterStringer.IMultiTypeAdapter()
 ) : BaseSortedBinding<E>(adapter) {
 
     init {
