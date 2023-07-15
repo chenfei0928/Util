@@ -9,7 +9,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
 import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
-import java.util.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.asCoroutineDispatcher
+import java.util.WeakHashMap
 import java.util.concurrent.Executor
 
 interface BgTaskExecutor : Executor {
@@ -28,6 +30,8 @@ interface BgTaskExecutor : Executor {
     fun containInBg(r: Runnable): Boolean
 
     fun removeBgCallbacks(r: Runnable)
+
+    val coroutineDispatcher: CoroutineDispatcher
 }
 
 class BgTaskExecutorImpl(
@@ -76,6 +80,10 @@ class BgTaskExecutorImpl(
         if (it != null) {
             bgThread.remove(it)
         }
+    }
+
+    override val coroutineDispatcher: CoroutineDispatcher by lazy {
+        this.asCoroutineDispatcher()
     }
 }
 
