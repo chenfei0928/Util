@@ -10,9 +10,11 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.coroutines.resume
 
 inline fun <D> D.launchWithShow(
     parentLifecycleOwner: LifecycleOwner = ImmortalLifecycleOwner,
@@ -56,5 +58,15 @@ suspend inline fun <D : Dialog, T> D.showWithContext(
     } finally {
         dismiss()
         cancelSelfJob.cancel()
+    }
+}
+
+suspend fun Dialog.showWithAwaitDismiss() = suspendCancellableCoroutine { continuation ->
+    setOnDismissListener {
+        continuation.resume(Unit)
+    }
+    show()
+    continuation.invokeOnCancellation {
+        cancel()
     }
 }
