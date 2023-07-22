@@ -1,8 +1,13 @@
 package io.github.chenfei0928.concurrent.coroutines
 
 import android.app.Dialog
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -10,12 +15,20 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 inline fun <D> D.launchWithShow(
+    parentLifecycleOwner: LifecycleOwner = ImmortalLifecycleOwner,
     crossinline block: suspend CoroutineScope.(D) -> Unit
 ) where D : Dialog, D : LifecycleOwner {
+    val callback = LifecycleEventObserver { _, event ->
+        if (event == Lifecycle.Event.ON_DESTROY) {
+            cancel()
+        }
+    }
+    parentLifecycleOwner.lifecycle.addObserver(callback)
     coroutineScope.launch {
         try {
             block(this@launchWithShow)
         } finally {
+            parentLifecycleOwner.lifecycle.removeObserver(callback)
             dismiss()
         }
     }
@@ -25,13 +38,23 @@ inline fun <D> D.launchWithShow(
 suspend inline fun <D : Dialog, T> D.showWithContext(
     context: CoroutineContext = EmptyCoroutineContext,
     crossinline block: suspend CoroutineScope.(D) -> T
-): T {
+): T = coroutineScope {
     show()
-    return try {
+    val cancelSelfJob = launch {
+        try {
+            awaitCancellation()
+        } finally {
+            if (isShowing) {
+                cancel()
+            }
+        }
+    }
+    return@coroutineScope try {
         withContext(currentCoroutineContext() + context) {
             block(this@showWithContext)
         }
     } finally {
         dismiss()
+        cancelSelfJob.cancel()
     }
 }
