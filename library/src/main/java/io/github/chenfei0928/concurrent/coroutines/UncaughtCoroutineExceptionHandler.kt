@@ -18,7 +18,9 @@ object UncaughtCoroutineExceptionHandler : CoroutineExceptionHandler,
     var onErrorLis: ((context: CoroutineContext, exception: Throwable) -> Unit)? = null
 
     override fun handleException(context: CoroutineContext, exception: Throwable) {
-        Log.w(TAG, "UncaughtCoroutineExceptionHandler: ", exception)
+        Log.w(TAG, run {
+            "UncaughtCoroutineExceptionHandler: ${context[CoroutineAndroidContext]}"
+        }, exception)
         onErrorLis?.invoke(context, exception)
     }
 }

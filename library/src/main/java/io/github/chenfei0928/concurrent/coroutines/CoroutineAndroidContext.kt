@@ -22,42 +22,66 @@ import kotlin.coroutines.CoroutineContext
  * @date 2020-03-14 17:48
  */
 internal class CoroutineAndroidContextImpl(
-    override val androidContext: Context, override val fragmentHost: Fragment?
+    private val host: Any?,
+    override val androidContext: Context,
+    override val fragmentHost: Fragment?,
 ) : CoroutineAndroidContext, AbstractCoroutineContextElement(CoroutineAndroidContext) {
 
     override fun toString(): String {
-        return "CoroutineAndroidContextImpl(androidContext=$androidContext, fragmentHost=$fragmentHost)"
+        return "CoroutineAndroidContextImpl(host=$host, androidContext=$androidContext, fragmentHost=$fragmentHost, tagOrNull=$tagOrNull)"
     }
+
+    override val tagOrNull by lazy {
+        host?.javaClass?.companionTag
+            ?: fragmentHost?.javaClass?.companionTag
+            ?: androidContext.javaClass.companionTag
+    }
+
+    private val Class<*>.companionTag: String?
+        get() = try {
+            getDeclaredField("TAG").run {
+                isAccessible = true
+                get(null) as? String
+            }
+        } catch (e: Exception) {
+            null
+        }
 
     companion object {
         fun newInstance(host: Any?): CoroutineAndroidContext {
-            return if (host is LifecycleOwner && FragmentViewLifecycleAccessor.isInstance(host)) {
+            return newInstanceImpl(host, host)
+        }
+
+        private fun newInstanceImpl(host: Any?, node: Any?): CoroutineAndroidContext {
+            return if (node is LifecycleOwner && FragmentViewLifecycleAccessor.isInstance(node)) {
                 // 使用fragment的viewLifecycle创建协程实例，通过该方式获取其fragment
-                val fragment = FragmentViewLifecycleAccessor.getFragmentByViewLifecycleOwner(host)
+                val fragment = FragmentViewLifecycleAccessor.getFragmentByViewLifecycleOwner(node)
                 CoroutineAndroidContextImpl(
+                    node,
                     fragment.activity ?: fragment.requireContext(),
                     fragment
                 )
-            } else when (host) {
+            } else when (node) {
                 is View -> {
-                    newInstance(
-                        host.findParentFragment() ?: host.context.findActivity() ?: host.context
+                    newInstanceImpl(
+                        host,
+                        node.findParentFragment() ?: node.context.findActivity() ?: node.context
                     )
                 }
                 is Dialog -> {
-                    CoroutineAndroidContextImpl(host.context, null)
+                    CoroutineAndroidContextImpl(node, node.context, null)
                 }
                 is Fragment -> {
-                    CoroutineAndroidContextImpl(host.activity ?: host.requireContext(), host)
+                    CoroutineAndroidContextImpl(node, node.activity ?: node.requireContext(), node)
                 }
                 is Activity -> {
-                    CoroutineAndroidContextImpl(host, null)
+                    CoroutineAndroidContextImpl(node, node, null)
                 }
                 is Context -> {
-                    CoroutineAndroidContextImpl(host, null)
+                    CoroutineAndroidContextImpl(node, node, null)
                 }
                 else -> {
-                    CoroutineAndroidContextImpl(ContextProvider.context, null)
+                    CoroutineAndroidContextImpl(node, ContextProvider.context, null)
                 }
             }
         }
@@ -79,6 +103,11 @@ interface CoroutineAndroidContext : CoroutineContext.Element {
      * 宿主Fragment，如果是从Fragment发起协程
      */
     val fragmentHost: Fragment?
+
+    /**
+     * 获取当前协程作用域所绑定上下文的 TAG 字段值
+     */
+    val tagOrNull: String?
 
     override fun toString(): String
 }
