@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.view.View
+import androidx.collection.LruCache
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -32,22 +33,27 @@ internal class CoroutineAndroidContextImpl(
     }
 
     override val tagOrNull by lazy {
-        host?.javaClass?.companionTag
-            ?: fragmentHost?.javaClass?.companionTag
-            ?: androidContext.javaClass.companionTag
+        host?.staticTag ?: fragmentHost?.staticTag ?: androidContext.staticTag
     }
 
-    private val Class<*>.companionTag: String?
-        get() = try {
-            getDeclaredField("TAG").run {
-                isAccessible = true
-                get(null) as? String
-            }
-        } catch (e: Exception) {
-            null
-        }
+    private val Any?.staticTag: String?
+        get() = this?.javaClass?.let { classTagMap[it] }
 
     companion object {
+        private val classTagMap: LruCache<Class<*>, String?> =
+            object : LruCache<Class<*>, String?>(20) {
+                override fun create(key: Class<*>): String? {
+                    return try {
+                        key.getDeclaredField("TAG").run {
+                            isAccessible = true
+                            get(null) as? String
+                        }
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+            }
+
         fun newInstance(host: Any?): CoroutineAndroidContext {
             return newInstanceImpl(host, host)
         }
