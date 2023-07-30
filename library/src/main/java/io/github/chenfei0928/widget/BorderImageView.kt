@@ -1,10 +1,12 @@
 package io.github.chenfei0928.widget
 
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.*
-import android.os.Build
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.util.R
@@ -13,7 +15,6 @@ import io.github.chenfei0928.util.R
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-01-25 17:21
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class BorderImageView
 @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0

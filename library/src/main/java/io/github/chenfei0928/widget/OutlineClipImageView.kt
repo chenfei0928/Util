@@ -2,11 +2,9 @@ package io.github.chenfei0928.widget
 
 import android.content.Context
 import android.graphics.Outline
-import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewOutlineProvider
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageView
 import io.github.chenfei0928.util.R
 import kotlin.math.max
@@ -19,7 +17,6 @@ import kotlin.math.max
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-01-25 11:10
  */
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 open class OutlineClipImageView
 @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
