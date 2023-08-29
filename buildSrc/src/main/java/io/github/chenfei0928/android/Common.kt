@@ -17,7 +17,6 @@ fun Project.applyCommon(appendBuildConfig: Boolean = true) {
         compileSdkVersion(Contract.compileSdkVersion)
 
         defaultConfig {
-            proguardFile(getDefaultProguardFile("proguard-android.txt"))
             proguardFile("proguard-rules.pro")
             // 添加文件夹下的混淆配置文件
             fileTree(Contract.PROGUARD_FILES_DIR).forEach { file ->

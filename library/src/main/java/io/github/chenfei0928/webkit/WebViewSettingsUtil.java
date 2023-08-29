@@ -186,8 +186,6 @@ public class WebViewSettingsUtil {
         // 允许使用Js
         settings.setJavaScriptEnabled(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        // 是否使用缓存
-        settings.setAppCacheEnabled(true);
         // 如果缓存可用则从缓存中获取
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         // 将图片调整到适合webView的大小

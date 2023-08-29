@@ -17,3 +17,6 @@
 -keepnames class * extends com.google.protobuf.GeneratedMessageV3 {
     public static * getDefaultInstance();
 }
+
+-dontwarn com.alibaba.android.arouter.facade.Postcard
+-dontwarn com.alibaba.android.arouter.facade.callback.NavigationCallback

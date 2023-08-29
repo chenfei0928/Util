@@ -11,10 +11,10 @@ tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
 
 dependencies {
     // https://github.com/JetBrains/kotlin
-    val kotlinVersion = "1.7.0"
+    val kotlinVersion = "1.9.10"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "8.0.0"
+    val agpVersion = "8.1.1"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
     implementation(kotlin("gradle-plugin", kotlinVersion))

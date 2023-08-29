@@ -14,7 +14,7 @@ private const val TAG = "KW_SharedPreferences"
  * 注册一个监听器以监听sp值变更，其可以监听生命周期变化以自动取消
  */
 fun SharedPreferences.registerOnSharedPreferenceChangeListener(
-    owner: LifecycleOwner, callback: SharedPreferences.(key: String) -> Unit
+    owner: LifecycleOwner, callback: SharedPreferences.(key: String?) -> Unit
 ) {
     if (owner is Fragment) {
         Log.w(TAG, buildString {
@@ -37,10 +37,10 @@ fun SharedPreferences.registerOnSharedPreferenceChangeListener(
 private class SharedPreferencesOnSharedPreferenceChangeListener(
     private val owner: LifecycleOwner,
     private val sharedPreferences: SharedPreferences,
-    private val callback: SharedPreferences.(key: String) -> Unit
+    private val callback: SharedPreferences.(key: String?) -> Unit
 ) : SharedPreferences.OnSharedPreferenceChangeListener, LifecycleEventObserver {
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         callback(this.sharedPreferences, key)
     }
 

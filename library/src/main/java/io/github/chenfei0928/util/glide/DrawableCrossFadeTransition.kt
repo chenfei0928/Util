@@ -92,7 +92,7 @@ class FixedSizeDrawable(
         return height
     }
 
-    override fun onBoundsChange(bounds: Rect?) {
+    override fun onBoundsChange(bounds: Rect) {
     }
 
     override fun draw(canvas: Canvas) {

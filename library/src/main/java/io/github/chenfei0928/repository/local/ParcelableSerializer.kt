@@ -8,6 +8,7 @@ import io.github.chenfei0928.os.PARCELABLE_CREATOR
  * 对[Parcelable]进行序列化和反序列化
  * 由于其API在开始时不是为持久化数据设计，会导致其数据结构定义变化后反序列化时大概率会产生数据混乱的问题
  */
+@Deprecated(message = "系统版本更新后可能会导致更改数据序列化格式，使用其他方式序列化数据")
 class ParcelableSerializer<T : Parcelable>(
     private val creator: Parcelable.Creator<T>
 ) : BaseParcelSerializer<T?>() {
@@ -25,5 +26,6 @@ class ParcelableSerializer<T : Parcelable>(
     }
 }
 
+@Deprecated(message = "系统版本更新后可能会导致更改数据序列化格式，使用其他方式序列化数据")
 inline fun <reified T : Parcelable> ParcelableSerializer() =
     ParcelableSerializer(T::class.java.PARCELABLE_CREATOR)

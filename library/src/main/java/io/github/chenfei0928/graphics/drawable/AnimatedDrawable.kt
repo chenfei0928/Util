@@ -48,29 +48,29 @@ open class AnimatedDrawable(
 
     private val callbacksSet = arrayListOf<Animatable2Compat.AnimationCallback>()
     private val lis = object : Animator.AnimatorListener {
-        override fun onAnimationStart(animation: Animator?) {
+        override fun onAnimationStart(animation: Animator) {
             callbacksSet.forEach {
                 it.onAnimationStart(this@AnimatedDrawable)
             }
         }
 
-        override fun onAnimationEnd(animation: Animator?) {
+        override fun onAnimationEnd(animation: Animator) {
             callbacksSet.forEach {
                 it.onAnimationEnd(this@AnimatedDrawable)
             }
         }
 
-        override fun onAnimationCancel(animation: Animator?) {
+        override fun onAnimationCancel(animation: Animator) {
         }
 
-        override fun onAnimationRepeat(animation: Animator?) {
+        override fun onAnimationRepeat(animation: Animator) {
         }
     }
     val animate = AnimatorSet().apply {
         addListener(lis)
     }
 
-    override fun onBoundsChange(bounds: Rect?) {
+    override fun onBoundsChange(bounds: Rect) {
     }
 
     override fun start() {

@@ -169,7 +169,7 @@ object Deps {
         val systemBarTint = "com.readystatesoftware.systembartint:systembartint:1.0.3"
 
         // https://github.com/chenfei0928/Util
-        val util = "io.github.chenfei0928:util:1.1-SNAPSHOT"
+        val util = "io.github.chenfei0928:util:1.3-SNAPSHOT"
 
         // Java标注
         // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
