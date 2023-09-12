@@ -9,6 +9,9 @@ import androidx.annotation.Nullable;
 public class Log {
     private static LogInterface[] implList = {SystemLog.INSTANCE};
 
+    private Log() {
+    }
+
     public static void register(LogInterface logger) {
         LogInterface[] newImplList = new LogInterface[implList.length + 1];
         System.arraycopy(implList, 0, newImplList, 0, implList.length);

@@ -16,6 +16,9 @@ import android.view.WindowMetrics;
  * @date 2015/8/19
  */
 public class DisplayUtil {
+    private DisplayUtil() {
+    }
+
     /**
      * 通过API获得屏幕方向，如果是横屏或主动设置了屏幕方向为横屏的话，返回true
      * SCREEN_ORIENTATION_PORTRAIT 为竖屏

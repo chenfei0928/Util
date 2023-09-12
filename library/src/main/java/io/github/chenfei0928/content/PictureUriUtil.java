@@ -20,6 +20,9 @@ import android.provider.MediaStore;
 @Deprecated
 public class PictureUriUtil {
 
+    private PictureUriUtil() {
+    }
+
     /**
      * <br>功能简述:4.4及以上获取图片的方法
      * <br>功能详细描述:

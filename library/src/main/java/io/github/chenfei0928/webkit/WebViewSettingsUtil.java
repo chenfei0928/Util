@@ -46,6 +46,9 @@ public class WebViewSettingsUtil {
     private static final String TAG = "KW_WebSettingUtil";
     private static boolean safeBrowsingEnable = true;
 
+    private WebViewSettingsUtil() {
+    }
+
     static {
         Context appContext = ContextProvider.Companion.getContext();
         // 当前的webView提供者
@@ -69,7 +72,10 @@ public class WebViewSettingsUtil {
     }
 
     @Nullable
-    public static <WV extends WebView> WV installWebView(@NonNull View placeHolder, @NonNull Function1<Context, WV> creator) {
+    public static <WV extends WebView> WV installWebView(
+            @NonNull View placeHolder,
+            @NonNull Function1<Context, WV> creator
+    ) {
         ViewGroup parent = (ViewGroup) placeHolder.getParent();
         // 修复 5.x 系统上webView初始化失败问题
         // https://www.twblogs.net/a/5b7f6cff2b717767c6af8a3c
@@ -131,7 +137,11 @@ public class WebViewSettingsUtil {
      */
     @Nullable
     public static <WV extends WebView> WV installWebViewWithLifecycle(
-            @NonNull LifecycleOwner lifecycleOwner, @NonNull View placeHolder, @NonNull Config config, @NonNull Function1<Context, WV> creator) {
+            @NonNull LifecycleOwner lifecycleOwner,
+            @NonNull View placeHolder,
+            @NonNull Config config,
+            @NonNull Function1<Context, WV> creator
+    ) {
         WV webView = installWebView(placeHolder, creator);
         if (webView == null) {
             return null;

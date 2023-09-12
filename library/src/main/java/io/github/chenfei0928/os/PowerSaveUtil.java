@@ -19,6 +19,9 @@ public class PowerSaveUtil {
     private static volatile Receiver sReceiver = null;
     private static boolean sIsInPowerSaveMode = false;
 
+    private PowerSaveUtil() {
+    }
+
     public static boolean isInPowerSaveMode(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return false;

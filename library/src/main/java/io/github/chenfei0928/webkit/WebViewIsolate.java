@@ -15,6 +15,9 @@ import io.github.chenfei0928.util.Log;
 public class WebViewIsolate {
     private static final String TAG = "KW_WebViewIsolate";
 
+    private WebViewIsolate() {
+    }
+
     /**
      * webView隔离，隔离不同进程webView的数据目录
      * 同一个进程中，只允许在webView初始化前调用，webView创建一次后调用会导致设置失败并activity退出

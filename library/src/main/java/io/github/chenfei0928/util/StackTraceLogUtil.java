@@ -14,7 +14,9 @@ import kotlin.jvm.functions.Function1;
  */
 public class StackTraceLogUtil {
     private static final String TAG = "KW_StackTraceLogUtil";
-    private static final String customTagPrefix = "KW_";
+
+    private StackTraceLogUtil() {
+    }
 
     @NonNull
     @CheckResult

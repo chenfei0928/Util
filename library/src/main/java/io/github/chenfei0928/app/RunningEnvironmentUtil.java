@@ -17,6 +17,9 @@ public class RunningEnvironmentUtil {
     private static final String TAG = "KW_RunningEnvironmentU";
     private static volatile String sProcessName;
 
+    private RunningEnvironmentUtil() {
+    }
+
     /**
      * 因为推送服务XMPushService在AndroidManifest.xml中设置为运行在另外一个进程
      * 这导致本Application会被实例化两次，所以我们需要让应用的主进程初始化。
