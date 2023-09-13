@@ -250,6 +250,7 @@ public abstract class ViewBackgroundTarget<T extends View, Z> implements Target<
         setTag(request);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Target for: " + view;

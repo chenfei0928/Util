@@ -89,7 +89,7 @@ object Deps {
     //<editor-fold defaultstate="collapsed" desc="Glide 图片加载库">
     object glide {
         // https://github.com/bumptech/glide
-        private const val glideVer = "4.13.2"
+        private const val glideVer = "4.16.0"
         val core = "com.github.bumptech.glide:glide:$glideVer"
         val apt = "com.github.bumptech.glide:compiler:$glideVer"
 
