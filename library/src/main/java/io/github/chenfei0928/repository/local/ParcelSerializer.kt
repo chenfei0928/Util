@@ -12,6 +12,7 @@ import android.os.Parcelable
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-13 18:35
  */
+@Deprecated(message = "系统版本更新后可能会导致更改数据序列化格式，使用其他方式序列化数据")
 class ParcelSerializer<T : Any>(
     private val classLoader: ClassLoader = ParcelSerializer::class.java.classLoader!!
 ) : BaseParcelSerializer<T?>() {
@@ -27,5 +28,6 @@ class ParcelSerializer<T : Any>(
     }
 }
 
+@Deprecated(message = "系统版本更新后可能会导致更改数据序列化格式，使用其他方式序列化数据")
 inline fun <reified T : Any> ParcelSerializer() =
     ParcelSerializer<T>(T::class.java.classLoader!!)

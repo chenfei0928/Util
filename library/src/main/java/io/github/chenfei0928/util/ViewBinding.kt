@@ -67,7 +67,7 @@ fun <T : ViewBinding> Dialog.setContentViewBinding(
 ): T {
     this.setContentView(layoutId)
     val contentView: ViewGroup = if (this is BottomSheetDialog) {
-        findViewById(R.id.design_bottom_sheet)!!
+        findViewById(com.google.android.material.R.id.design_bottom_sheet)!!
     } else {
         val decorView: View = window!!.decorView
         decorView.findViewById(android.R.id.content)

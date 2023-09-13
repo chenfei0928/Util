@@ -6,7 +6,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import io.github.chenfei0928.app.fragment.removeSelf
 import io.github.chenfei0928.os.safeHandler
-import java.util.*
+import java.util.LinkedList
+import java.util.Queue
 
 /**
  * 任务队列
@@ -103,7 +104,7 @@ class ActivityIntentQueue : Fragment() {
             }
     }
 
-    interface ShowFuncWithDismissListener {
+    fun interface ShowFuncWithDismissListener {
         fun show(dismissListener: () -> Unit)
     }
 

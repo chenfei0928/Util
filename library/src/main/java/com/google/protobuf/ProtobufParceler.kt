@@ -5,25 +5,15 @@ import androidx.collection.LruCache
 import kotlinx.parcelize.Parceler
 
 /**
- * 使Protobuf对象支持Parcelable的序列化支持
- * ```
- *   @TypeParceler<InitReply.SandboxVersion?, ProtobufParceler>()
- *   val remoteSandboxVersion: InitReply.SandboxVersion?,
- * ```
- * [Docs](https://developer.android.com/kotlin/parcelize?hl=zh-cn)
- *
- * @author chenfei(chenfei0928@gmail.com)
- * @date 2021-12-21 16:29
+ * @author chenf()
+ * @date 2023-03-28 14:27
  */
 object ProtobufParceler :
-    Parceler<GeneratedMessageLite<*, *>?>
+    Parceler<GeneratedMessageV3?>
     by
-    ProtobufParcelerImpl::class.java.newInstance() as Parceler<GeneratedMessageLite<*, *>?>
+    ProtobufV3ParcelerImpl::class.java.newInstance() as Parceler<GeneratedMessageV3?>
 
-private class ProtobufParcelerImpl<MessageType, BuilderType> : Parceler<MessageType?>
-        where
-MessageType : GeneratedMessageLite<MessageType, BuilderType>,
-BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
+private class ProtobufV3ParcelerImpl<MessageType : GeneratedMessageV3> : Parceler<MessageType?> {
 
     private val parserCache = object :
         LruCache<String, Parser<MessageType>>(10) {

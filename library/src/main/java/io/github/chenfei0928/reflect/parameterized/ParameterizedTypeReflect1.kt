@@ -56,7 +56,7 @@ constructor(
      * 获取已擦除后的类型类
      *
      * @param currentNode 当前类节点
-     * @param typeImplOnParent 当前类实现的父类中泛型定义（Child : Parent<X> 中的X）
+     * @param typeImplOnParent 当前类实现的父类中泛型定义（```Child : Parent<X>``` 中的X）
      */
     private fun getErasedTypeClass(
         currentNode: ParentParameterizedTypeNode, typeImplOnParent: Type

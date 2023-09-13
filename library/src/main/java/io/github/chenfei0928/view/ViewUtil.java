@@ -22,6 +22,9 @@ import androidx.annotation.RequiresApi;
  */
 public class ViewUtil {
 
+    private ViewUtil() {
+    }
+
     @ColorInt
     public static int getThemeColor(Context context) {
         // 由于Service没有主题，只能获取ApplicationInfo中的主题id，并根据其获取主题色

@@ -19,6 +19,8 @@ fun <F> FragmentManager.forEachFragmentWithChildByType(clazz: Class<F>, block: (
     fragments.forEach {
         if (clazz.isInstance(it)) {
             block(it as F)
+        } else if (it.host == null) {
+            return@forEach
         }
         it.childFragmentManager.forEachFragmentWithChildByType(clazz, block)
     }
@@ -45,6 +47,8 @@ inline fun <reified F> FragmentManager.findFragmentWithChildByType(): F? {
 fun <F> Fragment.findFragmentWithChildByType(clazz: Class<F>): F? {
     if (clazz.isInstance(this)) {
         return this as F
+    } else if (host == null) {
+        return null
     } else {
         childFragmentManager.fragments.forEach {
             val findWithChildByType = it.findFragmentWithChildByType(clazz)

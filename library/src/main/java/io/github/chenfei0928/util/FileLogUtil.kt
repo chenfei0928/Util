@@ -9,7 +9,8 @@ import java.io.File
 import java.io.PrintWriter
 import java.text.ParsePosition
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -22,8 +23,6 @@ private constructor(
     context: Context
 ) : Thread("FileLogUtil") {
     private val pid: String = android.os.Process.myPid().toString()
-    private val logDirName: String by lazy { createLogDir(context) }
-    private val logFileName: String by lazy { getFileName(context) }
     private val deviceInfo: String by lazy { devicesInfoProvider(context) }
     private val running = AtomicBoolean(true)
 
@@ -35,8 +34,7 @@ private constructor(
      */
     private val cmd: String
         get() = "logcat | grep \"$pid\""
-    val fullLogFileName: String
-        get() = "$logDirName${File.separatorChar}$logFileName.log"
+    val fullLogFile: File = getLogFile(context)
 
     fun stopLogs() {
         running.set(false)
@@ -47,7 +45,7 @@ private constructor(
         try {
             // 执行logcat
             Runtime.getRuntime().exec(cmd).use { logcatProc ->
-                File(fullLogFileName).bufferedWriter().use { bw ->
+                fullLogFile.bufferedWriter().use { bw ->
                     // 写入设备信息
                     bw.write(deviceInfo)
                     bw.write("\n")
@@ -117,7 +115,7 @@ private constructor(
 
         @JvmStatic
         fun saveExceptionToLog(context: Context, throwable: Throwable): String {
-            val file = File(createLogDir(context), getFileName(context) + ".log")
+            val file = getLogFile(context)
             try {
                 PrintWriter(file, "utf-8").use { pw ->
                     pw.write(devicesInfoProvider(context))
@@ -155,6 +153,12 @@ private constructor(
                 return logTime + "_" + name
             }
             return logTime
+        }
+
+        private fun getLogFile(context: Context): File {
+            val logDir = createLogDir(context)
+            val logFileName = getFileName(context) + ".log"
+            return File(logDir, logFileName)
         }
 
         // 2012-10-03 23:41:31.123

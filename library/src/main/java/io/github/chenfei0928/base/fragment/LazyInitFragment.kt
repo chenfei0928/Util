@@ -22,6 +22,11 @@ abstract class BaseLazyInitFragment : BaseFragment() {
     internal var isDestroyed = false
         private set
 
+    @Deprecated(
+        message = "Use onCreateViewImpl",
+        replaceWith = ReplaceWith("onCreateViewImpl(inflater, container, savedInstanceState)"),
+        level = DeprecationLevel.ERROR
+    )
     final override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -32,6 +37,11 @@ abstract class BaseLazyInitFragment : BaseFragment() {
         }
     }
 
+    @Deprecated(
+        message = "Use onViewCreatedImpl",
+        replaceWith = ReplaceWith("onViewCreatedImpl(view, savedInstanceState)"),
+        level = DeprecationLevel.ERROR
+    )
     final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.layoutParams?.run {

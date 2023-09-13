@@ -52,7 +52,7 @@ open class CollapsingToolbarBackListener(
     open fun syncActionBarColor(@ColorInt color: Int) {
         DrawableCompat.setTint(backIcon, color)
         actionBar.setHomeAsUpIndicator(backIcon)
-        menus.forEach { DrawableCompat.setTint(it.icon, color) }
+        menus.mapNotNull { it.icon }.forEach { DrawableCompat.setTint(it, color) }
     }
 
     /**
@@ -77,9 +77,14 @@ open class CollapsingToolbarBackListener(
         }
         this.menus += item
         // 将其icon再此处保留变化并添加着色支持，不影响到其它位置的类似图标
-        item.icon = DrawableCompat.wrap(item.icon.mutate())
+        val icon = item.icon?.let {
+            DrawableCompat.wrap(it.mutate())
+        }
+        item.icon = icon
         // 着色
-        DrawableCompat.setTint(item.icon, getColor())
+        if (icon != null) {
+            DrawableCompat.setTint(icon, getColor())
+        }
     }
 
     /**

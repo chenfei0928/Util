@@ -28,7 +28,7 @@ private object AbsSpSaverKProperty1Cache {
      * 如果缓存中已经建立了该类的缓存，直接从缓存中获取，否则建立该类字段的缓存
      */
     @Suppress("UNCHECKED_CAST")
-    private suspend fun <SpSaver : AbsSpSaver> getKotlinClassFieldsCache(
+    suspend fun <SpSaver : AbsSpSaver> getKotlinClassFieldsCache(
         spSaver: SpSaver
     ): Map<String, KProperty1<SpSaver, *>?> {
         val clazz = spSaver.javaClass
@@ -103,18 +103,26 @@ fun <SpSaver : AbsSpSaver> SpSaver.registerOnSharedPreferenceChangeListener(
     AbsSpSaver.getSp(this)
         .registerOnSharedPreferenceChangeListener(owner) { key ->
             owner.coroutineScope.launch {
-                // 根据key获取其对应的AbsSpSaver字段
-                val property = AbsSpSaverKProperty1Cache
-                    .findSpKProperty1BySpKey(spSaver, key)
-                // 找得到属性，回调通知该字段被更改
-                if (property == null) {
-                    Log.d(TAG, buildString {
-                        append("registerOnSharedPreferenceChangeListener: ")
-                        append("cannot found property of the key($key) in class ")
-                        append(spSaver.javaClass.simpleName)
-                    })
+                if (key == null) {
+                    // Android R以上时 clear sp，会回调null，R以下时clear时不会回调
+                    AbsSpSaverKProperty1Cache
+                        .getKotlinClassFieldsCache(spSaver)
+                        .values.filterNotNull()
+                        .forEach(callback)
                 } else {
-                    callback(property)
+                    // 根据key获取其对应的AbsSpSaver字段
+                    val property = AbsSpSaverKProperty1Cache
+                        .findSpKProperty1BySpKey(spSaver, key)
+                    // 找得到属性，回调通知该字段被更改
+                    if (property == null) {
+                        Log.d(TAG, buildString {
+                            append("registerOnSharedPreferenceChangeListener: ")
+                            append("cannot found property of the key($key) in class ")
+                            append(spSaver.javaClass.simpleName)
+                        })
+                    } else {
+                        callback(property)
+                    }
                 }
             }
         }

@@ -28,10 +28,10 @@ public class ParameterizedTypeReflect0 {
 
     /**
      * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
-     * {@code
+     * <pre>{@code
      * Parent<R>
      * Child extends Parent<SomeType>
-     * }
+     * }</pre>
      *
      * @param <Parent>                  父类类型
      * @param <Child>                   子类类型
@@ -130,7 +130,7 @@ public class ParameterizedTypeReflect0 {
     /**
      * 当父类定义了一个数组范型约束，调用该方法来获取数组范型约束的实现
      * 如
-     * {@code Child extends Parent<XXX[]>}
+     * <pre>{@code Child extends Parent<XXX[]>}</pre>
      * 该XXX可以为数组、范型约束或具体类
      *
      * @param parentClass     声明数组约束的父类类实例
@@ -198,9 +198,9 @@ public class ParameterizedTypeReflect0 {
      * <p>
      * 如：
      * <pre>
-     *     Child<R> extends Parent<R>
-     *     Child<R extends XXX> extends Parent<R>
-     *     Child<R super XXX> extends Parent<R>
+     * {@code Child<R> extends Parent<R>}
+     * {@code Child<R extends XXX> extends Parent<R>}
+     * {@code Child<R super XXX> extends Parent<R>}
      * </pre>
      *
      * @param parentClass               声明数组约束的父类类实例

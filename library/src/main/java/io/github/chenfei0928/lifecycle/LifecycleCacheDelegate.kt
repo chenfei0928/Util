@@ -1,11 +1,12 @@
 package io.github.chenfei0928.lifecycle
 
+import android.util.Log
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
 import java.io.Closeable
-import java.util.*
+import java.util.WeakHashMap
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -49,11 +50,16 @@ open class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObse
         lateinit var observer: LifecycleEventObserver
 
         override fun close() {
+            Log.d(TAG, "close: $observer because $owner was close.")
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 cache.remove(owner, observer)
             } else {
                 cache.remove(owner)
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "LifecycleCacheDelegate"
     }
 }

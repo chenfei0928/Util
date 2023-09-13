@@ -2,7 +2,9 @@ package io.github.chenfei0928.io
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
+import android.os.FileUtils
 import android.webkit.MimeTypeMap
 import okio.buffer
 import okio.sink
@@ -64,34 +66,38 @@ class FileUtil {
         fun moveDirToDest(source: File, dest: File): Boolean {
             if (source.isFile) {
                 return copyFileToDest(source, dest) && deleteFileOrDir(source)
-            }
-            if (!dest.exists()) {
-                dest.mkdir()
-            }
-            val files = source.listFiles()
-            if (files == null) {
-                return false
-            } else {
-                var finish = true
-                for (file in files) {
-                    val name = file.name
-                    val destChild = File(dest, name)
-                    if (!moveDirToDest(file, destChild)) {
-                        finish = false
+            } else if (source.isDirectory) {
+                if (!dest.exists()) {
+                    dest.mkdir()
+                }
+                val files = source.listFiles()
+                if (files == null) {
+                    return false
+                } else {
+                    var finish = true
+                    for (file in files) {
+                        val name = file.name
+                        val destChild = File(dest, name)
+                        if (!moveDirToDest(file, destChild)) {
+                            finish = false
+                        }
+                    }
+                    return if (finish) {
+                        deleteFileOrDir(source)
+                        true
+                    } else {
+                        false
                     }
                 }
-                return if (finish) {
-                    deleteFileOrDir(source)
-                    true
-                } else {
-                    false
-                }
+            } else {
+                return false
             }
         }
 
         @JvmStatic
         fun copyFileToDest(source: File, dest: File): Boolean {
             if (!dest.exists()) {
+                dest.parentFile.mkdirs()
                 try {
                     dest.createNewFile()
                 } catch (e: IOException) {
@@ -100,9 +106,13 @@ class FileUtil {
             return try {
                 FileInputStream(source).use { fis ->
                     FileOutputStream(dest).use { fos ->
-                        val inputChannel = fis.channel
-                        fos.channel.transferFrom(inputChannel, 0, inputChannel.size())
-                        fos.flush()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            FileUtils.copy(fis.fd, fos.fd)
+                        } else {
+                            val inputChannel = fis.channel
+                            fos.channel.transferFrom(inputChannel, 0, inputChannel.size())
+                            fos.flush()
+                        }
                         return true
                     }
                 }

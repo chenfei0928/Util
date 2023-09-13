@@ -47,37 +47,38 @@ class DataBindingExt {
     }
 }
 
-inline fun <T : ViewDataBinding> T.doOnBound(crossinline block: (T) -> Unit) {
-    addOnRebindCallback(object : OnRebindCallback<T>() {
-        override fun onBound(binding: T) {
-            super.onBound(binding)
-            block(binding)
-        }
-    })
-}
-
-inline fun <T : Observable> T.doOnPropertyChanged(crossinline block: T.(Int) -> Unit) {
-    addOnPropertyChangedCallback(createOnPropertyChanged(block))
-}
-
-inline fun <T : Observable> T.createOnPropertyChanged(crossinline block: T.(Int) -> Unit) =
-    object : Observable.OnPropertyChangedCallback() {
-        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            block(this@createOnPropertyChanged, propertyId)
-        }
+inline fun <T : ViewDataBinding> T.doOnBound(
+    crossinline block: (T) -> Unit
+): OnRebindCallback<T> = object : OnRebindCallback<T>() {
+    override fun onBound(binding: T) {
+        super.onBound(binding)
+        block(binding)
     }
+}.apply { addOnRebindCallback(this) }
 
-inline fun <T : Observable> T.observe(owner: LifecycleOwner, crossinline block: T.(Int) -> Unit) {
-    if (owner.lifecycle.currentState == Lifecycle.State.DESTROYED) {
-        return
+inline fun <T : Observable> T.observeForever(
+    crossinline block: Observable.OnPropertyChangedCallback.(propertyId: Int) -> Unit
+): Observable.OnPropertyChangedCallback = object : Observable.OnPropertyChangedCallback() {
+    override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+        block(propertyId)
     }
+}.apply { addOnPropertyChangedCallback(this) }
+
+inline fun <T : Observable> T.observe(
+    owner: LifecycleOwner,
+    crossinline block: Observable.OnPropertyChangedCallback.(propertyId: Int) -> Unit
+): Observable.OnPropertyChangedCallback {
     val callback = object : LifecycleOnPropertyChangedCallback(this) {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            block(this@observe, propertyId)
+            block(propertyId)
         }
+    }
+    if (owner.lifecycle.currentState == Lifecycle.State.DESTROYED) {
+        return callback
     }
     owner.lifecycle.addObserver(callback)
     this.addOnPropertyChangedCallback(callback)
+    return callback
 }
 
 abstract class LifecycleOnPropertyChangedCallback(

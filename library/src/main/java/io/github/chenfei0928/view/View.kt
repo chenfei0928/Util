@@ -6,6 +6,7 @@ import androidx.annotation.IdRes
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManagerAccessor
 import io.github.chenfei0928.content.checkIsDestroyed
 import io.github.chenfei0928.content.findActivity
 import kotlin.properties.ReadOnlyProperty
@@ -33,7 +34,12 @@ fun View?.removeSelfFromParent() {
  * [com.bumptech.glide.manager.RequestManagerRetriever.findSupportFragment]
  */
 fun View.findParentFragment(): Fragment? {
-    val activity = context.findActivity() as? FragmentActivity ?: return null
+    val findViewFragment = FragmentManagerAccessor.findViewFragment(this)
+    if (findViewFragment != null) {
+        return findViewFragment
+    }
+    val activity = context.findActivity() as? FragmentActivity
+        ?: return null
     val viewsToFragment = mutableMapOf<View, Fragment>()
     findAllSupportFragmentsWithViews(
         activity.supportFragmentManager.fragments, viewsToFragment

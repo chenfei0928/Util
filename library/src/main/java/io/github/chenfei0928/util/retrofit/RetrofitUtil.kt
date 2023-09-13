@@ -56,7 +56,7 @@ object RetrofitUtil {
 
     @JvmStatic
     fun <T> joinToString(values: List<T>?, getId: IdGetter<T>): String? {
-        return if (values == null || values.isEmpty()) {
+        return if (values.isNullOrEmpty()) {
             null
         } else {
             values.joinToString(separator = ",", transform = {
@@ -67,7 +67,7 @@ object RetrofitUtil {
         }
     }
 
-    interface IdGetter<T> {
+    fun interface IdGetter<T> {
         fun getId(t: T): Int
     }
 }

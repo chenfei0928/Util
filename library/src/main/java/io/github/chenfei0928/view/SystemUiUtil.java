@@ -22,6 +22,9 @@ public class SystemUiUtil {
     private static int status_bar_height = View.NO_ID;
     private static int navigation_bar_height = View.NO_ID;
 
+    private SystemUiUtil() {
+    }
+
     public static String getWebViewUserAgentSystemUiSafeAreaInsetsDescription(Context context) {
         return " [safeArea/" +
                 getStatusBarHeight(context) +

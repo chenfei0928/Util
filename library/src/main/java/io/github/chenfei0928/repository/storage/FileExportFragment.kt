@@ -36,15 +36,15 @@ class FileExportFragment : BaseFragment() {
         if (it) {
             parseArgToSave(requireContext(), requireArguments())
         } else {
-            removeSelf(false)
+            removeSelfAndCallback()
         }
     }
-    var resultCallback: (successful: Boolean, url: Uri?) -> Unit = { _, _ -> }
+    var resultCallback: (url: Uri?) -> Unit = { }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         val bundle = arguments ?: run {
-            removeSelf(false)
+            removeSelfAndCallback()
             return
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -59,14 +59,14 @@ class FileExportFragment : BaseFragment() {
     @SuppressLint("MissingPermission")
     private fun parseArgToSave(context: Context, bundle: Bundle) {
         val writerClassName = bundle.getString(KEY_CONTENT_WRITER_CLASS) ?: run {
-            removeSelf(false)
+            removeSelfAndCallback()
             return
         }
         // 实例化内容写入器，解析参数
         val writer = Class.forName(writerClassName).newInstance() as ContentValuesWriter
         // 解析参数
         if (!writer.parseArg(this, bundle)) {
-            removeSelf(false)
+            removeSelfAndCallback()
             return
         }
         // 根据不同系统版本使用不同的方式来保存文件
@@ -82,16 +82,16 @@ class FileExportFragment : BaseFragment() {
         context: Context, bundle: Bundle, writer: ContentValuesWriter
     ) {
         val uri = bundle.getParcelable<Uri>(KEY_CONTENT_TYPE) ?: run {
-            removeSelf(false)
+            removeSelfAndCallback()
             return
         }
         val contentValues = bundle.getParcelable<ContentValues>(KEY_CONTENT_VALUES) ?: run {
-            removeSelf(false)
+            removeSelfAndCallback()
             return
         }
         // 写入数据
         val saved = FileResolver.save(context, uri, contentValues, writer)
-        removeSelf(saved != null, saved)
+        removeSelfAndCallback(saved)
     }
 
     /**
@@ -105,27 +105,30 @@ class FileExportFragment : BaseFragment() {
     ) {
         coroutineScope.launch(Dispatchers.IO) {
             val targetFile = bundle.getString(KEY_TARGET_FILE) ?: run {
-                removeSelf(false)
+                removeSelfAndCallback()
                 return@launch
             }
             // 解析参数
             if (!writer.parseArg(this@FileExportFragment, bundle)) {
-                removeSelf(false)
+                removeSelfAndCallback()
                 return@launch
             }
             val file = File(targetFile)
-            val saved = FileResolver.save(context, file, writer)
-            val uri = FileProviderUtil.createUriFromFile(context, file)
-            removeSelf(saved, uri)
+            val uri = if (FileResolver.save(context, file, writer)) {
+                FileProviderUtil.createUriFromFile(context, file)
+            } else {
+                null
+            }
+            removeSelfAndCallback(uri)
         }
     }
 
     /**
      * 提示用户是否成功保存，并移除自身
      */
-    private fun removeSelf(saved: Boolean, uri: Uri? = null) {
+    private fun removeSelfAndCallback(uri: Uri? = null) {
         ExecutorUtil.runOnUiThread {
-            resultCallback(saved, uri)
+            resultCallback(uri)
             removeSelf()
         }
     }

@@ -51,7 +51,7 @@ abstract class BaseRecyclerViewBinderRecorderBinding(
         super.addSingleItem(position, item, layoutParams)
     }
 
-    open fun <E : Any> addTypedListItems(
+    protected open fun <E : Any> addTypedListItems(
         position: Int = list.size,
         data: List<E>,
         layoutParamsGenerator: (index: Int, item: E) -> LayoutParams<E> = { _, _ -> generateTypedDefaultLayoutParams() }
@@ -59,7 +59,7 @@ abstract class BaseRecyclerViewBinderRecorderBinding(
         super.addListItems(position, data, layoutParamsGenerator)
     }
 
-    open fun <T : Any> addTypedSingleItem(
+    protected open fun <T : Any> addTypedSingleItem(
         position: Int = list.size,
         item: T,
         layoutParams: LayoutParams<T> = generateTypedDefaultLayoutParams()

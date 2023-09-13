@@ -40,6 +40,9 @@ public class NetWorkUtil {
     public static final int NETWORK_CLASS_5_G = 4;
     private static final int NETWORK_TYPE_LTE_CA = 19;
 
+    private NetWorkUtil() {
+    }
+
     @RequiresPermission(Manifest.permission.ACCESS_WIFI_STATE)
     public static String getNetworkName(Context context) {
         WifiManager wifiManager = (WifiManager) context.getApplicationContext()

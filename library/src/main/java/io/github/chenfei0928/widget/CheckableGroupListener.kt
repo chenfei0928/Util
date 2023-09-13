@@ -1,5 +1,6 @@
 package io.github.chenfei0928.widget
 
+import android.view.View
 import android.widget.Checkable
 import android.widget.CompoundButton
 import android.widget.RadioGroup
@@ -19,17 +20,25 @@ import java.util.*
  * @date 2019-10-29 11:34
  */
 open class CheckableGroupListener<T : Checkable>(
-    private val views: List<T>
+    val views: List<T>
 ) {
 
     constructor(views: Array<T>) : this(views.toList())
     constructor(views: Sequence<T>) : this(views.toList())
 
-    var checkedView: T?
+    var checked: T?
         get() = views.find { it.isChecked }
         set(value) {
             views.forEach {
                 it.isChecked = it === value
+            }
+        }
+
+    var checkedViewId: Int
+        get() = (checked as? View)?.id ?: View.NO_ID
+        set(value) {
+            views.forEach {
+                it.isChecked = (it as? View)?.id == value
             }
         }
 

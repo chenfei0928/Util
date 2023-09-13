@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
@@ -22,7 +23,7 @@ private val viewOwnerCoroutineScopeCache: MutableMap<View, ViewCoroutineScope> =
 val View.attachedCoroutineScope: CoroutineScope
     get() = viewOwnerCoroutineScopeCache.getOrPut(this) {
         ViewCoroutineScope(this).init()
-    }
+    } + CoroutineStackTraceRecordContextImpl(4)
 
 private class ViewCoroutineScope(
     private val view: View

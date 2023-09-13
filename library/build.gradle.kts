@@ -15,7 +15,7 @@ applyLibrary(appendBuildConfig = false)
 applyTest()
 applyKotlin(parcelize = true, kapt = true)
 withKotlinAndroidMavenPublication(
-    versionName = "1.2-SNAPSHOT",
+    versionName = "1.3-SNAPSHOT",
     signed = true,
     componentName = "debug"
 )
@@ -25,6 +25,7 @@ android {
 
     buildFeatures {
         buildConfig = false
+        viewBinding = true
     }
 }
 
@@ -35,6 +36,7 @@ dependencies {
     implementation(DepsAndroidx.activity)
     implementation(DepsAndroidx.fragment)
     implementation(DepsAndroidx.startup)
+    implementation(DepsAndroidx.appcompat)
     implementation(DepsAndroidx.annotation)
     implementation(DepsAndroidx.lifecycle.runtime)
     implementation(DepsAndroidx.lifecycle.runtimeKtx)
