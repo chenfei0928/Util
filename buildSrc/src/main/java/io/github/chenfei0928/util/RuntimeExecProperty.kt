@@ -11,10 +11,10 @@ import kotlin.reflect.KProperty
  */
 class RuntimeExecProperty<R : Any>(
     private val command: String
-) : ReadOnlyProperty<Any, R> {
+) : ReadOnlyProperty<Any?, R> {
     private val valueRef = AtomicReference<R>()
 
-    override fun getValue(thisRef: Any, property: KProperty<*>): R {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): R {
         return valueRef.get() ?: valueRef.updateAndGet {
             it ?: run {
                 val l = System.currentTimeMillis()
@@ -25,6 +25,9 @@ class RuntimeExecProperty<R : Any>(
                 when (property.returnType.classifier) {
                     String::class -> result as R
                     Int::class -> result.toInt() as R
+                    Long::class -> result.toLong() as R
+                    Boolean::class -> result.toBoolean() as R
+                    Double::class -> result.toDouble() as R
                     else -> throw IllegalArgumentException("不支持的返回值类型 ${property.returnType}")
                 }
             }
