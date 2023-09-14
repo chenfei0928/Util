@@ -1,5 +1,6 @@
 package io.github.chenfei0928
 
+import io.github.chenfei0928.util.RuntimeExecProperty
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -43,6 +44,8 @@ object Env {
         get() = impl.vcsCommitId
     internal val vcsVersionCode: Int
         get() = impl.vcsVersionCode
+    internal val vscBranchName: String
+        get() = impl.vscBranchName
 
     //<editor-fold defaultstate="collapsed" desc="读取工程目录信息和运行时信息的实现，以便使用">
     private class EnvImpl(
@@ -54,46 +57,20 @@ object Env {
          * [com.android.build.gradle.internal.profile.AnalyticsUtil.getProductDetails().version]
          * 来自 com.android.tools:common 依赖定义
          */
-        val agpVersion: String = Reflect.onClass("com.android.Version")
-            .field("ANDROID_GRADLE_PLUGIN_VERSION")
-            .get()
-
-        val vcsCommitId: String by lazy {
-            // 不是Release编译不更新版本号
-            if (!containsReleaseBuild) return@lazy "-"
-            val l = System.currentTimeMillis()
-            // 以commit数量从大到小排序
-            val commitId = Runtime.getRuntime()
-                .exec("git rev-parse --short HEAD")
-                .readText()
-                .trim()
-            logger.quiet("VCS Commit Id: ${commitId}, time cost ${System.currentTimeMillis() - l} ms.")
-            commitId
+        val agpVersion: String by lazy {
+            Reflect.onClass("com.android.Version")
+                .field("ANDROID_GRADLE_PLUGIN_VERSION")
+                .get()
         }
-
-        val vcsVersionCode: Int by lazy {
-            // 不是Release编译不更新版本号
-            if (!containsReleaseBuild) return@lazy 100000
-            val l = System.currentTimeMillis()
-            // 以commit数量从大到小排序
-            val ver = try {
-                Runtime
-                    .getRuntime()
-                    .exec("git rev-list HEAD --count")
-                    .readText()
-                    .trim()
-                    .toInt()
-            } catch (e: Throwable) {
-                logger.error("vcsVersionCode: ", e)
-                0
-            }
-            logger.quiet("VCS Version Code: ${ver}, time cost ${System.currentTimeMillis() - l} ms.")
-            ver
-        }
-
-        private fun Process.readText(): String {
-            return inputStream.reader().readText()
-        }
+        val vcsCommitId: String by RuntimeExecProperty(
+            "git rev-parse --short HEAD"
+        )
+        val vcsVersionCode: Int by RuntimeExecProperty(
+            "git rev-list HEAD --count"
+        )
+        val vscBranchName: String by RuntimeExecProperty(
+            "git symbolic-ref --short -q HEAD"
+        )
     }
     //</editor-fold>
 }
