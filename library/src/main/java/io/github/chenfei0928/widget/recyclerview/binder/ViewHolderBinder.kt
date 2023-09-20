@@ -65,6 +65,6 @@ abstract class BaseBindingClickBinder<T, V : ViewBinding>(
     }
 }
 
-interface ClickableBinder<T> {
+fun interface ClickableBinder<T> {
     fun onItemClick(item: T)
 }

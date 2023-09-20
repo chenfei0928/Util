@@ -2,7 +2,11 @@ package io.github.chenfei0928.widget.recyclerview
 
 import android.view.View
 import androidx.annotation.IdRes
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.flexbox.FlexboxLayoutManager
 import io.github.chenfei0928.view.ViewTagDelegate
 import io.github.chenfei0928.view.getTagOrPut
@@ -45,10 +49,10 @@ fun RecyclerView.nearToPosition(targetPosition: Int, maxOffsetSize: Int = 5) {
         null -> {
             return
         }
-        is LinearLayoutManager -> {
+        is GridLayoutManager -> {
             lm.findFirstVisibleItemPosition()..lm.findLastVisibleItemPosition()
         }
-        is GridLayoutManager -> {
+        is LinearLayoutManager -> {
             lm.findFirstVisibleItemPosition()..lm.findLastVisibleItemPosition()
         }
         is StaggeredGridLayoutManager -> {

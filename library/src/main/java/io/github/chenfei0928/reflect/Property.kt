@@ -3,9 +3,10 @@ package io.github.chenfei0928.reflect
 import android.util.Property
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
+import kotlin.reflect.jvm.javaType
 
 fun <T, V> KProperty1<T, V>.toReadOnlyProperty(): Property<T, V> {
-    return object : Property<T, V>(returnType.javaClass as Class<V>, name) {
+    return object : Property<T, V>(returnType.javaType as Class<V>, name) {
         override fun isReadOnly(): Boolean {
             return true
         }
@@ -17,7 +18,7 @@ fun <T, V> KProperty1<T, V>.toReadOnlyProperty(): Property<T, V> {
 }
 
 fun <T, V> KMutableProperty1<T, V>.toProperty(afterSetBlock: (T) -> Unit = {}): Property<T, V> {
-    return object : Property<T, V>(returnType.javaClass as Class<V>, name) {
+    return object : Property<T, V>(returnType.javaType as Class<V>, name) {
         override fun isReadOnly(): Boolean {
             return false
         }
