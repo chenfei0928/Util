@@ -1,6 +1,7 @@
 package io.github.chenfei0928.reflect.parameterized
 
 import androidx.annotation.IntRange
+import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.reflect.arrayClass
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.ParameterizedType
@@ -194,9 +195,9 @@ constructor(
             com.google.gson.internal.`$Gson$Types`.newParameterizedTypeWithOwner(
                 typeImplOnParent.ownerType,
                 typeImplOnParent.rawType,
-                *typeImplOnParent.actualTypeArguments.map {
+                *typeImplOnParent.actualTypeArguments.mapToArray {
                     getType(currentNode, it)
-                }.toTypedArray()
+                }
             )
         }
         is WildcardType -> {
