@@ -1,7 +1,9 @@
 package io.github.chenfei0928.util
 
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Arrays
+import java.util.Date
+import java.util.Locale
 
 inline fun <R> Process.use(block: (Process) -> R): R {
     try {

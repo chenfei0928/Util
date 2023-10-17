@@ -6,8 +6,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 
-import androidx.annotation.NonNull;
-import androidx.core.util.Pair;
 import io.github.chenfei0928.reflect.ReflectKt;
 
 /**
@@ -16,16 +14,6 @@ import io.github.chenfei0928.reflect.ReflectKt;
  */
 public class ParameterizedTypeReflect0 {
 
-    public static <Parent, Child extends Parent, R> Class<R> getParentParameterizedTypeDefinedImplInChild1(
-            Class<Parent> parentClass,
-            Class<Child> finalChildClass,
-            int positionInParentParameter
-    ) {
-        return new ParameterizedTypeReflect1<Parent, Child, R>(
-                parentClass, finalChildClass, positionInParentParameter
-        ).getParentParameterizedTypeDefinedImplInChild();
-    }
-
     /**
      * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
      * <pre>{@code
@@ -33,16 +21,16 @@ public class ParameterizedTypeReflect0 {
      * Child extends Parent<SomeType>
      * }</pre>
      *
-     * @param <Parent>                  父类类型
-     * @param <Child>                   子类类型
+     * @param <P>                       父类类型
+     * @param <C>                       子类类型
      * @param parentClass               父类类实例
      * @param finalChildClass           最终子类类实例
      * @param positionInParentParameter 要获取的父类声明范型的指定下标
      * @return 在子类实现的父类中指定声明的类型
      */
-    public static <Parent, Child extends Parent, R> TypeBoundsContract<R> getParentParameterizedTypeDefinedImplInChild(
-            Class<Parent> parentClass,
-            Class<Child> finalChildClass,
+    public static <P, C extends P, R> TypeBoundsContract<R> getParentParameterizedTypeDefinedImplInChild(
+            Class<P> parentClass,
+            Class<C> finalChildClass,
             int positionInParentParameter) {
         // 要获取的类型声明
         TypeVariable<?> parentTypeParameter = parentClass.getTypeParameters()[positionInParentParameter];
@@ -51,7 +39,8 @@ public class ParameterizedTypeReflect0 {
             return findParameterizedTypeDefinedImplInChild(parentClass, finalChildClass, parentTypeParameter);
         }
         // 从子类开始向上迭代查找超类，直到到达父类为止，并获取父类的直接子类
-        ParentParameterizedTypeNode childClassNode = getParentTypeDefinedImplInChild(parentClass, finalChildClass).first;
+        ParentParameterizedTypeNode childClassNode =
+                ParameterizedTypeReflect.getParentTypeDefinedImplInChild(parentClass, finalChildClass).first;
         // 从父类到子类查找过程中的类型边界约束
         TypeBoundsContract<R> parentTypeBoundsContract = null;
         // 从父类的直接子类开始向最后实现类遍历
@@ -99,7 +88,7 @@ public class ParameterizedTypeReflect0 {
                 // 如果是数组范型，还要查找子类中该范型数组元素的具体实现
                 // Child extends Parent<XXX[]>
                 return findParameterizedArrayTypeDefinedImplInChild(
-                        (Class<? super Child>) childClass.nodeClass, finalChildClass, (GenericArrayType) childActualTypeArgument);
+                        (Class<? super C>) childClass.nodeClass, finalChildClass, (GenericArrayType) childActualTypeArgument);
             } else if (childActualTypeArgument instanceof ParameterizedType) {
                 // 子类的范型约束ChildP虽然是一个Interface或Class，但其仍有范型定义
                 // Child<ChildR> extends Parent<ChildParameterized<ChildR>>
@@ -136,14 +125,14 @@ public class ParameterizedTypeReflect0 {
      * @param parentClass     声明数组约束的父类类实例
      * @param finalChildClass 最终子类类实例
      * @param arrayType       父类的数组范型约束实现 XXX[]
-     * @param <Parent>        声明数组约束的父类类型
-     * @param <Child>         子类类型
+     * @param <P>        声明数组约束的父类类型
+     * @param <C>         子类类型
      * @param <R>             父类类声明的范型类型
      * @return 子类实现的范型约束范围
      */
-    private static <Parent, Child extends Parent, R> TypeBoundsContract<R> findParameterizedArrayTypeDefinedImplInChild(
-            Class<Parent> parentClass,
-            Class<Child> finalChildClass,
+    private static <P, C extends P, R> TypeBoundsContract<R> findParameterizedArrayTypeDefinedImplInChild(
+            Class<P> parentClass,
+            Class<C> finalChildClass,
             GenericArrayType arrayType
     ) {
         // 如果是数组范型，还要查找子类中该范型数组元素的具体实现
@@ -206,14 +195,14 @@ public class ParameterizedTypeReflect0 {
      * @param parentClass               声明数组约束的父类类实例
      * @param finalChildClass           最终子类类实例
      * @param typeVariableInParentClass 父类实现的数组范型约束元素的范型约束声明 R
-     * @param <Parent>                  声明数组约束的父类类型
-     * @param <Child>                   子类类型
+     * @param <P>                  声明数组约束的父类类型
+     * @param <C>                   子类类型
      * @param <R>                       父类类声明的范型类型
      * @return 子类实现的范型约束范围
      */
-    private static <Parent, Child extends Parent, R> TypeBoundsContract<R> findParameterizedTypeDefinedImplInChild(
-            Class<Parent> parentClass,
-            Class<Child> finalChildClass,
+    private static <P, C extends P, R> TypeBoundsContract<R> findParameterizedTypeDefinedImplInChild(
+            Class<P> parentClass,
+            Class<C> finalChildClass,
             TypeVariable<?> typeVariableInParentClass
     ) {
         if (parentClass == finalChildClass) {
@@ -234,58 +223,5 @@ public class ParameterizedTypeReflect0 {
                 "中间子类：" + parentClass +
                 "中间子类中定义的范型：" + typeVariableInParentClass +
                 "最终子类：" + finalChildClass);
-    }
-
-    /**
-     * 从子类/接口向上查找其到父类/接口的继承链
-     * 包含最终子类（列表末尾）不包含顶级父类 {@code parentClass}
-     *
-     * @param <Parent>        父类类型
-     * @param <Child>         子类类型
-     * @param parentClass     父类类实例
-     * @param finalChildClass 最终子类类实例
-     * @return 父类的直接子类 to 最终子类的节点链
-     */
-    @NonNull
-    static <Parent, Child extends Parent> Pair<ParentParameterizedTypeNode, ParentParameterizedTypeNode> getParentTypeDefinedImplInChild(
-            Class<Parent> parentClass,
-            Class<Child> finalChildClass) {
-        final ParentParameterizedTypeNode finalChildClassNode = new ParentParameterizedTypeNode(finalChildClass);
-        ParentParameterizedTypeNode childClass = finalChildClassNode;
-        // 从子类开始向上迭代查找超类，直到到达父类为止
-        findParent:
-        while (true) {
-            // 获得这个子类的超类
-            Class<?> superclass = childClass.getSuperclass();
-            if (parentClass == superclass) {
-                // 记录其是由继承获得的父类
-                childClass.interfaceIndex = ParentParameterizedTypeNode.BY_SUPER_CLASS;
-                // 如果子类的超类就是要找的父类，遍历结束
-                break;
-            } else if (superclass != null && parentClass.isAssignableFrom(superclass)) {
-                // 记录其是由继承获得的父类
-                childClass.interfaceIndex = ParentParameterizedTypeNode.BY_SUPER_CLASS;
-                // 如果子类的超类仍然是这个接口的子类，继续遍历这个超类的超类
-                childClass = childClass.takeParentNode(superclass);
-            } else {
-                // 如果它的超类不是要找的父类的子类，查找是否其接口是该父类的子类
-                Class<?>[] interfaces = childClass.getInterfaces();
-                for (int i = 0; i < interfaces.length; i++) {
-                    Class<?> anInterface = interfaces[i];
-                    if (parentClass == anInterface) {
-                        // 记录其接口实现的接口下标
-                        childClass.interfaceIndex = i;
-                        // 如果子类的超接口就是要找的父类，遍历结束
-                        break findParent;
-                    } else if (parentClass.isAssignableFrom(anInterface)) {
-                        // 记录其接口实现的接口下标
-                        childClass.interfaceIndex = i;
-                        // 如果子类的超类仍然是这个接口的子类，继续遍历这个超类的超类
-                        childClass = childClass.takeParentNode(anInterface);
-                    }
-                }
-            }
-        }
-        return new Pair<>(childClass, finalChildClassNode);
     }
 }

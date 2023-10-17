@@ -54,7 +54,7 @@ dependencies {
     compileOnly(Deps.glide.core)
     compileOnly(Deps.glide.transformations)
     // https://github.com/google/gson
-    compileOnly(Deps.lib.gson)
+    implementation(Deps.lib.gson)
     compileOnly(Deps.lib.zxing.core)
     compileOnly(Deps.network.okhttp)
     compileOnly(Deps.network.retrofit.core)
