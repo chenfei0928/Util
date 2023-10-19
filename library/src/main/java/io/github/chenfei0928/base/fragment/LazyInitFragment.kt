@@ -19,8 +19,7 @@ import io.github.chenfei0928.view.asyncinflater.SuspendLayoutInflater
  */
 abstract class BaseLazyInitFragment : BaseFragment() {
     internal var lazyLoadSavedInstanceState: Bundle? = null
-    internal var isDestroyed = false
-        private set
+    private var isDestroyed = false
 
     @Deprecated(
         message = "Use onCreateViewImpl",
@@ -164,6 +163,7 @@ abstract class LazyInitInnerFragment<F : Fragment>(
         childFragmentManager.findFragmentByTag(FRAGMENT_TAG) as? F
             ?: createFragment()
             ?: (childFragmentClass ?: getParentParameterizedTypeClassDefinedImplInChild(0))
+                .getDeclaredConstructor()
                 .newInstance()
     }
 

@@ -31,7 +31,8 @@ public class ParameterizedTypeReflect0 {
     public static <P, C extends P, R> TypeBoundsContract<R> getParentParameterizedTypeDefinedImplInChild(
             Class<P> parentClass,
             Class<C> finalChildClass,
-            int positionInParentParameter) {
+            int positionInParentParameter
+    ) {
         // 要获取的类型声明
         TypeVariable<?> parentTypeParameter = parentClass.getTypeParameters()[positionInParentParameter];
         // 如果查找的是当前类，不需要从继承链上查找，直接返回当前类的泛型约束

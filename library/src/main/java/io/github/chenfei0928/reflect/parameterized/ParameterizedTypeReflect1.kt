@@ -24,7 +24,7 @@ import java.lang.reflect.WildcardType
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-07 11:06
  */
-class ParameterizedTypeReflect1<Parent, Child : Parent, R>
+class ParameterizedTypeReflect1<Parent, R>
 /**
  * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
  *
@@ -34,7 +34,7 @@ class ParameterizedTypeReflect1<Parent, Child : Parent, R>
  */
 constructor(
     private val parentClass: Class<Parent>,
-    private val finalChildClass: Class<Child>,
+    private val finalChildClass: Class<out Parent>,
     @IntRange(from = 0)
     private val positionInParentParameter: Int
 ) {

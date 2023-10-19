@@ -40,8 +40,9 @@ constructor(
         if (_clazz != null) {
             return _clazz.isInstance(obj)
         }
-        val bounds =
-            childClassTypeParameter?.bounds ?: childClassWildcardType?.upperBounds ?: return true
+        val bounds = childClassTypeParameter?.bounds
+            ?: childClassWildcardType?.upperBounds
+            ?: return true
         bounds.forEach { bound ->
             when (bound) {
                 is Class<*> -> {

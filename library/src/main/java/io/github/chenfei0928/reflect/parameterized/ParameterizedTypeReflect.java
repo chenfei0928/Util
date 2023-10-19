@@ -1,7 +1,5 @@
 package io.github.chenfei0928.reflect.parameterized;
 
-import java.lang.reflect.Type;
-
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
@@ -12,26 +10,6 @@ import androidx.core.util.Pair;
 public class ParameterizedTypeReflect {
 
     private ParameterizedTypeReflect() {
-    }
-
-    public static <P, C extends P, R> Class<R> getParentParameterizedTypeClassDefinedImplInChild(
-            Class<P> parentClass,
-            Class<C> finalChildClass,
-            int positionInParentParameter
-    ) {
-        return new ParameterizedTypeReflect1<P, C, R>(
-                parentClass, finalChildClass, positionInParentParameter
-        ).getParentParameterizedTypeDefinedImplInChild();
-    }
-
-    public static <P, C extends P> Type getParentParameterizedTypeDefinedImplInChild(
-            Class<P> parentClass,
-            Class<C> finalChildClass,
-            int positionInParentParameter
-    ) {
-        return new ParameterizedTypeReflect1<>(
-                parentClass, finalChildClass, positionInParentParameter
-        ).getType();
     }
 
     /**
@@ -47,7 +25,8 @@ public class ParameterizedTypeReflect {
     @NonNull
     static <P, C extends P> Pair<ParentParameterizedTypeNode, ParentParameterizedTypeNode> getParentTypeDefinedImplInChild(
             Class<P> parentClass,
-            Class<C> finalChildClass) {
+            Class<C> finalChildClass
+    ) {
         final ParentParameterizedTypeNode finalChildClassNode = new ParentParameterizedTypeNode(finalChildClass);
         ParentParameterizedTypeNode childClass = finalChildClassNode;
         // 从子类开始向上迭代查找超类，直到到达父类为止

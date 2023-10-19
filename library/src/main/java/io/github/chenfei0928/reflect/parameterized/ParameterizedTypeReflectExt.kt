@@ -17,15 +17,15 @@ inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeBoundsCont
 inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeClassDefinedImplInChild(
     positionInParentParameter: Int
 ): Class<R> {
-    return ParameterizedTypeReflect.getParentParameterizedTypeClassDefinedImplInChild(
+    return ParameterizedTypeReflect1<Parent, R>(
         Parent::class.java, this::class.java, positionInParentParameter
-    )
+    ).parentParameterizedTypeDefinedImplInChild
 }
 
 inline fun <reified Parent : Any> Parent.getParentParameterizedTypeDefinedImplInChild(
     positionInParentParameter: Int
 ): Type {
-    return ParameterizedTypeReflect.getParentParameterizedTypeDefinedImplInChild(
+    return ParameterizedTypeReflect1<Parent, Any>(
         Parent::class.java, this::class.java, positionInParentParameter
-    )
+    ).type
 }
