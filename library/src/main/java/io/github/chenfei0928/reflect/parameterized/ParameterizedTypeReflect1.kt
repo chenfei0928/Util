@@ -18,62 +18,50 @@ import java.lang.reflect.WildcardType
  * ```
  *
  * @param Parent 父类类型
- * @param Child  子类类型
- * @param R 在子类实现的父类中指定声明的类型
+ * @param parentClass               父类类实例
+ * @param finalChildClass           最终子类类实例
  *
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-07 11:06
  */
-class ParameterizedTypeReflect1<Parent, R>
-/**
- * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
- *
- * @param parentClass               父类类实例
- * @param finalChildClass           最终子类类实例
- * @param positionInParentParameter 要获取的父类声明范型的指定下标
- */
-constructor(
+class ParameterizedTypeReflect1<Parent>(
     private val parentClass: Class<Parent>,
     private val finalChildClass: Class<out Parent>,
-    @IntRange(from = 0)
-    private val positionInParentParameter: Int
 ) {
+    private val childClassNode: ParentParameterizedTypeNode = if (parentClass == finalChildClass) {
+        ParentParameterizedTypeNode(finalChildClass)
+    } else {
+        ParameterizedTypeReflect.getParentTypeDefinedImplInChild(
+            parentClass, finalChildClass
+        ).first
+    }
+    private val childActualTypeArguments: Array<out Type> = if (parentClass == finalChildClass) {
+        parentClass.typeParameters
+    } else {
+        val parameterizedType = childClassNode.genericSuperclass as ParameterizedType
+        parameterizedType.actualTypeArguments
+    }
 
-    val parentParameterizedTypeDefinedImplInChild: Class<R>
-        get() = if (parentClass == finalChildClass) {
-            val typeVariable = parentClass.typeParameters[positionInParentParameter]
-            getErasedTypeClass(
-                ParentParameterizedTypeNode(finalChildClass),
-                typeVariable
-            )
-        } else {
-            val childClassNodeToFinalChildClassNode =
-                ParameterizedTypeReflect.getParentTypeDefinedImplInChild(
-                    parentClass, finalChildClass
-                )
-            val childClassNode = childClassNodeToFinalChildClassNode.first
-            val parameterizedType = childClassNode.genericSuperclass as ParameterizedType
-            val type = parameterizedType.actualTypeArguments[positionInParentParameter]
-            getErasedTypeClass(childClassNode, type)
-        } as Class<R>
+    /**
+     * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
+     *
+     * @param positionInParentParameter 要获取的父类声明范型的指定下标
+     * @param R 在子类实现的父类中指定声明的类型
+     */
+    fun <R> getParentParameterizedTypeDefinedImplInChild(
+        @IntRange(from = 0) positionInParentParameter: Int
+    ): Class<R> = getErasedTypeClass(
+        childClassNode, childActualTypeArguments[positionInParentParameter]
+    ) as Class<R>
 
-    val type: Type
-        get() = if (parentClass == finalChildClass) {
-            val typeVariable = parentClass.typeParameters[positionInParentParameter]
-            getType(
-                ParentParameterizedTypeNode(finalChildClass),
-                typeVariable
-            )
-        } else {
-            val childClassNodeToFinalChildClassNode =
-                ParameterizedTypeReflect.getParentTypeDefinedImplInChild(
-                    parentClass, finalChildClass
-                )
-            val childClassNode = childClassNodeToFinalChildClassNode.first
-            val parameterizedType = childClassNode.genericSuperclass as ParameterizedType
-            val type = parameterizedType.actualTypeArguments[positionInParentParameter]
-            getType(childClassNode, type)
-        }
+    /**
+     * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
+     *
+     * @param positionInParentParameter 要获取的父类声明范型的指定下标
+     */
+    fun getType(
+        @IntRange(from = 0) positionInParentParameter: Int
+    ): Type = getType(childClassNode, childActualTypeArguments[positionInParentParameter])
 
     /**
      * 获取已擦除后的类型类

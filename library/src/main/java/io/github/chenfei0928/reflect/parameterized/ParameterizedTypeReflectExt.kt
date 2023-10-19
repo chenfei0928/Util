@@ -1,5 +1,6 @@
 package io.github.chenfei0928.reflect.parameterized
 
+import androidx.annotation.IntRange
 import java.lang.reflect.Type
 
 /**
@@ -7,25 +8,19 @@ import java.lang.reflect.Type
  * @date 2021-02-20 18:01
  */
 inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeBoundsContractDefinedImplInChild(
-    positionInParentParameter: Int
-): TypeBoundsContract<R> {
-    return ParameterizedTypeReflect0.getParentParameterizedTypeDefinedImplInChild(
-        Parent::class.java, this::class.java, positionInParentParameter
-    )
-}
+    @IntRange(from = 0) positionInParentParameter: Int
+): TypeBoundsContract<R> = ParameterizedTypeReflect0.getParentParameterizedTypeDefinedImplInChild(
+    Parent::class.java, this::class.java, positionInParentParameter
+)
 
 inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeClassDefinedImplInChild(
-    positionInParentParameter: Int
-): Class<R> {
-    return ParameterizedTypeReflect1<Parent, R>(
-        Parent::class.java, this::class.java, positionInParentParameter
-    ).parentParameterizedTypeDefinedImplInChild
-}
+    @IntRange(from = 0) positionInParentParameter: Int
+): Class<R> = ParameterizedTypeReflect1(
+    Parent::class.java, this::class.java
+).getParentParameterizedTypeDefinedImplInChild(positionInParentParameter)
 
 inline fun <reified Parent : Any> Parent.getParentParameterizedTypeDefinedImplInChild(
-    positionInParentParameter: Int
-): Type {
-    return ParameterizedTypeReflect1<Parent, Any>(
-        Parent::class.java, this::class.java, positionInParentParameter
-    ).type
-}
+    @IntRange(from = 0) positionInParentParameter: Int
+): Type = ParameterizedTypeReflect1(
+    Parent::class.java, this::class.java
+).getType(positionInParentParameter)
