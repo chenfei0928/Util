@@ -67,12 +67,14 @@ public class ParameterizedTypeReflectTest {
     ) {
         Class<IInterface> finalChildClass = (Class<IInterface>) finalChildClassInstance.getClass();
 
+        // 判断获取泛型被擦除后的Class
         ParameterizedTypeReflect1<I<R>> reflect = new ParameterizedTypeReflect1(I.class, finalChildClass);
         Class<R> reflectParentParameterizedTypeDefinedImplInChild =
                 reflect.getParentParameterizedTypeDefinedImplInChild(0);
         Class<R> paramsType = finalChildClassInstance.getEClass();
         assertEquals(reflectParentParameterizedTypeDefinedImplInChild, paramsType);
 
+        // 获取泛型的Type
         Type refType = new ParameterizedTypeReflect1<>(I.class, finalChildClass).getType(0);
         Type gsonType = finalChildClassInstance.getGsonTypeToken().getType();
         // 此处对Xxx[]类型时二者获取到的数据不一致，不做测试断言处理，仅打印
@@ -83,6 +85,7 @@ public class ParameterizedTypeReflectTest {
         System.out.println(finalChildClass.getSimpleName() + ": " + refType + ", gson: " + gsonType);
 //        assertEquals(finalChildClassInstance.getType().getType(), type);
 
+        // 检查gson反序列化
         R data = finalChildClassInstance.getDemoDataOrNull();
         if (data != null) {
             String json = gson.toJson(data);
