@@ -1,5 +1,7 @@
 package io.github.chenfei0928
 
+import org.gradle.api.JavaVersion
+
 /**
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2022-07-05 19:01
@@ -23,6 +25,13 @@ object Contract {
     internal const val mappingFileSaveDirName = "tinker"
 
     /**
+     * 打入渠道的文件的输出文件夹名
+     *
+     * 渠道配置目录名，以flavor名创建文件，内配置要打入的渠道名列表
+     */
+    internal const val CHANNELS_APK_OUTPUT_DIR_NAME = "channels"
+
+    /**
      * Apk打包任务名前缀，打包任务名命名规则为
      *
      * ```assemble[DimensionedFlavorName][BuildType]```
@@ -33,10 +42,12 @@ object Contract {
      * 混淆文件目录
      */
     internal const val PROGUARD_FILES_DIR = "proguard-rules"
+
+    internal val JAVA_VERSION = JavaVersion.VERSION_17
     //</editor-fold>
 
     //<editor-fold desc="工程Module的sdkVersion等配置">
-    internal const val minSdkVersion = 23
+    internal const val minSdkVersion = 26
     internal const val targetSdkVersion = 26
     internal const val compileSdkVersion = 34
 

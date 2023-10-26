@@ -20,6 +20,9 @@ dependencies {
     implementation(kotlin("gradle-plugin", kotlinVersion))
     implementation(kotlin("gradle-plugin-api", kotlinVersion))
     implementation(kotlin("android-extensions", kotlinVersion))
+    // Kotlin Symbol Processing 符号处理器编译器插件，需伴随Kotlin版本一同升级
+    // https://github.com/google/ksp
+    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.13")
     implementation(gradleApi())
 
     implementation(localGroovy())
@@ -36,6 +39,10 @@ dependencies {
     // https://github.com/tbroyer/gradle-errorprone-plugin
     // https://github.com/google/error-prone
     implementation("net.ltgt.gradle:gradle-errorprone-plugin:2.0.2")
+    // ARouter
+    // https://github.com/alibaba/ARouter/blob/master/README_CN.md
+    // https://github.com/jadepeakpoet/ARouter
+    implementation("com.github.jadepeakpoet.ARouter:arouter-register:1.0.3")
 
     // 参与编译打包流程，但不参与代码编写
     // 增加 protobuf-gradle-plugin 插件
@@ -61,4 +68,9 @@ repositories {
     // 原生镜像
     mavenCentral()
     google()
+    gradlePluginPortal()
+    // DEX控制流混淆、SdkEditor
+    maven("https://jitpack.io") {
+        name = "jetpack"
+    }
 }

@@ -9,15 +9,7 @@ object Deps {
     object kotlin {
 
         // https://github.com/Kotlin/kotlinx-datetime
-        val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.2.1"
-
-        // https://github.com/Kotlin/kotlinx-io
-        private const val kotlinIo = "0.1.16"
-        val io = "org.jetbrains.kotlinx:kotlinx-io-jvm:${kotlinIo}"
-        val coroutinesIo = "org.jetbrains.kotlinx:kotlinx-coroutines-io:${kotlinIo}"
-
-        // https://github.com/Kotlin/kotlinx.coroutines
-        val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3"
+        val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.4.0"
 
         // https://github.com/fengzhizi715/Lifecycle-Coroutines-Extension
         val coroutinesExt = "com.safframework.lifecycle:lifecycle-coroutine-ext:1.2.1"
@@ -29,18 +21,42 @@ object Deps {
         // 下载框架
         // https://github.com/lingochamp/FileDownloader/blob/master/README-zh.md
         object filedownloader {
-            val core = "com.liulishuo.filedownloader:library:1.7.7"
+            val core = "com.liulishuo.filedownloader:library:1.7.8"
             val okhttp3 = "cn.dreamtobe.filedownloader:filedownloader-okhttp3-connection:1.0.0"
         }
 
         // 下载框架
         // https://github.com/AriaLyy/Aria
         object aria {
+            val http = "me.laoyuyu.aria:http:3.8.16"
+            val public = "me.laoyuyu.aria:public:3.8.16"
+
             val core = "me.laoyuyu.aria:core:3.8.16"
             val apt = "me.laoyuyu.aria:compiler:3.8.16"
             val ftp = "me.laoyuyu.aria:ftp:3.8.16"
             val sftp = "me.laoyuyu.aria:sftp:3.8.16"
             val m3u8 = "me.laoyuyu.aria:m3u8:3.8.16"
+        }
+
+        // https://github.com/lingochamp/okdownload/wiki
+        object okDownload {
+            private val latest_version = "1.0.7"
+
+            // core
+            val core = "com.liulishuo.okdownload:okdownload:${latest_version}"
+
+            // provide sqlite to store breakpoints
+            val sqlite = "com.liulishuo.okdownload:sqlite:${latest_version}"
+
+            // provide okhttp to connect to backend
+            // and then please import okhttp dependencies by yourself
+            val okhttp = "com.liulishuo.okdownload:okhttp:${latest_version}"
+
+            // provide interface to match filedownloader
+            val fileDownloader = "com.liulishuo.okdownload:filedownloader:${latest_version}"
+
+            // provide interface for kotlin extension
+            val ktx = "com.liulishuo.okdownload:ktx:${latest_version}"
         }
 
         // 阿里OSS
@@ -50,12 +66,12 @@ object Deps {
         val aliOss = "com.aliyun.dpa:oss-android-sdk:2.9.11"
 
         // https://github.com/qiniu/happy-dns-android
-        val qiniuDns = "com.qiniu:happy-dns:1.0.0"
+        val qiniuDns = "com.qiniu:happy-dns:2.0.1"
 
         // https://github.com/square/okhttp
         // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-        val okhttp = "com.squareup.okhttp3:okhttp:4.10.0"
-        val logging = "com.squareup.okhttp3:logging-interceptor:4.10.0"
+        val okhttp = "com.squareup.okhttp3:okhttp:4.11.0"
+        val logging = "com.squareup.okhttp3:logging-interceptor:4.11.0"
 
         // https://github.com/gildor/kotlin-coroutines-okhttp
         val okhttpExt = "ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0"
@@ -79,10 +95,13 @@ object Deps {
         val picasso = "com.squareup.picasso:picasso:2.8"
 
         // https://hc.apache.org/httpcomponents-client-4.3.x/android-port.html
-        val apache = "org.apache.httpcomponents:httpclient-android:4.3.5.1"
+        val apacheClient = "org.apache.httpcomponents:httpclient-android:4.3.5.1"
 
         // https://developer.android.com/training/volley/index.html
         val volley = "com.android.volley:volley:1.2.1"
+
+        // https://mvnrepository.com/artifact/org.apache.httpcomponents.core5/httpcore5-h2
+        val apacheHttpCore5 = "org.apache.httpcomponents.core5:httpcore5-h2:5.2.2"
     }
     //</editor-fold>
 
@@ -92,6 +111,7 @@ object Deps {
         private const val glideVer = "4.16.0"
         val core = "com.github.bumptech.glide:glide:$glideVer"
         val apt = "com.github.bumptech.glide:compiler:$glideVer"
+        val ksp = "com.github.bumptech.glide:ksp:$glideVer"
 
         // https://mvnrepository.com/artifact/com.github.bumptech.glide/recyclerview-integration
         val recyclerview = "com.github.bumptech.glide:recyclerview-integration:$glideVer"
@@ -134,24 +154,15 @@ object Deps {
         val floatView = "com.imuxuan:floatingview:1.6"
 
         // https://github.com/google/gson
-        val gson = "com.google.code.gson:gson:2.9.0"
+        val gson = "com.google.code.gson:gson:2.10.1"
 
         // https://github.com/square/okio
-        val okio = "com.squareup.okio:okio:3.0.0"
-
-        // protobuf 序列化框架
-        object protobuf {
-            // https://github.com/protocolbuffers/protobuf/tree/master/java
-            val java = "com.google.protobuf:protobuf-java:3.21.2"
-
-            // https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md
-            val javaLite = "com.google.protobuf:protobuf-javalite:3.21.2"
-        }
+        val okio = "com.squareup.okio:okio:3.5.0"
 
         // https://github.com/zxing/zxing
         // https://repo1.maven.org/maven2/com/google/zxing/core/
         object zxing {
-            val core = "com.google.zxing:core:3.5.0"
+            val core = "com.google.zxing:core:3.5.2"
         }
 
         // https://github.com/Curzibn/Luban
@@ -171,6 +182,9 @@ object Deps {
         // https://github.com/chenfei0928/Util
         val util = "io.github.chenfei0928:util:1.3-SNAPSHOT"
 
+        // https://github.com/johncarl81/parceler
+        val parceler = "org.parceler:parceler-api:1.1.13"
+
         // Java标注
         // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
         val jsr305 = "com.google.code.findbugs:jsr305:3.0.2"
@@ -189,16 +203,16 @@ object Deps {
         val icu4j = "com.ibm.icu:icu4j:71.1"
 
         // https://github.com/luben/zstd-jni
-        val zstdCompression = "com.github.luben:zstd-jni:1.5.2-3@aar"
+        val zstdCompression = "com.github.luben:zstd-jni:1.5.5-5@aar"
 
         // Google工具类
         object google {
             // https://github.com/google/guava
-            val guava = "com.google.guava:guava:30.1.1-android"
+            val guava = "com.google.guava:guava:32.1.2-android"
         }
 
         // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-        val apacheCommonLang3 = "org.apache.commons:commons-lang3:3.0"
+        val apacheCommonLang3 = "org.apache.commons:commons-lang3:3.13.0"
 
         // dagger2，依赖注入
         // https://github.com/google/dagger
@@ -212,12 +226,13 @@ object Deps {
         }
 
         // https://github.com/alibaba/ARouter/blob/master/README_CN.md
+        // https://github.com/jadepeakpoet/ARouter
         object aRouter {
-            val api = "com.alibaba:arouter-api:1.5.2"
-            val compiler = "com.alibaba:arouter-compiler:1.5.2"
+            val api = "com.github.jadepeakpoet.ARouter:arouter-api:1.0.3"
+            val compiler = "com.github.jadepeakpoet.ARouter:arouter-compiler:1.0.3"
 
             // 需在 buildSrc/build.gradle.kts 中同步依赖版本修改
-            val plugin = "com.alibaba:arouter-register:1.0.2"
+            val plugin = "com.github.jadepeakpoet.ARouter:arouter-register:1.0.3"
         }
 
         object huawei {
@@ -246,7 +261,7 @@ object Deps {
         // 腾讯
         object tencent {
             // https://developers.weixin.qq.com/doc/oplatform/Downloads/Android_Resource.html
-            val wechat = "com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.7.0"
+            val wechat = "com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.8.0"
 
             // https://bugly.qq.com/v2/
             val bugly = "com.tencent.bugly:crashreport:latest.release"
@@ -268,6 +283,13 @@ object Deps {
             // 需在 settings.gradle.kts 中同步 Maven 远端仓库地址修改
             val maven = "https://artifact.bytedance.com/repository/pangle"
             val adsSdk = "com.pangle.cn:ads-sdk-pro:4.3.0.8"
+        }
+
+        object baiduMap {
+            val mapNavi = "com.baidu.lbsyun:BaiduMapSDK_Map-Navi:7.5.4"
+            val location = "com.baidu.lbsyun:BaiduMapSDK_Location:9.3.7"
+            val util = "com.baidu.lbsyun:BaiduMapSDK_Util:7.5.4"
+            val search = "com.baidu.lbsyun:BaiduMapSDK_Search:7.5.4"
         }
     }
     //</editor-fold>
@@ -303,7 +325,7 @@ object Deps {
             val animators = "jp.wasabeef:recyclerview-animators:4.0.2"
 
             // https://github.com/rubensousa/RecyclerViewSnap
-            val gravitySnap = "com.github.rubensousa:gravitysnaphelper:2.2.1"
+            val gravitySnap = "com.github.rubensousa:gravitysnaphelper:2.2.2"
 
             // https://github.com/TonicArtos/SuperSLiM
             val superSlim = "com.tonicartos:superslim:0.4.13"
@@ -326,7 +348,7 @@ object Deps {
         }
 
         // https://github.com/Zhao-Yan-Yan/MultiStatePage
-        val multiStatePage = "com.github.Zhao-Yan-Yan:MultiStatePage:2.0.2"
+        val multiStatePage = "com.github.Zhao-Yan-Yan:MultiStatePage:2.0.6"
 
         // https://github.com/scwang90/SmartRefreshLayout/tree/master#%E7%AE%80%E5%8D%95%E7%94%A8%E4%BE%8B
         object smartRefreshLayout {
@@ -361,8 +383,10 @@ object Deps {
         // https://github.com/ikew0ng/SwipeBackLayout
         val swipeBackLayout = "me.imid.swipebacklayout.lib:library:1.1.0"
 
+        val loadMoreWrapper = "com.github.nukc:LoadMoreWrapper:v1.9.1"
+
         // https://github.com/vanniktech/Emoji
-        val emoji = "com.vanniktech:emoji-google:0.6.0"
+        val emoji = "com.vanniktech:emoji-google:0.16.0"
 
         // https://github.com/H07000223/FlycoTabLayout/blob/master/README_CN.md
         val flycoTabLayout = "com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar"
@@ -390,8 +414,8 @@ object Deps {
         val numberProgressBar = "com.daimajia.numberprogressbar:library:1.4@aar"
 
         // https://github.com/airbnb/lottie-android
-        val lottie = "com.airbnb.android:lottie:4.2.1"
-        val lottieCompose = "com.airbnb.android:lottie-compose:4.2.1"
+        val lottie = "com.airbnb.android:lottie:6.1.0"
+        val lottieCompose = "com.airbnb.android:lottie-compose:6.1.0"
 
         // https://github.com/akexorcist/Android-RoundCornerProgressBar
         val roundCornerProgressBar = "com.akexorcist:round-corner-progress-bar:2.2.1"
@@ -437,10 +461,16 @@ object Deps {
         val pickerView = "com.contrarywind:Android-PickerView:4.1.9"
 
         // https://github.com/Dimezis/BlurView
-        val blurView = "com.github.Dimezis:BlurView:version-2.0.0"
+        val blurView = "com.github.Dimezis:BlurView:version-2.0.4"
 
         // https://github.com/qinci/EdgeTranslucent
         val edgeTranslucent = "ren.qinc.edgetranslucent:lib:0.0.3"
+
+        // https://github.com/getActivity/ToastUtils
+        val toastUtil = "com.github.getActivity:ToastUtils:12.5"
+
+        // 仿iOS的UIVisualEffectView
+        val realtimeBlurView = "com.github.mmin18:realtimeblurview:1.2.1"
     }
     //</editor-fold>
 
@@ -464,6 +494,7 @@ object Deps {
             val externalPlayerAliyunArtp = "com.aliyun.sdk.android:AlivcArtp:5.1.5"
 
             //playerSDK
+            // https://help.aliyun.com/document_detail/124711.html
             val externalPlayerFull = "com.aliyun.sdk.android:AliyunPlayer:5.4.0-full"
             val externalPlayerPart = "com.aliyun.sdk.android:AliyunPlayer:5.4.0-part"
 
@@ -719,7 +750,7 @@ object Deps {
         // LeakCanary 内存泄漏检测工具
         // https://github.com/square/leakcanary
         // https://square.github.io/leakcanary/getting_started/
-        val leakcanary = "com.squareup.leakcanary:leakcanary-android:2.9.1"
+        val leakcanary = "com.squareup.leakcanary:leakcanary-android:2.11"
         val curtains = "com.squareup.curtains:curtains:1.2.3"
 
         // FaceBook的Stetho调试工具，可以在Chrome中直接调试APP，再次只作为Debug包时使用
@@ -751,6 +782,9 @@ object Deps {
             // https://github.com/qiniu/android-netdiag
             val netdiag = "com.qiniu:android-netdiag:0.1.1"
         }
+
+        // https://bugly.qq.com/docs/user-guide/instruction-manual-android/?v=20230509233624
+        val bugly = "com.tencent.bugly:crashreport:4.1.9.2"
     }
     //</editor-fold>
 
@@ -758,7 +792,10 @@ object Deps {
     object framework {
         // Tinker热修复
         // https://github.com/Tencent/tinker
-        const val tinker = "com.tencent.tinker:tinker-android-lib:1.9.14.19"
+        const val tinker = "com.tencent.tinker:tinker-android-lib:1.9.14.25.3"
+
+        // https://github.com/chachako/sweekt
+        const val meowoolToolkit = "com.meowool.toolkit:sweekt:0.1.0-SNAPSHOT"
     }
     //</editor-fold>
 }

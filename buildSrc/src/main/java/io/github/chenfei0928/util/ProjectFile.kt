@@ -1,5 +1,6 @@
 package io.github.chenfei0928.util
 
+import io.github.chenfei0928.Contract
 import org.gradle.api.Project
 import java.io.File
 
@@ -8,10 +9,23 @@ import java.io.File
  * @date 2022-07-06 13:52
  */
 internal val Project.mappingFileSaveDir: File
-    get() = projectDir.child { io.github.chenfei0928.Contract.mappingFileSaveDirName }
+    get() = projectDir.child { Contract.mappingFileSaveDirName }
 
 internal val Project.buildOutputsDir: File
-    get() = buildDir.child { io.github.chenfei0928.Contract.outputs }
+    get() = buildDir.child { Contract.outputs }
 
 internal val Project.tmpProguardFilesDir: File
-    get() = buildDir.child { "tmp" / io.github.chenfei0928.Contract.PROGUARD_FILES_DIR }
+    get() = buildDir.child { "tmp" / Contract.PROGUARD_FILES_DIR }
+
+internal fun Project.writeTmpProguardFile(fileName: String, content: String): File {
+    return tmpProguardFilesDir.child {
+        fileName
+    }.also {
+        if (!it.exists() || it.readText() != content) {
+            it.parentFile.mkdirs()
+            it.delete()
+            it.createNewFile()
+            it.writeText(content)
+        }
+    }
+}

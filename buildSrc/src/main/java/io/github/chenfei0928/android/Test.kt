@@ -71,10 +71,10 @@ fun Project.applyTest() {
     }
 }
 
-private fun DependencyHandlerScope.androidTestImplementation(dependencyNotation: String) {
+internal fun DependencyHandlerScope.androidTestImplementation(dependencyNotation: Any) {
     add("androidTestImplementation", dependencyNotation)
 }
 
-private fun DependencyHandlerScope.testImplementation(dependencyNotation: String) {
+internal fun DependencyHandlerScope.testImplementation(dependencyNotation: Any) {
     add("testImplementation", dependencyNotation)
 }

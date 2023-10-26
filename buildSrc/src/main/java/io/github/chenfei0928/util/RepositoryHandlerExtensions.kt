@@ -43,6 +43,9 @@ internal fun DependencyHandlerScope.api(dependencyNotation: Any): Dependency? =
 internal fun DependencyHandlerScope.implementation(dependencyNotation: Any): Dependency? =
     add("implementation", dependencyNotation)
 
+internal fun DependencyHandlerScope.debugImplementation(dependencyNotation: Any): Dependency? =
+    add("debugImplementation", dependencyNotation)
+
 internal fun DependencyHandlerScope.compileOnly(dependencyNotation: Any): Dependency? =
     add("compileOnly", dependencyNotation)
 
@@ -79,9 +82,10 @@ internal fun <BuildTypeT : com.android.build.api.dsl.BuildType> NamedDomainObjec
 
 //<editor-fold defaultstate="collapsed" desc="遍历打包的assembleTask任务" >
 /**
- * 对每个`assemble`开头的任务进行处理，这些任务是由Android Gradle Plugin产生的编译任务
+ * 对每个`assemble`开头的任务进行处理，在[Projrct.afterEvaluate]中执行，此时已生成task，
+ * 这些任务是由Android Gradle Plugin产生的编译任务
  */
-internal fun Project.assembleTasks(block: (assembleTask: Task, taskInfo: AssembleTaskInfo) -> Unit) {
+internal fun Project.forEachAssembleTasks(block: (assembleTask: Task, taskInfo: AssembleTaskInfo) -> Unit) {
     val buildTypeNames = mutableListOf<String>()
 
     buildSrcAndroid<com.android.build.gradle.AppExtension> {
@@ -109,7 +113,9 @@ internal fun Project.assembleTasks(block: (assembleTask: Task, taskInfo: Assembl
             )
             .decapitalize(Locale.ROOT)
 
+        // 对assemble编译任务进行处理
         block(this, AssembleTaskInfo(dimensionedFlavorName, buildType))
+        // 校验全渠道包任务
         if (dimensionedFlavorName.isEmpty()) {
             // 校验一下该全渠道包的task和依赖列表
             // 全渠道包的task只会包含所有同 buildType 的编译task

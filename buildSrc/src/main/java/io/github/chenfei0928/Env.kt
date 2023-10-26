@@ -24,7 +24,9 @@ object Env {
             .flatMap { it.args }
             .find { startTaskRequestArg ->
                 Contract.minifyBuildTypes.find { minifyBuildType ->
-                    startTaskRequestArg.contains(minifyBuildType.capitalize(Locale.ROOT))
+                    startTaskRequestArg.contains(minifyBuildType.replaceFirstChar {
+                        if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
+                    })
                 } != null
             } != null
         // 创建impl
@@ -40,7 +42,7 @@ object Env {
         get() = impl.containsReleaseBuild
     internal val agpVersion: String
         get() = impl.agpVersion
-    internal val vcsCommitId: String
+    val vcsCommitId: String
         get() = impl.vcsCommitId
     internal val vcsVersionCode: Int
         get() = impl.vcsVersionCode
@@ -49,12 +51,14 @@ object Env {
 
     //<editor-fold defaultstate="collapsed" desc="读取工程目录信息和运行时信息的实现，以便使用">
     private class EnvImpl(
-        val containsReleaseBuild: Boolean
+        val containsReleaseBuild: Boolean,
     ) {
 
         /**
          * [com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION]
+         *
          * [com.android.build.gradle.internal.profile.AnalyticsUtil.getProductDetails().version]
+         *
          * 来自 com.android.tools:common 依赖定义
          */
         val agpVersion: String by lazy {
