@@ -47,7 +47,7 @@ object Contract {
     //</editor-fold>
 
     //<editor-fold desc="工程Module的sdkVersion等配置">
-    internal const val minSdkVersion = 26
+    internal const val minSdkVersion = 23
     internal const val targetSdkVersion = 26
     internal const val compileSdkVersion = 34
 

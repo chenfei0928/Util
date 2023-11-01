@@ -31,4 +31,5 @@ dependencyResolutionManagement {
 include(
     ":app",
     "library",
+    ":script",
 )

@@ -159,6 +159,15 @@ object Deps {
         // https://github.com/square/okio
         val okio = "com.squareup.okio:okio:3.5.0"
 
+        // protobuf 序列化框架
+        object protobuf {
+            // https://github.com/protocolbuffers/protobuf/tree/master/java
+            val java = "com.google.protobuf:protobuf-java:3.21.2"
+
+            // https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md
+            val javaLite = "com.google.protobuf:protobuf-javalite:3.21.2"
+        }
+
         // https://github.com/zxing/zxing
         // https://repo1.maven.org/maven2/com/google/zxing/core/
         object zxing {
