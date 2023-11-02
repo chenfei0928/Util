@@ -11,9 +11,8 @@ import androidx.lifecycle.LifecycleOwner
  * @date 2020-08-10 16:08
  */
 object ImmortalLifecycleOwner : LifecycleOwner {
-    override fun getLifecycle(): Lifecycle {
-        return ImmortalLifecycle
-    }
+    override val lifecycle: Lifecycle
+        get() = ImmortalLifecycle
 
     private object ImmortalLifecycle : Lifecycle() {
         override fun addObserver(observer: LifecycleObserver) {
@@ -22,8 +21,7 @@ object ImmortalLifecycleOwner : LifecycleOwner {
         override fun removeObserver(observer: LifecycleObserver) {
         }
 
-        override fun getCurrentState(): State {
-            return State.RESUMED
-        }
+        override val currentState: State
+            get() = State.RESUMED
     }
 }

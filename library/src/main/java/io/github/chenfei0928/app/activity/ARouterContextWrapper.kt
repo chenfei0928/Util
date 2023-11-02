@@ -23,19 +23,19 @@ class ARouterActivityWrapper(
         return fragment.requireContext().packageName
     }
 
-    override fun startActivityForResult(intent: Intent?, requestCode: Int, options: Bundle?) {
+    override fun startActivityForResult(intent: Intent, requestCode: Int, options: Bundle?) {
         fragment.startActivityForResult(intent, requestCode, options)
     }
 
-    override fun startActivityForResult(intent: Intent?, requestCode: Int) {
+    override fun startActivityForResult(intent: Intent, requestCode: Int) {
         fragment.startActivityForResult(intent, requestCode)
     }
 
-    override fun startActivity(intent: Intent?, options: Bundle?) {
+    override fun startActivity(intent: Intent, options: Bundle?) {
         fragment.startActivity(intent, options)
     }
 
-    override fun startActivity(intent: Intent?) {
+    override fun startActivity(intent: Intent) {
         fragment.startActivity(intent)
     }
 
@@ -46,7 +46,7 @@ class ARouterActivityWrapper(
 
     // <editor-fold desc="华为支付等sdk所用" defaultstate="collapsed">
     override fun startIntentSenderForResult(
-        intent: IntentSender?,
+        intent: IntentSender,
         requestCode: Int,
         fillInIntent: Intent?,
         flagsMask: Int,
@@ -65,7 +65,7 @@ class ARouterActivityWrapper(
     }
 
     override fun startIntentSenderForResult(
-        intent: IntentSender?,
+        intent: IntentSender,
         requestCode: Int,
         fillInIntent: Intent?,
         flagsMask: Int,

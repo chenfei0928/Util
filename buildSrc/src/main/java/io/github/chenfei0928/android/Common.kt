@@ -90,8 +90,8 @@ fun Project.applyCommon(appendBuildConfig: Boolean = true) {
         }
 
         compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
+            sourceCompatibility = Contract.JAVA_VERSION
+            targetCompatibility = Contract.JAVA_VERSION
             // 开启增量编译
             incremental = true
         }

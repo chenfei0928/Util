@@ -58,9 +58,8 @@ constructor(
         onDestroy()
     }
 
-    override fun getLifecycle(): Lifecycle {
-        return mLifecycleProvider.lifecycle
-    }
+    override val lifecycle: Lifecycle
+        get() = mLifecycleProvider.lifecycle
 
     private fun checkPresenterContainer(lifecycleProvider: LifecycleOwner, contract: Contract) {
         when {
