@@ -43,7 +43,7 @@ public class MyClass {
         });
     }
 
-    private static void deleteDir(File dir) {
+    static void deleteDir(File dir) {
         if (dir.isFile()) {
             dir.delete();
         } else {
