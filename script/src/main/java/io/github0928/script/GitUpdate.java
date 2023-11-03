@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -21,22 +23,21 @@ class GitUpdate {
     );
     private static final File targetDir = new File("D:\\open_source");
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
         System.out.println("工作目录：" + targetDir);
         Set<String> ignoreDirs;
         try (var reader = new BufferedReader(new FileReader(new File(targetDir, "ignore.txt")))) {
             ignoreDirs = reader.lines().collect(Collectors.toSet());
         }
         System.out.println("忽略的Git工程：" + ignoreDirs);
-        var dirs = targetDir.listFiles(f -> f.isDirectory() && !ignoreDirs.contains(f.getName()));
-//        for (File dir : dirs) {
-//            checkToSync(dir);
-//        }
-        Arrays.stream(dirs)
-                .parallel()
+        var files = new ArrayList<>(Arrays.stream(
+                targetDir.listFiles(f -> f.isDirectory() && !ignoreDirs.contains(f.getName()))
+        ).toList());
+        Collections.shuffle(files);
+        files.parallelStream()
                 .map(file -> EXECUTOR.submit(() -> {
                     checkToSync(file);
-                    return 1;
+                    return 0;
                 }))
                 .forEach(integerFuture -> {
                     try {
@@ -57,28 +58,33 @@ class GitUpdate {
 
     private static void syncGit(File gitDir) throws IOException, InterruptedException {
         var gitPrefix = getGitPrefix(gitDir);
-        var cmd_fetch = "git --no-optional-locks -c color.branch=false -c color.diff=false -c color.status=false -c diff.mnemonicprefix=false -c core.quotepath=false -c credential.helper=sourcetree fetch --prune origin".replace(
-                "git ", gitPrefix
-        );
         // 抓取远端分支
-        Runtime.getRuntime().exec(cmd_fetch).waitFor();
+        Runtime.getRuntime()
+                .exec(gitPrefix + "--no-optional-locks -c color.branch=false -c color.diff=false -c color.status=false -c diff.mnemonicprefix=false -c core.quotepath=false -c credential.helper=sourcetree fetch --prune origin")
+                .waitFor();
         // 读取所有本地不存在的远程分支到本地作为映射
         // 读取远程分支
-        Set<String> remoteBranches = Runtime.getRuntime().exec("git branch -r".replace("git ", gitPrefix))
-                .inputReader()
-                .lines()
-                .map(String::strip)
-                // 过滤在已经映射到本地的分支
-                .filter(s -> !s.contains("->") && !s.isEmpty())
-                .collect(Collectors.toSet());
+        Set<String> remoteBranches;
+        try (var reader = Runtime.getRuntime()
+                .exec("git branch -r".replace("git ", gitPrefix))
+                .inputReader()) {
+            remoteBranches = reader.lines()
+                    .map(String::strip)
+                    // 过滤在已经映射到本地的分支
+                    .filter(s -> !s.contains("->") && !s.isEmpty())
+                    .collect(Collectors.toSet());
+        }
         // 读取本地分支
-        Set<String> localBranch = Runtime.getRuntime().exec("git branch".replace("git ", gitPrefix))
-                .inputReader()
-                .lines()
-                // 替换当前分支
-                .map(s -> s.strip().replace("* ", ""))
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toSet());
+        Set<String> localBranch;
+        try (var reader = Runtime.getRuntime()
+                .exec("git branch".replace("git ", gitPrefix))
+                .inputReader()) {
+            localBranch = reader.lines()
+                    // 替换当前分支
+                    .map(s -> s.strip().replace("* ", ""))
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toSet());
+        }
         // 求差集
         Set<String> defBranch = remoteBranches.stream()
                 .filter(s -> !localBranch.contains(s.substring(s.indexOf('/') + 1)))
@@ -86,23 +92,27 @@ class GitUpdate {
         // 将未映射到本地的所有远程分支映射到本地
         for (String remote : defBranch) {
             String branchName = remote.substring(remote.indexOf('/') + 1);
-            Runtime.getRuntime().exec(gitPrefix + "branch --track " + branchName + " " + remote + " ").waitFor();
+            Runtime.getRuntime()
+                    .exec(gitPrefix + "branch --track " + branchName + " " + remote + " ")
+                    .waitFor();
         }
         // 更新所有本地分支
-        Runtime.getRuntime().exec("git branch".replace("git ", gitPrefix))
-                .inputReader()
-                .lines()
-                .map(s -> s.strip().replace("* ", ""))
-                .filter(s -> !s.isEmpty())
-                .forEach(branch -> {
-                    try {
-                        syncGitSomeoneBranch(gitDir, branch);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+        try (var reader = Runtime.getRuntime()
+                .exec("git branch".replace("git ", gitPrefix))
+                .inputReader()) {
+            reader.lines()
+                    .map(s -> s.strip().replace("* ", ""))
+                    .filter(s -> !s.isEmpty())
+                    .forEach(branch -> {
+                        try {
+                            syncGitSomeoneBranch(gitDir, branch);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+        }
 
         // 更新当前分支
         syncGitCurrentBranch(gitDir);
@@ -126,7 +136,9 @@ class GitUpdate {
                 "reset --hard",
                 "pull --all",
         }) {
-            Runtime.getRuntime().exec(gitPrefix + s).waitFor();
+            Runtime.getRuntime()
+                    .exec(gitPrefix + s)
+                    .waitFor();
         }
     }
 
