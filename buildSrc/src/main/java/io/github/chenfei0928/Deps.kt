@@ -191,6 +191,9 @@ object Deps {
         // https://github.com/chenfei0928/Util
         val util = "io.github.chenfei0928:util:1.3-SNAPSHOT"
 
+        // https://github.com/getActivity/XXPermissions
+        val xxPermission = "com.github.getActivity:XXPermissions:18.5"
+
         // https://github.com/johncarl81/parceler
         val parceler = "org.parceler:parceler-api:1.1.13"
 

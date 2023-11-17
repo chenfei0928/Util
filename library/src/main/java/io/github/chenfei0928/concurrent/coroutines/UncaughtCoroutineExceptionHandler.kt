@@ -8,12 +8,14 @@ import kotlinx.coroutines.GlobalScope
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
+abstract class AbsCoroutineExceptionHandler : CoroutineExceptionHandler,
+    AbstractCoroutineContextElement(CoroutineExceptionHandler.Key)
+
 /**
  * 通用的协程异常处理器，用于补充[GlobalScope]不带错误处理，在协程中出异常直接导致应用崩溃的问题
  * [博文](https://www.jianshu.com/p/2056d5424001)
  */
-object UncaughtCoroutineExceptionHandler : CoroutineExceptionHandler,
-    AbstractCoroutineContextElement(CoroutineExceptionHandler.Key) {
+object UncaughtLogCoroutineExceptionHandler : AbsCoroutineExceptionHandler() {
     private const val TAG = "KW_CoroutineExceptionH"
     var onErrorLis: ((context: CoroutineContext, exception: Throwable) -> Unit)? = null
 
@@ -34,7 +36,7 @@ object UncaughtCoroutineExceptionHandler : CoroutineExceptionHandler,
  */
 object IoScope : CoroutineScope {
     override val coroutineContext: CoroutineContext =
-        Dispatchers.IO + UncaughtCoroutineExceptionHandler
+        Dispatchers.IO + UncaughtLogCoroutineExceptionHandler
 }
 
 /**
@@ -42,7 +44,7 @@ object IoScope : CoroutineScope {
  */
 object DefaultScope : CoroutineScope {
     override val coroutineContext: CoroutineContext =
-        Dispatchers.Default + UncaughtCoroutineExceptionHandler
+        Dispatchers.Default + UncaughtLogCoroutineExceptionHandler
 }
 
 /**
@@ -50,5 +52,5 @@ object DefaultScope : CoroutineScope {
  */
 object MainScope : CoroutineScope {
     override val coroutineContext: CoroutineContext =
-        Dispatchers.Main + UncaughtCoroutineExceptionHandler
+        Dispatchers.Main + UncaughtLogCoroutineExceptionHandler
 }

@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MyClass {
+public class WPSClean {
     public static void main(String[] args) {
         var appData = System.getenv("APPDATA");
         var files = new File(appData + "\\kingsoft\\wps\\addons\\pool\\win-i386").listFiles();

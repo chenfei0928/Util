@@ -34,7 +34,7 @@ private val cancelledCoroutineScope by lazy(LazyThreadSafetyMode.NONE) {
  * 在 [Fragment] 中使用时，需要额外留意 [LifecycleOwner] 是 [Fragment] 本体还是 [Fragment.getViewLifecycleOwner]。
  * 会影响返回的协程作用域的生命周期而导致内存泄漏。
  *
- * 相较 [lifecycleScope] 多 [UncaughtCoroutineExceptionHandler] 和 [CoroutineAndroidContext]
+ * 相较 [lifecycleScope] 添加了 [UncaughtLogCoroutineExceptionHandler] 和 [CoroutineAndroidContext]
  */
 val LifecycleOwner.coroutineScope: CoroutineScope by
 object : ReadOnlyProperty<LifecycleOwner, CoroutineScope> {
