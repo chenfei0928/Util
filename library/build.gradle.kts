@@ -17,7 +17,6 @@ applyKotlin(parcelize = true, kapt = true)
 withKotlinAndroidMavenPublication(
     versionName = "1.3-SNAPSHOT",
     signed = true,
-    componentName = "debug"
 )
 
 android {
