@@ -12,17 +12,29 @@ import kotlin.coroutines.EmptyCoroutineContext
  * @date 2022-08-22 15:10
  */
 class SuspendGetter<T>(
-    context: CoroutineContext = EmptyCoroutineContext,
-    initializer: suspend CoroutineScope.() -> T
+    private val context: CoroutineContext = EmptyCoroutineContext,
+    private val initializer: suspend CoroutineScope.() -> T
 ) {
     private val atomicReference = AtomicReference<IGetter<T>>(
         IGetter.DeferredGetter(context, initializer)
     )
 
+    fun reset() {
+        atomicReference.set(IGetter.DeferredGetter(context, initializer))
+    }
+
+    fun isInitialized(): Boolean =
+        atomicReference.get() is IGetter.Object
+
     tailrec suspend fun get(): T = when (val mayBeDeferred = atomicReference.get()) {
         is IGetter.Object<T> -> mayBeDeferred.obj
         is IGetter.DeferredGetter<T> -> {
-            val next = mayBeDeferred.invoke()
+            val next = try {
+                mayBeDeferred.invoke()
+            } catch (e: Throwable) {
+                reset()
+                throw e
+            }
             if (atomicReference.compareAndSet(mayBeDeferred, IGetter.Object(next))) {
                 next
             } else {

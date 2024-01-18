@@ -55,10 +55,11 @@ fun Project.applyKotlin(
             // for JNA and JNA-platform
             resources.excludes += "META-INF/AL2.0"
             resources.excludes += "META-INF/LGPL2.1"
+            resources.excludes += "com/sun/jna/**"
             // for byte-buddy
             resources.excludes += "META-INF/licenses/ASM"
-            resources.pickFirsts += "win32-x86-64/attach_hotspot_windows.dll"
-            resources.pickFirsts += "win32-x86/attach_hotspot_windows.dll"
+            resources.pickFirsts += "win32-x86-64/**"
+            resources.pickFirsts += "win32-x86/**"
         }
 
         (this as ExtensionAware).buildSrcKotlinOptions {

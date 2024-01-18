@@ -1,6 +1,5 @@
 package io.github.chenfei0928.util
 
-import com.google.common.collect.ImmutableList
 import io.github.chenfei0928.Env
 import java.io.File
 import java.util.Enumeration
@@ -57,8 +56,13 @@ constructor(
     }
 
     companion object {
-        fun <E> Enumeration<E>.elements() =
-            ImmutableList.copyOf(asIterator())
+        fun <E> Enumeration<E>.elements() = asIterator().run {
+            val list = ArrayList<E>()
+            while (hasNext()) {
+                list.add(next())
+            }
+            list
+        }
 
         fun StringTokenizer.tokens() =
             Array(countTokens()) { nextToken() }

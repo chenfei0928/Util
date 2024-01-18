@@ -14,7 +14,7 @@ dependencies {
     val kotlinVersion = "1.9.20"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "8.1.4"
+    val agpVersion = "8.2.0"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
     implementation(kotlin("gradle-plugin", kotlinVersion))
@@ -38,7 +38,7 @@ dependencies {
     // ErrorProne
     // https://github.com/tbroyer/gradle-errorprone-plugin
     // https://github.com/google/error-prone
-    implementation("net.ltgt.gradle:gradle-errorprone-plugin:2.0.2")
+    implementation("net.ltgt.gradle:gradle-errorprone-plugin:3.1.0")
     // ARouter
     // https://github.com/alibaba/ARouter/blob/master/README_CN.md
     // https://github.com/jadepeakpoet/ARouter
@@ -47,7 +47,7 @@ dependencies {
     // 参与编译打包流程，但不参与代码编写
     // 增加 protobuf-gradle-plugin 插件
     // https://github.com/google/protobuf-gradle-plugin
-    implementation("com.google.protobuf:protobuf-gradle-plugin:0.8.18")
+    implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
 
     // https://github.com/bintray/gradle-bintray-plugin
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")

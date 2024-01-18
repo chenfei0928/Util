@@ -25,6 +25,22 @@ class GitUpdate {
     private static final File targetDir = new File("D:\\open_source");
 
     public static void main(String[] args) throws IOException {
+        try {
+            new ProcessBuilder()
+                    .command("git", "--version")
+                    .redirectErrorStream(true)
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                    .start()
+                    .waitFor();
+            new ProcessBuilder()
+                    .command("git", "config", "--global", "-l")
+                    .redirectErrorStream(true)
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                    .start()
+                    .waitFor();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("工作目录：" + targetDir);
         Set<String> ignoreDirs;
         try (var reader = new BufferedReader(new FileReader(new File(targetDir, "ignore.txt")))) {
@@ -85,13 +101,22 @@ class GitUpdate {
     }
 
     private static void syncGit(GitDir gitDir) throws IOException, InterruptedException {
-        var gitPrefix = gitDir.gitPrefix;
         Set<String> defBranch = gitDir.defBranch;
         // 将未映射到本地的所有远程分支映射到本地
         for (String remote : defBranch) {
             String branchName = remote.substring(remote.indexOf('/') + 1);
-            Runtime.getRuntime()
-                    .exec(gitPrefix + "branch --track " + branchName + " " + remote + " ")
+            new ProcessBuilder()
+                    .command(
+                            "git",
+                            "branch",
+                            "--track",
+                            branchName,
+                            remote
+                    )
+                    .directory(gitDir.dir)
+                    .redirectErrorStream(true)
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                    .start()
                     .waitFor();
         }
         // 更新所有本地分支
@@ -112,46 +137,61 @@ class GitUpdate {
 
     private static void syncGitSomeoneBranch(GitDir gitDir, String branchName) throws IOException, InterruptedException {
         System.out.println("同步Git目录：" + gitDir.dir + " 分支：" + branchName);
-        var gitPrefix = gitDir.gitPrefix;
-        Runtime.getRuntime()
-                .exec(gitPrefix + "-c diff.mnemonicprefix=false -c core.quotepath=false --no-optional-locks fetch origin " + branchName + ":" + branchName)
+        new ProcessBuilder()
+                .command(
+                        "git",
+                        "--no-optional-locks",
+                        "-c",
+                        "diff.mnemonicprefix=false",
+                        "-c",
+                        "core.quotepath=false",
+                        "fetch",
+                        "origin",
+                        branchName + ":" + branchName
+                )
+                .directory(gitDir.dir)
+                .redirectErrorStream(true)
+                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                .start()
                 .waitFor();
     }
 
     private static void syncGitCurrentBranch(GitDir gitDir) throws IOException, InterruptedException {
         System.out.println("同步Git目录：" + gitDir.dir + " 当前分支");
-        var gitPrefix = gitDir.gitPrefix;
-        for (String s : new String[]{
-                "checkout -- .",
-                "clean -xdf",
-                "reset --hard",
-                "pull --all",
+        for (String[] command : new String[][]{
+                {"git", "checkout", "--", "."},
+                {"git", "clean", "-xdf"},
+                {"git", "reset", "--hard"},
+                {"git", "pull", "--all"},
         }) {
-            Runtime.getRuntime()
-                    .exec(gitPrefix + s)
+            new ProcessBuilder()
+                    .command(command)
+                    .directory(gitDir.dir)
+                    .redirectErrorStream(true)
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                    .start()
                     .waitFor();
         }
     }
 
     private static class GitDir {
         final File dir;
-        final String gitPrefix;
         Set<String> localBranch;
         final Set<String> defBranch;
 
         private GitDir(File dir) throws IOException, InterruptedException {
             this.dir = dir;
-            gitPrefix = "git --work-tree={git_dir} --git-dir={git_dir}/.git ".replace(
-                    "{git_dir}", dir.getAbsolutePath()
-            );
             calculateLocalBranch();
             defBranch = checkDefBranch();
         }
 
         void calculateLocalBranch() throws IOException {
             // 读取本地分支
-            try (var reader = Runtime.getRuntime()
-                    .exec("git branch".replace("git ", gitPrefix))
+            try (var reader = new ProcessBuilder()
+                    .command("git", "branch")
+                    .directory(dir)
+                    .redirectErrorStream(true)
+                    .start()
                     .inputReader()) {
                 localBranch = reader.lines()
                         // 替换当前分支
@@ -163,14 +203,39 @@ class GitUpdate {
 
         private Set<String> checkDefBranch() throws IOException, InterruptedException {
             // 抓取远端分支
-            Runtime.getRuntime()
-                    .exec(gitPrefix + "--no-optional-locks -c color.branch=false -c color.diff=false -c color.status=false -c diff.mnemonicprefix=false -c core.quotepath=false -c credential.helper=sourcetree fetch --prune origin")
+            new ProcessBuilder()
+                    .command(
+                            "git",
+                            "--no-optional-locks",
+                            "-c",
+                            "color.branch=false",
+                            "-c",
+                            "color.diff=false",
+                            "-c",
+                            "color.status=false",
+                            "-c",
+                            "diff.mnemonicprefix=false",
+                            "-c",
+                            "core.quotepath=false",
+                            "-c",
+                            "credential.helper=sourcetree",
+                            "fetch",
+                            "--prune",
+                            "origin"
+                    )
+                    .directory(dir)
+                    .redirectErrorStream(true)
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                    .start()
                     .waitFor();
             // 读取所有本地不存在的远程分支到本地作为映射
             // 读取远程分支
             Set<String> remoteBranches;
-            try (var reader = Runtime.getRuntime()
-                    .exec("git branch -r".replace("git ", gitPrefix))
+            try (var reader = new ProcessBuilder()
+                    .command("git", "branch", "-r")
+                    .directory(dir)
+                    .redirectErrorStream(true)
+                    .start()
                     .inputReader()) {
                 remoteBranches = reader.lines()
                         .map(String::strip)
