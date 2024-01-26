@@ -25,41 +25,47 @@ class FileUtil {
             return path.joinToString(File.separator)
         }
 
-        @JvmStatic
+        /**
+         * 迭代删除一个文件或目录
+         *
+         * @param path 要删除的文件或文件夹
+         * @return 删除成功返回true，失败则返回false
+         */
         fun deleteFileOrDir(path: File?): Boolean {
             if (path == null || !path.exists()) {
+                // 文件不存在，直接返回
                 return true
             }
             if (path.isFile) {
+                // 文件路径，删除
                 return path.delete()
             }
-            path
-                .listFiles()
-                ?.forEach {
-                    deleteFileOrDir(it)
-                }
+            // 非文件路径，迭代子路径，删除
+            path.listFiles()?.forEach {
+                deleteFileOrDir(it)
+            }
             return path.delete()
         }
 
-        @JvmStatic
+        /**
+         * 获取一个文件或目录的大小
+         *
+         * @param file 要获取文件尺寸的文件或目录
+         * @return 文件尺寸，以字节为单位
+         */
         fun getFileOrDirSize(file: File?): Long {
-            if (file == null) {
-                return 0
-            }
-            if (!file.exists()) {
+            if (file == null || !file.exists()) {
+                // 文件不存在，返回0
                 return 0
             }
             if (!file.isDirectory) {
+                // 路径不是文件夹，返回文件大小
                 return file.length()
             }
-
-            var length: Long = 0
-            file
-                .listFiles()
-                ?.forEach {
-                    length += getFileOrDirSize(it)
-                }
-            return length
+            // 迭代子文件，并统计总大小
+            return file.listFiles()
+                ?.sumOf { getFileOrDirSize(it) }
+                ?: 0
         }
 
         @JvmStatic
