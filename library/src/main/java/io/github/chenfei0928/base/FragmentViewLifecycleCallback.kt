@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import java.util.*
+import java.util.WeakHashMap
 
 /**
  * 用于保存Fragment的详细生命周期

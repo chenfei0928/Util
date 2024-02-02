@@ -4,7 +4,11 @@ import android.os.Handler
 import android.os.Looper
 import androidx.core.os.postDelayed
 import io.github.chenfei0928.util.Log
-import okhttp3.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
 
 /**
  * WebSocket基类

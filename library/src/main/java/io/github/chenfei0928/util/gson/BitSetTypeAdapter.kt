@@ -4,7 +4,7 @@ import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
-import java.util.*
+import java.util.BitSet
 
 /**
  * 可以使用BitSet来实现intIdsArray，并实现快速的查找其是否在其中的操作。

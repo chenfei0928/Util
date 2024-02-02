@@ -3,7 +3,7 @@ package io.github.chenfei0928.view.listener
 import android.view.View
 import android.view.ViewConfiguration
 import androidx.core.view.doOnDetach
-import java.util.*
+import java.util.WeakHashMap
 
 /**
  * 防双击点击监听器

@@ -11,7 +11,19 @@ import android.view.ViewGroup
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.GravityInt
 import androidx.core.graphics.Insets
-import androidx.core.view.*
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnPreDraw
+import androidx.core.view.marginBottom
+import androidx.core.view.marginEnd
+import androidx.core.view.marginLeft
+import androidx.core.view.marginRight
+import androidx.core.view.marginStart
+import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMargins
+import androidx.core.view.updateMarginsRelative
+import androidx.core.view.updatePadding
+import androidx.core.view.updatePaddingRelative
 import io.github.chenfei0928.util.contains
 
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.JELLY_BEAN_MR1)

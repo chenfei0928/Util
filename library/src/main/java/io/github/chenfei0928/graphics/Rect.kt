@@ -6,7 +6,11 @@ package io.github.chenfei0928.graphics
 
 import android.graphics.RectF
 import androidx.annotation.FloatRange
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * 根据指定圆心和半径，生成圆的范围，以供绘制

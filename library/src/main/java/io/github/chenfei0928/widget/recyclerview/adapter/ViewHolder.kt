@@ -4,11 +4,20 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.view.View
-import androidx.annotation.*
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import org.jetbrains.anko.*
+import org.jetbrains.anko.dimen
+import org.jetbrains.anko.dimenF
+import org.jetbrains.anko.dip
+import org.jetbrains.anko.dipF
+import org.jetbrains.anko.sp
+import org.jetbrains.anko.spF
 
 /**
  * User: ChenFei(chenfei0928@gmail.com)

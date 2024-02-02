@@ -3,7 +3,7 @@ package io.github.chenfei0928.util
 import android.os.SystemClock
 import androidx.annotation.IntRange
 import io.github.chenfei0928.collection.sumByLong
-import java.util.*
+import java.util.LinkedList
 
 /**
  * 秒表，提供恢复计时、暂停计时、获取当前计时时间

@@ -1,6 +1,10 @@
 package io.github.chenfei0928.widget
 
-import android.animation.*
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.PointF
 import android.graphics.drawable.Drawable
@@ -8,11 +12,15 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.*
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.Interpolator
+import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import io.github.chenfei0928.animation.BezierEvaluator
-import java.util.*
+import java.util.Random
 
 /**
  * [来源博客](https://blog.csdn.net/u010302765/article/details/70843831)

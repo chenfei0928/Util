@@ -26,7 +26,8 @@ import com.drakeet.multitype.MultiTypeAdapter
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2023-03-01 18:09
  */
-abstract class FragmentBinder<T> : ItemViewDelegate<T, MultiTypeFragmentViewHolder<T>>(), StatefulAdapter {
+abstract class FragmentBinder<T> : ItemViewDelegate<T, MultiTypeFragmentViewHolder<T>>(),
+    StatefulAdapter {
 
     //<editor-fold desc="不使用的父类方法和Adapter接口访问" defaultstatus="collapsed">
     val fragmentAdapter: FragmentStateMultiTypeAdapter
@@ -77,7 +78,10 @@ abstract class FragmentBinder<T> : ItemViewDelegate<T, MultiTypeFragmentViewHold
         mFragmentMaxLifecycleEnforcer = null
     }
 
-    override fun onCreateViewHolder(context: Context, parent: ViewGroup): MultiTypeFragmentViewHolder<T> {
+    override fun onCreateViewHolder(
+        context: Context,
+        parent: ViewGroup
+    ): MultiTypeFragmentViewHolder<T> {
         return MultiTypeFragmentViewHolder.create(parent)
     }
 

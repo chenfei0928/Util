@@ -2,7 +2,13 @@ package io.github.chenfei0928.util.gson
 
 import android.util.SparseArray
 import androidx.core.util.forEach
-import com.google.gson.*
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonNull
+import com.google.gson.JsonObject
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 

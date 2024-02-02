@@ -3,10 +3,17 @@ package io.github.chenfei0928.util.gson
 import android.os.Build
 import android.util.SparseArray
 import android.util.SparseLongArray
-import com.google.gson.*
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.InstanceCreator
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonSerializer
+import com.google.gson.TypeAdapter
 import io.github.chenfei0928.reflect.typeOf
 import java.io.Reader
-import java.util.*
+import java.util.BitSet
 
 inline fun <reified T> Gson.fromJson(json: Reader): T? = fromJson(json, typeOf<T>())
 

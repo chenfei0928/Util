@@ -3,7 +3,7 @@ package io.github.chenfei0928.util
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import java.util.*
+import java.util.WeakHashMap
 
 /**
  * 提供基于Context来获取缓存数据，在Activity的范围内保持缓存

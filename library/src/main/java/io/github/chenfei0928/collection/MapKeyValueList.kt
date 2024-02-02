@@ -1,6 +1,6 @@
 package io.github.chenfei0928.collection
 
-import java.util.*
+import java.util.AbstractList
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)

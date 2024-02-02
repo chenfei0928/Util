@@ -4,7 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import io.github.chenfei0928.concurrent.ExecutorUtil
-import java.util.*
+import java.util.WeakHashMap
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)

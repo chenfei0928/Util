@@ -5,7 +5,7 @@ import android.os.Build
 import io.github.chenfei0928.util.Log
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
+import java.util.Locale
 
 private const val TAG = "KW_Bitmap"
 

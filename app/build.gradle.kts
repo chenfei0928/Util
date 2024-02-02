@@ -22,14 +22,21 @@ android {
 
     buildFeatures {
         buildConfig = true
+        viewBinding = true
     }
 }
 
 dependencies {
     implementation(DepsAndroidx.appcompat)
+    implementation(DepsAndroidx.constraintlayout.layout)
     implementation(DepsAndroidx.multidex.core)
 
-    implementation(Deps.lib.util) {
-        isChanging = "SNAPSHOT" in version.toString()
-    }
+    implementation(Deps.widget.recyclerView.multiType)
+
+    implementation(Deps.lib.xxPermission)
+    implementation("com.jaredrummler:android-processes:1.1.1")
+//    implementation(Deps.lib.util) {
+//        isChanging = "SNAPSHOT" in version.toString()
+//    }
+    implementation(projects.library)
 }

@@ -126,8 +126,8 @@ public class ParameterizedTypeReflect0 {
      * @param parentClass     声明数组约束的父类类实例
      * @param finalChildClass 最终子类类实例
      * @param arrayType       父类的数组范型约束实现 XXX[]
-     * @param <P>        声明数组约束的父类类型
-     * @param <C>         子类类型
+     * @param <P>             声明数组约束的父类类型
+     * @param <C>             子类类型
      * @param <R>             父类类声明的范型类型
      * @return 子类实现的范型约束范围
      */
@@ -196,8 +196,8 @@ public class ParameterizedTypeReflect0 {
      * @param parentClass               声明数组约束的父类类实例
      * @param finalChildClass           最终子类类实例
      * @param typeVariableInParentClass 父类实现的数组范型约束元素的范型约束声明 R
-     * @param <P>                  声明数组约束的父类类型
-     * @param <C>                   子类类型
+     * @param <P>                       声明数组约束的父类类型
+     * @param <C>                       子类类型
      * @param <R>                       父类类声明的范型类型
      * @return 子类实现的范型约束范围
      */

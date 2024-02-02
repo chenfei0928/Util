@@ -31,5 +31,5 @@ abstract class PaintDrawable : Drawable() {
     }
 
     override fun getOpacity(): Int =
-            PixelFormat.TRANSLUCENT
+        PixelFormat.TRANSLUCENT
 }

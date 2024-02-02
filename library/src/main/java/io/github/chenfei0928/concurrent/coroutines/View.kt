@@ -8,7 +8,7 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import java.util.*
+import java.util.WeakHashMap
 import kotlin.coroutines.CoroutineContext
 
 /**
