@@ -91,7 +91,7 @@ fun Project.applyKotlin(
         implementation("org.jetbrains.kotlin:kotlin-parcelize-runtime:$kotlinPluginVersion")
         // 协程库
         // https://github.com/Kotlin/kotlinx.coroutines
-        val coroutinesVersion = "1.7.3"
+        val coroutinesVersion = "1.8.0"
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
         // Kotlin官方解决方案，需要在Kotlin协程库在入前调用 System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
         // https://github.com/Kotlin/kotlinx.coroutines/blob/master/docs/topics/debugging.md

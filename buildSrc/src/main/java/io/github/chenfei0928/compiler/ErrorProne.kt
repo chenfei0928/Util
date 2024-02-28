@@ -25,7 +25,7 @@ fun Project.applyErrorProne() {
     }
 
     dependencies {
-        add("errorprone", "com.google.errorprone:error_prone_core:2.22.0")
-        compileOnly("com.google.errorprone:error_prone_core:2.22.0")
+        add("errorprone", "com.google.errorprone:error_prone_core:2.25.0")
+        compileOnly("com.google.errorprone:error_prone_core:2.25.0")
     }
 }

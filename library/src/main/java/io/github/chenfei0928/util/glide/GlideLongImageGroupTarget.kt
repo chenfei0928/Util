@@ -73,20 +73,16 @@ abstract class GlideLongImageGroupTarget(
     private fun splitBitmaps(resource: File): List<Bitmap> {
         // 只进行获取尺寸的解码以获取其高度
         val height = run {
-            val config = BitmapFactory
-                .Options()
-                .apply {
-                    inJustDecodeBounds = false
-                }
+            val config = BitmapFactory.Options().apply {
+                inJustDecodeBounds = false
+            }
             BitmapFactory.decodeFile(resource.absolutePath, config)
             config.outHeight
         }
         // 解码的bitmapConfig
-        val bitmapOptions = BitmapFactory
-            .Options()
-            .apply {
-                this.inPreferredConfig = this@GlideLongImageGroupTarget.inPreferredConfig
-            }
+        val bitmapOptions = BitmapFactory.Options().apply {
+            this.inPreferredConfig = this@GlideLongImageGroupTarget.inPreferredConfig
+        }
         // 对单页高度分页显示，超出部分独立一页
         val page = height / pageHeight + if (height % pageHeight > 0) 1 else 0
         return if (page == 1) {
@@ -112,11 +108,9 @@ abstract class GlideLongImageGroupTarget(
                 // 如果解码方式是硬件加速，将其取消（硬件加速bitmap在裁剪时将会由硬件负责渲染和裁切，也会遇到pageHeight限制问题）
                 val bitmapOptions =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bitmapOptions.inPreferredConfig == Bitmap.Config.HARDWARE) {
-                        BitmapFactory
-                            .Options()
-                            .apply {
-                                inPreferredConfig = Bitmap.Config.ARGB_8888
-                            }
+                        BitmapFactory.Options().apply {
+                            inPreferredConfig = Bitmap.Config.ARGB_8888
+                        }
                     } else {
                         bitmapOptions
                     }
