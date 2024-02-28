@@ -5,12 +5,16 @@
 package io.github.chenfei0928.util
 
 import io.github.chenfei0928.Contract
-import io.github.chenfei0928.bean.AssembleTaskInfo
-import org.gradle.api.*
+import io.github.chenfei0928.bean.TaskInfo
+import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.kotlin.dsl.DependencyHandlerScope
-import java.util.*
+import java.util.Locale
+import java.util.regex.Pattern
 
 internal fun <Android : com.android.build.gradle.BaseExtension> Project.buildSrcAndroid(
     configure: Action<Android>
@@ -82,64 +86,82 @@ internal fun <BuildTypeT : com.android.build.api.dsl.BuildType> NamedDomainObjec
 
 //<editor-fold defaultstate="collapsed" desc="遍历打包的assembleTask任务" >
 /**
- * 对每个`assemble`开头的任务进行处理，在[Projrct.afterEvaluate]中执行，此时已生成task，
+ * 对每个`assemble`开头的任务进行处理，在[Project.afterEvaluate]中执行，此时已生成task，
  * 这些任务是由Android Gradle Plugin产生的编译任务
  */
-internal fun Project.forEachAssembleTasks(block: (assembleTask: Task, taskInfo: AssembleTaskInfo) -> Unit) {
-    val buildTypeNames = mutableListOf<String>()
+internal fun Project.forEachAssembleTasks(
+    block: (assembleTask: Task, taskInfo: TaskInfo) -> Unit
+) = forEachTasks(
+    "assemble${Contract.DIMENSIONED_FLAVOR_AND_BUILD_TYPE}".toPattern(),
+    Task::class.java,
+    block
+)
 
-    buildSrcAndroid<com.android.build.gradle.AppExtension> {
-        // 读取所有buildTypes
-        buildTypes.forEach {
-            buildTypeNames.add(it.name)
+internal fun <TaskType : Task> Project.forEachTasks(
+    taskNamePattern: Pattern,
+    taskType: Class<TaskType>,
+    block: (task: TaskType, taskInfo: TaskInfo) -> Unit,
+) {
+    val appExtension = buildSrcAndroid<com.android.build.gradle.AppExtension>()
+    // 读取所有buildTypes
+    val buildTypeNames by lazy {
+        appExtension.buildTypes.map { it.name }
+    }
+    val flavorDimensions by lazy {
+        appExtension.flavorDimensionList.toList()
+    }
+    val dimensionNameMap by lazy {
+        val dimensionNameMap = flavorDimensions.associateWith { ArrayList<String>() }
+        appExtension.productFlavors.forEach {
+            dimensionNameMap[it.dimension]?.add(it.name)
         }
+        dimensionNameMap
     }
 
     tasks.all {
-        // 只对 assemble[DimensionedFlavorName][BuildType] 的编译任务进行处理
-        val targetTaskName = name
-        if (!targetTaskName.startsWith(Contract.ASSEMBLE_TASK_PREFIX)) {
+        if (!taskType.isInstance(this)) {
             return@all
         }
+        // 只对任务名匹配的任务进行处理
+        val targetTaskName = name
+        val matcher = taskNamePattern.matcher(targetTaskName)
+        if (!matcher.find()) {
+            return@all
+        }
+        val dimensionedFlavorBuildTypeName = matcher.group(1)
         // 只处理buildType为后缀的task，以过滤如美团Walle渠道包任务
         val buildType = buildTypeNames.find {
-            targetTaskName.endsWith(it, true)
+            dimensionedFlavorBuildTypeName.endsWith(it, true)
         } ?: return@all
         // 当前task的flavor名或空字符串（全flavor编译）
-        val dimensionedFlavorName = targetTaskName
-            .substring(
-                Contract.ASSEMBLE_TASK_PREFIX.length,
-                targetTaskName.length - buildType.length
-            )
-            .decapitalize(Locale.ROOT)
-
-        // 对assemble编译任务进行处理
-        block(this, AssembleTaskInfo(dimensionedFlavorName, buildType))
-        // 校验全渠道包任务
-        if (dimensionedFlavorName.isEmpty()) {
-            // 校验一下该全渠道包的task和依赖列表
-            // 全渠道包的task只会包含所有同 buildType 的编译task
-            this.dependsOn.flatMap { depend ->
-                when (depend) {
-                    is Collection<*> -> depend.map {
-                        (it as? Named)?.name ?: it?.javaClass.toString()
-                    }
-                    is Task -> listOf(depend.name)
-                    else -> listOf(depend?.javaClass.toString())
+        val dimensionedFlavorName = dimensionedFlavorBuildTypeName
+            .substring(0, dimensionedFlavorBuildTypeName.length - buildType.length)
+            .replaceFirstChar { it.lowercase(Locale.ROOT) }
+        val dimensionFlavorNames = run {
+            var localDimensionedFlavorName = dimensionedFlavorName
+            flavorDimensions.map { dimension ->
+                val name = dimensionNameMap[dimension]?.find { name ->
+                    localDimensionedFlavorName.startsWith(name, true)
+                }?.also { name ->
+                    localDimensionedFlavorName =
+                        localDimensionedFlavorName.substring(
+                            name.length, localDimensionedFlavorName.length
+                        )
                 }
-            }.takeIf { dependsList ->
-                dependsList.find {
-                    !it.startsWith(Contract.ASSEMBLE_TASK_PREFIX)
-                            || !it.endsWith(buildType, true)
-                } != null
-            }?.let {
-                throw IllegalStateException("Task \"$targetTaskName\" depends tasks contains uncaught task, dependsOn $it.")
-            }
-            // 全渠道包的task不会拥有任何action，否则报错
-            if (this.actions.isNotEmpty()) {
-                throw IllegalStateException("Task \"$targetTaskName\" actions is not empty.")
+                dimension to name
             }
         }
+
+        // 对assemble编译任务进行处理
+        block(
+            taskType.cast(this),
+            TaskInfo(
+                dimensionFlavorNames,
+                dimensionedFlavorName,
+                buildType,
+                dimensionedFlavorBuildTypeName
+            )
+        )
     }
 }
 //</editor-fold>

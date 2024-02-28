@@ -38,6 +38,8 @@ object Contract {
      */
     internal const val ASSEMBLE_TASK_PREFIX = "assemble"
 
+    internal const val DIMENSIONED_FLAVOR_AND_BUILD_TYPE = "(\\w+)"
+
     /**
      * 混淆文件目录
      */
