@@ -27,7 +27,6 @@ fun Project.applyComponent() {
         aaptOptions {
             // 禁用cruncher, 以加速编译
             cruncherEnabled = false
-            cruncherProcesses = 0
         }
 
         compileOptions {

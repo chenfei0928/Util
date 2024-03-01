@@ -13,6 +13,8 @@ object Deps {
 
         // https://github.com/fengzhizi715/Lifecycle-Coroutines-Extension
         val coroutinesExt = "com.safframework.lifecycle:lifecycle-coroutine-ext:1.2.1"
+
+        val test: String = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
     }
     //</editor-fold>
 

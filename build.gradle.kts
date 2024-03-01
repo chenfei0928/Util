@@ -2,5 +2,5 @@
 io.github.chenfei0928.Env.reload(gradle)
 
 tasks.register<Delete>("clean") {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }

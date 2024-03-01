@@ -2,7 +2,11 @@ package io.github.chenfei0928.android
 
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.Env
-import io.github.chenfei0928.util.*
+import io.github.chenfei0928.util.buildSrcAndroid
+import io.github.chenfei0928.util.debug
+import io.github.chenfei0928.util.prerelease
+import io.github.chenfei0928.util.qatest
+import io.github.chenfei0928.util.release
 import org.gradle.api.Project
 import java.io.File
 
@@ -83,7 +87,6 @@ fun Project.applyApp() {
         aaptOptions {
             // 禁用cruncher, 以加速编译
             cruncherEnabled = false
-            cruncherProcesses = 0
         }
 
         compileOptions {

@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.gradle.internal.ParcelizeSubplugin
 import org.jetbrains.kotlin.gradle.plugin.KaptExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
+import org.jetbrains.kotlinx.serialization.gradle.SerializationGradleSubplugin
 
 /**
  * Kotlin语言、反射、协程配置
@@ -29,6 +30,7 @@ fun Project.applyKotlin(
     parcelize: Boolean = false,
     kapt: Boolean = false,
     ksp: Boolean = false,
+    json: Boolean = false,
 ) {
     apply<KotlinAndroidPluginWrapper>()
     if (parcelize) {
@@ -39,6 +41,9 @@ fun Project.applyKotlin(
     }
     if (ksp) {
         apply<KspGradleSubplugin>()
+    }
+    if (json) {
+        apply<SerializationGradleSubplugin>()
     }
 
     buildSrcAndroid<com.android.build.gradle.BaseExtension> {
@@ -58,8 +63,8 @@ fun Project.applyKotlin(
             resources.excludes += "com/sun/jna/**"
             // for byte-buddy
             resources.excludes += "META-INF/licenses/ASM"
-            resources.pickFirsts += "win32-x86-64/**"
-            resources.pickFirsts += "win32-x86/**"
+            resources.excludes += "win32-x86-64/**"
+            resources.excludes += "win32-x86/**"
         }
 
         (this as ExtensionAware).buildSrcKotlinOptions {
@@ -89,6 +94,11 @@ fun Project.applyKotlin(
         implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinPluginVersion")
         // Parcelable序列化支持
         implementation("org.jetbrains.kotlin:kotlin-parcelize-runtime:$kotlinPluginVersion")
+        // Json序列化支持
+        // https://github.com/Kotlin/kotlinx.serialization
+        if (json) {
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+        }
         // 协程库
         // https://github.com/Kotlin/kotlinx.coroutines
         val coroutinesVersion = "1.8.0"

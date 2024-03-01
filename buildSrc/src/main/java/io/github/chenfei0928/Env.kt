@@ -40,6 +40,8 @@ object Env {
      */
     internal val containsReleaseBuild: Boolean
         get() = impl.containsReleaseBuild
+    internal val launchTimestamp: Date
+        get() = impl.launchTimestamp
     internal val agpVersion: String
         get() = impl.agpVersion
     val vcsCommitId: String
@@ -53,6 +55,7 @@ object Env {
     private class EnvImpl(
         val containsReleaseBuild: Boolean,
     ) {
+        val launchTimestamp = Date()
 
         /**
          * [com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION]

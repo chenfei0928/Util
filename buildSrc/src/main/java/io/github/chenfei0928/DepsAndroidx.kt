@@ -25,6 +25,7 @@ object DepsAndroidx {
     // https://dl.google.com/dl/android/maven2/androidx/fragment/fragment/maven-metadata.xml
     const val fragment = "androidx.fragment:fragment:1.6.1"
     const val fragmentKtx = "androidx.fragment:fragment-ktx:1.6.1"
+    const val fragmentTest = "androidx.fragment:fragment-testing:1.6.2"
 
     // https://dl.google.com/dl/android/maven2/androidx/appcompat/appcompat/maven-metadata.xml
     const val appcompat = "androidx.appcompat:appcompat:1.6.1"

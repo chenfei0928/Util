@@ -14,12 +14,14 @@ dependencies {
     val kotlinVersion = "1.9.22"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "8.2.2"
+    val agpVersion = "8.3.0"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
+    implementation(kotlin("reflect", kotlinVersion))
     implementation(kotlin("gradle-plugin", kotlinVersion))
     implementation(kotlin("gradle-plugin-api", kotlinVersion))
     implementation(kotlin("android-extensions", kotlinVersion))
+    implementation(kotlin("serialization", kotlinVersion))
     // Kotlin Symbol Processing 符号处理器编译器插件，需伴随Kotlin版本一同升级
     // https://github.com/google/ksp
     implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.17")

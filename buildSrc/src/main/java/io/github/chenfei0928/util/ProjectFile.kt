@@ -12,10 +12,10 @@ internal val Project.mappingFileSaveDir: File
     get() = projectDir.child { Contract.mappingFileSaveDirName }
 
 internal val Project.buildOutputsDir: File
-    get() = buildDir.child { Contract.outputs }
+    get() = layout.buildDirectory.child { Contract.outputs }
 
 internal val Project.tmpProguardFilesDir: File
-    get() = buildDir.child { "tmp" / Contract.PROGUARD_FILES_DIR }
+    get() = layout.buildDirectory.child { "tmp" / Contract.PROGUARD_FILES_DIR }
 
 internal fun Project.writeTmpProguardFile(fileName: String, content: String): File {
     return tmpProguardFilesDir.child {

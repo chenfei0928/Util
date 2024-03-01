@@ -86,7 +86,6 @@ fun Project.applyCommon(appendBuildConfig: Boolean = true) {
         // Debug时禁用PNG优化
         aaptOptions {
             cruncherEnabled = io.github.chenfei0928.Env.containsReleaseBuild
-            cruncherProcesses = 0
         }
 
         compileOptions {
