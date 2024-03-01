@@ -34,6 +34,9 @@ dependencies {
     implementation("com.android.tools.build:gradle-api:$agpVersion")
 
     // 代码工具类库插件
+    // GreenDao数据库
+    // https://github.com/greenrobot/greenDAO
+    implementation("org.greenrobot:greendao-gradle-plugin:3.3.0")
     // 反射
     // https://github.com/jOOQ/jOOR
     implementation("org.jooq:joor:0.9.14")
@@ -45,11 +48,42 @@ dependencies {
     // https://github.com/alibaba/ARouter/blob/master/README_CN.md
     // https://github.com/jadepeakpoet/ARouter
     implementation("com.github.jadepeakpoet.ARouter:arouter-register:1.0.3")
+    // https://github.com/didi/DRouter#%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3
+    implementation("io.github.didi:drouter-plugin:1.4.0")
 
     // 参与编译打包流程，但不参与代码编写
+    // https://github.com/iwhys/sdk-editor-plugin
+    implementation("com.github.iwhys:sdk-editor-plugin:1.1.7")
+    // 字符串混淆工具，用于加密应用内appKey
+    // https://github.com/MichaelRocks/paranoid
+    implementation("io.michaelrocks:paranoid-gradle-plugin:0.3.7")
+    // 使用 mavenLocal aar 加速编译
+    // https://github.com/trycatchx/RocketXPlugin
+    implementation("io.github.trycatchx:rocketx:1.1.1")
+    // DEX控制流混淆
+    // https://github.com/CodingGay/BlackObfuscator-ASPlugin
+    implementation("com.github.CodingGay:BlackObfuscator-ASPlugin:3.6")
     // 增加 protobuf-gradle-plugin 插件
     // https://github.com/google/protobuf-gradle-plugin
     implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
+    // 美团打包工具
+    // https://github.com/Meituan-Dianping/walle
+    implementation("com.meituan.android.walle:plugin:1.1.7")
+    // https://github.com/google/guava
+    implementation("com.google.guava:guava:31.1-jre")
+    // 腾讯Bugly混淆表上传工具
+    // https://bugly.qq.com/docs/utility-tools/plugin-gradle-bugly/
+    // https://repo1.maven.org/maven2/com/tencent/bugly/symtabfileuploader/
+//    implementation("com.tencent.bugly:symtabfileuploader:2.2.1")
+    // 腾讯补丁包工具
+    // https://github.com/Tencent/tinker
+    implementation("com.tencent.tinker:tinker-patch-gradle-plugin:1.9.14.25.1")
+    implementation("com.tencent.tinker:tinker-patch-lib:1.9.14.25.1") {
+        exclude(group = "com.google.guava")
+    }
+    // 操作系统和硬件架构判断工具，tinker依赖
+    // https://github.com/google/osdetector-gradle-plugin
+    implementation("com.google.gradle:osdetector-gradle-plugin:1.7.3")
 
     // https://github.com/bintray/gradle-bintray-plugin
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")

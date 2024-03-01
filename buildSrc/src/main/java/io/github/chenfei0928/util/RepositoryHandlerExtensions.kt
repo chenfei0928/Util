@@ -59,6 +59,9 @@ internal fun DependencyHandlerScope.annotationProcessor(dependencyNotation: Any)
 fun DependencyHandlerScope.kapt(dependencyNotation: Any): Dependency? =
     add("kapt", dependencyNotation)
 
+fun DependencyHandlerScope.ksp(dependencyNotation: Any): Dependency? =
+    add("ksp", dependencyNotation)
+
 fun <T : ModuleDependency> T.excludeDep(dep: String): T =
     exclude(dep.split(":").let {
         mapOf("group" to it[0], "module" to it[1])

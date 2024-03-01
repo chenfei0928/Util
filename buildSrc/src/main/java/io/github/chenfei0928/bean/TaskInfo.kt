@@ -1,5 +1,7 @@
 package io.github.chenfei0928.bean
 
+import java.util.Locale
+
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -19,4 +21,9 @@ internal data class TaskInfo(
      * 首字母大写的变体名
      */
     val dimensionedFlavorBuildTypeName: String,
-)
+) {
+    val targetFlavorBuildTypeVariantName =
+        dimensionedFlavorName + buildType.replaceFirstChar {
+            if (it.isLowerCase()) it.toString() else it.lowercase(Locale.ROOT)
+        }
+}

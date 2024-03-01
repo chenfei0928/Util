@@ -1,5 +1,6 @@
 package io.github.chenfei0928
 
+import io.github.chenfei0928.data.ProtobufType
 import io.github.chenfei0928.util.RuntimeExecProperty
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.logging.Logger
@@ -17,8 +18,9 @@ object Env {
      * buildSrc中创建的有关编译的task，需要在task名中包含其flavors和buildType名。
      *
      * @param gradle Gradle环境实例
+     * @param protobufType 工程中所用protobuf编译目标类型
      */
-    fun reload(gradle: Gradle) {
+    fun reload(gradle: Gradle, protobufType: ProtobufType) {
         // 从启动任务中寻找是否含有Release/QaTest编译的task
         val containsReleaseBuild: Boolean = gradle.startParameter.taskRequests
             .flatMap { it.args }
@@ -30,7 +32,7 @@ object Env {
                 } != null
             } != null
         // 创建impl
-        impl = EnvImpl(containsReleaseBuild)
+        impl = EnvImpl(containsReleaseBuild, protobufType)
         logger.lifecycle("Env环境初始化：$containsReleaseBuild")
     }
 
@@ -40,6 +42,8 @@ object Env {
      */
     internal val containsReleaseBuild: Boolean
         get() = impl.containsReleaseBuild
+    internal val protobufType: ProtobufType
+        get() = impl.protobufType
     internal val launchTimestamp: Date
         get() = impl.launchTimestamp
     internal val agpVersion: String
@@ -54,6 +58,7 @@ object Env {
     //<editor-fold defaultstate="collapsed" desc="读取工程目录信息和运行时信息的实现，以便使用">
     private class EnvImpl(
         val containsReleaseBuild: Boolean,
+        val protobufType: ProtobufType,
     ) {
         val launchTimestamp = Date()
 
