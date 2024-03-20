@@ -8,8 +8,8 @@ import android.graphics.ColorFilter
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.util.R
+import io.github.chenfei0928.view.OutlineType
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -71,27 +71,11 @@ class BorderImageView
             width - paddingRight.toFloat() - borderWidth / 2,
             height - paddingBottom.toFloat() - borderWidth / 2
         )
-        when {
-            clipToBackground -> {
-                Log.w(TAG, "draw: clipToBackground 时不支持绘制边框")
-            }
-            isOval -> {
-                // 圆/椭圆形
-                canvas.drawOval(rectF, mBorderPaint)
-            }
-            cornerRadius != DEFAULT_RADIUS -> {
-                // 四圆角同等半径
-                canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, mBorderPaint)
-            }
-            else -> {
-                // 绘制矩形
-                canvas.drawRect(rectF, mBorderPaint)
-            }
-        }
+        val provider = outlineProvider as? OutlineType
+        provider?.drawBorder(canvas, mBorderPaint, rectF)
     }
 
     companion object {
-        private const val TAG = "KW_BorderImageView"
         const val DEFAULT_BORDER_COLOR = Color.BLACK
     }
 }

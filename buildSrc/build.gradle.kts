@@ -11,7 +11,7 @@ tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
 
 dependencies {
     // https://github.com/JetBrains/kotlin
-    val kotlinVersion = "1.9.22"
+    val kotlinVersion = "1.9.23"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
     val agpVersion = "8.3.0"
@@ -24,7 +24,7 @@ dependencies {
     implementation(kotlin("serialization", kotlinVersion))
     // Kotlin Symbol Processing 符号处理器编译器插件，需伴随Kotlin版本一同升级
     // https://github.com/google/ksp
-    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.17")
+    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.19")
     implementation(gradleApi())
 
     implementation(localGroovy())

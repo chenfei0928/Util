@@ -1,12 +1,16 @@
 package io.github.chenfei0928.view
 
+import android.graphics.Canvas
 import android.graphics.Outline
+import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.view.View
 import android.view.ViewOutlineProvider
+import io.github.chenfei0928.util.Log
 
 /**
  * 通过outline实现对View进行圆角、圆形显示的支持，只支持5.0及以上系统。
@@ -21,10 +25,24 @@ import android.view.ViewOutlineProvider
  * @date 2024-01-26 17:38
  */
 sealed class OutlineType : ViewOutlineProvider() {
+
+    /**
+     * 绘制边线
+     *
+     * @param canvas
+     * @param paint
+     * @param rectF
+     */
+    abstract fun drawBorder(canvas: Canvas, paint: Paint, rectF: RectF)
+
     /**
      * 裁剪到圆形
      */
     data object Oval : OutlineType() {
+        override fun drawBorder(canvas: Canvas, paint: Paint, rectF: RectF) {
+            canvas.drawOval(rectF, paint)
+        }
+
         override fun getOutline(view: View, outline: Outline) {
             outline.setOval(
                 view.paddingLeft,
@@ -39,6 +57,10 @@ sealed class OutlineType : ViewOutlineProvider() {
      * 根据[getBackground]的[Drawable.getOutline]裁剪
      */
     data object Background : OutlineType() {
+        override fun drawBorder(canvas: Canvas, paint: Paint, rectF: RectF) {
+            Log.w(TAG, "drawBorder: clipToBackground 时不支持绘制边框")
+        }
+
         override fun getOutline(view: View?, outline: Outline?) {
             BACKGROUND.getOutline(view, outline)
         }
@@ -52,6 +74,10 @@ sealed class OutlineType : ViewOutlineProvider() {
     data class SameCornerRadius(
         var cornerRadius: Float
     ) : OutlineType() {
+        override fun drawBorder(canvas: Canvas, paint: Paint, rectF: RectF) {
+            canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint)
+        }
+
         override fun getOutline(view: View, outline: Outline) {
             outline.setRoundRect(
                 view.paddingLeft,
@@ -70,6 +96,10 @@ sealed class OutlineType : ViewOutlineProvider() {
      */
     open class PathType : OutlineType() {
         val path: Path = Path()
+
+        override fun drawBorder(canvas: Canvas, paint: Paint, rectF: RectF) {
+            canvas.drawPath(path, paint)
+        }
 
         override fun getOutline(view: View, outline: Outline) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -117,5 +147,9 @@ sealed class OutlineType : ViewOutlineProvider() {
             block(view, path)
             super.getOutline(view, outline)
         }
+    }
+
+    companion object {
+        private const val TAG = "OutlineType"
     }
 }
