@@ -1,8 +1,15 @@
 package io.github.chenfei0928.app.fragment
 
+import android.app.Dialog
 import android.os.Bundle
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import io.github.chenfei0928.concurrent.coroutines.showWithAwaitDismiss
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 fun Fragment.isVisibleForUser(): Boolean {
     return activity?.lifecycle?.currentState == Lifecycle.State.RESUMED
@@ -66,4 +73,17 @@ fun <T> Fragment.findParentByType(clazz: Class<T>): T? {
         return clazz.cast(activity)
     }
     return null
+}
+
+/**
+ * 等待指定fragment销毁，通常可以用于[DialogFragment]的showAndAwait功能
+ */
+suspend fun LifecycleOwner.awaitDestroy() {
+    suspendCancellableCoroutine { continuation ->
+        lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY && continuation.isActive) {
+                continuation.resume(Unit)
+            }
+        })
+    }
 }
