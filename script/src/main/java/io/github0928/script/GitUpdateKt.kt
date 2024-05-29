@@ -5,9 +5,8 @@ import kotlinx.coroutines.coroutineScope
 import java.io.Closeable
 import java.io.File
 import java.io.IOException
+import java.lang.Runtime.Version
 import java.util.Collections
-import java.util.function.Consumer
-import java.util.stream.Collectors
 
 suspend fun main(args: Array<String>) {
     GitUpdateKt().main(args)
@@ -69,15 +68,9 @@ class GitUpdateKt {
         }
         // 更新所有本地分支
         gitDir.reCalculateLocalBranch()
-        gitDir.localBranch.forEach(Consumer { branch: String ->
-            try {
-                syncGitSomeoneBranch(gitDir, branch)
-            } catch (e: IOException) {
-                throw RuntimeException(e)
-            } catch (e: InterruptedException) {
-                throw RuntimeException(e)
-            }
-        })
+        gitDir.localBranch.forEach { branch ->
+            syncGitSomeoneBranch(gitDir, branch)
+        }
 
         // 更新当前分支
         syncGitCurrentBranch(gitDir)
@@ -110,12 +103,8 @@ class GitUpdateKt {
 
     companion object {
         fun File.runCommand(vararg command: String): Process {
-            return ProcessBuilder()
-                .command(*command)
-                .directory(this)
-                .redirectErrorStream(true)
-                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                .start()
+            return ProcessBuilder().command(*command).directory(this).redirectErrorStream(true)
+                .redirectOutput(ProcessBuilder.Redirect.INHERIT).start()
         }
 
         fun Process.lines(): ProcessLinesSequence = ProcessLinesSequence(this)
@@ -131,9 +120,20 @@ class GitUpdateKt {
 
     class ProcessLinesSequence(
         private val process: Process
-    ) : Sequence<String> by process.inputReader().lineSequence(), Closeable {
+    ) : Sequence<String> by process.inputLineSequence(), Closeable {
+
         override fun close() {
             process.destroy()
+        }
+
+        companion object {
+            private fun Process.inputLineSequence() =
+                if (Version.parse("17.0.0") >= Version.parse(System.getProperty("java.version"))) {
+                    // 此方法java17才被添加
+                    inputReader()
+                } else {
+                    inputStream.bufferedReader()
+                }.lineSequence()
         }
     }
 
@@ -149,17 +149,14 @@ class GitUpdateKt {
 
         // 读取本地分支
         @Throws(IOException::class)
-        private fun calculateLocalBranch() =
-            dir.runCommand("git", "branch").use {
-                inputReader().lines().use { reader ->
-                    // 替换当前分支
-                    reader.map {
-                        it.strip().replace("* ", "")
-                    }.filter {
-                        it.isNotEmpty()
-                    }.collect(Collectors.toSet())
-                }
-            }
+        private fun calculateLocalBranch() = dir.runCommand("git", "branch").lines().use { reader ->
+            // 替换当前分支
+            reader.map {
+                it.trim().replace("* ", "")
+            }.filter {
+                it.isNotEmpty()
+            }.toSet()
+        }
 
         @Throws(IOException::class, InterruptedException::class)
         private fun checkDefBranch(): Set<String> {
@@ -187,15 +184,13 @@ class GitUpdateKt {
             // 读取远程分支
             return dir.runCommand(
                 "git", "branch", "-r"
-            ).use {
+            ).lines().use { reader ->
                 // 过滤在已经映射到本地的分支
-                inputReader().lines().use { reader ->
-                    reader.map { obj: String ->
-                        obj.strip()
-                    }.filter { s: String ->
-                        !s.contains("->") && s.isNotEmpty()
-                    }.collect(Collectors.toSet())
-                }
+                reader.map { obj: String ->
+                    obj.trim()
+                }.filter { s: String ->
+                    !s.contains("->") && s.isNotEmpty()
+                }.toSet()
             }.filter { s: String ->
                 // 求差集
                 s.substringAfter('/') !in localBranch

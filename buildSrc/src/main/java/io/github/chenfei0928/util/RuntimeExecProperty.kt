@@ -30,8 +30,10 @@ constructor(
         return valueRef.get() ?: valueRef.updateAndGet {
             it ?: run {
                 val l = System.currentTimeMillis()
-                val result = Runtime.getRuntime().exec(cmdarray, envp, dir).use {
-                    inputStream.use { it.reader().readText().trim() }
+                val result = Runtime.getRuntime().exec(
+                    cmdarray, envp, dir
+                ).inputReader().use {
+                    it.readText().trim()
                 }
                 Env.logger.quiet("VCS ${property.name}: $result, time cost ${System.currentTimeMillis() - l} ms.")
                 when (property.returnType.classifier) {

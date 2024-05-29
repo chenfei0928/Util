@@ -85,7 +85,7 @@ fun AbsSpSaver.toPreferenceDataStore(
 
 private fun AbsSpSaver.findMutablePropertyField(property0: KMutableProperty0<*>): SpSaverPreferenceDataStore.Field<*> {
     val name = getPropertySpKeyName(property0)
-    var delegate = property0.getDelegate()
+    var delegate: Any? = property0.getDelegate()
     var defaultValue: Any? = null
     while (true) {
         when (delegate) {
@@ -101,14 +101,14 @@ private fun AbsSpSaver.findMutablePropertyField(property0: KMutableProperty0<*>)
                 delegate = delegate.saver
             }
             is AbsSpSaver.AbsSpDelegate<*> -> {
-                delegate as AbsSpSaver.AbsSpDelegate<Any?>
+                val localDelegate = delegate as AbsSpSaver.AbsSpDelegate<Any?>
                 return SpSaverPreferenceDataStore.Field(
                     name = name,
                     getter = {
-                        delegate.getValue(this, property0) ?: defaultValue
+                        localDelegate.getValue(this, property0) ?: defaultValue
                     },
                     setter = {
-                        delegate.setValue(this, property0, it)
+                        localDelegate.setValue(this, property0, it)
                     }
                 )
             }

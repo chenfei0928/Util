@@ -9,6 +9,7 @@ import io.github.chenfei0928.bean.DataInterface
  * @author chenf()
  * @date 2023-10-20 16:12
  */
+@Suppress("UNCHECKED_CAST")
 open class KI<E> {
     open val gsonTypeToken: TypeToken<E> = object : TypeToken<E>() {}
     open val eClass: Class<E> = Any::class.java as Class<E>
