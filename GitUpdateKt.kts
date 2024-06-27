@@ -123,12 +123,7 @@ class ProcessLinesSequence(
 
     companion object {
         private fun Process.inputLineSequence() =
-            if (Runtime.Version.parse("17.0.0") >= Runtime.Version.parse(System.getProperty("java.version"))) {
-                // 此方法java17才被添加
-                inputReader()
-            } else {
-                inputStream.bufferedReader()
-            }.lineSequence()
+            inputStream.bufferedReader().lineSequence()
     }
 }
 

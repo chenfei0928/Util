@@ -97,7 +97,7 @@ fun Project.applyKotlin(
         // Json序列化支持
         // https://github.com/Kotlin/kotlinx.serialization
         if (json) {
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
         }
         // 协程库
         // https://github.com/Kotlin/kotlinx.coroutines
