@@ -11,7 +11,7 @@ import androidx.lifecycle.LifecycleOwner
  * @author chenf()
  * @date 2024-06-27 17:24
  */
-class LiveListenerSet<T>(
+class LiveListeners<T>(
     private val map: MutableMap<T, Pair<LifecycleOwner, LifecycleEventObserver>?> = ArrayMap()
 ) : Set<T> {
     override val size: Int
@@ -33,7 +33,11 @@ class LiveListenerSet<T>(
         return map.containsKey(element)
     }
 
-    fun observe(owner: LifecycleOwner, element: T) {
+    fun observe(
+        owner: LifecycleOwner,
+        state: Lifecycle.State = Lifecycle.State.INITIALIZED,
+        element: T
+    ) {
         if (map.containsKey(element)) {
             return
         }
@@ -41,12 +45,18 @@ class LiveListenerSet<T>(
             // ignore
             return
         }
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_DESTROY) {
-                map.remove(element)
+        val observer = object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                if (owner.lifecycle.currentState >= state) {
+                    map[element] = owner to this
+                } else {
+                    map.remove(element)
+                }
             }
         }
-        map[element] = owner to observer
+        if (owner.lifecycle.currentState == state) {
+            map[element] = owner to observer
+        }
         owner.lifecycle.addObserver(observer)
     }
 
