@@ -21,6 +21,7 @@ import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.content.FileProviderUtil
 import io.github.chenfei0928.io.FileUtil
+import io.github.chenfei0928.os.getParcelableCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -63,7 +64,9 @@ class FileExportFragment : BaseFragment() {
             return
         }
         // 实例化内容写入器，解析参数
-        val writer = Class.forName(writerClassName).newInstance() as ContentValuesWriter
+        val writer = Class.forName(writerClassName)
+            .getDeclaredConstructor()
+            .newInstance() as ContentValuesWriter
         // 解析参数
         if (!writer.parseArg(this, bundle)) {
             removeSelfAndCallback()
@@ -81,11 +84,11 @@ class FileExportFragment : BaseFragment() {
     private fun parseArgSaveContentResolver(
         context: Context, bundle: Bundle, writer: ContentValuesWriter
     ) {
-        val uri = bundle.getParcelable<Uri>(KEY_CONTENT_TYPE) ?: run {
+        val uri = bundle.getParcelableCompat<Uri>(KEY_CONTENT_TYPE) ?: run {
             removeSelfAndCallback()
             return
         }
-        val contentValues = bundle.getParcelable<ContentValues>(KEY_CONTENT_VALUES) ?: run {
+        val contentValues = bundle.getParcelableCompat<ContentValues>(KEY_CONTENT_VALUES) ?: run {
             removeSelfAndCallback()
             return
         }

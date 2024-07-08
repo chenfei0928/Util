@@ -17,16 +17,16 @@ class TmpFileWriter : ContentValuesWriter {
 
     override fun parseArg(host: Fragment, arg: Bundle?): Boolean {
         super.parseArg(host, arg)
-        arg ?: return false
-        val tmpFilePath = arg.getString(TMP_FILE_PATH)
+        val tmpFilePath = arg?.getString(TMP_FILE_PATH)
             ?: return false
         tmpFile = File(tmpFilePath)
         // 检查文件是否存在
-        if (tmpFile.isDirectory || !tmpFile.exists()) {
-            return false
+        return if (tmpFile.isDirectory || !tmpFile.exists()) {
+            false
+        } else {
+            autoDeleteTmpFile = arg.getBoolean(AUTO_DELETE_TMP_FILE)
+            true
         }
-        autoDeleteTmpFile = arg.getBoolean(AUTO_DELETE_TMP_FILE)
-        return true
     }
 
     override fun write(outputStream: OutputStream) {

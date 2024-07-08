@@ -1,5 +1,6 @@
 package io.github.chenfei0928.widget.recyclerview
 
+import android.util.Log
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.recyclerview.widget.GridLayoutManager
@@ -15,6 +16,8 @@ import kotlin.math.min
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+
+private const val TAG = "KW_RecyclerView"
 
 fun RecyclerView.smoothScrollToTop() {
     smoothMoveToPosition(0)
@@ -76,12 +79,13 @@ fun RecyclerView.nearToPosition(targetPosition: Int, maxOffsetSize: Int = 5) {
                 val lastVisibleItem = getMethod("findLastVisibleItemPosition").invoke(lm) as Int
                 firstVisibleItem..lastVisibleItem
             }
-        } catch (e: Exception) {
+        } catch (e: NoSuchMethodException) {
+            Log.d(TAG, "nearToPosition: cannot find visible range ${lm.javaClass.name} $lm", e)
             0..Int.MAX_VALUE
         }
     }
     // 如果目标在可见范围外，先计算一个期望的列表滚动动画开始时的下标，防止动画滚动时间太长
-    when {
+    val scrollAnimationStartPosition = when {
         targetPosition < visibleRange.first -> {
             // 目标在当前列表展示范围之上
             // 实际测试时由上方向下方滑动时，该项目会在顶部。
@@ -95,14 +99,14 @@ fun RecyclerView.nearToPosition(targetPosition: Int, maxOffsetSize: Int = 5) {
             max(targetPosition - maxOffsetSize, visibleRange.last)
         }
         else -> {
+            // 目标在可见范围内，不处理直接返回
             return
         }
-    }.let { scrollAnimationStartPosition ->
-        // 如果计算出的动画开始时的下标在可见范围外，将列表滑动到滚动开始时的位置
-        if (scrollAnimationStartPosition !in visibleRange) {
-            // 文档说明为只负责滑动到指定位置，但该项目具体位置由LayoutManager实现
-            scrollToPosition(scrollAnimationStartPosition)
-        }
+    }
+    // 如果计算出的动画开始时的下标在可见范围外，将列表滑动到滚动开始时的位置
+    if (scrollAnimationStartPosition !in visibleRange) {
+        // 文档说明为只负责滑动到指定位置，但该项目具体位置由LayoutManager实现
+        scrollToPosition(scrollAnimationStartPosition)
     }
 }
 
@@ -135,7 +139,8 @@ class ViewHolderTagDelegate<R>(
  * 字段委托类，通过viewTag来实现为viewHolder扩展字段
  */
 class ViewHolderTagValDelegate<VH : RecyclerView.ViewHolder, R>(
-    @IdRes private val id: Int, private val creator: (VH) -> R
+    @IdRes private val id: Int,
+    private val creator: (VH) -> R
 ) : ReadOnlyProperty<VH, R> {
 
     override fun getValue(thisRef: VH, property: KProperty<*>): R {

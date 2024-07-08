@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import io.github.chenfei0928.content.IntentFilterBroadcastReceiver
+import io.github.chenfei0928.os.getParcelableExtraCompat
 import io.github.chenfei0928.reflect.asType
 
 /**
@@ -31,7 +32,7 @@ object ActivityInfoReceiver : IntentFilterBroadcastReceiver(
         lifecycleLiveData.removeObservers(owner)
 
     override fun onReceive(context: Context, intent: Intent) {
-        val activityInfo: ActivityInfo = intent.getParcelableExtra(
+        val activityInfo: ActivityInfo = intent.getParcelableExtraCompat(
             ProcessActivityLifecycleCallbackSender.ACTIVITY_INFO
         ) ?: return
 

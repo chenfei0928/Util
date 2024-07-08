@@ -37,10 +37,10 @@ abstract class BaseObservableTwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>(
      */
     private val Bean.viewObservable: ObservableBindToViewHolderCallback<Bean, VH>
             by object : BeanExtValDelegate<Bean, ObservableBindToViewHolderCallback<Bean, VH>>() {
-
                 override fun create(thisRef: Bean): ObservableBindToViewHolderCallback<Bean, VH> {
-                    val observable =
-                        ObservableBindToViewHolderCallback(this@BaseObservableTwoWayLayoutBinder)
+                    val observable = ObservableBindToViewHolderCallback(
+                        this@BaseObservableTwoWayLayoutBinder
+                    )
                     this@BaseObservableTwoWayLayoutBinder.setBeanPropertyChangedNeedViewUpdateCallback(
                         thisRef, observable
                     )

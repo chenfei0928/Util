@@ -34,7 +34,7 @@ class GravityCropTransformation(
         val width = if (width == 0) outWidth else width
         val height = if (height == 0) outHeight else height
 
-        val bitmap = pool[width, height, toTransform.config ?: Bitmap.Config.ARGB_8888]
+        val bitmap = pool[width, height, toTransform.config]
         bitmap.setHasAlpha(true)
 
         val targetRect = run {
@@ -60,15 +60,20 @@ class GravityCropTransformation(
         val isVertical = Gravity.isVertical(gravity)
         val scaleX = dest.width.toFloat() / src.width
         val scaleY = dest.height.toFloat() / src.height
-        return if (isHorizontal && isVertical) {
-            maxOf(scaleX, scaleY)
-        } else if (isHorizontal) {
-            scaleY
-        } else if (isVertical) {
-            scaleX
-        } else {
-            Log.i(TAG, "getScale: ${Companion.toString(gravity)}")
-            maxOf(scaleX, scaleY)
+        return when {
+            isHorizontal && isVertical -> {
+                maxOf(scaleX, scaleY)
+            }
+            isHorizontal -> {
+                scaleY
+            }
+            isVertical -> {
+                scaleX
+            }
+            else -> {
+                Log.i(TAG, "getScale: ${Companion.toString(gravity)}")
+                maxOf(scaleX, scaleY)
+            }
         }
     }
 
@@ -167,7 +172,7 @@ class GravityCropTransformation(
                     result.append("CENTER_HORIZONTAL").append(' ')
                 }
             }
-            if (result.length == 0) {
+            if (result.isEmpty()) {
                 result.append("NO GRAVITY").append(' ')
             }
             if (gravity and Gravity.DISPLAY_CLIP_VERTICAL == Gravity.DISPLAY_CLIP_VERTICAL) {

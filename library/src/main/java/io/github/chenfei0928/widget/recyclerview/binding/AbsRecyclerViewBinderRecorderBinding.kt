@@ -33,7 +33,8 @@ abstract class AbsRecyclerViewBinderRecorderBinding<LP : LayoutParams<*>>(
     protected fun <T> MultiTypeAdapter.registerWithTypeRecorderMap(
         type: Class<T>, binders: Array<ItemViewDelegate<T, *>>
     ) {
-        @Suppress("UNCHECKED_CAST") val layoutParamsRecord =
+        @Suppress("UNCHECKED_CAST")
+        val layoutParamsRecord: Map<T, LayoutParams<T>> =
             layoutParamsRecord as Map<T, LayoutParams<T>>
         registerWithTypeRecorderMap(type, binders, layoutParamsRecord)
     }

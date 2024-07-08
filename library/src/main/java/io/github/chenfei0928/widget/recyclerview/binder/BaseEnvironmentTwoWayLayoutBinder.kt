@@ -75,7 +75,11 @@ abstract class BaseEnvironmentTwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>(
                 is LiveData<*> -> Observer<Any> {
                     syncBeanChanged(holder, observer, null)
                 }
-                else -> createCallback(observer) ?: throw IllegalArgumentException()
+                else -> createCallback(observer) ?: throw IllegalArgumentException(
+                    "子类 ${this.javaClass.name} 未提供有效回调以注册，" +
+                            "子类需对此类型 ${observer.javaClass.name} 返回回调，" +
+                            "并重写 bindTwoWayCallback 与 unbindTwoWayCallback 方法注册回调"
+                )
             }
         }
     }

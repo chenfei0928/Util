@@ -17,7 +17,7 @@ import kotlin.coroutines.resume
  * @author chenf()
  * @date 2024-03-21 16:52
  */
-suspend fun <T> Future<T>.await(): T {
+suspend fun <T> Future<T>.awaitKt(): T {
     if (this is ListenableFuture) {
         return this.await()
     }

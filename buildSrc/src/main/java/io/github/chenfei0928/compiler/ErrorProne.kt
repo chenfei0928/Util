@@ -10,6 +10,8 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 
 /**
+ * https://github.com/google/error-prone
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2022-07-05 16:23
  */
@@ -25,7 +27,7 @@ fun Project.applyErrorProne() {
     }
 
     dependencies {
-        add("errorprone", "com.google.errorprone:error_prone_core:2.25.0")
-        compileOnly("com.google.errorprone:error_prone_core:2.25.0")
+        add("errorprone", "com.google.errorprone:error_prone_core:2.28.0")
+        compileOnly("com.google.errorprone:error_prone_core:2.28.0")
     }
 }

@@ -13,7 +13,7 @@ fun <T> Class<T>.arrayClass(): Class<Array<T>> =
 @Throws(
     IllegalAccessException::class, IllegalArgumentException::class, InvocationTargetException::class
 )
-fun Method.safeInvoke(target: Any?, args: Array<Any?>?): Any? {
+inline fun Method.safeInvoke(target: Any?, args: Array<Any?>?): Any? {
     return if (args == null) {
         this.invoke(target)
     } else {

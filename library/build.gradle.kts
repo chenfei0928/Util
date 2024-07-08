@@ -13,7 +13,7 @@ plugins {
 
 applyLibrary(appendBuildConfig = false)
 applyTest()
-applyKotlin(parcelize = true, kapt = true)
+applyKotlin(parcelize = true)
 withKotlinAndroidMavenPublication(
     versionName = "1.3-SNAPSHOT",
     signed = true,

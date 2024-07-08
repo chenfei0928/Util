@@ -27,6 +27,6 @@ fun <E> MultiSelectListPreference.bindEnum(enumValues: Array<E>) where E : Enum<
     entryValues = enumValues.mapToArray { it.name }
 }
 
-interface VisibleNamed {
+fun interface VisibleNamed {
     fun getVisibleName(context: Context): CharSequence
 }

@@ -36,8 +36,7 @@ abstract class FractionOffsetChangedListener(
      * @param expandedFraction 展开进度，0为已完全展开，1为已完全收起
      */
     abstract fun onExpandedFractionChanged(
-        @FloatRange(
-            from = 0.0, to = 1.0
-        ) expandedFraction: Float
+        @FloatRange(from = 0.0, to = 1.0)
+        expandedFraction: Float
     )
 }

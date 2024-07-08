@@ -5,11 +5,10 @@ package org.jetbrains.anko.collections
  *
  * @f an action to invoke on each list element (index, element).
  */
-inline fun <T> List<T>.forEachReversedWithIndex(f: (Int, T) -> Unit) {
+inline fun <T> List<T>.forEachReversedWithIndex(f: (index: Int, e: T) -> Unit) {
     var i = size - 1
     while (i >= 0) {
         f(i, get(i))
         i--
     }
 }
-

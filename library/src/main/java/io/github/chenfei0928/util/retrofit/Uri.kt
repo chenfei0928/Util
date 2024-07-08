@@ -16,6 +16,7 @@ fun Uri.getLength(context: Context): Long {
             try {
                 return File(it).length()
             } catch (ignore: Exception) {
+                // noop
             }
         }
     }
@@ -34,6 +35,7 @@ fun Uri.getLength(context: Context): Long {
             try {
                 return File(cursor.getString(filePathIndex)).length()
             } catch (ignore: Exception) {
+                // noop
             }
         }
     }
@@ -42,12 +44,14 @@ fun Uri.getLength(context: Context): Long {
             return it.statSize
         }
     } catch (ignore: Exception) {
+        // noop
     }
     try {
         context.contentResolver.openInputStream(this@getLength)?.use {
             return it.available().toLong()
         }
     } catch (ignore: Exception) {
+        // noop
     }
     return -1L
 }

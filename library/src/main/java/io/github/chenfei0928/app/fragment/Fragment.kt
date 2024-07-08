@@ -1,13 +1,12 @@
 package io.github.chenfei0928.app.fragment
 
-import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.concurrent.coroutines.showWithAwaitDismiss
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -37,10 +36,9 @@ fun Fragment.removeSelf() {
     if (!isAdded) {
         return
     }
-    fragmentManager
-        ?.beginTransaction()
-        ?.remove(this)
-        ?.commitAllowingStateLoss()
+    parentFragmentManager.commit(true) {
+        remove(this@removeSelf)
+    }
 }
 
 inline fun <reified T> Fragment.findParentByType(block: T.() -> Unit) {

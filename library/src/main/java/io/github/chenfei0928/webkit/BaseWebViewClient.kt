@@ -6,7 +6,11 @@ import android.graphics.Bitmap
 import android.net.http.SslError
 import android.os.Build
 import android.view.View
-import android.webkit.*
+import android.webkit.RenderProcessGoneDetail
+import android.webkit.SslErrorHandler
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import android.webkit.WebView
 import android.widget.ProgressBar
 import androidx.annotation.Size
 import androidx.webkit.SafeBrowsingResponseCompat
@@ -202,34 +206,28 @@ open class BaseWebViewClient(
         if (!debugLog) {
             return
         }
-        val sb = StringBuilder()
-            .append("debugMessage: ")
-            .append(methodName)
+        val sb = StringBuilder().append("debugMessage: ").append(methodName)
         for (i in params.indices step 2) {
-            sb
-                .append(params[i])
-                .append('=')
-                .append(params[i + 1])
+            sb.append(params[i]).append('=').append(params[i + 1])
         }
         Log.d(TAG, sb.toString())
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="请求拦截返回">
-    var assetLoader: WebViewAssetLoader = WebViewAssetLoader
-        .Builder()
+    var assetLoader: WebViewAssetLoader = WebViewAssetLoader.Builder().apply { }
         // https://appassets.androidplatform.net/assets/index.html
         .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
         // https://appassets.androidplatform.net/resources/mipmap/ic_launcher.png
         .addPathHandler("/resources/", WebViewAssetLoader.ResourcesPathHandler(context))
         // https://appassets.androidplatform.net/osRes/android/mipmap/sym_def_app_icon.png
         .addPathHandler("/osRes/", OsResourcesPathHandler(context))
+        // http://appassets.androidplatform.net/public/ic_launcher.png
         .addPathHandler(
             "/public/", WebViewAssetLoader.InternalStoragePathHandler(
                 context, File(context.filesDir, "webViewPublic")
             )
-        )
-        .build()
+        ).build()
     val interceptRequest: MutableList<(WebResourceRequestSupport) -> WebResourceResponse?> =
         mutableListOf()
 

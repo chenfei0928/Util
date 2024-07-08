@@ -115,7 +115,7 @@ object ToastUtil {
     }
 
     //<editor-fold defaultstate="collapsing" desc="Toast工厂">
-    private interface ToastFactory {
+    private sealed interface ToastFactory {
         fun makeText(context: Context, text: CharSequence?, duration: Int): Toast
     }
 
@@ -141,12 +141,28 @@ object ToastUtil {
             }
             return sToastView
         }
+
+        override fun equals(other: Any?): Boolean {
+            return this === other
+        }
+
+        override fun hashCode(): Int {
+            return System.identityHashCode(this)
+        }
     }
 
     private class ToastFactoryImplQ : ToastFactory {
         override fun makeText(context: Context, text: CharSequence?, duration: Int): Toast {
             // 11 以上不允许去setView方式设置toastView，直接通过工厂方法创建toast
             return Toast.makeText(context, text, Toast.LENGTH_SHORT)
+        }
+
+        override fun equals(other: Any?): Boolean {
+            return this === other
+        }
+
+        override fun hashCode(): Int {
+            return System.identityHashCode(this)
         }
     } //</editor-fold>
 }

@@ -21,13 +21,17 @@ abstract class RecyclerViewScrollPositionOutOfIndexListener : RecyclerView.OnScr
         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
 
         // 处理菜单的显示隐藏
-        if (dy == 0) {
-            // 布局刚刚完成，初始化菜单ui
-            onPositionOutOfFocusIndex(layoutManager.findFirstCompletelyVisibleItemPosition() > focusIndex + 1)
-        } else if (dy < 0 && layoutManager.findFirstVisibleItemPosition() <= focusIndex) {
-            onPositionOutOfFocusIndex(outOfIndex = false)
-        } else if (dy > 0 && layoutManager.findFirstCompletelyVisibleItemPosition() > focusIndex + 1) {
-            onPositionOutOfFocusIndex(outOfIndex = true)
+        when {
+            dy == 0 -> {
+                // 布局刚刚完成，初始化菜单ui
+                onPositionOutOfFocusIndex(layoutManager.findFirstCompletelyVisibleItemPosition() > focusIndex + 1)
+            }
+            dy < 0 && layoutManager.findFirstVisibleItemPosition() <= focusIndex -> {
+                onPositionOutOfFocusIndex(outOfIndex = false)
+            }
+            dy > 0 && layoutManager.findFirstCompletelyVisibleItemPosition() > focusIndex + 1 -> {
+                onPositionOutOfFocusIndex(outOfIndex = true)
+            }
         }
     }
 

@@ -54,7 +54,7 @@ sealed class OutlineType : ViewOutlineProvider() {
     }
 
     /**
-     * 根据[getBackground]的[Drawable.getOutline]裁剪
+     * 根据[View.getBackground]的[Drawable.getOutline]裁剪
      */
     data object Background : OutlineType() {
         override fun drawBorder(canvas: Canvas, paint: Paint, rectF: RectF) {

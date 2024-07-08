@@ -101,12 +101,11 @@ fun <SpSaver : AbsSpSaver> SpSaver.getPropertySpKeyName(property: KProperty1<SpS
     property.isAccessible = true
     val delegate = property.getDelegate(this)
     // 判断该字段的委托
-    if (delegate !is AbsSpSaver.AbsSpDelegate<*>) {
-        throw IllegalArgumentException("Property($property) must is delegate subclass as AbsSpSaver.AbsSpDelegate0: $delegate")
-    } else {
-        // 如果该字段是sp委托，获取其sp存储的key
-        return delegate.obtainDefaultKey(property)
+    require(delegate is AbsSpSaver.AbsSpDelegate<*>) {
+        "Property($property) must is delegate subclass as AbsSpSaver.AbsSpDelegate0: $delegate"
     }
+    // 如果该字段是sp委托，获取其sp存储的key
+    return delegate.obtainDefaultKey(property)
 }
 
 /**

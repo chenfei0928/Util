@@ -78,7 +78,7 @@ public class RunningEnvironmentUtil {
         boolean isWork = false;
         ActivityManager myAM = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> myList = myAM.getRunningServices(40);
-        if (myList.size() <= 0) {
+        if (myList.isEmpty()) {
             return false;
         }
         String serviceName = service.getName();

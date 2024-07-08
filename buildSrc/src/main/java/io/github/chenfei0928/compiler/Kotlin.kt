@@ -109,7 +109,7 @@ fun Project.applyKotlin(
         debugImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:$coroutinesVersion")
         // 此库可以将调用栈补充到被协程抛出的异常上，每网上抛出一次suspend/coroutineContext(?)切换均会追加一个调用栈
         // https://github.com/Anamorphosee/stacktrace-decoroutinator#android
-//        debugImplementation("dev.reformator.stacktracedecoroutinator:stacktrace-decoroutinator-android:2.3.6")
+//        debugImplementation("dev.reformator.stacktracedecoroutinator:stacktrace-decoroutinator-android:2.3.9")
     }
 }
 

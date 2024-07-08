@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.RequiresApi
 import io.github.chenfei0928.content.FileProviderUtil
+import io.github.chenfei0928.os.getParcelableCompat
 import io.github.chenfei0928.repository.storage.BaseFileImportUriFragment
 import java.io.File
 
@@ -31,10 +32,8 @@ internal abstract class AbsCropImportV19Fragment : BaseFileImportUriFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        croppedImageUri =
-            savedInstanceState?.getParcelable(KEY_CROPPED_IMAGE_URI) ?: obtainPicturePathUri(
-                requireContext()
-            )
+        croppedImageUri = savedInstanceState?.getParcelableCompat(KEY_CROPPED_IMAGE_URI)
+            ?: obtainPicturePathUri(requireContext())
         cropImageLauncher = registerForActivityResult(CropImageContract(croppedImageUri)) { uri ->
             if (uri != null) {
                 // 裁剪图片完成

@@ -31,7 +31,9 @@ abstract class BaseViewHolderBinder<T, VH : ViewHolder<T>> : ItemViewBinder<T, V
 
     protected abstract fun onCreateViewHolderImpl(inflater: LayoutInflater, parent: ViewGroup): VH
 
-    open fun onViewHolderCreated(holder: VH, parent: ViewGroup) {}
+    open fun onViewHolderCreated(holder: VH, parent: ViewGroup) {
+        // noop
+    }
 
     override fun onBindViewHolder(holder: VH, item: T, payloads: List<Any>) {
         holder.item = item

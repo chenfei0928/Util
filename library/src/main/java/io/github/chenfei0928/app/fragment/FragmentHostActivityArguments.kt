@@ -1,10 +1,12 @@
 package io.github.chenfei0928.app.fragment
 
 import android.os.Parcelable
+import androidx.core.content.IntentCompat
 import androidx.fragment.app.Fragment
 import io.github.chenfei0928.collection.asArrayList
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+import kotlin.reflect.jvm.javaType
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -16,11 +18,13 @@ class FragmentHostActivityParcelableDelegate<T : Parcelable>(
     private var value: T? = null
 
     override fun getValue(thisRef: Fragment, property: KProperty<*>): T {
-        return value ?: thisRef.requireActivity().intent
-            .getParcelableExtra<T>(name ?: property.name)
-            ?.also {
-                value = it
-            } ?: throw IllegalArgumentException("缺少应有的字段: ${name ?: property.name}")
+        return value ?: IntentCompat.getParcelableExtra(
+            thisRef.requireActivity().intent,
+            name ?: property.name,
+            property.returnType.javaType as Class<T>
+        )?.also {
+            value = it
+        } ?: throw IllegalArgumentException("缺少应有的字段: ${name ?: property.name}")
     }
 
     override fun setValue(thisRef: Fragment, property: KProperty<*>, value: T) {
@@ -37,11 +41,11 @@ class FragmentHostActivityParcelableNullableDelegate<T : Parcelable>(
 
     override fun getValue(thisRef: Fragment, property: KProperty<*>): T? {
         return if (value is Unit) {
-            thisRef.requireActivity().intent
-                .getParcelableExtra<T>(name ?: property.name)
-                ?.also {
-                    value = it
-                }
+            IntentCompat.getParcelableExtra(
+                thisRef.requireActivity().intent,
+                name ?: property.name,
+                property.returnType.javaType as Class<T>
+            )?.also { value = it }
         } else {
             value as T?
         }
@@ -64,11 +68,13 @@ class FragmentHostActivityParcelableListDelegate<T : Parcelable>(
     private var value: List<T>? = null
 
     override fun getValue(thisRef: Fragment, property: KProperty<*>): List<T> {
-        return value ?: thisRef.requireActivity().intent
-            .getParcelableArrayListExtra<T>(name ?: property.name)
-            ?.also {
-                value = it
-            } ?: throw IllegalArgumentException("缺少应有的字段: ${name ?: property.name}")
+        return value ?: IntentCompat.getParcelableArrayListExtra(
+            thisRef.requireActivity().intent,
+            name ?: property.name,
+            property.returnType.arguments[0].type?.javaType as Class<T>
+        )?.also {
+            value = it
+        } ?: throw IllegalArgumentException("缺少应有的字段: ${name ?: property.name}")
     }
 
     override fun setValue(thisRef: Fragment, property: KProperty<*>, value: List<T>) {

@@ -38,15 +38,12 @@ internal class VersionedSerializer<T>(
         val savedVersionCode = ByteArray(8)
         // 读取本地保存的内容的数据结构版本号
         inputStream.read(savedVersionCode)
-        if (versionCode contentEquals savedVersionCode) {
-            // 版本号校验一致，读取内容
-            return serializer.read(inputStream)
-        } else {
+        require(versionCode contentEquals savedVersionCode) {
             // 抛出异常，通知对数据进行反序列化失败，交由调用处LocalFileModule删除缓存文件
-            throw IllegalArgumentException(
-                "当前版本是${versionCode.toLong()}, 本地文件的版本是${savedVersionCode.toLong()}，版本不匹配！数据结构可能已经被修改"
-            )
+            "当前版本是${versionCode.toLong()}, 本地文件的版本是${savedVersionCode.toLong()}，版本不匹配！数据结构可能已经被修改"
         }
+        // 版本号校验一致，读取内容
+        return serializer.read(inputStream)
     }
 
     private fun ByteArray.toLong(): Long {

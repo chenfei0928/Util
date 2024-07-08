@@ -15,29 +15,28 @@ abstract class SupportBridgeWebViewClient(
     context: Context,
     progressBar: ProgressBar? = null
 ) : BaseWebViewClient(context, progressBar) {
-    private val TAG = "KW_SBridgeWebViewC"
 
     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
         val webView = view as? BridgeWebView
             ?: return super.shouldOverrideUrlLoading(view, url)
 
-        var url = url
+        var urlDecoded = url
         try {
-            url = URLDecoder.decode(url, "UTF-8")
+            urlDecoded = URLDecoder.decode(urlDecoded, "UTF-8")
         } catch (e: UnsupportedEncodingException) {
-            e.printStackTrace()
+            Log.i(TAG, "shouldOverrideUrlLoading: $url", e)
         }
 
-        return if (url.startsWith(BridgeUtil.YY_RETURN_DATA)) { // 如果是返回数据
-            Log.i(TAG, "shouldOverrideUrlLoading: return $url")
-            webView.handlerReturnData(url)
+        return if (urlDecoded.startsWith(BridgeUtil.YY_RETURN_DATA)) { // 如果是返回数据
+            Log.i(TAG, "shouldOverrideUrlLoading: return $urlDecoded")
+            webView.handlerReturnData(urlDecoded)
             true
-        } else if (url.startsWith(BridgeUtil.YY_OVERRIDE_SCHEMA)) { //
+        } else if (urlDecoded.startsWith(BridgeUtil.YY_OVERRIDE_SCHEMA)) { //
             Log.i(TAG, "shouldOverrideUrlLoading: load jsBridge")
             webView.flushMessageQueue()
             true
         } else {
-            super.shouldOverrideUrlLoading(view, url)
+            super.shouldOverrideUrlLoading(view, urlDecoded)
         }
     }
 
@@ -54,5 +53,9 @@ abstract class SupportBridgeWebViewClient(
             }
             webView.startupMessage = null
         }
+    }
+
+    companion object {
+        private const val TAG = "KW_SBridgeWebViewC"
     }
 }

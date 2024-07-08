@@ -45,7 +45,7 @@ internal class TakePhotoImportPermissionFragment : BasePermissionFileImportParen
     override val permissionName: String
         get() = "相机"
 
-    override fun createFragment(): BaseFileImportFragment<Uri>? {
+    override fun createFragment(): BaseFileImportFragment<Uri> {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             TakePhotoCropImportV19Fragment()
         } else {

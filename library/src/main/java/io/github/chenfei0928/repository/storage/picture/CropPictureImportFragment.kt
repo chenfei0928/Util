@@ -12,11 +12,10 @@ import io.github.chenfei0928.repository.storage.BaseFileImportUriFragment
 class CropPictureImportFragment : BaseFileImportUriFragment() {
 
     override fun launchFileChoose() {
-        val source = arguments?.getInt(KEY_SOURCE)
-            ?: run {
-                removeSelf(null)
-                return
-            }
+        val source = arguments?.getInt(KEY_SOURCE) ?: run {
+            removeSelf(null)
+            return
+        }
         // 根据参数创建指定的图片裁剪导入器
         val fragment = when (source) {
             PICTURE -> PictureImportPermissionFragment()

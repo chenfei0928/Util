@@ -37,12 +37,13 @@ abstract class PermissionLauncher(
 
     override fun launch(input: Unit?, options: ActivityOptionsCompat?) {
         when {
-            PermissionUtils.hasSelfPermissions(context(), *permissions) -> {
+            PermissionUtils.hasSelfPermissions(context(), permissions = permissions) -> {
                 callback.onActivityResult(emptyMap())
             }
-            PermissionUtils.shouldShowRequestPermissionRationale(context(), *permissions) -> {
+            PermissionUtils.shouldShowRequestPermissionRationale(
+                context(), permissions = permissions
+            ) -> {
                 onRationale(object : PermissionRequest {
-
                     override fun proceed() {
                         launcher.launch(permissions, options)
                     }

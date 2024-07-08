@@ -25,9 +25,9 @@ public class RoundBackgroundColorSpan extends ReplacementSpan {
     // 圆角的半径
     public int radius = 15;
     // 文本内容相对圆角背景水平方向的内边距
-    public int paddingHorizontal = 20;
+    public final int paddingHorizontal = 20;
     // 文本内容相对圆角背景垂直方向的内边距
-    public int paddingVertical = 1;
+    public final int paddingVertical = 1;
 
     public RoundBackgroundColorSpan(@Px int radius, @ColorInt int bgColor, @ColorInt int textColor) {
         super();

@@ -57,7 +57,7 @@ private fun Drawable.asRippleLessL(pressedDrawableLayer: Drawable): Drawable {
  * 处理图层列表中每一图层
  */
 inline fun LayerDrawable.forEachLayer(block: (index: Int, drawable: Drawable) -> Unit) {
-    (0 until numberOfLayers).forEach {
+    for (it in 0 until numberOfLayers) {
         block(it, getDrawable(it))
     }
 }

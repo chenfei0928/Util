@@ -48,7 +48,7 @@ private inline fun startActivityWithTransition(
         startActivityWithBundle(intent, null)
     } else {
         val options = context.createActivityOption(
-            true, *sharedElements, transition = transition
+            true, sharedElements = sharedElements, transition = transition
         )
         startActivityWithBundle(intent, options.toBundle())
     }

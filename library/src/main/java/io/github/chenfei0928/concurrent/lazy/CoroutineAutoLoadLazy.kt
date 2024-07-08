@@ -52,6 +52,7 @@ private class CoroutineAutoLoadLazy<T>(
                     try {
                         (lock as Object).wait()
                     } catch (ignore: InterruptedException) {
+                        // noop
                     }
                 }
                 val _v2 = _value

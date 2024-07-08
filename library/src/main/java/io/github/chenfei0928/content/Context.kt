@@ -96,3 +96,9 @@ suspend inline fun <T> Context.bindService(
         }
     }
 }
+
+typealias OnServiceConnected<T> = (
+    name: ComponentName,
+    service: IBinder,
+    continuation: CancellableContinuation<T>
+) -> Unit

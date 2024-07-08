@@ -1,6 +1,11 @@
 package io.github.chenfei0928.repository.local
 
-import java.io.*
+import java.io.IOException
+import java.io.InputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
+import java.io.OutputStream
+import java.io.Serializable
 
 /**
  * 对JDK的 [Serializable] 实现序列化和反序列化

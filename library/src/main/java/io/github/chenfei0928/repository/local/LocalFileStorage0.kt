@@ -1,0 +1,117 @@
+package io.github.chenfei0928.repository.local
+
+import android.content.Context
+import android.os.Build
+import android.util.Log
+import androidx.core.util.AtomicFile
+import io.github.chenfei0928.concurrent.ExecutorUtil
+import java.io.File
+import java.util.concurrent.atomic.AtomicReference
+
+abstract class LocalFileStorage0<T>(
+    context: Context,
+    serializer: LocalSerializer<T>,
+    fileName: String,
+    cacheDir: Boolean = false,
+    private val memoryCacheable: Boolean = true
+) {
+    private val serializer = LocalSerializer.NoopIODecorator(serializer)
+    private val atomicFile: AtomicFile = AtomicFile(
+        if (cacheDir) {
+            File(File(context.cacheDir, "localFileStorage"), fileName)
+        } else {
+            File(File(context.filesDir, "localFileStorage"), fileName)
+        }
+    )
+
+    //<editor-fold defaultstate="collapsed" desc="通过文件锁读写文件的实现">
+    /**
+     * 从本地文件反序列化
+     */
+    @Synchronized
+    private fun loadFromLocalFile(): T {
+        return if (!atomicFile.baseFile.exists()) {
+            // 文件不存在，直接返回空
+            serializer.defaultValue
+        } else try {
+            atomicFile.openRead()
+                .let { serializer.onOpenInputStream(it) }
+                .use { serializer.read(it) }
+        } catch (e: Exception) {
+            Log.e(TAG, "loadFromLocalFile: ${atomicFile.baseFile}, $serializer", e)
+            atomicFile.delete()
+            serializer.defaultValue
+        }
+    }
+
+    /**
+     * 将数据序列化到本地文件
+     */
+    @Synchronized
+    private fun saveToLocalFileOrDelete(value: T?) {
+        if (value == null) {
+            atomicFile.delete()
+            return
+        }
+        val write = atomicFile.startWrite()
+        try {
+            serializer.onOpenOutStream(write).use {
+                serializer.write(it, value)
+                it.flush()
+            }
+            atomicFile.finishWrite(write)
+        } catch (e: Exception) {
+            Log.e(TAG, "saveToLocalFileOrDelete: ${atomicFile.baseFile}, $serializer", e)
+            atomicFile.failWrite(write)
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="带缓存的快速访问">
+    private val cachedValue: AtomicReference<T> = AtomicReference()
+
+    protected fun getCacheOrLoad(): T {
+        return if (!memoryCacheable) {
+            // 不使用内存缓存，每次都从磁盘文件反序列化
+            loadFromLocalFile()
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // 从缓存中读取，缓存中没有值时从磁盘文件反序列化
+            cachedValue.get() ?: cachedValue.updateAndGet {
+                loadFromLocalFile()
+            }
+        } else synchronized(this) {
+            // 从缓存中读取，缓存中没有值时从磁盘文件反序列化
+            cachedValue.get() ?: loadFromLocalFile().also {
+                cachedValue.set(it)
+            }
+        }
+    }
+
+    protected fun write(value: T?, writeNow: Boolean = true) {
+        // 读取时会拷贝，此处可以不进行拷贝
+        if (memoryCacheable) {
+            cachedValue.set(value)
+        }
+        if (memoryCacheable && !writeNow) {
+            // 以提交代替同步写入
+            ExecutorUtil.postToBg {
+                saveToLocalFileOrDelete(value)
+            }
+        } else {
+            saveToLocalFileOrDelete(value)
+        }
+    }
+    //</editor-fold>
+
+    /**
+     * 当子类返回的数据后会对实例进行修改，可能会污染缓存时，
+     * 使用实例自身的clone或copy方法，或使用该方法获得一个新的实例后在返回
+     */
+    protected fun <Tn : T & Any> Tn.serializerCopy(): T & Any {
+        return serializer.copy(this)
+    }
+
+    companion object {
+        protected const val TAG = "KW_LocalJsonStorage"
+    }
+}

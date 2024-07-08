@@ -10,34 +10,31 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-10-22 18:45
  */
-class WrapperUtils {
-    companion object {
+object WrapperUtils {
+    fun onAttachedToRecyclerView(
+        innerAdapter: RecyclerView.Adapter<*>,
+        recyclerView: RecyclerView,
+        callback: (layoutManager: GridLayoutManager, oldLookup: GridLayoutManager.SpanSizeLookup, position: Int) -> Int
+    ) {
+        innerAdapter.onAttachedToRecyclerView(recyclerView)
 
-        fun onAttachedToRecyclerView(
-            innerAdapter: RecyclerView.Adapter<*>,
-            recyclerView: RecyclerView,
-            callback: (layoutManager: GridLayoutManager, oldLookup: GridLayoutManager.SpanSizeLookup, position: Int) -> Int
-        ) {
-            innerAdapter.onAttachedToRecyclerView(recyclerView)
+        val layoutManager = recyclerView.layoutManager
+        if (layoutManager is GridLayoutManager) {
+            val spanSizeLookup = layoutManager.spanSizeLookup
 
-            val layoutManager = recyclerView.layoutManager
-            if (layoutManager is GridLayoutManager) {
-                val spanSizeLookup = layoutManager.spanSizeLookup
-
-                layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                    override fun getSpanSize(position: Int): Int {
-                        return callback(layoutManager, spanSizeLookup, position)
-                    }
+            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return callback(layoutManager, spanSizeLookup, position)
                 }
-                layoutManager.spanCount = layoutManager.spanCount
             }
+            layoutManager.spanCount = layoutManager.spanCount
         }
+    }
 
-        fun setFullSpan(holder: RecyclerView.ViewHolder) {
-            val lp = holder.itemView.layoutParams
-            if (lp is StaggeredGridLayoutManager.LayoutParams) {
-                lp.isFullSpan = true
-            }
+    fun setFullSpan(holder: RecyclerView.ViewHolder) {
+        val lp = holder.itemView.layoutParams
+        if (lp is StaggeredGridLayoutManager.LayoutParams) {
+            lp.isFullSpan = true
         }
     }
 }

@@ -82,6 +82,7 @@ class TabLayout : LinearLayout {
             }
 
             override fun onTabReselect(view: View, position: Int) {
+                // noop
             }
         }
         target.addOnPageChangeListener(onPageChangeLis)

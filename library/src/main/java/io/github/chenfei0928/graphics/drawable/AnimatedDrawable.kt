@@ -9,7 +9,7 @@ import android.graphics.drawable.Drawable
 import android.util.Property
 import androidx.annotation.Keep
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import io.github.chenfei0928.reflect.toProperty
+import io.github.chenfei0928.reflect.KProperty1Property
 import kotlin.reflect.KMutableProperty1
 
 /**
@@ -113,7 +113,16 @@ open class AnimatedDrawable(
         val PIVOT_Y = AnimatedDrawable::pivotY.toProperty()
         val DEGREES = AnimatedDrawable::degrees.toProperty()
 
-        private fun <V> KMutableProperty1<AnimatedDrawable, V>.toProperty(): Property<AnimatedDrawable, V> =
-            toProperty(AnimatedDrawable::invalidateSelf)
+        // 此处不直接调用 io.github.chenfei0928.reflect.toProperty 而是先构建内部类，减少内部类的产生
+        private inline fun <reified V> KMutableProperty1<AnimatedDrawable, V>.toProperty()
+                : Property<AnimatedDrawable, V> = DrawableProperty(this, V::class.java)
+
+        private class DrawableProperty<T : Drawable, V>(
+            property: KMutableProperty1<T, V>, type: Class<V>,
+        ) : KProperty1Property<T, V>(property, false, type) {
+            override fun afterSetBlock(value: T) {
+                value.invalidateSelf()
+            }
+        }
     }
 }

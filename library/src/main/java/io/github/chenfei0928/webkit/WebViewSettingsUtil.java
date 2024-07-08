@@ -24,6 +24,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.webkit.ProxyConfig;
 import androidx.webkit.ProxyController;
 import androidx.webkit.WebSettingsCompat;
+import androidx.webkit.WebViewAssetLoader;
 import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 import androidx.webkit.WebViewRenderProcess;
@@ -72,14 +73,14 @@ public class WebViewSettingsUtil {
     }
 
     @Nullable
-    public static <WV extends WebView> WV installWebView(
+    public static <V extends WebView> V installWebView(
             @NonNull View placeHolder,
-            @NonNull Function1<Context, WV> creator
+            @NonNull Function1<Context, V> creator
     ) {
         ViewGroup parent = (ViewGroup) placeHolder.getParent();
         // 修复 5.x 系统上webView初始化失败问题
         // https://www.twblogs.net/a/5b7f6cff2b717767c6af8a3c
-        Function1<Context, WV> tryCreateWebView = context -> {
+        Function1<Context, V> tryCreateWebView = context -> {
             try {
                 return creator.invoke(context);
             } catch (Resources.NotFoundException ignore) {
@@ -87,7 +88,7 @@ public class WebViewSettingsUtil {
             }
         };
         // 尝试创建webView
-        WV webView;
+        V webView;
         try {
             webView = tryCreateWebView.invoke(placeHolder.getContext());
             // 修复 5.x 系统上webView初始化失败问题
@@ -136,13 +137,13 @@ public class WebViewSettingsUtil {
      * @param creator        WebView构造者
      */
     @Nullable
-    public static <WV extends WebView> WV installWebViewWithLifecycle(
+    public static <V extends WebView> V installWebViewWithLifecycle(
             @NonNull LifecycleOwner lifecycleOwner,
             @NonNull View placeHolder,
             @NonNull Config config,
-            @NonNull Function1<Context, WV> creator
+            @NonNull Function1<Context, V> creator
     ) {
-        WV webView = installWebView(placeHolder, creator);
+        V webView = installWebView(placeHolder, creator);
         if (webView == null) {
             return null;
         }
@@ -159,6 +160,8 @@ public class WebViewSettingsUtil {
                     break;
                 case ON_DESTROY:
                     onDestroy(webView);
+                    break;
+                default:
                     break;
             }
         });
@@ -298,7 +301,7 @@ public class WebViewSettingsUtil {
             webView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
             webView.clearHistory();
             webView.setWebChromeClient(null);
-            webView.setWebViewClient(null);
+//            webView.setWebViewClient(null);
             ViewKt.removeSelfFromParent(webView);
             webView.destroy();
         }

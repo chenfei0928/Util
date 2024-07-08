@@ -97,6 +97,7 @@ class FixedSizeDrawable(
     }
 
     override fun onBoundsChange(bounds: Rect) {
+        // noop
     }
 
     override fun draw(canvas: Canvas) {
@@ -125,55 +126,62 @@ class FixedSizeDrawable(
             // We need to do the scaling ourself, so have the drawable
             // use its native size.
             drawable.setBounds(0, 0, dwidth, dheight)
-            if (ImageView.ScaleType.MATRIX == mScaleType) {
-                // Use the specified matrix as-is.
-                // use mDrawMatrix
-            } else if (fits) {
-                // The bitmap fits exactly, no transform needed.
-                mDrawMatrix = null
-            } else if (ImageView.ScaleType.CENTER == mScaleType) {
-                // Center bitmap in view, no scaling.
-                mDrawMatrix = Matrix()
-                mDrawMatrix?.setTranslate(
-                    ((vwidth - dwidth) * 0.5f).roundToInt().toFloat(),
-                    ((vheight - dheight) * 0.5f).roundToInt().toFloat()
-                )
-            } else if (ImageView.ScaleType.CENTER_CROP == mScaleType) {
-                mDrawMatrix = Matrix()
-                val scale: Float
-                var dx = 0f
-                var dy = 0f
-                if (dwidth * vheight > vwidth * dheight) {
-                    scale = vheight.toFloat() / dheight.toFloat()
-                    dx = (vwidth - dwidth * scale) * 0.5f
-                } else {
-                    scale = vwidth.toFloat() / dwidth.toFloat()
-                    dy = (vheight - dheight * scale) * 0.5f
+            when {
+                ImageView.ScaleType.MATRIX == mScaleType -> {
+                    // Use the specified matrix as-is.
+                    // use mDrawMatrix
                 }
-                mDrawMatrix?.setScale(scale, scale)
-                mDrawMatrix?.postTranslate(dx.roundToInt().toFloat(), dy.roundToInt().toFloat())
-            } else if (ImageView.ScaleType.CENTER_INSIDE == mScaleType) {
-                mDrawMatrix = Matrix()
-                val scale: Float = if (dwidth <= vwidth && dheight <= vheight) {
-                    1.0f
-                } else {
-                    minOf(
-                        vwidth.toFloat() / dwidth.toFloat(),
-                        vheight.toFloat() / dheight.toFloat()
+                fits -> {
+                    // The bitmap fits exactly, no transform needed.
+                    mDrawMatrix = null
+                }
+                ImageView.ScaleType.CENTER == mScaleType -> {
+                    // Center bitmap in view, no scaling.
+                    mDrawMatrix = Matrix()
+                    mDrawMatrix?.setTranslate(
+                        ((vwidth - dwidth) * 0.5f).roundToInt().toFloat(),
+                        ((vheight - dheight) * 0.5f).roundToInt().toFloat()
                     )
                 }
-                val dx: Float = ((vwidth - dwidth * scale) * 0.5f).roundToInt().toFloat()
-                val dy: Float = ((vheight - dheight * scale) * 0.5f).roundToInt().toFloat()
-                mDrawMatrix?.setScale(scale, scale)
-                mDrawMatrix?.postTranslate(dx, dy)
-            } else {
-                // Generate the required transform.
-                mDrawMatrix = Matrix()
-                mDrawMatrix?.setRectToRect(
-                    RectF().apply { set(0f, 0f, dwidth.toFloat(), dheight.toFloat()) },
-                    RectF().apply { set(0f, 0f, vwidth.toFloat(), vheight.toFloat()) },
-                    scaleTypeToScaleToFit(mScaleType)
-                )
+                ImageView.ScaleType.CENTER_CROP == mScaleType -> {
+                    mDrawMatrix = Matrix()
+                    val scale: Float
+                    var dx = 0f
+                    var dy = 0f
+                    if (dwidth * vheight > vwidth * dheight) {
+                        scale = vheight.toFloat() / dheight.toFloat()
+                        dx = (vwidth - dwidth * scale) * 0.5f
+                    } else {
+                        scale = vwidth.toFloat() / dwidth.toFloat()
+                        dy = (vheight - dheight * scale) * 0.5f
+                    }
+                    mDrawMatrix?.setScale(scale, scale)
+                    mDrawMatrix?.postTranslate(dx.roundToInt().toFloat(), dy.roundToInt().toFloat())
+                }
+                ImageView.ScaleType.CENTER_INSIDE == mScaleType -> {
+                    mDrawMatrix = Matrix()
+                    val scale: Float = if (dwidth <= vwidth && dheight <= vheight) {
+                        1.0f
+                    } else {
+                        minOf(
+                            vwidth.toFloat() / dwidth.toFloat(),
+                            vheight.toFloat() / dheight.toFloat()
+                        )
+                    }
+                    val dx: Float = ((vwidth - dwidth * scale) * 0.5f).roundToInt().toFloat()
+                    val dy: Float = ((vheight - dheight * scale) * 0.5f).roundToInt().toFloat()
+                    mDrawMatrix?.setScale(scale, scale)
+                    mDrawMatrix?.postTranslate(dx, dy)
+                }
+                else -> {
+                    // Generate the required transform.
+                    mDrawMatrix = Matrix()
+                    mDrawMatrix?.setRectToRect(
+                        RectF().apply { set(0f, 0f, dwidth.toFloat(), dheight.toFloat()) },
+                        RectF().apply { set(0f, 0f, vwidth.toFloat(), vheight.toFloat()) },
+                        scaleTypeToScaleToFit(mScaleType)
+                    )
+                }
             }
         }
     }

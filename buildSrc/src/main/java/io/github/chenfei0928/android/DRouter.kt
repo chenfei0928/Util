@@ -27,7 +27,7 @@ fun Project.applyDRouter() {
 
     dependencies {
         // Router、Service
-        implementation("io.github.didi:drouter-api:2.4.5")
+        implementation("io.github.didi:drouter-api:2.4.6")
         // Page
         implementation("io.github.didi:drouter-api-page:1.0.0")
         // Process

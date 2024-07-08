@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.RequiresApi
 import io.github.chenfei0928.content.FileProviderUtil
 import io.github.chenfei0928.io.FileUtil
+import io.github.chenfei0928.os.getParcelableCompat
 
 /**
  * 提供图片选择、并裁剪的导入
@@ -88,10 +89,8 @@ internal class TakePhotoCropImportV19Fragment : AbsCropImportV19Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        takePhotoUri =
-            savedInstanceState?.getParcelable(KEY_TAKE_PHOTO_URI) ?: obtainPicturePathUri(
-                requireContext()
-            )
+        takePhotoUri = savedInstanceState?.getParcelableCompat(KEY_TAKE_PHOTO_URI)
+            ?: obtainPicturePathUri(requireContext())
         pictureSourceLauncher = registerForActivityResult(PictureSourceContract(takePhotoUri)) {
             if (it != null) {
                 // 获取到了图片，进行裁剪

@@ -20,7 +20,7 @@ inline fun Lifecycle.bindUntilFirstEvent(
     event: Lifecycle.Event, crossinline action: (Lifecycle.Event) -> Unit
 ): LifecycleEventObserver {
     val observer = object : LifecycleEventObserver {
-        override fun onStateChanged(l: LifecycleOwner, e: Lifecycle.Event) {
+        override fun onStateChanged(source: LifecycleOwner, e: Lifecycle.Event) {
             if (e == event) {
                 action(e)
                 removeObserver(this)

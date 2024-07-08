@@ -21,9 +21,11 @@ interface BasicAdapter<VG : ViewGroup, Bean> {
 
     @EmptySuper
     fun onAddOrShow(view: View) {
+        // noop
     }
 
     @EmptySuper
     fun onRemoveOrHide(view: View) {
+        // noop
     }
 }

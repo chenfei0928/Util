@@ -46,13 +46,13 @@ internal class AwaitCall<T>(
     override fun clone(): Call<T> = AwaitCall(service, method, args)
 
     override fun isCanceled(): Boolean {
-        if (canceled) {
-            return true
+        return if (canceled) {
+            true
+        } else if (!realCall.isInitialized()) {
+            false
+        } else {
+            realCall.value.isCanceled
         }
-        if (!realCall.isInitialized()) {
-            return false
-        }
-        return realCall.value.isCanceled
     }
 
     override fun cancel() {

@@ -11,6 +11,7 @@ import android.opengl.GLES11
 import android.opengl.GLES20
 import android.opengl.GLES30
 import android.os.Build
+import androidx.annotation.EmptySuper
 import androidx.annotation.IntRange
 import androidx.annotation.WorkerThread
 import com.bumptech.glide.request.target.CustomTarget
@@ -56,7 +57,9 @@ abstract class GlideLongImageGroupTarget(
         job.cancel()
     }
 
+    @EmptySuper
     override fun onLoadCleared(placeholder: Drawable?) {
+        // noop
     }
 
     override fun onResourceReady(resource: File, transition: Transition<in File>?) {

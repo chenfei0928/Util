@@ -16,6 +16,7 @@ object ListenersProxy {
         listenerImpls: MutableCollection<T> = arrayListOf()
     ) = newListenersProxy(T::class.java, listenerImpls)
 
+    @SuppressWarnings("kotlin:S6530")
     fun <T : Any> newListenersProxy(
         clazz: Class<T>, listenerImpls: MutableCollection<T> = arrayListOf()
     ): T = Proxy.newProxyInstance(
@@ -57,6 +58,7 @@ object ListenersProxy {
         }
     } as T
 
+    @SuppressWarnings("kotlin:S6530")
     fun <T : Any> newEmptyListener(
         clazz: Class<T>
     ): T = Proxy.newProxyInstance(clazz.classLoader, arrayOf(clazz)) { _, _, _ -> } as T
@@ -86,6 +88,7 @@ object ListenersProxy {
     /**
      * 创建一个懒获取的代理实现，该代理对象可能不会实时获取到(通过一段代码来find或创建)或为懒加载
      */
+    @SuppressWarnings("kotlin:S6530")
     inline fun <T : Any> newImplByGetter(
         clazz: Class<T>, crossinline getter: () -> T
     ): T = Proxy.newProxyInstance(

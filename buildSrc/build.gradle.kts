@@ -22,6 +22,8 @@ dependencies {
     implementation(kotlin("gradle-plugin-api", kotlinVersion))
     implementation(kotlin("android-extensions", kotlinVersion))
     implementation(kotlin("serialization", kotlinVersion))
+    implementation(kotlin("compose-compiler-plugin", kotlinVersion))
+    implementation(kotlin("compose-compiler-plugin-embeddable", kotlinVersion))
     // Kotlin Symbol Processing 符号处理器编译器插件，需伴随Kotlin版本一同升级
     // https://github.com/google/ksp
     implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.22")
@@ -39,11 +41,11 @@ dependencies {
     implementation("org.greenrobot:greendao-gradle-plugin:3.3.0")
     // 反射
     // https://github.com/jOOQ/jOOR
-    implementation("org.jooq:joor:0.9.14")
+    implementation("org.jooq:joor:0.9.15")
     // ErrorProne
     // https://github.com/tbroyer/gradle-errorprone-plugin
     // https://github.com/google/error-prone
-    implementation("net.ltgt.gradle:gradle-errorprone-plugin:3.1.0")
+    implementation("net.ltgt.gradle:gradle-errorprone-plugin:4.0.1")
     // ARouter
     // https://github.com/alibaba/ARouter/blob/master/README_CN.md
     // https://github.com/jadepeakpoet/ARouter
@@ -62,7 +64,7 @@ dependencies {
     implementation("io.github.trycatchx:rocketx:1.1.1")
     // DEX控制流混淆
     // https://github.com/CodingGay/BlackObfuscator-ASPlugin
-    implementation("com.github.CodingGay:BlackObfuscator-ASPlugin:3.6")
+    implementation("com.github.CodingGay:BlackObfuscator-ASPlugin:3.9")
     // 增加 protobuf-gradle-plugin 插件
     // https://github.com/google/protobuf-gradle-plugin
     implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
@@ -70,15 +72,15 @@ dependencies {
     // https://github.com/Meituan-Dianping/walle
     implementation("com.meituan.android.walle:plugin:1.1.7")
     // https://github.com/google/guava
-    implementation("com.google.guava:guava:31.1-jre")
+    implementation("com.google.guava:guava:33.2.1-jre")
     // 腾讯Bugly混淆表上传工具
     // https://bugly.qq.com/docs/utility-tools/plugin-gradle-bugly/
     // https://repo1.maven.org/maven2/com/tencent/bugly/symtabfileuploader/
 //    implementation("com.tencent.bugly:symtabfileuploader:2.2.1")
     // 腾讯补丁包工具
     // https://github.com/Tencent/tinker
-    implementation("com.tencent.tinker:tinker-patch-gradle-plugin:1.9.14.25.1")
-    implementation("com.tencent.tinker:tinker-patch-lib:1.9.14.25.1") {
+    implementation("com.tencent.tinker:tinker-patch-gradle-plugin:1.9.14.26.3")
+    implementation("com.tencent.tinker:tinker-patch-lib:1.9.14.26.3") {
         exclude(group = "com.google.guava")
     }
     // 操作系统和硬件架构判断工具，tinker依赖

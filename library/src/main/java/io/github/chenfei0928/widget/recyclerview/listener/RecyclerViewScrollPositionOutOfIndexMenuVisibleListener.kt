@@ -35,13 +35,11 @@ class RecyclerViewScrollPositionOutOfIndexMenuVisibleListener(
                 }
                 iconAnimator = this
             }
-        animator.setIntValues(
-            *if (outOfIndex) {
-                intArrayOf(0, 255)
-            } else {
-                intArrayOf(255, 0)
-            }
-        )
+        if (outOfIndex) {
+            animator.setIntValues(0, 255)
+        } else {
+            animator.setIntValues(255, 0)
+        }
         animator.start()
         targetSearchBarVisible = outOfIndex
     }

@@ -64,8 +64,9 @@ private fun binaryMeasureTextSafeWidthForTextEndIndex(
     lineStart: Int,
     safeWidth: Float
 ): Int {
-    if (lineStart >= text.length)
+    if (lineStart >= text.length) {
         return text.length
+    }
 
     var lo = lineStart
     var hi = text.length - 1
@@ -110,7 +111,9 @@ var TextView.strikeThroughText by TextViewPaintDelegate(Paint.STRIKE_THRU_TEXT_F
 // 下划线
 var TextView.underLineText by TextViewPaintDelegate(Paint.UNDERLINE_TEXT_FLAG)
 
-private class TextViewPaintDelegate(private val flag: Int) : ReadWriteProperty<TextView, Boolean> {
+private class TextViewPaintDelegate(
+    private val flag: Int
+) : ReadWriteProperty<TextView, Boolean> {
 
     override fun getValue(thisRef: TextView, property: KProperty<*>): Boolean {
         return flag in thisRef.paintFlags

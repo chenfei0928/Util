@@ -5,8 +5,8 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -21,24 +21,22 @@ import kotlin.coroutines.resumeWithException
  */
 private class ImageViewGlideAwait(
     private val continuation: CancellableContinuation<Drawable>, view: ImageView
-) : ViewTarget<ImageView, Drawable>(view), Transition.ViewAdapter {
+) : CustomViewTarget<ImageView, Drawable>(view), Transition.ViewAdapter {
     private var animatable: Animatable? = null
 
-    override fun onLoadStarted(placeholder: Drawable?) {
-        super.onLoadStarted(placeholder)
+    override fun onResourceLoading(placeholder: Drawable?) {
+        super.onResourceLoading(placeholder)
         setResourceInternal(null)
         view.setImageDrawable(placeholder)
     }
 
     override fun onLoadFailed(errorDrawable: Drawable?) {
-        super.onLoadFailed(errorDrawable)
         setResourceInternal(null)
         view.setImageDrawable(errorDrawable)
         continuation.resumeWithException(RuntimeException("onLoadFailed"))
     }
 
-    override fun onLoadCleared(placeholder: Drawable?) {
-        super.onLoadCleared(placeholder)
+    override fun onResourceCleared(placeholder: Drawable?) {
         animatable?.stop()
         setResourceInternal(null)
         view.setImageDrawable(placeholder)
@@ -111,6 +109,7 @@ private class GlideAwait<TranscodeType>(
     }
 
     override fun onLoadCleared(placeholder: Drawable?) {
+        // noop
     }
 
     override fun onResourceReady(

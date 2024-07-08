@@ -33,10 +33,8 @@ fun <T> MultiTypeAdapter.registerWithTypeRecordClassMap(
     clazz: Class<T>,
     binders: Array<ItemViewDelegate<T, *>>,
     viewTypeRecord: Map<T, Class<out ItemViewDelegate<T, *>>>
-) {
-    registerWithTypeRecord(clazz, binders) { item ->
-        viewTypeRecord[item]
-    }
+) = registerWithTypeRecord(clazz, binders) { item ->
+    viewTypeRecord[item]
 }
 
 /**
@@ -60,10 +58,8 @@ fun <T> MultiTypeAdapter.registerWithTypeRecorderMap(
     clazz: Class<T>,
     binders: Array<ItemViewDelegate<T, *>>,
     viewTypeRecord: Map<in T, ViewTypeProvider>
-) {
-    registerWithTypeRecord(clazz, binders) { item ->
-        viewTypeRecord[item]?.binderClazz
-    }
+) = registerWithTypeRecord(clazz, binders) { item ->
+    viewTypeRecord[item]?.binderClazz
 }
 
 /**
@@ -81,29 +77,27 @@ private inline fun <T> MultiTypeAdapter.registerWithTypeRecord(
     clazz: Class<T>,
     binders: Array<ItemViewDelegate<T, *>>,
     crossinline viewTypeRecorder: (T) -> Class<out ItemViewDelegate<*, *>>?
-) {
-    registerWithLinker(clazz, binders) linker@{ localBinders, _, item ->
-        // 获取该item所使用的binder类
-        val binderClazz = viewTypeRecorder(item)
-        if (binderClazz == null) {
-            Log.w(TAG, "registerWithTypeRecordClassMap: item not found binderClass.\n$item")
-            return@linker 0
-        }
-        // 查找第几个是该binder类的实例
-        val index = localBinders.indexOfFirst {
-            binderClazz.isInstance(it)
-        }
-        return@linker if (index != -1) {
-            index
-        } else {
-            Log.w(TAG, buildString {
-                append("registerWithTypeRecordClassMap: ")
-                append("item's binder instance not found by binderClass.")
-                appendLine()
-                append(item)
-            })
-            0
-        }
+) = registerWithLinker(clazz, binders) linker@{ localBinders, _, item ->
+    // 获取该item所使用的binder类
+    val binderClazz = viewTypeRecorder(item)
+    if (binderClazz == null) {
+        Log.w(TAG, "registerWithTypeRecordClassMap: item not found binderClass.\n$item")
+        return@linker 0
+    }
+    // 查找第几个是该binder类的实例
+    val index = localBinders.indexOfFirst {
+        binderClazz.isInstance(it)
+    }
+    return@linker if (index != -1) {
+        index
+    } else {
+        Log.w(TAG, buildString {
+            append("registerWithTypeRecordClassMap: ")
+            append("item's binder instance not found by binderClass.")
+            appendLine()
+            append(item)
+        })
+        0
     }
 }
 
@@ -111,25 +105,22 @@ private inline fun <T> MultiTypeAdapter.registerWithTypeRecord(
  * 注册一个类型的一type对多binder的映射关系，并使用linker来进行分配管理
  */
 inline fun <reified T> MultiTypeAdapter.registerWithLinker(
-    binders: Array<ItemViewDelegate<T, *>>, crossinline linker: BindersLinker<T>
-) {
-    registerWithLinker(T::class.java, binders, linker)
-}
+    binders: Array<ItemViewDelegate<T, *>>,
+    crossinline linker: BindersLinker<T>
+) = registerWithLinker(T::class.java, binders, linker)
 
 /**
  * 注册一个类型的一type对多binder的映射关系，并使用linker来进行分配管理
  */
 inline fun <T> MultiTypeAdapter.registerWithLinker(
-    clazz: Class<T>, binders: Array<ItemViewDelegate<T, *>>, crossinline linker: BindersLinker<T>
-) {
-    register(clazz)
-        .to(*binders)
-        .withLinker(object : Linker<T> {
-            override fun index(position: Int, item: T): Int {
-                return linker(binders, position, item)
-            }
-        })
-}
+    clazz: Class<T>,
+    binders: Array<ItemViewDelegate<T, *>>,
+    crossinline linker: BindersLinker<T>
+) = register(clazz).to(delegates = binders).withLinker(object : Linker<T> {
+    override fun index(position: Int, item: T): Int {
+        return linker(binders, position, item)
+    }
+})
 
 /**
  * 传入binders，并返回指定的item所使用的binder在binders中对应的下标

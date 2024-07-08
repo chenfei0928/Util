@@ -9,8 +9,12 @@ import androidx.lifecycle.Observer;
 /**
  * @author chenf()
  * @date 2023-02-17 16:28
+ * @noinspection unchecked, rawtypes
  */
 class EnvironmentObservableRegister {
+    private EnvironmentObservableRegister() {
+    }
+
     static void register(Object observer, Object callback) {
         if (observer instanceof Observable) {
             ((Observable) observer).addOnPropertyChangedCallback((Observable.OnPropertyChangedCallback) callback);

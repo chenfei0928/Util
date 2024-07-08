@@ -9,7 +9,7 @@ import java.io.OutputStream
  * @date 2019-09-10 09:35
  */
 abstract class BaseExpirationDateSerializer<T>(
-    private val serializer: LocalSerializer<T>
+    serializer: LocalSerializer<T>
 ) : LocalSerializer.NoopIODecorator<T>(serializer) {
 
     override fun write(outputStream: OutputStream, obj: T & Any) {

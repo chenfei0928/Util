@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.app.ActivityOptionsCompat
 import com.alibaba.android.arouter.facade.Postcard
+import io.github.chenfei0928.os.getParcelableExtraCompat
 
 /**
  * @author chenfei(chenfei0928@gmail.com)
@@ -21,7 +22,7 @@ class ARouterIntentBridgeActivity : Activity() {
             Postcard(
                 getStringExtra(KEY_PATH),
                 getStringExtra(KEY_GROUP),
-                getParcelableExtra(KEY_URI),
+                getParcelableExtraCompat(KEY_URI),
                 getBundleExtra(KEY_BUNDLE)
             ).apply {
                 withFlags(getIntExtra(KEY_FLAGS, 0))

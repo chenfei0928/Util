@@ -31,7 +31,7 @@ public class Installation {
     private Installation() {
     }
 
-    public synchronized static String id(Context context) {
+    public static synchronized String id(Context context) {
         if (sID == null) {
             File installation = new File(context.getFilesDir(), INSTALLATION);
             try {

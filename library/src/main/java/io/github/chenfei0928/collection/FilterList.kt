@@ -32,9 +32,7 @@ constructor(
         }
 
     fun notifyFilterOrDataSourceUpdate() {
-        if (realtimeFilter) {
-            throw IllegalArgumentException("实时过滤的FilterList不需要通知数据源已更新")
-        }
+        require(!realtimeFilter) { "实时过滤的FilterList不需要通知数据源已更新" }
         filteredList = list.filter(filterPredicate)
     }
 

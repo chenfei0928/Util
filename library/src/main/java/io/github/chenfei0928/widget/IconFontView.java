@@ -11,6 +11,7 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import io.github.chenfei0928.util.R;
 
 /**
@@ -77,24 +78,24 @@ public class IconFontView extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
         int padLeft = getPaddingLeft();
         int padRight = getPaddingLeft();
         int padTop = getPaddingLeft();
         int padBottom = getPaddingLeft();
 
-        int padingHor = padLeft > padRight ? padLeft : padRight;
-        int padingVer = padTop > padBottom ? padTop : padBottom;
+        int padingHor = Math.max(padLeft, padRight);
+        int padingVer = Math.max(padTop, padBottom);
 
         int fontWidth = getWidth() - padingHor * 2;
         int fontHeight = getHeight() - padingVer * 2;
         //始终画在中间
-        int fontSize = fontWidth > fontHeight ? fontHeight : fontWidth;
+        int fontSize = Math.min(fontWidth, fontHeight);
         mTextPaint.setTextSize(fontSize);
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
         int x = getWidth() / 2;
-        int y = (int) (getHeight() / 2 + Math.abs(fontMetrics.ascent) / 2 - fontMetrics.leading * 3 / 4);
+        int y = (int) (getHeight() / 2.0 + Math.abs(fontMetrics.ascent) / 2 - fontMetrics.leading * 3 / 4);
         canvas.drawText(mIconFontText, x, y, mTextPaint);
     }
 }
