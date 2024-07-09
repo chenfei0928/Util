@@ -12,7 +12,7 @@ import kotlin.reflect.jvm.jvmErasure
  * @author chenf()
  * @date 2024-07-08 10:47
  */
-class ParameterizedTypeReflectKt<Parent : Any>(
+class ParameterizedTypeReflect2<Parent : Any>(
     private val parentKClass: KClass<Parent>,
     private val finalChildKClass: KClass<out Parent>,
 ) {

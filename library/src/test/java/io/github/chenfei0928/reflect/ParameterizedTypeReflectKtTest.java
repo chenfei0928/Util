@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.chenfei0928.reflect.parameterized.ParameterizedTypeReflect1;
-import io.github.chenfei0928.reflect.parameterized.ParameterizedTypeReflectKt;
+import io.github.chenfei0928.reflect.parameterized.ParameterizedTypeReflect2;
 import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
 
@@ -61,7 +61,7 @@ public class ParameterizedTypeReflectKtTest {
 
         // 判断获取泛型被擦除后的Class
         KClass<I> ikClass = JvmClassMappingKt.getKotlinClass(I.class);
-        ParameterizedTypeReflectKt<I<R>> reflect = new ParameterizedTypeReflectKt(ikClass, kClass);
+        ParameterizedTypeReflect2<I<R>> reflect = new ParameterizedTypeReflect2(ikClass, kClass);
         Class<R> refClass = reflect.getParentParameterizedTypeDefinedImplInChild(0);
         Class<R> overrideClass = finalChildClassInstance.getEClass();
         System.out.println("class by ref: " + refClass.getName() + ", by override:" + overrideClass.getName());
@@ -114,7 +114,7 @@ public class ParameterizedTypeReflectKtTest {
 
         // 判断获取泛型被擦除后的Class
         KClass<KI> ikClass = JvmClassMappingKt.getKotlinClass(KI.class);
-        ParameterizedTypeReflectKt<I<R>> reflect = new ParameterizedTypeReflectKt(ikClass, kClass);
+        ParameterizedTypeReflect2<I<R>> reflect = new ParameterizedTypeReflect2(ikClass, kClass);
         Class<R> refClass = reflect.getParentParameterizedTypeDefinedImplInChild(0);
         Class<R> overrideClass = finalChildClassInstance.getEClass();
         System.out.println("class by ref: " + refClass.getName() + ", by override:" + overrideClass.getName());
