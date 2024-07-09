@@ -31,7 +31,7 @@ class ParameterizedTypeReflect1<Parent>(
     private val childClassNode: ParentParameterizedTypeNode = if (parentClass == finalChildClass) {
         ParentParameterizedTypeNode(finalChildClass)
     } else {
-        ParameterizedTypeReflect.getParentTypeDefinedImplInChild(
+        ParentParameterizedTypeNode.getParentTypeDefinedImplInChild(
             parentClass, finalChildClass
         ).first
     }
@@ -89,7 +89,9 @@ class ParameterizedTypeReflect1<Parent>(
             currentNode.childNode?.let { childNode ->
                 // 如果父类定义了泛型，但子类没有实现，此处不会返回ParameterizedType的实例（测试为父类类实例），需要去获取该子类父类的泛型范围
                 val genericSuperclass = childNode.genericSuperclass as? ParameterizedType
-                genericSuperclass?.let { childNode to genericSuperclass.actualTypeArguments[indexOfCurrentNodeDefParameter] }
+                genericSuperclass?.let {
+                    childNode to genericSuperclass.actualTypeArguments[indexOfCurrentNodeDefParameter]
+                }
             }?.let { (childNode, typeImplOnParent) ->
                 // 在子类中查找父类中泛型定义实现
                 getErasedTypeClass(childNode, typeImplOnParent)
@@ -156,7 +158,9 @@ class ParameterizedTypeReflect1<Parent>(
             currentNode.childNode?.let { childNode ->
                 // 如果父类定义了泛型，但子类没有实现，此处不会返回ParameterizedType的实例（测试为父类类实例），需要去获取该子类父类的泛型范围
                 val genericSuperclass = childNode.genericSuperclass as? ParameterizedType
-                genericSuperclass?.let { childNode to genericSuperclass.actualTypeArguments[indexOfCurrentNodeDefParameter] }
+                genericSuperclass?.let {
+                    childNode to genericSuperclass.actualTypeArguments[indexOfCurrentNodeDefParameter]
+                }
             }?.let { (childNode, typeImplOnParent) ->
                 // 在子类中查找父类中泛型定义实现
                 getType(childNode, typeImplOnParent)

@@ -24,6 +24,16 @@ android {
         buildConfig = true
         viewBinding = true
     }
+
+    packaging {
+        resources {
+            excludes += arrayOf(
+                "META-INF/LICENSE-notice.md",
+                "META-INF/LICENSE.md",
+                "MANIFEST.MF",
+            )
+        }
+    }
 }
 
 dependencies {

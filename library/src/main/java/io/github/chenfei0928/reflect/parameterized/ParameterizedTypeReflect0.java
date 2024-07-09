@@ -41,7 +41,7 @@ public class ParameterizedTypeReflect0 {
         }
         // 从子类开始向上迭代查找超类，直到到达父类为止，并获取父类的直接子类
         ParentParameterizedTypeNode childClassNode =
-                ParameterizedTypeReflect.getParentTypeDefinedImplInChild(parentClass, finalChildClass).first;
+                ParentParameterizedTypeNode.getParentTypeDefinedImplInChild(parentClass, finalChildClass).first;
         // 从父类到子类查找过程中的类型边界约束
         TypeBoundsContract<R> parentTypeBoundsContract = null;
         // 从父类的直接子类开始向最后实现类遍历
