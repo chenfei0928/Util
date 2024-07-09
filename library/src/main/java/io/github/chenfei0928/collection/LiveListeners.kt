@@ -1,5 +1,6 @@
 package io.github.chenfei0928.collection
 
+import androidx.annotation.EmptySuper
 import androidx.collection.ArrayMap
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -11,7 +12,7 @@ import androidx.lifecycle.LifecycleOwner
  * @author chenf()
  * @date 2024-06-27 17:24
  */
-class LiveListeners<T>(
+open class LiveListeners<T>(
     private val map: MutableMap<T, Pair<LifecycleOwner, LifecycleEventObserver>?> = ArrayMap()
 ) : Set<T> {
     override val size: Int
@@ -51,6 +52,7 @@ class LiveListeners<T>(
                     map[element] = owner to this
                 } else {
                     map.remove(element)
+                    onRemoved(element)
                 }
             }
         }
@@ -73,13 +75,18 @@ class LiveListeners<T>(
         map.remove(element)?.let { (owner, observer) ->
             owner.lifecycle.removeObserver(observer)
         }
+        onRemoved(element)
     }
 
     fun removeObservers(owner: LifecycleOwner) {
         map.keys.filter {
             map[it]?.first == owner
         }.forEach {
-            map.remove(it)
+            removeObserver(it)
         }
+    }
+
+    @EmptySuper
+    protected open fun onRemoved(element: T) {
     }
 }
