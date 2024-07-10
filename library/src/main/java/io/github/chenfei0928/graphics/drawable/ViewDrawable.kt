@@ -97,5 +97,6 @@ class ViewDrawable(
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
+        // noop
     }
 }

@@ -61,9 +61,11 @@ open class AnimatedDrawable(
         }
 
         override fun onAnimationCancel(animation: Animator) {
+            // noop
         }
 
         override fun onAnimationRepeat(animation: Animator) {
+            // noop
         }
     }
     val animate = AnimatorSet().apply {
@@ -71,6 +73,7 @@ open class AnimatedDrawable(
     }
 
     override fun onBoundsChange(bounds: Rect) {
+        // noop
     }
 
     override fun start() {

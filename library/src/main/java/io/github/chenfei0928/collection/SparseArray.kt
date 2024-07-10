@@ -9,7 +9,7 @@ inline operator fun <T> SparseArrayCompat<T>.contains(value: T): Boolean {
     return containsValue(value)
 }
 
-inline fun <T> SparseArray<T>.getOrPut(key: Int, defaultValue: (Int) -> T): T {
+inline fun <T> SparseArray<T>.getOrPut(key: Int, defaultValue: (key: Int) -> T): T {
     val value = get(key)
     if (value != null) {
         return value
@@ -27,7 +27,7 @@ fun <T> SparseArray<T>.keys(): IntArray {
     return array
 }
 
-inline fun SparseIntArray.getOrPut(key: Int, defaultValue: (Int) -> Int): Int {
+inline fun SparseIntArray.getOrPut(key: Int, defaultValue: (key: Int) -> Int): Int {
     return if (containsKey(key)) {
         get(key)
     } else {

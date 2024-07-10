@@ -15,8 +15,7 @@ import kotlin.reflect.jvm.isAccessible
  * 监听sp字段的变化并通知回调进行更新，可以方便的传入字段以保证类型安全和一个监听器只监听一个值的变化
  *
  * @param owner 生命周期宿主（用于同步生命周期变化以取消监听）
- * @param property 要监听的字段（用于错误日志反馈和获取该字段sp存储的key）
- * @param delegate 该字段的委托实现（用于获取该字段的sp存储key）
+ * @param key 要监听的字段（用于错误日志反馈和获取该字段sp存储的key）
  * @param valueGetter 该字段值的获取方法（通过字段反射获取或其它）
  * @param listener 该字段变化的监听器（该sp存储的值发生变化时会触发回调，传入的值根据传入的[valueGetter]获取而非直接通过sp获取值）
  */
@@ -41,17 +40,17 @@ private inline fun <SpSaver : AbsSpSaver, V> SpSaver.watchSharedPreferenceDelega
 /**
  * 通过实例的属性引用获取该sp字段的key
  */
+@Suppress("UnusedReceiverParameter")
 fun AbsSpSaver.getPropertySpKeyName(property: KProperty0<*>): String {
     // 获取该字段的委托
     property.isAccessible = true
     val delegate = property.getDelegate()
     // 判断该字段的委托
-    if (delegate !is AbsSpSaver.AbsSpDelegate<*>) {
-        throw IllegalArgumentException("Property($property) must is delegate subclass as AbsSpSaver.AbsSpDelegate0: $delegate")
-    } else {
-        // 如果该字段是sp委托，获取其sp存储的key
-        return delegate.obtainDefaultKey(property)
+    require(delegate is AbsSpSaver.AbsSpDelegate<*>) {
+        "Property($property) must is delegate subclass as AbsSpSaver.AbsSpDelegate0: $delegate"
     }
+    // 如果该字段是sp委托，获取其sp存储的key
+    return delegate.obtainDefaultKey(property)
 }
 
 /**

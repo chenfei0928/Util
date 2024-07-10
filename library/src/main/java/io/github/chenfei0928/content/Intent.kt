@@ -6,7 +6,7 @@ import androidx.collection.ArrayMap
 import com.google.protobuf.GeneratedMessageLite
 import com.google.protobuf.getProtobufLiteParserForType
 import io.github.chenfei0928.base.ContextProvider
-import io.github.chenfei0928.repository.local.ParcelableUtils
+import io.github.chenfei0928.os.ParcelUtil
 import io.github.chenfei0928.util.deepEquals
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -74,7 +74,7 @@ fun Intent.zipExtras(): Intent = apply {
     val bundle = extras ?: return@apply
     val zipped = ByteArrayOutputStream().use {
         GZIPOutputStream(it).use {
-            it.write(ParcelableUtils.marshall(bundle))
+            it.write(ParcelUtil.marshall(bundle))
         }
         it.toByteArray()
     }
@@ -89,7 +89,7 @@ fun Intent.unzipExtras(classLoader: ClassLoader = ContextProvider::class.java.cl
     val unzipped = GZIPInputStream(ByteArrayInputStream(zipped)).use {
         it.readBytes()
     }
-    return ParcelableUtils.unmarshall(unzipped, Bundle.CREATOR).apply {
+    return ParcelUtil.unmarshall(unzipped, Bundle.CREATOR).apply {
         this.classLoader = classLoader
     }
 }

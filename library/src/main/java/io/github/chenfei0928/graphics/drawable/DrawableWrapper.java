@@ -10,6 +10,8 @@ import android.graphics.drawable.Drawable;
 
 import org.jetbrains.annotations.NotNull;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 /**
@@ -32,7 +34,7 @@ public class DrawableWrapper extends Drawable implements Drawable.Callback {
     }
 
     @Override
-    protected void onBoundsChange(Rect bounds) {
+    protected void onBoundsChange(@NonNull Rect bounds) {
         mDrawable.setBounds(bounds);
     }
 
@@ -72,11 +74,11 @@ public class DrawableWrapper extends Drawable implements Drawable.Callback {
     }
 
     @Override
-    public boolean setState(@NotNull final int[] stateSet) {
+    public boolean setState(@NonNull final int[] stateSet) {
         return mDrawable.setState(stateSet);
     }
 
-    @NotNull
+    @NonNull
     @Override
     public int[] getState() {
         return mDrawable.getState();
@@ -183,7 +185,7 @@ public class DrawableWrapper extends Drawable implements Drawable.Callback {
     }
 
     @Override
-    public void setTintMode(@NotNull PorterDuff.Mode tintMode) {
+    public void setTintMode(@Nullable PorterDuff.Mode tintMode) {
         DrawableCompat.setTintMode(mDrawable, tintMode);
     }
 

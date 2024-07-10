@@ -12,17 +12,19 @@ import java.util.WeakHashMap
  * @date 2021-06-29 14:09
  */
 open class WeakCache<T, R>(
-    private val creator: () -> R
+    private val creator: (T) -> R
 ) {
     private val cache: MutableMap<T, R> = WeakHashMap()
 
     open operator fun get(context: T): R {
-        return cache.getOrPut(context, creator)
+        return cache.getOrPut(context) {
+            creator(context)
+        }
     }
 }
 
 class ContextWeakCache<R>(
-    creator: () -> R
+    creator: (Context) -> R
 ) : WeakCache<Context, R>(creator) {
 
     override fun get(context: Context): R {

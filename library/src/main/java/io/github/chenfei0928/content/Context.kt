@@ -56,7 +56,7 @@ fun Context.getMetaDataString(name: String): String? {
 suspend inline fun <T> Context.bindService(
     intent: Intent,
     flag: Int,
-    crossinline onServiceConnected: (name: ComponentName, service: IBinder, continuation: CancellableContinuation<T>) -> Unit
+    crossinline onServiceConnected: OnServiceConnected<T>
 ): T {
     var outerConnection: ServiceConnection? = null
     return try {

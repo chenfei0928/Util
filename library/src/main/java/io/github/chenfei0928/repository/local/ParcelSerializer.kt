@@ -3,8 +3,7 @@ package io.github.chenfei0928.repository.local
 import android.os.Parcel
 import android.os.Parcelable
 import io.github.chenfei0928.os.PARCELABLE_CREATOR
-import io.github.chenfei0928.repository.local.ParcelableUtils.obtainToUse
-import io.github.chenfei0928.repository.local.ParcelableUtils.useByParcel
+import io.github.chenfei0928.os.ParcelUtil
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -16,14 +15,14 @@ import java.io.OutputStream
 abstract class BaseParcelSerializer<T> : LocalSerializer<T> {
 
     override fun write(outputStream: OutputStream, obj: T & Any) {
-        outputStream.write(obtainToUse {
+        outputStream.write(ParcelUtil.marshall {
             write(obj)
         })
         outputStream.flush()
     }
 
     override fun read(inputStream: InputStream): T {
-        return inputStream.readBytes().useByParcel {
+        return ParcelUtil.unmarshall(inputStream.readBytes()) {
             read()
         }
     }
