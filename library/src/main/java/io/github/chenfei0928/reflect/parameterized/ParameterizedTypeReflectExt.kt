@@ -15,8 +15,8 @@ inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeBoundsCont
 
 inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeClassDefinedImplInChild(
     @IntRange(from = 0) positionInParentParameter: Int
-): Class<R> = ParameterizedTypeReflect1(
-    Parent::class.java, this::class.java
+): Class<R> = ParameterizedTypeReflect2(
+    Parent::class, this::class
 ).getParentParameterizedTypeDefinedImplInChild(positionInParentParameter)
 
 inline fun <reified Parent : Any> Parent.getParentParameterizedTypeDefinedImplInChild(

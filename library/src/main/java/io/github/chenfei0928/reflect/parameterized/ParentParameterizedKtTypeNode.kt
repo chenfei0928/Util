@@ -11,15 +11,19 @@ import kotlin.reflect.full.isSubclassOf
  * @author chenf()
  * @date 2024-07-08 11:40
  */
-class ParentParameterizedKtTypeNode(
+internal class ParentParameterizedKtTypeNode(
     val nodeKClass: KClass<*>,
 ) {
-    var parentNode: ParentParameterizedKtTypeNode? = null
+    private var parentNode: ParentParameterizedKtTypeNode? = null
     var childNode: ParentParameterizedKtTypeNode? = null
 
-    var supertype: KType? = null
+    private var supertype: KType? = null
 
-    fun takeParentNode(
+    fun getSupertypeArgumentType(
+        positionInParentParameter: Int
+    ): KType = supertype?.arguments?.get(positionInParentParameter)?.type!!
+
+    private fun takeParentNode(
         supertype: KType, superNodeType: KClass<*>
     ) = ParentParameterizedKtTypeNode(superNodeType).also { parentNode ->
         this.supertype = supertype

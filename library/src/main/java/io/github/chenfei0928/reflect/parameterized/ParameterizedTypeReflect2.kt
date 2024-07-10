@@ -3,12 +3,24 @@ package io.github.chenfei0928.reflect.parameterized
 import androidx.annotation.IntRange
 import io.github.chenfei0928.reflect.arrayClass
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.reflect.KTypeParameter
-import kotlin.reflect.KTypeProjection
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.jvmErasure
 
 /**
+ * 用Kotlin反射获取类型信息
+ * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
+ *
+ * ```
+ * Parent<R>
+ * Child : Parent<R-Impl>
+ * ```
+ *
+ * @param Parent 父类类型
+ * @param parentKClass              父类类实例
+ * @param finalChildKClass          最终子类类实例
+ *
  * @author chenf()
  * @date 2024-07-08 10:47
  */
@@ -16,85 +28,96 @@ class ParameterizedTypeReflect2<Parent : Any>(
     private val parentKClass: KClass<Parent>,
     private val finalChildKClass: KClass<out Parent>,
 ) {
-    private val childClassNode: ParentParameterizedKtTypeNode =
-        if (parentKClass == finalChildKClass) {
-            ParentParameterizedKtTypeNode(finalChildKClass)
-        } else {
-            ParentParameterizedKtTypeNode.getParentTypeDefinedImplInChild(
-                parentKClass, finalChildKClass
-            ).first
-        }
-
+    /**
+     * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
+     *
+     * @param positionInParentParameter 要获取的父类声明范型的指定下标
+     * @param R 在子类实现的父类中指定声明的类型
+     */
     fun <R> getParentParameterizedTypeDefinedImplInChild(
         @IntRange(from = 0) positionInParentParameter: Int
     ): Class<R> = if (parentKClass == finalChildKClass) {
-        childClassNode.nodeKClass.typeParameters[positionInParentParameter].upperBounds.first().javaType as Class<R>
-    } else getErasedTypeKClass(
-        childClassNode, childClassNode.supertype?.arguments?.get(positionInParentParameter)!!
-    )
-
-    private fun <R> getErasedTypeKClass(
-        currentNode: ParentParameterizedKtTypeNode,
-        kTypeProjection: KTypeProjection?
-    ): Class<R> {
-        when (val kClassifier = kTypeProjection?.type?.classifier) {
-            null -> {
-                throw IllegalArgumentException(
-                    "无法从指定类型中获取其泛型擦除后的类型." +
-                            "\n父类：" + parentKClass +
-                            "\n最终子类：" + finalChildKClass +
-                            "\n当前子类：" + currentNode +
-                            "\n当前子类实现的父类中的范型定义：" + kTypeProjection
-                )
-            }
-            is KClass<*> -> {
-                val jClass = kClassifier.java
-                if (!jClass.isArray) {
-                    // 当前子类直接指定了类型
-                    return jClass as Class<R>
-                } else if (jClass.componentType.isPrimitive) {
-                    // 当前子类直接指定了原生类型数组类型
-                    return jClass as Class<R>
-                } else {
-                    // 数组，但由子类负责进一步约束
-                    val typeKClass =
-                        getErasedTypeKClass<R>(currentNode, kTypeProjection.type!!.arguments[0])
-                    return typeKClass.arrayClass() as Class<R>
-                }
-            }
-            is KTypeParameter -> {
-                // 当前子类进一步约束了范围，并由子类再次实现
-                return findKTypeParameterClass(currentNode, kClassifier)
-            }
-            else -> {
-                throw IllegalArgumentException(
-                    "无法从指定类型中获取其泛型擦除后的类型." +
-                            "\n父类：" + parentKClass +
-                            "\n最终子类：" + finalChildKClass +
-                            "\n当前子类：" + currentNode +
-                            "\n当前子类实现的父类中的范型定义：" + kTypeProjection.javaClass + kTypeProjection
-                )
-            }
-        }
+        val clazz = ParentParameterizedKtTypeNode(finalChildKClass)
+            .nodeKClass
+            .typeParameters[positionInParentParameter]
+            .upperBounds
+            .first()
+            .javaType
+        clazz as Class<R>
+    } else {
+        val childClassNode = ParentParameterizedKtTypeNode.getParentTypeDefinedImplInChild(
+            parentKClass, finalChildKClass
+        ).first
+        getErasedTypeClass(
+            childClassNode, childClassNode.getSupertypeArgumentType(positionInParentParameter)
+        )
     }
 
-    private fun <R> findKTypeParameterClass(
+    /**
+     * 获取已擦除后的类型类
+     *
+     * @param R 在子类实现的父类中指定声明的类型
+     * @param currentNode 当前类节点
+     * @param kType 当前类实现的父类中泛型定义（```Child : Parent<X>``` 中的X）
+     * @return 已擦除后的类型类
+     */
+    private fun <R> getErasedTypeClass(
         currentNode: ParentParameterizedKtTypeNode,
-        kTypeParameter: KTypeParameter
-    ): Class<R> {
-        val typeParameters = currentNode.nodeKClass.typeParameters
-        val index = typeParameters.indexOfFirst {
-            it.name == kTypeParameter.name
-        }
-        val childNode = currentNode.childNode
-        if (childNode == null) {
-            return typeParameters[index].upperBounds.first().jvmErasure.java as Class<R>
-        } else {
-            val erasedTypeKClass = getErasedTypeKClass<Any>(
-                childNode,
-                childNode.supertype?.arguments?.get(index)!!
+        kType: KType?
+    ): Class<R> = when (val kClassifier = kType?.classifier) {
+        null -> {
+            // Kotlin不支持对其进行描述的类型，如复合类型
+            throw IllegalArgumentException(
+                "无法从指定类型中获取其泛型擦除后的类型." +
+                        "\n父类：" + parentKClass +
+                        "\n最终子类：" + finalChildKClass +
+                        "\n当前子类：" + currentNode +
+                        "\n当前子类实现的父类中的范型定义：" + kType
             )
-            return erasedTypeKClass as Class<R>
+        }
+        is KClass<*> -> {
+            val jClass = kClassifier.java
+            /* return */ if (!jClass.isArray) {
+                // 当前子类直接指定了一个非数组类型
+                jClass as Class<R>
+            } else if (jClass.componentType.isPrimitive) {
+                // 当前子类直接指定了原生类型数组类型
+                jClass as Class<R>
+            } else {
+                // 数组，但由子类负责进一步约束
+                val typeKClass = getErasedTypeClass<R>(
+                    currentNode, kType.arguments[0].type
+                )
+                typeKClass.arrayClass() as Class<R>
+            }
+        }
+        is KTypeParameter -> {
+            // 当前子类进一步约束了范围，并由子类再次实现
+            // 查找当前泛型约束在类头定义的下标顺序
+            val typeParameters = currentNode.nodeKClass.typeParameters
+            val index = typeParameters.indexOfFirst {
+                it.name == kClassifier.name
+            }
+            val childNode = currentNode.childNode
+            /* return */ if (childNode == null) {
+                // 没有子节点，直接获取当前节点的泛型约束范围
+                typeParameters[index].upperBounds.first().jvmErasure.java as Class<R>
+            } else {
+                // 有子节点，进一步获取子节点的泛型约束
+                val erasedTypeKClass = getErasedTypeClass<Any>(
+                    childNode, childNode.getSupertypeArgumentType(index)
+                )
+                erasedTypeKClass as Class<R>
+            }
+        }
+        else -> {
+            throw IllegalArgumentException(
+                "无法从指定类型中获取其泛型擦除后的类型." +
+                        "\n父类：" + parentKClass +
+                        "\n最终子类：" + finalChildKClass +
+                        "\n当前子类：" + currentNode +
+                        "\n当前子类实现的父类中的范型定义：" + kType.javaClass + kType
+            )
         }
     }
 }
