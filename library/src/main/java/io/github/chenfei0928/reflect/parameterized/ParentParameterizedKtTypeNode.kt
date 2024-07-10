@@ -17,8 +17,14 @@ internal class ParentParameterizedKtTypeNode(
     private var parentNode: ParentParameterizedKtTypeNode? = null
     var childNode: ParentParameterizedKtTypeNode? = null
 
+    // 当前节点继承的父节点的泛型类型信息
     private var supertype: KType? = null
 
+    /**
+     * 获取当前节点继承的父节点时声明的泛型信息
+     *
+     * @param positionInParentParameter 要获取的父类声明范型的指定下标
+     */
     fun getSupertypeArgumentType(
         positionInParentParameter: Int
     ): KType = supertype?.arguments?.get(positionInParentParameter)?.type!!
@@ -32,15 +38,17 @@ internal class ParentParameterizedKtTypeNode(
     }
 
     private fun toChildString(): String {
-        return "ParentParameterizedKtTypeNode{" +
+        return '{' +
                 "nodeClass=" + nodeKClass +
+                ", supertype=" + supertype +
                 ", childNode=" + childNode?.toChildString() +
                 '}'
     }
 
     private fun toParentString(): String {
-        return "ParentParameterizedKtTypeNode{" +
+        return '{' +
                 "nodeClass=" + nodeKClass +
+                ", supertype=" + supertype +
                 ", parentNode=" + parentNode?.toParentString() +
                 '}'
     }
@@ -83,11 +91,9 @@ internal class ParentParameterizedKtTypeNode(
                             continue
                         }
                         parentKClass == superClass -> {
-                            childClass.supertype = supertype
                             return childClass to finalChildNode
                         }
                         superClass.isSubclassOf(parentKClass) -> {
-                            childClass.supertype = supertype
                             childClass = childClass.takeParentNode(supertype, superClass)
                             break
                         }

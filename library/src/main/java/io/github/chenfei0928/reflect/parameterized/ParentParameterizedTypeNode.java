@@ -28,7 +28,7 @@ class ParentParameterizedTypeNode {
      * 如果该类的父节点是由继承获得，则为{@link ParentParameterizedTypeNode#BY_SUPER_CLASS}，
      * 如果是由实现接口获得的父节点，则父节点接口在当前类中实现的下标。
      */
-    int interfaceIndex = BY_SUPER_CLASS;
+    private int interfaceIndex = BY_SUPER_CLASS;
 
     ParentParameterizedTypeNode(@NotNull Class<?> aClass) {
         nodeClass = aClass;
@@ -63,7 +63,7 @@ class ParentParameterizedTypeNode {
 
     private String toChildString() {
         String childString = childNode != null ? childNode.toChildString() : null;
-        return "ParentParameterizedTypeNode{" +
+        return '{' +
                 "nodeClass=" + nodeClass +
                 ", childNode=" + childString +
                 ", interfaceIndex=" + interfaceIndex +
@@ -72,7 +72,7 @@ class ParentParameterizedTypeNode {
 
     private String toParentString() {
         String parentString = parentNode != null ? parentNode.toParentString() : null;
-        return "ParentParameterizedTypeNode{" +
+        return '{' +
                 "nodeClass=" + nodeClass +
                 ", parentNode=" + parentString +
                 ", interfaceIndex=" + interfaceIndex +
