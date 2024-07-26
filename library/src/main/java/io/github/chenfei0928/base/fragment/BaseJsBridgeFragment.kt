@@ -3,18 +3,19 @@ package io.github.chenfei0928.base.fragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.github.lzyzsd.jsbridge.BridgeHandler
-import com.github.lzyzsd.jsbridge.CallBackFunction
-import com.github.lzyzsd.jsbridge.WebViewJavascriptBridge
-import com.github.lzyzsd.jsbridge.send
+import com.github.lzyzsd.jsbridge.BridgeWebView
+import com.github.lzyzsd.jsbridge.OnBridgeCallback
 import io.github.chenfei0928.app.fragment.findOrAddChild
 import io.github.chenfei0928.concurrent.ExecutorUtil
+import io.github.chenfei0928.util.Log
+import io.github.chenfei0928.webkit.BaseWebChromeClient
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-11-06 14:45
  */
 abstract class BaseJsBridgeFragment : Fragment() {
-    private var jsBridge: WebViewJavascriptBridge? = null
+    private var jsBridge: BridgeWebView? = null
     private var doOnResumed: Runnable? = null
 
     override fun onResume() {
@@ -27,25 +28,29 @@ abstract class BaseJsBridgeFragment : Fragment() {
         }
     }
 
-    protected abstract fun handler(name: String, data: String?, function: CallBackFunction)
+    protected abstract fun handler(name: String, data: String?, function: OnBridgeCallback)
 
     protected fun safeJsBridgeSend(
-        handlerName: String, data: String?, responseCallback: CallBackFunction? = null
+        handlerName: String, data: String?, responseCallback: OnBridgeCallback? = null
     ) {
         ExecutorUtil.postToUiThread {
+            if (BaseWebChromeClient.debugLog) {
+                Log.v(TAG, "send: $handlerName $data")
+            }
             // 如果在前台，则转发回调
             if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                jsBridge?.send(handlerName, data, responseCallback)
+                jsBridge?.callHandler(handlerName, data, responseCallback)
             }
         }
     }
 
     companion object {
+        private const val TAG = "BaseJsBridgeFragment"
 
         @JvmStatic
         protected inline fun <reified F : BaseJsBridgeFragment> createBridgeHandler(
             host: FragmentHost,
-            jsBridge: WebViewJavascriptBridge,
+            jsBridge: BridgeWebView,
             handlerName: String,
             noinline creator: () -> F
         ) = createBridgeHandler(
@@ -55,7 +60,7 @@ abstract class BaseJsBridgeFragment : Fragment() {
         @JvmStatic
         protected fun <F : BaseJsBridgeFragment> createBridgeHandler(
             host: FragmentHost,
-            jsBridge: WebViewJavascriptBridge,
+            jsBridge: BridgeWebView,
             handlerName: String,
             tag: String,
             clazz: Class<F>,

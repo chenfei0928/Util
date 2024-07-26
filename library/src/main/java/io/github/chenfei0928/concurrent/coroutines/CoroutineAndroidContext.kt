@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentViewLifecycleAccessor
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.base.ContextProvider
 import io.github.chenfei0928.content.findActivity
@@ -22,7 +23,8 @@ import kotlin.coroutines.CoroutineContext
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-03-14 17:48
  */
-internal class CoroutineAndroidContextImpl(
+internal class CoroutineAndroidContextImpl
+private constructor(
     private val host: Any?,
     override val androidContext: Context,
     override val fragmentHost: Fragment?,
@@ -32,7 +34,7 @@ internal class CoroutineAndroidContextImpl(
         return "CoroutineAndroidContextImpl(host=$host, androidContext=$androidContext, fragmentHost=$fragmentHost, tagOrNull=$tagOrNull)"
     }
 
-    override val tagOrNull by lazy {
+    override val tagOrNull: String? by lazy {
         host?.staticTag ?: fragmentHost?.staticTag ?: androidContext.staticTag
     }
 
@@ -77,6 +79,9 @@ internal class CoroutineAndroidContextImpl(
                 is Dialog -> {
                     CoroutineAndroidContextImpl(node, node.context, null)
                 }
+                is AndroidViewModel -> {
+                    CoroutineAndroidContextImpl(node, node.getApplication(), null)
+                }
                 is Fragment -> {
                     CoroutineAndroidContextImpl(node, node.activity ?: node.requireContext(), node)
                 }
@@ -116,17 +121,17 @@ interface CoroutineAndroidContext : CoroutineContext.Element {
     val tagOrNull: String?
 
     override fun toString(): String
-}
 
-val CoroutineAndroidContext.childFragmentManager: FragmentManager?
-    get() {
-        val fragment = fragmentHost
-        if (fragment != null) {
-            return fragment.childFragmentManager
+    val childFragmentManager: FragmentManager?
+        get() {
+            val fragment = fragmentHost
+            if (fragment != null) {
+                return fragment.childFragmentManager
+            }
+            val context = androidContext
+            if (context is FragmentActivity) {
+                return context.supportFragmentManager
+            }
+            return null
         }
-        val context = androidContext
-        if (context is FragmentActivity) {
-            return context.supportFragmentManager
-        }
-        return null
-    }
+}

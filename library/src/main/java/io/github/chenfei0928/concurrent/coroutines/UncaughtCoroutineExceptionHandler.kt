@@ -52,5 +52,5 @@ object DefaultScope : CoroutineScope {
  */
 object MainScope : CoroutineScope {
     override val coroutineContext: CoroutineContext =
-        Dispatchers.Main + UncaughtLogCoroutineExceptionHandler
+        Dispatchers.Main.immediate + UncaughtLogCoroutineExceptionHandler
 }

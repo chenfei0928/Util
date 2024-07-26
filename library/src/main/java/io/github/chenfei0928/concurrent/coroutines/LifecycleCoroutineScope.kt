@@ -62,9 +62,11 @@ private class LifecycleCoroutineScope(
     host: LifecycleOwner,
     private val closeCallback: Closeable
 ) : JobCoroutineScope(MainScope.coroutineContext), LifecycleEventObserver {
-    override val coroutineContext: CoroutineContext
-        get() = super.coroutineContext + // 生命周期的协程
-                androidContextElement
+    private val androidContextElement: CoroutineAndroidContext =
+        CoroutineAndroidContextImpl.newInstance(host)
+
+    override val coroutineContext: CoroutineContext =
+        super.coroutineContext + androidContextElement
 
     fun init(): LifecycleCoroutineScope = apply {
         launch {
@@ -80,7 +82,4 @@ private class LifecycleCoroutineScope(
             cancel()
         }
     }
-
-    private val androidContextElement: CoroutineAndroidContext =
-        CoroutineAndroidContextImpl.newInstance(host)
 }

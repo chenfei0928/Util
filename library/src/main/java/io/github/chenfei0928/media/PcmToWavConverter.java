@@ -105,7 +105,7 @@ public class PcmToWavConverter {
         // 文件头数据
         System.arraycopy(header, 0, target, 0, HEADER_SIZE_WAVE);
         // 将pcm数据输出到target
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; ) {
             int it = pcmData[i];
             // 高8bit内存位
             target[HEADER_SIZE_WAVE + i++] = (byte) ((it >> 8) & 0xff);
@@ -128,7 +128,7 @@ public class PcmToWavConverter {
 
     private void fixSize(byte[] target, int size) {
         // 总大小，由于不包括RIFF和WAV，所以是44 - 8 = 36，在加上PCM文件大小
-        long totalDataLen = size + 36;
+        int totalDataLen = size + 36;
         // 数据大小
         target[4] = (byte) (totalDataLen & 0xff);
         target[5] = (byte) ((totalDataLen >> 8) & 0xff);

@@ -2,8 +2,9 @@ package io.github.chenfei0928.repository.local
 
 import android.content.Context
 import android.os.Build
+import android.util.AtomicFile
 import android.util.Log
-import androidx.core.util.AtomicFile
+import androidx.core.util.tryWrite
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import java.io.File
 import java.util.concurrent.atomic.AtomicReference
@@ -53,16 +54,15 @@ abstract class LocalFileStorage0<T>(
             atomicFile.delete()
             return
         }
-        val write = atomicFile.startWrite()
         try {
-            serializer.onOpenOutStream(write).use {
-                serializer.write(it, value)
-                it.flush()
+            atomicFile.tryWrite { write ->
+                serializer.onOpenOutStream(write).use {
+                    serializer.write(it, value)
+                    it.flush()
+                }
             }
-            atomicFile.finishWrite(write)
         } catch (e: Exception) {
             Log.e(TAG, "saveToLocalFileOrDelete: ${atomicFile.baseFile}, $serializer", e)
-            atomicFile.failWrite(write)
         }
     }
     //</editor-fold>

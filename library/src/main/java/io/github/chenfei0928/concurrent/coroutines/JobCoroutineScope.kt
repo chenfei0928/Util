@@ -11,10 +11,10 @@ import kotlin.coroutines.CoroutineContext
  * @date 2020-07-30 15:04
  */
 open class JobCoroutineScope(
-    private val constructorCoroutineContext: CoroutineContext
+    constructorCoroutineContext: CoroutineContext
 ) : CoroutineScope {
     val job = SupervisorJob() // 定义job
 
-    override val coroutineContext: CoroutineContext
-        get() = constructorCoroutineContext + job
+    override val coroutineContext: CoroutineContext =
+        constructorCoroutineContext + job
 }

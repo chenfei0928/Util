@@ -72,8 +72,8 @@ object Deps {
 
         // https://github.com/square/okhttp
         // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-        val okhttp = "com.squareup.okhttp3:okhttp:4.11.0"
-        val logging = "com.squareup.okhttp3:logging-interceptor:4.11.0"
+        val okhttp = "com.squareup.okhttp3:okhttp:4.12.0"
+        val logging = "com.squareup.okhttp3:logging-interceptor:4.12.0"
 
         // https://github.com/gildor/kotlin-coroutines-okhttp
         val okhttpExt = "ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0"
@@ -81,9 +81,9 @@ object Deps {
         // https://github.com/square/retrofit
         // http://mvnrepository.com/artifact/com.squareup.retrofit2
         object retrofit {
-            val core = "com.squareup.retrofit2:retrofit:2.9.0"
-            val rxjava2 = "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
-            val gson = "com.squareup.retrofit2:converter-gson:2.9.0"
+            val core = "com.squareup.retrofit2:retrofit:2.11.0"
+            val rxjava2 = "com.squareup.retrofit2:adapter-rxjava2:2.11.0"
+            val gson = "com.squareup.retrofit2:converter-gson:2.11.0"
         }
 
         // https://github.com/franmontiel/PersistentCookieJar
@@ -156,7 +156,7 @@ object Deps {
         val floatView = "com.imuxuan:floatingview:1.6"
 
         // https://github.com/google/gson
-        val gson = "com.google.code.gson:gson:2.10.1"
+        val gson = "com.google.code.gson:gson:2.11.0"
 
         // https://github.com/square/okio
         val okio = "com.squareup.okio:okio:3.5.0"
@@ -164,16 +164,16 @@ object Deps {
         // protobuf 序列化框架
         object protobuf {
             // https://github.com/protocolbuffers/protobuf/tree/master/java
-            val java = "com.google.protobuf:protobuf-java:3.21.2"
+            val java = "com.google.protobuf:protobuf-java:3.25.3"
 
             // https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md
-            val javaLite = "com.google.protobuf:protobuf-javalite:3.21.2"
+            val javaLite = "com.google.protobuf:protobuf-javalite:3.25.3"
         }
 
         // https://github.com/zxing/zxing
         // https://repo1.maven.org/maven2/com/google/zxing/core/
         object zxing {
-            val core = "com.google.zxing:core:3.5.2"
+            val core = "com.google.zxing:core:3.5.3"
         }
 
         // https://github.com/Curzibn/Luban
@@ -194,7 +194,7 @@ object Deps {
         val util = "io.github.chenfei0928:util:1.3-SNAPSHOT"
 
         // https://github.com/getActivity/XXPermissions
-        val xxPermission = "com.github.getActivity:XXPermissions:18.5"
+        val xxPermission = "com.github.getActivity:XXPermissions:20.0"
 
         // https://github.com/johncarl81/parceler
         val parceler = "org.parceler:parceler-api:1.1.13"
@@ -222,7 +222,7 @@ object Deps {
         // Google工具类
         object google {
             // https://github.com/google/guava
-            val guava = "com.google.guava:guava:32.1.2-android"
+            val guava = "com.google.guava:guava:33.2.1-android"
         }
 
         // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
@@ -459,7 +459,8 @@ object Deps {
         val captchaInput = "com.alimuzaffar.lib:pinentryedittext:2.0.6"
 
         // https://github.com/lzyzsd/JsBridge
-        val jsBridge = "com.github.lzyzsd:jsbridge:1.0.4"
+        // https://jitpack.io/#com.github.lzyzsd/jsbridge
+        val jsBridge = "com.github.lzyzsd.jsbridge:jsbridge:2.0.0"
 
         // https://github.com/huburt-Hu/NewbieGuide
         val newbieGuide = "com.github.huburt-Hu:NewbieGuide:v2.4.4"

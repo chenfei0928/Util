@@ -22,9 +22,11 @@ abstract class PermissionLauncher(
     private val callback: PermissionResultCallback,
 ) : ActivityResultLauncher<Unit?>() {
 
-    override fun getContract(): ActivityResultContract<Unit?, Map<String, Boolean>> {
-        val requestMultiplePermissions = ActivityResultContracts.RequestMultiplePermissions()
-        return object : ActivityResultContract<Unit?, Map<String, Boolean>>() {
+    override val contract: ActivityResultContract<Unit?, Map<String, Boolean>>
+        get() = object : ActivityResultContract<Unit?, Map<String, Boolean>>() {
+            val requestMultiplePermissions =
+                ActivityResultContracts.RequestMultiplePermissions()
+
             override fun createIntent(context: Context, input: Unit?): Intent {
                 return requestMultiplePermissions.createIntent(context, permissions)
             }
@@ -33,7 +35,6 @@ abstract class PermissionLauncher(
                 return requestMultiplePermissions.parseResult(resultCode, intent)
             }
         }
-    }
 
     override fun launch(input: Unit?, options: ActivityOptionsCompat?) {
         when {

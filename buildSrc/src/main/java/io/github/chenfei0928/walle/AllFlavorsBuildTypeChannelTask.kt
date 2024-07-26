@@ -34,16 +34,16 @@ internal abstract class AllFlavorsBuildTypeChannelTask : DefaultTask() {
             outputDir.mkdirs()
         }
         // 如果不只是general productFlavor，则说明是全渠道打包，将其它的productFlavors输出文件复制到最终输出目录
-        outputsApkPath.get().forEach { (variant, apkFile) ->
-            if (variant.buildTypeName.equals(targetBuildType.get(), true)) {
-                val channels = File(apkFile.parentFile, ChannelMaker.CHANNELS_APK_OUTPUT_DIR_NAME)
-                if (channels.exists()) {
-                    channels.listFiles()?.forEach {
-                        Files.copy(it, File(outputDir, it.name))
-                    }
-                } else {
-                    Files.copy(apkFile, File(outputDir, apkFile.name))
+        outputsApkPath.get().filter { (variant, _) ->
+            variant.buildTypeName.equals(targetBuildType.get(), true)
+        }.forEach { (_, apkFile) ->
+            val channels = File(apkFile.parentFile, ChannelMaker.CHANNELS_APK_OUTPUT_DIR_NAME)
+            if (channels.exists()) {
+                channels.listFiles()?.forEach {
+                    Files.copy(it, File(outputDir, it.name))
                 }
+            } else {
+                Files.copy(apkFile, File(outputDir, apkFile.name))
             }
         }
     }

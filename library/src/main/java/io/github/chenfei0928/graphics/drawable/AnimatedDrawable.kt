@@ -1,6 +1,7 @@
 package io.github.chenfei0928.graphics.drawable
 
 import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.graphics.Canvas
 import android.graphics.Rect
@@ -47,7 +48,7 @@ open class AnimatedDrawable(
     }
 
     private val callbacksSet = arrayListOf<Animatable2Compat.AnimationCallback>()
-    private val lis = object : Animator.AnimatorListener {
+    private val lis = object : AnimatorListenerAdapter() {
         override fun onAnimationStart(animation: Animator) {
             callbacksSet.forEach {
                 it.onAnimationStart(this@AnimatedDrawable)
@@ -58,14 +59,6 @@ open class AnimatedDrawable(
             callbacksSet.forEach {
                 it.onAnimationEnd(this@AnimatedDrawable)
             }
-        }
-
-        override fun onAnimationCancel(animation: Animator) {
-            // noop
-        }
-
-        override fun onAnimationRepeat(animation: Animator) {
-            // noop
         }
     }
     val animate = AnimatorSet().apply {

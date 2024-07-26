@@ -70,31 +70,28 @@ object FileUtil {
     fun moveDirToDest(source: File, dest: File): Boolean {
         if (source.isFile) {
             return copyFileToDest(source, dest) && deleteFileOrDir(source)
-        } else if (!source.isDirectory) {
+        }
+        if (!source.isDirectory) {
             return false
+        }
+        if (!dest.exists()) {
+            dest.mkdir()
+        }
+        val files = source.listFiles()
+            ?: return false
+        var finish = true
+        for (file in files) {
+            val name = file.name
+            val destChild = File(dest, name)
+            if (!moveDirToDest(file, destChild)) {
+                finish = false
+            }
+        }
+        return if (finish) {
+            deleteFileOrDir(source)
+            true
         } else {
-            if (!dest.exists()) {
-                dest.mkdir()
-            }
-            val files = source.listFiles()
-            if (files == null) {
-                return false
-            } else {
-                var finish = true
-                for (file in files) {
-                    val name = file.name
-                    val destChild = File(dest, name)
-                    if (!moveDirToDest(file, destChild)) {
-                        finish = false
-                    }
-                }
-                return if (finish) {
-                    deleteFileOrDir(source)
-                    true
-                } else {
-                    false
-                }
-            }
+            false
         }
     }
 

@@ -5,7 +5,12 @@ import android.content.DialogInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Message
-import android.webkit.*
+import android.webkit.ConsoleMessage
+import android.webkit.JsPromptResult
+import android.webkit.JsResult
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
+import android.webkit.WebView
 import android.widget.ProgressBar
 import androidx.annotation.Size
 import androidx.appcompat.app.AlertDialog

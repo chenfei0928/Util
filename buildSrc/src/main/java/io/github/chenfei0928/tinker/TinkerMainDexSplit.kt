@@ -36,7 +36,7 @@ internal fun Project.applyTinkerMainDexSplit() {
                 "transformClassesWithMultidexlistFor${variantName}"
             )
             val exist = multidexTask != null
-            println("main-dex multidexTask(transformClassesWithMultidexlistFor${variantName}) exist: ${exist}")
+            println("main-dex multidexTask(transformClassesWithMultidexlistFor${variantName}) exist: $exist")
 
             if (multidexTask != null) {
                 val replaceTask = createReplaceMainDexListTask(variant)
@@ -55,24 +55,25 @@ private fun Project.createReplaceMainDexListTask(variant: ApplicationVariant): T
         // 从主dex移除的列表
         // 存放剔除规则的路径
         val excludeClassList = project.projectDir.child {
-            tinkerConfigDir / "main_dex_exclude_class.txt"
-        }.takeIf { it.exists() }?.useLines {
-            it.map { it.trim() }
+            TINKER_CONFIG_DIR / "main_dex_exclude_class.txt"
+        }.takeIf { it.exists() }?.useLines { mainDexClass ->
+            mainDexClass.map { it.trim() }
                 .filter { it.isNotEmpty() && !it.startsWith("#") }
                 .toList()
         } ?: return@doLast
 
         // 主dex中类列表
         val mainDexFile = project.layout.buildDirectory.child {
-            "intermediates" / "legacy_multidex_main_dex_list" / variant.dirName / "transformClassesWithMultidexlistFor${variantName}"
-        }.let {
+            "intermediates" / "legacy_multidex_main_dex_list" / variant.dirName /
+                    "transformClassesWithMultidexlistFor${variantName}"
+        }.let { file ->
             //再次判断兼容 linux/mac 环境获取
-            it.child { "maindexlist.txt" }.takeIf { it.exists() }
-                ?: it.child { "mainDexList.txt" }.takeIf { it.exists() }
+            file.child { "maindexlist.txt" }.takeIf { it.exists() }
+                ?: file.child { "mainDexList.txt" }.takeIf { it.exists() }
         } ?: return@doLast
 
-        val mainDexList = mainDexFile.useLines {
-            it.map { it.trim() }.filter { it.isNotEmpty() }.toList()
+        val mainDexList = mainDexFile.useLines { mainDexClass ->
+            mainDexClass.map { it.trim() }.filter { it.isNotEmpty() }.toList()
         }
         val newMainDexList = mainDexList.mapNotNull { mainDexItem ->
             var isKeepMainDexItem = true

@@ -18,12 +18,8 @@ import io.github.chenfei0928.view.ViewUtil
  * 获取帧动画的总时长
  */
 val AnimationDrawable.duration: Int
-    get() {
-        var duration = 0
-        for (i in 0 until numberOfFrames) {
-            duration += getDuration(i)
-        }
-        return duration
+    get() = (0 until numberOfFrames).sumOf {
+        getDuration(it)
     }
 
 fun Drawable.asRipple(context: Context): Drawable {

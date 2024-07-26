@@ -28,9 +28,11 @@ val View.attachedCoroutineScope: CoroutineScope
 private class ViewCoroutineScope(
     private val view: View
 ) : JobCoroutineScope(MainScope.coroutineContext) {
-    override val coroutineContext: CoroutineContext
-        get() = super.coroutineContext + // 生命周期的协程
-                androidContextElement
+    private val androidContextElement: CoroutineAndroidContext =
+        CoroutineAndroidContextImpl.newInstance(view)
+
+    override val coroutineContext: CoroutineContext =
+        super.coroutineContext + androidContextElement
 
     fun init(): ViewCoroutineScope = apply {
         view.doOnAttach {
@@ -51,7 +53,4 @@ private class ViewCoroutineScope(
             }
         }
     }
-
-    private val androidContextElement: CoroutineAndroidContext =
-        CoroutineAndroidContextImpl.newInstance(view)
 }

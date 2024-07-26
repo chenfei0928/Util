@@ -29,7 +29,7 @@ import java.io.File
 import java.util.Locale
 
 // tinker混淆文件存放位置
-internal const val tinkerConfigDir = "tinker"
+internal const val TINKER_CONFIG_DIR = "tinker"
 
 /**
  * 接入方式为仅依赖接入，编译完手动备份R8混淆表与资源文件混淆表。
@@ -47,9 +47,9 @@ fun Project.applyAppTinker() {
     // tinkerSdk 所需混淆表
     buildSrcAndroid<com.android.build.gradle.AppExtension> {
         defaultConfig {
-            proguardFiles(projectDir.child { tinkerConfigDir / "tinker_proguard.pro" })
+            proguardFiles(projectDir.child { TINKER_CONFIG_DIR / "tinker_proguard.pro" })
             multiDexKeepProguard = projectDir.child {
-                tinkerConfigDir / "tinker_multidexkeep.pro"
+                TINKER_CONFIG_DIR / "tinker_multidexkeep.pro"
             }
         }
     }

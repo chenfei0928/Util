@@ -12,36 +12,36 @@ object DepsAndroidx {
 
     // https://developer.android.com/jetpack/androidx/releases/core
     // https://dl.google.com/dl/android/maven2/androidx/core/core/maven-metadata.xml
-    const val core = "androidx.core:core:1.12.0"
-    const val ktx = "androidx.core:core-ktx:1.12.0"
+    const val core = "androidx.core:core:1.13.1"
+    const val ktx = "androidx.core:core-ktx:1.13.1"
 
     // https://dl.google.com/dl/android/maven2/androidx/activity/activity/maven-metadata.xml
-    const val activity = "androidx.activity:activity:1.7.2"
-    const val activityKtx = "androidx.activity:activity-ktx:1.7.2"
+    const val activity = "androidx.activity:activity:1.9.1"
+    const val activityKtx = "androidx.activity:activity-ktx:1.9.1"
 
     // https://dl.google.com/dl/android/maven2/androidx/activity/activity-compose/maven-metadata.xml
     const val activityCompose = "androidx.activity:activity-compose:1.7.2"
 
     // https://dl.google.com/dl/android/maven2/androidx/fragment/fragment/maven-metadata.xml
-    const val fragment = "androidx.fragment:fragment:1.6.1"
-    const val fragmentKtx = "androidx.fragment:fragment-ktx:1.6.1"
-    const val fragmentTest = "androidx.fragment:fragment-testing:1.6.2"
+    const val fragment = "androidx.fragment:fragment:1.8.1"
+    const val fragmentKtx = "androidx.fragment:fragment-ktx:1.8.1"
+    const val fragmentTest = "androidx.fragment:fragment-testing:1.8.2"
 
     // https://dl.google.com/dl/android/maven2/androidx/appcompat/appcompat/maven-metadata.xml
-    const val appcompat = "androidx.appcompat:appcompat:1.6.1"
-    const val appcompatRes = "androidx.appcompat:appcompat-resources:1.6.1"
+    const val appcompat = "androidx.appcompat:appcompat:1.7.0"
+    const val appcompatRes = "androidx.appcompat:appcompat-resources:1.7.0"
 
     const val v4Legacy = "androidx.legacy:legacy-support-v4:1.0.0"
 
     // https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/maven-metadata.xml
-    const val annotation = "androidx.annotation:annotation:1.7.0"
-    const val annotationExp = "androidx.annotation:annotation-experimental:1.7.0"
+    const val annotation = "androidx.annotation:annotation:1.8.1"
+    const val annotationExp = "androidx.annotation:annotation-experimental:1.8.1"
 
     // https://dl.google.com/dl/android/maven2/androidx/core/core-role/maven-metadata.xml
     const val role = "androidx.core:core-role:1.0.0"
 
     // https://dl.google.com/dl/android/maven2/androidx/core/core-performance/maven-metadata.xml
-    const val performance = "androidx.core:core-performance:1.0.0-alpha02"
+    const val performance = "androidx.core:core-performance:1.0.0"
 
     // https://dl.google.com/dl/android/maven2/androidx/core/core-google-shortcuts/maven-metadata.xml
     const val shortcuts = "androidx.core:core-google-shortcuts:1.1.0"
@@ -90,23 +90,23 @@ object DepsAndroidx {
     // https://developer.android.com/jetpack/androidx/releases/webkit
     // https://developer.android.com/reference/androidx/webkit/package-summary?hl=zh-cn
     // https://dl.google.com/dl/android/maven2/androidx/webkit/webkit/maven-metadata.xml
-    const val webkit = "androidx.webkit:webkit:1.8.0"
+    const val webkit = "androidx.webkit:webkit:1.9.0"
 
     // https://developer.android.com/jetpack/androidx/releases/datastore
     // https://dl.google.com/dl/android/maven2/androidx/datastore/datastore-core/maven-metadata.xml
     object datastore {
-        const val core = "androidx.datastore:datastore:1.0.0"
-        const val sp = "androidx.datastore:datastore-preferences:1.0.0"
+        const val core = "androidx.datastore:datastore:1.1.1"
+        const val sp = "androidx.datastore:datastore-preferences:1.1.1"
     }
 
     // https://developer.android.com/jetpack/androidx/releases/tracing
     // https://dl.google.com/dl/android/maven2/androidx/tracing/tracing/maven-metadata.xml
-    const val trace = "androidx.tracing:tracing:1.1.0"
-    const val traceKtx = "androidx.tracing:tracing-ktx:1.1.0"
+    const val trace = "androidx.tracing:tracing:1.2.0"
+    const val traceKtx = "androidx.tracing:tracing-ktx:1.2.0"
 
     // https://developer.android.com/jetpack/androidx/releases/ads
     // https://dl.google.com/dl/android/maven2/androidx/ads/ads-identifier/maven-metadata.xml
-    const val ads = "androidx.ads:ads-identifier:1.0.0-alpha04"
+    const val ads = "androidx.ads:ads-identifier:1.0.0-alpha05"
 
     // https://developer.android.com/jetpack/androidx/releases/startup
     // https://dl.google.com/dl/android/maven2/androidx/startup/startup-runtime/maven-metadata.xml
@@ -136,7 +136,7 @@ object DepsAndroidx {
 
     // https://developer.android.com/jetpack/androidx/releases/camera
     object camera2 {
-        private const val camerax_version = "1.2.3"
+        private const val camerax_version = "1.3.4"
         val core = "androidx.camera:camera-core:$camerax_version"
         val camera2 = "androidx.camera:camera-camera2:$camerax_version"
         val lifecycle = "androidx.camera:camera-lifecycle:$camerax_version"
@@ -165,7 +165,7 @@ object DepsAndroidx {
 
     object navigation {
         // https://developer.android.com/jetpack/androidx/releases/navigation
-        val nav_version = "2.7.3"
+        val nav_version = "2.7.7"
 
         // Java language implementation
         val fragment = "androidx.navigation:navigation-fragment:$nav_version"
@@ -229,12 +229,12 @@ object DepsAndroidx {
     const val gridlayout = "androidx.gridlayout:gridlayout:$supportVer"
 
     // https://dl.google.com/dl/android/maven2/com/google/android/material/material/maven-metadata.xml
-    const val material = "com.google.android.material:material:1.9.0"
+    const val material = "com.google.android.material:material:1.12.0"
 
     // https://developer.android.com/jetpack/androidx/releases/recyclerview
     object recyclerview {
         // https://dl.google.com/dl/android/maven2/androidx/recyclerview/recyclerview/maven-metadata.xml
-        const val core = "androidx.recyclerview:recyclerview:1.3.1"
+        const val core = "androidx.recyclerview:recyclerview:1.3.2"
 
         // https://dl.google.com/dl/android/maven2/androidx/recyclerview/recyclerview-selection/maven-metadata.xml
         const val selection = "androidx.recyclerview:recyclerview-selection:1.1.0"
@@ -291,7 +291,7 @@ object DepsAndroidx {
     // https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/maven-metadata.xml
     object lifecycle {
         // https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/maven-metadata.xml
-        private const val lifecycleVer = "2.6.2"
+        private const val lifecycleVer = "2.8.4"
 
         const val common = "androidx.lifecycle:lifecycle-common:$lifecycleVer"
         const val commonJ8 = "androidx.lifecycle:lifecycle-common-java8:$lifecycleVer"
@@ -324,7 +324,7 @@ object DepsAndroidx {
     // https://dl.google.com/dl/android/maven2/androidx/room/room-common/maven-metadata.xml
     object room {
         // https://dl.google.com/dl/android/maven2/androidx/room/room-common/maven-metadata.xml
-        private const val roomVer = "2.6.0-rc01"
+        private const val roomVer = "2.6.1"
 
         const val common = "androidx.room:room-common:$roomVer"
         const val compiler = "androidx.room:room-compiler:$roomVer"

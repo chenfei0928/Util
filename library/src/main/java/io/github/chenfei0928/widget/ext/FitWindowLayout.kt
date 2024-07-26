@@ -9,6 +9,7 @@ import android.os.Build
 import android.view.Gravity
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import io.github.chenfei0928.view.applySystemInsetPadding
 
@@ -17,7 +18,9 @@ fun View.onMeasure(fitStatusBar: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // 修复状态栏边距
             updatePadding(
-                top = rootWindowInsets.systemWindowInsetTop
+                top = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets)
+                    .getInsets(WindowInsetsCompat.Type.statusBars())
+                    .top
             )
         } else {
             applySystemInsetPadding(direction = Gravity.TOP)
@@ -35,7 +38,9 @@ fun View.fitSystemWindows(insets: Rect, fitStatusBar: Boolean) {
         // 修复状态栏边距
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             updatePadding(
-                top = rootWindowInsets.systemWindowInsetTop
+                top = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets)
+                    .getInsets(WindowInsetsCompat.Type.statusBars())
+                    .top
             )
         }
     }
@@ -59,7 +64,9 @@ private fun View.fitDisplayCutoutSafeInset() {
         // 有物理刘海区域，状态栏显示在刘海区域内
         // 无物理刘海区域，状态栏覆盖显示在window绘制区域内
         updatePadding(
-            top = rootWindowInsets.systemWindowInsetTop
+            top = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets)
+                .getInsets(WindowInsetsCompat.Type.statusBars())
+                .top
         )
     }
 }

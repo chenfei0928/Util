@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 
 /**
@@ -26,9 +25,9 @@ fun Context.isExists(uri: Uri?): Boolean {
 }
 
 private fun Uri.isLocalUri(): Boolean {
-    return (ContentResolver.SCHEME_FILE == this.scheme
+    return ContentResolver.SCHEME_FILE == this.scheme
             || ContentResolver.SCHEME_CONTENT == this.scheme
-            || ContentResolver.SCHEME_ANDROID_RESOURCE == this.scheme)
+            || ContentResolver.SCHEME_ANDROID_RESOURCE == this.scheme
 }
 
 fun copyTo(context: Context, uri: Uri?, dest: File): Boolean {
@@ -39,14 +38,9 @@ fun copyTo(context: Context, uri: Uri?, dest: File): Boolean {
     } else try {
         ParcelFileDescriptor.AutoCloseInputStream(
             context.contentResolver.openFileDescriptor(uri, "r")
-        ).use {
-            FileOutputStream(dest).use { os ->
-                val b = ByteArray(DEFAULT_BUFFER_SIZE)
-                var i = it.read(b)
-                while (i != -1) {
-                    os.write(b, 0, i)
-                    i = it.read(b)
-                }
+        ).use { inputStream ->
+            dest.outputStream().use { os ->
+                inputStream.copyTo(os)
                 os.flush()
             }
         }

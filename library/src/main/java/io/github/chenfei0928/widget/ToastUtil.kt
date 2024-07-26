@@ -10,9 +10,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import io.github.chenfei0928.base.ContextProvider
-import io.github.chenfei0928.base.ContextProvider.Companion.context
-import io.github.chenfei0928.util.Log
 import java.lang.ref.WeakReference
 
 /**
@@ -22,7 +19,6 @@ import java.lang.ref.WeakReference
  * @date 2015/8/28
  */
 object ToastUtil {
-    private const val TAG = "KW_ToastUtil"
     private val sHandler = Handler(Looper.getMainLooper())
     private val sToastFactory: ToastFactory = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         ToastFactoryImplQ()
@@ -39,33 +35,15 @@ object ToastUtil {
     @Volatile
     private var sToastShowTask: ToastShowTask? = null
 
-    @Deprecated("使用携带 Context/Fragment 参的 showShort")
-    fun showShort(@StringRes message: Int) {
-        Log.w(TAG, "showShort: 无Context参 Toast", Exception())
-        val context = context
-        showShort(context, context.getString(message))
-    }
-
-    @Deprecated("使用携带 Context/Fragment 参的 showShort")
-    fun showShort(message: String?) {
-        Log.w(TAG, "showShort: 无Context参 Toast", Exception())
-        showShort(context, message)
-    }
-
     fun showShort(context: Fragment, @StringRes message: Int) {
-        showShort(context.context, message)
+        showShort(context.requireContext(), message)
     }
 
     fun showShort(context: Fragment, message: String?) {
-        showShort(context.context, message)
+        showShort(context.requireContext(), message)
     }
 
-    fun showShort(context: Context?, @StringRes message: Int) {
-        if (context == null) {
-            Log.w(TAG, "showShort: context is null", NullPointerException())
-            showShort(ContextProvider.context, message)
-            return
-        }
+    fun showShort(context: Context, @StringRes message: Int) {
         showShort(context, context.getString(message))
     }
 
@@ -73,13 +51,8 @@ object ToastUtil {
      * 将正在展示的toast取消并toast新的message
      * 如果消息为空，将不会显示它，也不会取消正在显示的toast
      */
-    fun showShort(context: Context?, message: String?) {
+    fun showShort(context: Context, message: String?) {
         if (TextUtils.isEmpty(message)) {
-            return
-        }
-        if (context == null) {
-            Log.w(TAG, "showShort: ", NullPointerException("context is null"))
-            showShort(ContextProvider.context, message)
             return
         }
         cancel()
@@ -114,7 +87,7 @@ object ToastUtil {
         }
     }
 
-    //<editor-fold defaultstate="collapsing" desc="Toast工厂">
+    //<editor-fold defaultstate="collapsed" desc="Toast工厂">
     private sealed interface ToastFactory {
         fun makeText(context: Context, text: CharSequence?, duration: Int): Toast
     }
@@ -126,6 +99,7 @@ object ToastUtil {
             // 11以下缓存toastView，以提升toast创建的性能
             // 10 以上添加了 LayoutInflater#tryInflatePrecompiled 来优化layoutInflater性能，但10中并没有启用
             val toast = Toast(context)
+            @Suppress("DEPRECATION")
             toast.view = getToastView(context)
             toast.setText(text)
             return toast
@@ -164,5 +138,6 @@ object ToastUtil {
         override fun hashCode(): Int {
             return System.identityHashCode(this)
         }
-    } //</editor-fold>
+    }
+    //</editor-fold>
 }

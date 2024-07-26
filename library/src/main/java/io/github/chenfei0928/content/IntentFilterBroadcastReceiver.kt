@@ -3,6 +3,7 @@ package io.github.chenfei0928.content
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.IntentFilter
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -21,21 +22,22 @@ abstract class IntentFilterBroadcastReceiver(
     open fun register(context: Context, owner: LifecycleOwner) {
         if (owner.lifecycle.isAlive) {
             register(context)
-            owner.lifecycle.addObserver(object : LifecycleEventObserver {
-                override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                    if (event == Lifecycle.Event.ON_DESTROY) {
-                        context.unregisterReceiver(this@IntentFilterBroadcastReceiver)
-                    }
+            owner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    context.unregisterReceiver(this@IntentFilterBroadcastReceiver)
                 }
             })
         }
     }
 
     open fun register(context: Context) {
-        context.registerReceiver(this, IntentFilter().apply {
-            for (action in actions) {
-                addAction(action)
-            }
-        })
+        ContextCompat.registerReceiver(
+            context, this,
+            IntentFilter().apply {
+                for (action in actions) {
+                    addAction(action)
+                }
+            }, ContextCompat.RECEIVER_EXPORTED
+        )
     }
 }

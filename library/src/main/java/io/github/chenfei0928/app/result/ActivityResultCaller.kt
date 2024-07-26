@@ -57,7 +57,7 @@ abstract class ActivityResultCallerLauncher<I, O>(
         }
     }
 
-    override fun launch(void: Unit?, options: ActivityOptionsCompat?) {
+    override fun launch(input: Unit, options: ActivityOptionsCompat?) {
         launcher.launch(input(), options)
     }
 
@@ -65,9 +65,8 @@ abstract class ActivityResultCallerLauncher<I, O>(
         launcher.unregister()
     }
 
-    override fun getContract(): ActivityResultContract<Unit, O> {
-        return resultContract
-    }
+    override val contract: ActivityResultContract<Unit, O>
+        get() = resultContract
 
     protected abstract fun input(): I
 }
