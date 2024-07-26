@@ -6,12 +6,18 @@
  */
 package com.drakeet.multitype
 
+import androidx.collection.SystemIdentityArrayMap
 import io.github.chenfei0928.util.Log
 
 private const val TAG = "KW_MultiType"
 
 /**
  * 注册一个类型的一type对多binder的映射关系，并且使用map字典[viewTypeRecord]来保存实例与binder类的映射。
+ *
+ * Warning:
+ * - [viewTypeRecord] 的各个value之间不允许存在继承关系
+ * - [viewTypeRecord] 的value在 [binders] 中只允许出现一个实现类
+ * - [viewTypeRecord] 建议使用[SystemIdentityArrayMap]实现
  *
  * 考虑到binder类定义时会使用抽象类隔离ui逻辑与点击事件，[viewTypeRecord]的binder类定义到[binders]的实现
  * 不允许出现任何一定义对多实现的关系。
@@ -21,7 +27,7 @@ private const val TAG = "KW_MultiType"
  * [viewTypeRecord]的map通常会使用依赖于对象hash的map实现，此时要确保[T]的类没有重写[Any.hashCode]方法，
  * 以避免列表出现重复内容数据时hash冲突（重复），而覆盖了之前实例的binder映射关系。
  * 并要求在某项被记录其binder之后，不允许修改其实例属性，否则可能会导致其hash变化，影响查找其值。
- * 或可以直接使用[androidx.collection.SystemIdentityArrayMap]实现的map，
+ * 或可以直接使用[SystemIdentityArrayMap]实现的map，
  * 其会使用JVM提供的[Object.hashCode]默认实现，可避免由于对象内容相同导致的hash碰撞。
  *
  * @param clazz binder要渲染的bean的类型
@@ -40,6 +46,11 @@ fun <T> MultiTypeAdapter.registerWithTypeRecordClassMap(
 /**
  * 注册一个类型的一type对多binder的映射关系，并且使用map字典[viewTypeRecord]来保存实例与binder类的映射。
  *
+ * Warning:
+ * - [viewTypeRecord] 的各个value之间不允许存在继承关系
+ * - [viewTypeRecord] 的value在 [binders] 中只允许出现一个实现类
+ * - [viewTypeRecord] 建议使用[SystemIdentityArrayMap]实现
+ *
  * 考虑到binder类定义时会使用抽象类隔离ui逻辑与点击事件，[viewTypeRecord]的binder类定义到[binders]的实现
  * 不允许出现任何一定义对多实现的关系。
  * 即在[viewTypeRecord]中所出现的各个值（类对象）之间不允许出现任何继承关系，也不允许出现一个类对象在[binders]
@@ -48,7 +59,7 @@ fun <T> MultiTypeAdapter.registerWithTypeRecordClassMap(
  * [viewTypeRecord]的map通常会使用依赖于对象hash的map实现，此时要确保[T]的类没有重写[Any.hashCode]方法，
  * 以避免列表出现重复内容数据时hash冲突（重复），而覆盖了之前实例的binder映射关系。
  * 并要求在某项被记录其binder之后，不允许修改其实例属性，否则可能会导致其hash变化，影响查找其值。
- * 或可以直接使用[androidx.collection.SystemIdentityArrayMap]实现的map，
+ * 或可以直接使用[SystemIdentityArrayMap]实现的map，
  * 其会使用JVM提供的[Object.hashCode]默认实现，可避免由于对象内容相同导致的hash碰撞。
  *
  * @param binders 实现该类型布局绑定器的实例
@@ -64,6 +75,9 @@ fun <T> MultiTypeAdapter.registerWithTypeRecorderMap(
 
 /**
  * 注册一个类型的一type对多binder的映射关系，并且通过回调选择其binder类映射。
+ *
+ * Warning:
+ * - [viewTypeRecorder] 的value在 [binders] 中只允许出现一个实现类
  *
  * 考虑到binder类定义时会使用抽象类隔离ui逻辑与点击事件，[viewTypeRecorder]的binder类定义到[binders]的实现
  * 不允许出现任何一定义对多实现的关系。

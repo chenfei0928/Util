@@ -13,7 +13,7 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-fun <T : View> ViewGroup.findChildById(id: Int): T? {
+fun <T : View> ViewGroup.findChildById(@IdRes id: Int): T? {
     forEach {
         if (it.id == id) {
             return it as T
@@ -69,7 +69,7 @@ private fun findAllSupportFragmentsWithViews(
     }
 }
 
-inline fun <V : View, R> V.getTagOrPut(id: Int, creator: (V) -> R): R {
+inline fun <V : View, R> V.getTagOrPut(@IdRes id: Int, creator: (V) -> R): R {
     val tag = this.getTag(id)
     return if (tag != null) {
         tag as R

@@ -11,10 +11,12 @@ import android.os.Process;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import androidx.annotation.GuardedBy;
 import io.github.chenfei0928.util.Log;
 
 public class RunningEnvironmentUtil {
     private static final String TAG = "KW_RunningEnvironmentU";
+    @GuardedBy("RunningEnvironmentUtil.class")
     private static volatile String sProcessName;
 
     private RunningEnvironmentUtil() {

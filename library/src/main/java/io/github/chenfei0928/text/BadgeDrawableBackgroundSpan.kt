@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.text.style.ReplacementSpan
+import androidx.annotation.Px
 import kotlin.math.max
 
 /**
@@ -15,6 +16,7 @@ import kotlin.math.max
  */
 class BadgeDrawableBackgroundSpan(
     private val drawableLeft: Drawable?,
+    @Px
     private val drawablePadding: Int,
     private val background: Drawable
 ) : ReplacementSpan() {

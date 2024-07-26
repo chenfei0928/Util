@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.collection.LruCache
 import androidx.viewbinding.ViewBinding
-import com.google.android.material.R
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.github.chenfei0928.reflect.safeInvoke
 import java.lang.reflect.Method

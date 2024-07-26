@@ -34,6 +34,7 @@ fun blendColors(
     return Color.argb(a.toInt(), r.toInt(), g.toInt(), b.toInt())
 }
 
+@ColorInt
 fun String.toColorIntOrNull(): Int? {
     return try {
         Color.parseColor(this)

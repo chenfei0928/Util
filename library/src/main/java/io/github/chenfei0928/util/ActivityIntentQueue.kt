@@ -2,6 +2,7 @@ package io.github.chenfei0928.util
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.annotation.ReturnThis
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import io.github.chenfei0928.app.fragment.removeSelf
@@ -72,6 +73,7 @@ class ActivityIntentQueue : Fragment() {
         }
     }
 
+    @ReturnThis
     @JvmOverloads
     fun offer(
         intent: Intent, callback: (resultCode: Int, data: Intent?) -> Unit = { _, _ -> }
@@ -81,6 +83,7 @@ class ActivityIntentQueue : Fragment() {
         return this
     }
 
+    @ReturnThis
     fun offer(showWithDismissListener: ShowFuncWithDismissListener): ActivityIntentQueue {
         pendingTaskQueue.offer(showWithDismissListener)
         return this

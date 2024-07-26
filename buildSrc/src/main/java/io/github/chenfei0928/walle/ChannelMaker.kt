@@ -35,8 +35,12 @@ internal object ChannelMaker {
     private const val DOT_APK = ".apk"
 
     fun generateChannelApk(
-        apkFile: File, channelOutputFolder: File, nameVariantMap: MutableMap<String, String?>,
-        channel: String, extraInfo: Map<String, String>? = null, alias: String? = null
+        apkFile: File,
+        channelOutputFolder: File,
+        nameVariantMap: MutableMap<String, String?>,
+        channel: String,
+        extraInfo: Map<String, String>? = null,
+        alias: String? = null
     ) {
         val buildTime = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date())
         val channelName = alias ?: channel

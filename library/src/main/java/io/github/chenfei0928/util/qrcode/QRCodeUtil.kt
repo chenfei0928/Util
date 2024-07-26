@@ -3,6 +3,7 @@ package io.github.chenfei0928.util.qrcode
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import androidx.annotation.Px
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.WriterException
@@ -33,7 +34,7 @@ object QRCodeUtil {
      */
     @JvmStatic
     fun createQRImage(
-        content: String?, widthPix: Int, heightPix: Int, logoBm: Bitmap?, filePath: String
+        content: String?, @Px widthPix: Int, @Px heightPix: Int, logoBm: Bitmap?, filePath: String
     ): Boolean = if (content.isNullOrBlank()) {
         false
     } else try {
@@ -52,7 +53,7 @@ object QRCodeUtil {
 
     @JvmStatic
     fun createQRBitmap(
-        content: String?, widthPix: Int, heightPix: Int
+        content: String?, @Px widthPix: Int, @Px heightPix: Int
     ): Bitmap? = if (content.isNullOrBlank() || widthPix == 0 || heightPix == 0) {
         null
     } else try {

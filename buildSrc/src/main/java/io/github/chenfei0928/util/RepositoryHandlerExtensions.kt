@@ -4,6 +4,11 @@
  */
 package io.github.chenfei0928.util
 
+import com.android.build.api.dsl.BuildType
+import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.gradle.AppExtension
+import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.bean.TaskInfo
 import org.gradle.api.Action
@@ -12,15 +17,16 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ModuleDependency
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import java.util.Locale
 import java.util.regex.Pattern
 
-internal fun <Android : com.android.build.gradle.BaseExtension> Project.buildSrcAndroid(
+internal fun <Android : BaseExtension> Project.buildSrcAndroid(
     configure: Action<Android>
 ): Unit = this.extensions.configure("android", configure)
 
-internal fun <Android : com.android.build.gradle.BaseExtension> Project.buildSrcAndroid(
+internal fun <Android : BaseExtension> Project.buildSrcAndroid(
 ): Android = this.extensions.getByName("android") as Android
 
 /**
@@ -29,14 +35,14 @@ internal fun <Android : com.android.build.gradle.BaseExtension> Project.buildSrc
  *
  * @param configure
  */
-internal fun <Android : com.android.build.api.variant.AndroidComponentsExtension<*, *, *>> Project.buildSrcAndroidComponents(
+internal fun <Android : AndroidComponentsExtension<*, *, *>> Project.buildSrcAndroidComponents(
     configure: Action<Android>
-): Unit = (this as org.gradle.api.plugins.ExtensionAware).extensions.configure(
+): Unit = (this as ExtensionAware).extensions.configure(
     "androidComponents", configure
 )
 
 internal fun Project.checkApp(methodName: String) {
-    extensions.getByName("android") as? com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+    extensions.getByName("android") as? BaseAppModuleExtension
         ?: throw IllegalStateException("$methodName 只能在 plugins android 下使用.")
 }
 
@@ -70,19 +76,19 @@ fun <T : ModuleDependency> T.excludeDep(dep: String): T =
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="BuildType">
-internal fun <BuildTypeT : com.android.build.api.dsl.BuildType> NamedDomainObjectContainer<BuildTypeT>.release(
+internal fun <BuildTypeT : BuildType> NamedDomainObjectContainer<BuildTypeT>.release(
     action: BuildTypeT.() -> Unit
 ) = maybeCreate("release").apply(action)
 
-fun <BuildTypeT : com.android.build.api.dsl.BuildType> NamedDomainObjectContainer<BuildTypeT>.prerelease(
+fun <BuildTypeT : BuildType> NamedDomainObjectContainer<BuildTypeT>.prerelease(
     action: BuildTypeT.() -> Unit
 ) = maybeCreate("prerelease").apply(action)
 
-fun <BuildTypeT : com.android.build.api.dsl.BuildType> NamedDomainObjectContainer<BuildTypeT>.qatest(
+fun <BuildTypeT : BuildType> NamedDomainObjectContainer<BuildTypeT>.qatest(
     action: BuildTypeT.() -> Unit
 ) = maybeCreate("qatest").apply(action)
 
-internal fun <BuildTypeT : com.android.build.api.dsl.BuildType> NamedDomainObjectContainer<BuildTypeT>.debug(
+internal fun <BuildTypeT : BuildType> NamedDomainObjectContainer<BuildTypeT>.debug(
     action: BuildTypeT.() -> Unit
 ) = maybeCreate("debug").apply(action)
 //</editor-fold>
@@ -105,7 +111,7 @@ internal fun <TaskType : Task> Project.forEachTasks(
     taskType: Class<TaskType>,
     block: (task: TaskType, taskInfo: TaskInfo) -> Unit,
 ) {
-    val appExtension = buildSrcAndroid<com.android.build.gradle.AppExtension>()
+    val appExtension = buildSrcAndroid<AppExtension>()
     // 读取所有buildTypes
     val buildTypeNames by lazy {
         appExtension.buildTypes.map { it.name }

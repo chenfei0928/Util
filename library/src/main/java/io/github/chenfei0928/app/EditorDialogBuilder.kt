@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.DrawableRes
+import androidx.annotation.ReturnThis
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatEditText
@@ -28,6 +29,7 @@ class EditorDialogBuilder(
     /**
      * 设置图标，会显示在title的左边
      */
+    @ReturnThis
     fun setIcon(@DrawableRes icon: Int): EditorDialogBuilder {
         builder.setIcon(icon)
         return this
@@ -36,6 +38,7 @@ class EditorDialogBuilder(
     /**
      * 设置标题
      */
+    @ReturnThis
     fun setTitle(@StringRes title: Int): EditorDialogBuilder {
         builder.setTitle(title)
         return this
@@ -44,6 +47,7 @@ class EditorDialogBuilder(
     /**
      * 设置显示的消息提示
      */
+    @ReturnThis
     fun setMessage(text: CharSequence?): EditorDialogBuilder {
         builder.setMessage(text)
         return this
@@ -52,6 +56,7 @@ class EditorDialogBuilder(
     /**
      * 设置确认按钮
      */
+    @ReturnThis
     @JvmOverloads
     inline fun setPositiveButton(
         @StringRes textId: Int,
@@ -59,7 +64,7 @@ class EditorDialogBuilder(
         crossinline filter: (String) -> String = { it },
         crossinline listener: (DialogInterface, EditText, String) -> Unit
     ): EditorDialogBuilder {
-        return setPositiveButton(textId, DialogInterface.OnClickListener { dialog, _ ->
+        setPositiveButton(textId) { dialog, _ ->
             // 获取参数
             val code = filter(editor.text.toString())
             if (code.isEmpty()) {
@@ -73,12 +78,14 @@ class EditorDialogBuilder(
                 // 提交
                 listener(dialog, editor, code)
             }
-        })
+        }
+        return this
     }
 
     /**
      * 设置确认按钮
      */
+    @ReturnThis
     inline fun setPositiveButton(
         @StringRes textId: Int, crossinline listener: (DialogInterface, EditText, Int) -> Unit
     ): EditorDialogBuilder {
@@ -91,6 +98,7 @@ class EditorDialogBuilder(
     /**
      * 设置确认按钮
      */
+    @ReturnThis
     fun setPositiveButton(
         @StringRes textId: Int, listener: DialogInterface.OnClickListener?
     ): EditorDialogBuilder {
@@ -101,6 +109,7 @@ class EditorDialogBuilder(
     /**
      * 设置取消按钮
      */
+    @ReturnThis
     fun setNegativeButton(
         @StringRes textId: Int, listener: DialogInterface.OnClickListener?
     ): EditorDialogBuilder {
@@ -108,11 +117,13 @@ class EditorDialogBuilder(
         return this
     }
 
+    @ReturnThis
     fun setOnKeyListener(onKeyListener: DialogInterface.OnKeyListener?): EditorDialogBuilder {
         builder.setOnKeyListener(onKeyListener)
         return this
     }
 
+    @ReturnThis
     fun setCancelable(cancelable: Boolean): EditorDialogBuilder {
         builder.setCancelable(cancelable)
         return this
@@ -121,6 +132,7 @@ class EditorDialogBuilder(
     /**
      * 设置输入框的提示内容
      */
+    @ReturnThis
     fun setHint(@StringRes hint: Int): EditorDialogBuilder {
         editor.setHint(hint)
         return this
@@ -129,11 +141,13 @@ class EditorDialogBuilder(
     /**
      * 设置输入框的提示内容
      */
+    @ReturnThis
     fun setHint(hint: CharSequence?): EditorDialogBuilder {
         editor.hint = hint
         return this
     }
 
+    @ReturnThis
     fun setSingleLine(): EditorDialogBuilder {
         editor.setSingleLine()
         return this
@@ -142,6 +156,7 @@ class EditorDialogBuilder(
     /**
      * 设置输入框的输入类型，适用于输入法的面板
      */
+    @ReturnThis
     fun setInputType(type: Int): EditorDialogBuilder {
         editor.inputType = type
         return this
@@ -150,6 +165,7 @@ class EditorDialogBuilder(
     /**
      * 设置可输入内容的过滤器
      */
+    @ReturnThis
     fun setFilters(filters: Array<InputFilter>): EditorDialogBuilder {
         editor.filters = filters
         return this
@@ -157,6 +173,7 @@ class EditorDialogBuilder(
 
     private var showListener: (AlertDialog) -> Unit = {}
 
+    @ReturnThis
     fun setOnShowListener(l: (AlertDialog) -> Unit): EditorDialogBuilder {
         showListener = l
         return this

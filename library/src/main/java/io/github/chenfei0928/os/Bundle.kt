@@ -19,7 +19,7 @@ inline fun <reified T : Parcelable> Bundle.getParcelableArrayCompat(key: String)
     return BundleCompat.getParcelableArray(this, key, T::class.java)
 }
 
-inline fun <reified T> Bundle.getParcelableArrayListCompat(key: String): ArrayList<T>? {
+inline fun <reified T> Bundle.getParcelableArrayListCompat(key: String): java.util.ArrayList<T>? {
     return BundleCompat.getParcelableArrayList(this, key, T::class.java)
 }
 

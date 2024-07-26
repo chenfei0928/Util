@@ -1,13 +1,16 @@
 package io.github.chenfei0928.util
 
+import androidx.annotation.ReturnThis
 import org.json.JSONArray
 import org.json.JSONObject
 
+@ReturnThis
 operator fun JSONObject.set(name: String, value: Any?): JSONObject {
     putOpt(name, value)
     return this
 }
 
+@ReturnThis
 inline fun JSONObject.newJsonObject(name: String, action: JSONObject.() -> Unit): JSONObject {
     val jsonObject = JSONObject()
     action(jsonObject)
@@ -15,6 +18,7 @@ inline fun JSONObject.newJsonObject(name: String, action: JSONObject.() -> Unit)
     return this
 }
 
+@ReturnThis
 inline fun JSONObject.newJsonArray(name: String, action: JSONArray.() -> Unit): JSONObject {
     val jsonArray = JSONArray()
     action(jsonArray)
@@ -22,6 +26,7 @@ inline fun JSONObject.newJsonArray(name: String, action: JSONArray.() -> Unit): 
     return this
 }
 
+@ReturnThis
 inline fun JSONArray.newJsonObject(action: JSONObject.() -> Unit): JSONArray {
     val jsonObject = JSONObject()
     action(jsonObject)
@@ -29,6 +34,7 @@ inline fun JSONArray.newJsonObject(action: JSONObject.() -> Unit): JSONArray {
     return this
 }
 
+@ReturnThis
 inline fun JSONArray.newJsonArray(action: JSONArray.() -> Unit): JSONArray {
     val jsonArray = JSONArray()
     action(jsonArray)

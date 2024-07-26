@@ -25,6 +25,7 @@ import java.util.List;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.ReturnThis;
 import androidx.annotation.VisibleForTesting;
 import io.github.chenfei0928.util.Log;
 
@@ -115,6 +116,7 @@ public abstract class ViewBackgroundTarget<T extends View, Z> implements Target<
      */
     @SuppressWarnings("WeakerAccess") // Public API
     @NonNull
+    @ReturnThis
     public final ViewBackgroundTarget<T, Z> waitForLayout() {
         sizeDeterminer.waitForLayout = true;
         return this;
@@ -140,6 +142,7 @@ public abstract class ViewBackgroundTarget<T extends View, Z> implements Target<
      */
     // Public API.
     @NonNull
+    @ReturnThis
     @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
     public final ViewBackgroundTarget<T, Z> clearOnDetach() {
         if (attachStateListener != null) {
@@ -171,6 +174,7 @@ public abstract class ViewBackgroundTarget<T extends View, Z> implements Target<
      * @param tagId The android resource id to use.
      */
     // Public API.
+    @ReturnThis
     @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
     public final ViewBackgroundTarget<T, Z> useTagId(@IdRes int tagId) {
         if (this.overrideTag != 0) {

@@ -1,9 +1,16 @@
 package io.github.chenfei0928.tinker
 
-import io.github.chenfei0928.util.buildOutputsDir
 import com.google.gradle.osdetector.OsDetectorPlugin
 import com.tencent.tinker.build.gradle.TinkerPatchPlugin
-import com.tencent.tinker.build.gradle.extension.*
+import com.tencent.tinker.build.gradle.extension.TinkerArkHotExtension
+import com.tencent.tinker.build.gradle.extension.TinkerBuildConfigExtension
+import com.tencent.tinker.build.gradle.extension.TinkerDexExtension
+import com.tencent.tinker.build.gradle.extension.TinkerLibExtension
+import com.tencent.tinker.build.gradle.extension.TinkerPackageConfigExtension
+import com.tencent.tinker.build.gradle.extension.TinkerPatchExtension
+import com.tencent.tinker.build.gradle.extension.TinkerResourceExtension
+import com.tencent.tinker.build.gradle.extension.TinkerSevenZipExtension
+import io.github.chenfei0928.util.buildOutputsDir
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware

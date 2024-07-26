@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.PowerManager;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.RequiresApi;
 
 /**
@@ -16,6 +17,7 @@ import androidx.annotation.RequiresApi;
  * Created by MrFeng on 2017/11/2.
  */
 public class PowerSaveUtil {
+    @GuardedBy("PowerSaveUtil.class")
     private static volatile Receiver sReceiver = null;
     private static boolean sIsInPowerSaveMode = false;
 

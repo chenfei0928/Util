@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Px;
 
 /**
  * Created by MrFeng on 2018/3/5.
@@ -24,9 +25,10 @@ public class GlideSplitTransformation extends BitmapTransformation {
     private static final byte[] ID_BYTES = ID.getBytes(CHARSET);
 
     private final int page;
+    @Px
     private final int pageHeight;
 
-    public GlideSplitTransformation(int page, int pageHeight) {
+    public GlideSplitTransformation(int page, @Px int pageHeight) {
         this.page = page;
         this.pageHeight = pageHeight;
     }

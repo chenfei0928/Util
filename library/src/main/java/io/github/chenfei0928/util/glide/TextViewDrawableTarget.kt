@@ -17,7 +17,9 @@ import io.github.chenfei0928.util.contains
 @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 open class TextViewDrawableTarget
 @JvmOverloads constructor(
-    view: TextView, @GravityInt private val direction: Int = Gravity.TOP
+    view: TextView,
+    @GravityInt
+    private val direction: Int = Gravity.TOP
 ) : CustomViewTarget<TextView, Drawable>(view) {
     override fun onLoadFailed(errorDrawable: Drawable?) {
         setDrawable(errorDrawable)

@@ -7,6 +7,7 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
+import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -41,10 +42,10 @@ open class ViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView),
 
     fun getDrawable(@DrawableRes id: Int): Drawable? = ContextCompat.getDrawable(context, id)
 
-    inline fun dipI(value: Float): Int = context.dip(value)
-    inline fun dipF(value: Float): Float = context.dipF(value)
-    inline fun spI(value: Float): Int = context.sp(value)
-    inline fun spF(value: Float): Float = context.spF(value)
+    inline fun dipI(@Dimension(Dimension.DP) value: Float): Int = context.dip(value)
+    inline fun dipF(@Dimension(Dimension.DP) value: Float): Float = context.dipF(value)
+    inline fun spI(@Dimension(Dimension.SP) value: Float): Int = context.sp(value)
+    inline fun spF(@Dimension(Dimension.SP) value: Float): Float = context.spF(value)
     inline fun dimen(@DimenRes resource: Int): Int = context.dimen(resource)
     inline fun dimenF(@DimenRes resource: Int): Float = context.dimenF(resource)
 }

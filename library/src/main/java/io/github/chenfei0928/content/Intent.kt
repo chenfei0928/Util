@@ -10,6 +10,7 @@ import io.github.chenfei0928.os.ParcelUtil
 import io.github.chenfei0928.util.deepEquals
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.util.Arrays
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
@@ -17,7 +18,7 @@ fun Intent.putExtra(name: String, value: GeneratedMessageLite<*, *>) {
     putExtra(name, value.toByteArray())
 }
 
-fun <T : GeneratedMessageLite<*, *>> Intent.getProtobufExtra(
+inline fun <T : GeneratedMessageLite<*, *>> Intent.getProtobufExtra(
     name: String, parse: (ByteArray) -> T
 ): T? {
     return getByteArrayExtra(name)?.let(parse)

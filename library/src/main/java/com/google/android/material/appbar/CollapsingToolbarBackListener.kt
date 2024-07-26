@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.view.MenuItem
 import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
 import androidx.appcompat.R
 import androidx.appcompat.app.ActionBar
 import androidx.core.content.ContextCompat
@@ -20,7 +21,8 @@ import io.github.chenfei0928.graphics.blendColors
 open class CollapsingToolbarBackListener(
     collapsingToolbarLayout: CollapsingToolbarLayout,
     protected val actionBar: ActionBar,
-    @SuppressLint("PrivateResource") drawableIcon: Int = R.drawable.abc_ic_ab_back_material
+    @DrawableRes @SuppressLint("PrivateResource")
+    drawableIcon: Int = R.drawable.abc_ic_ab_back_material
 ) : FractionOffsetChangedListener(collapsingToolbarLayout) {
     protected val backIcon: Drawable = ContextCompat
         .getDrawable(actionBar.themedContext, drawableIcon)!!

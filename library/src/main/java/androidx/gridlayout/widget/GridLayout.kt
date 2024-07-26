@@ -26,7 +26,7 @@ class GridLayoutLayoutParamsSpecBuilder(
     private val isHorizontal: Boolean
 ) {
     @Slide.GravityFlag
-    var gravity: Int = Gravity.NO_GRAVITY
+    var gravity: Int = Gravity.BOTTOM
     var index: Int = UNDEFINED
     var span: Int = DEFAULT_SPAN_SIZE
     var weight: Float = GridLayout.Spec.DEFAULT_WEIGHT

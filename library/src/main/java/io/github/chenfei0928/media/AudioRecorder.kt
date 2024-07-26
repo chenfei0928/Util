@@ -14,7 +14,6 @@ import kotlin.math.log10
 class AudioRecorder(
     val fileName: String  // 录音生成的文件存储路径
 ) {
-    private val TAG = "KW_VoiceRecorder"
 
     // 录音类
     private var recorder: MediaRecorder = MediaRecorder()
@@ -60,7 +59,7 @@ class AudioRecorder(
      */
     private fun getMaxAmplitude() = try {
         recorder.maxAmplitude
-    } catch (e: IllegalStateException) {
+    } catch (ignore: IllegalStateException) {
         0
     }
 
@@ -76,5 +75,9 @@ class AudioRecorder(
         dbstart = dblast + (dbValue - dblast) * 0.2f
         dblast = dbstart
         return dblast
+    }
+
+    companion object {
+        private const val TAG = "KW_VoiceRecorder"
     }
 }

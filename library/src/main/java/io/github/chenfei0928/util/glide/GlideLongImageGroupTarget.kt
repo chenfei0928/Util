@@ -13,6 +13,7 @@ import android.opengl.GLES30
 import android.os.Build
 import androidx.annotation.EmptySuper
 import androidx.annotation.IntRange
+import androidx.annotation.Px
 import androidx.annotation.WorkerThread
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -45,7 +46,9 @@ import kotlin.math.min
  * Created by MrFeng on 2018/3/2.
  */
 abstract class GlideLongImageGroupTarget(
-    @param:IntRange(from = 1, to = 4096) private val pageHeight: Int
+    @param:Px
+    @param:IntRange(from = 1, to = 4096)
+    private val pageHeight: Int
 ) : CustomTarget<File>(), CoroutineScope {
     private var job = Job() // 定义job
     override val coroutineContext: CoroutineContext

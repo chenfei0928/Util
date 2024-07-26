@@ -7,12 +7,13 @@ import android.graphics.RectF
 import android.util.Log
 import android.view.Gravity
 import androidx.annotation.GravityInt
+import androidx.annotation.Px
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
 import jp.wasabeef.glide.transformations.BitmapTransformation
 import java.security.MessageDigest
 
 /**
- * 使用Gravity来裁剪的BitmapTransformation，支持两个方向上的Gravity位置摆放。
+ * 使用Gravity来裁剪的 [BitmapTransformation]，支持两个方向上的Gravity位置摆放。
  *
  * 当只有一个方向被设置时，将会对另一个轴进行拉伸/缩放以全量显示，并在其设置轴上对齐（可能会留黑边）。
  * 当水平/垂直两个方向都被设置时，将会以不留黑边为目的进行缩放，并对更长的进行对齐。
@@ -21,7 +22,9 @@ import java.security.MessageDigest
  * @date 2022-05-12 11:00
  */
 class GravityCropTransformation(
+    @Px
     private val width: Int,
+    @Px
     private val height: Int,
     @GravityInt
     private val gravity: Int = Gravity.CENTER
@@ -117,7 +120,7 @@ class GravityCropTransformation(
     }
 
     override fun toString(): String {
-        return "CropTransformation(width=$width, height=$height, gravity=$gravity)"
+        return "CropTransformation(width=$width, height=$height, gravity=$gravity:${toString(gravity)})"
     }
 
     override fun updateDiskCacheKey(messageDigest: MessageDigest) {
@@ -129,7 +132,9 @@ class GravityCropTransformation(
         private const val VERSION = 1
         private const val ID = "io.github.chenfei0928.util.glide.CropTransformation.$VERSION"
 
+        //<editor-fold desc="toString" defaultstatus="collapsed">
         /**
+         * 参考自 [Gravity.toString]
          * @hide
          */
         fun toString(@GravityInt gravity: Int): String {
@@ -184,5 +189,6 @@ class GravityCropTransformation(
             result.deleteCharAt(result.length - 1)
             return result.toString()
         }
+        //</editor-fold>
     }
 }

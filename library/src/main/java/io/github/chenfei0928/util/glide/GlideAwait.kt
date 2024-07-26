@@ -3,6 +3,7 @@ package io.github.chenfei0928.util.glide
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
+import androidx.annotation.Px
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.CustomViewTarget
@@ -126,8 +127,8 @@ private class GlideAwait<TranscodeType>(
  * @return 加载到的图片资源
  */
 suspend fun <TranscodeType> RequestBuilder<TranscodeType>.await(
-    width: Int = Target.SIZE_ORIGINAL,
-    height: Int = Target.SIZE_ORIGINAL
+    @Px width: Int = Target.SIZE_ORIGINAL,
+    @Px height: Int = Target.SIZE_ORIGINAL
 ): TranscodeType {
     return suspendCancellableCoroutine { continuation ->
         // 获取view尺寸后开启加载过程
