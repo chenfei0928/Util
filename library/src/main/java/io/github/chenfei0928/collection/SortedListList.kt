@@ -16,4 +16,8 @@ class SortedListList<E>(
     override fun get(index: Int): E {
         return impl.get(index)
     }
+
+    override fun indexOf(element: E): Int {
+        return impl.indexOf(element)
+    }
 }
