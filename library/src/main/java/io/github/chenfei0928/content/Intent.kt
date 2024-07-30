@@ -2,6 +2,7 @@ package io.github.chenfei0928.content
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.annotation.ReturnThis
 import androidx.collection.ArrayMap
 import com.google.protobuf.GeneratedMessageLite
 import com.google.protobuf.getProtobufLiteParserForType
@@ -10,7 +11,6 @@ import io.github.chenfei0928.os.ParcelUtil
 import io.github.chenfei0928.util.deepEquals
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.util.Arrays
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
@@ -28,7 +28,7 @@ inline fun <reified T : GeneratedMessageLite<T, *>> Intent.getProtobufExtra(name
     return getByteArrayExtra(name)?.let(T::class.java.getProtobufLiteParserForType()::parseFrom)
 }
 
-fun Intent.getAllExtras() = extras?.getAll() ?: emptyMap()
+fun Intent.getAllExtras(): Map<String, Any> = extras?.getAll() ?: emptyMap()
 
 /**
  * 同步intent目标包名，仅用与便于在使用[Intent.URI_ANDROID_APP_SCHEME]
@@ -36,10 +36,12 @@ fun Intent.getAllExtras() = extras?.getAll() ?: emptyMap()
  *
  * 鬼知道为什么在指定了组件之后不会自动指定intent包名¯\_(ツ)_/¯
  */
-fun Intent.syncPackage(): Intent = apply {
+@ReturnThis
+fun Intent.syncPackage(): Intent {
     component?.let {
         setPackage(it.packageName)
     }
+    return this
 }
 
 fun Bundle.getAll(): Map<String, Any> {
@@ -71,8 +73,10 @@ fun Bundle.contentEquals(other: Bundle): Boolean {
     return true
 }
 
-fun Intent.zipExtras(): Intent = apply {
-    val bundle = extras ?: return@apply
+@ReturnThis
+fun Intent.zipExtras(): Intent {
+    val bundle = extras
+        ?: return this
     val zipped = ByteArrayOutputStream().use {
         GZIPOutputStream(it).use {
             it.write(ParcelUtil.marshall(bundle))
@@ -83,6 +87,7 @@ fun Intent.zipExtras(): Intent = apply {
         removeExtra(it)
     }
     putExtra("zipped", zipped)
+    return this
 }
 
 fun Intent.unzipExtras(classLoader: ClassLoader = ContextProvider::class.java.classLoader!!): Bundle {

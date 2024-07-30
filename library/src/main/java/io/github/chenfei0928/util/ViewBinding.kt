@@ -58,6 +58,7 @@ private val bindFuncCache = object : LruCache<Class<out ViewBinding>, Method>(16
 }
 
 fun <T : ViewBinding> Class<T>.bindFunc(): (View) -> T = {
+    @Suppress("UNCHECKED_CAST")
     bindFuncCache[this]!!.safeInvoke(null, arrayOf(it)) as T
 }
 //</editor-fold>
@@ -73,6 +74,7 @@ private val inflateFuncCache = object : LruCache<Class<out ViewBinding>, Method>
 
 fun <T : ViewBinding> Class<T>.inflateFunc(): (LayoutInflater, ViewGroup?, Boolean) -> T =
     { layoutInflater, container, attachParent ->
+        @Suppress("UNCHECKED_CAST")
         inflateFuncCache[this]!!.safeInvoke(
             null, arrayOf(layoutInflater, container, attachParent)
         ) as T

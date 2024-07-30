@@ -128,7 +128,7 @@ interface CoroutineAndroidContext : CoroutineContext.Element {
             if (fragment != null) {
                 return fragment.childFragmentManager
             }
-            val context = androidContext
+            val context = androidContext.findActivity()
             if (context is FragmentActivity) {
                 return context.supportFragmentManager
             }

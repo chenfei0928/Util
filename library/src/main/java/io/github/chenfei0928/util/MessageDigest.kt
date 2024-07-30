@@ -8,8 +8,6 @@ import java.util.Locale
 inline fun <R> Process.use(block: (Process) -> R): R {
     try {
         return block(this)
-    } catch (e: Throwable) {
-        throw e
     } finally {
         this.destroy()
     }

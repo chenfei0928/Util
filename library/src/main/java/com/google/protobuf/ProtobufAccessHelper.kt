@@ -1,21 +1,27 @@
-package com.google.protobuf
-
 /**
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2021-11-24 17:01
  */
-fun <T : GeneratedMessageLite<T, *>> Class<T>.getProtobufLiteParserForType(): Parser<T> {
-    return getProtobufLiteDefaultInstance().getParserForType()
-}
+package com.google.protobuf
+
+import io.github.chenfei0928.util.WeakCache
 
 fun <T : GeneratedMessageLite<T, *>> Class<T>.getProtobufLiteDefaultInstance(): T {
     return GeneratedMessageLite.getDefaultInstance(this)
 }
 
-fun <T : GeneratedMessageV3> Class<T>.getProtobufParserForType(): Parser<T> {
-    return getProtobufDefaultInstance().parserForType as Parser<T>
+fun <T : GeneratedMessageLite<T, *>> Class<T>.getProtobufLiteParserForType(): Parser<T> {
+    return getProtobufLiteDefaultInstance().getParserForType()
 }
 
-fun <T : GeneratedMessageV3> Class<T>.getProtobufDefaultInstance(): T {
-    return getMethod("getDefaultInstance").invoke(null) as T
+private val protobufDefaultInstanceCache = WeakCache<Class<*>, GeneratedMessageV3> {
+    it.getMethod("getDefaultInstance").invoke(null) as GeneratedMessageV3
+}
+
+fun <T : GeneratedMessageV3> Class<T>.getProtobufV3DefaultInstance(): T {
+    return protobufDefaultInstanceCache[this] as T
+}
+
+fun <T : GeneratedMessageV3> Class<T>.getProtobufV3ParserForType(): Parser<T> {
+    return getProtobufV3DefaultInstance().parserForType as Parser<T>
 }

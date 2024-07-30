@@ -36,11 +36,11 @@ public class AsyncLayoutInflater {
      * @param onCreateView 子视图创建者
      * @param parent       父布局，用于生成LayoutParam
      * @param callback     子视图创建完成后在主线程的回调
-     * @param <VG>         父布局的类型
+     * @param <V>          父布局的类型
      */
     @UiThread
-    public <VG extends ViewGroup> void inflate(
-            Function2<LayoutInflater, VG, View> onCreateView, @Nullable VG parent,
+    public <V extends ViewGroup> void inflate(
+            Function2<LayoutInflater, V, View> onCreateView, @Nullable V parent,
             @NonNull OnInflateFinishedListener callback) {
         ExecutorUtil.execute(() -> {
             try {
@@ -65,11 +65,11 @@ public class AsyncLayoutInflater {
      * @param resid    子视图布局id
      * @param parent   父布局，用于生成LayoutParam
      * @param callback 子视图创建完成后在主线程的回调
-     * @param <VG>     父布局的类型
+     * @param <V>      父布局的类型
      */
     @UiThread
-    public <VG extends ViewGroup> void inflate(
-            @LayoutRes int resid, @Nullable VG parent,
+    public <V extends ViewGroup> void inflate(
+            @LayoutRes int resid, @Nullable V parent,
             @NonNull OnInflateFinishedListener callback) {
         ExecutorUtil.execute(() -> {
             try {

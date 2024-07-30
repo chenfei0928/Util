@@ -38,6 +38,46 @@ fun RecyclerView.smoothMoveToPosition(position: Int) {
 }
 
 /**
+ * 查询列表可见区域范围
+ */
+fun RecyclerView.findVisibleRange(): IntRange = when (val lm = layoutManager) {
+    null -> {
+        throw IllegalArgumentException("no layoutManger")
+    }
+    is GridLayoutManager -> {
+        lm.findFirstVisibleItemPosition()..lm.findLastVisibleItemPosition()
+    }
+    is LinearLayoutManager -> {
+        lm.findFirstVisibleItemPosition()..lm.findLastVisibleItemPosition()
+    }
+    is StaggeredGridLayoutManager -> {
+        // 获取列表各列第一项
+        val positionsCache = IntArray(lm.spanCount) { 0 }
+        lm.findFirstVisibleItemPositions(positionsCache)
+        val firstVisibleItem = positionsCache.minOrNull() ?: 0
+        // 获取列表各列最后一项
+        positionsCache.fill(Int.MAX_VALUE)
+        lm.findLastVisibleItemPositions(positionsCache)
+        val lastVisibleItem = positionsCache.maxOrNull() ?: Int.MAX_VALUE
+        // 列表显示范围
+        firstVisibleItem..lastVisibleItem
+    }
+    is FlexboxLayoutManager -> {
+        lm.findFirstVisibleItemPosition()..lm.findLastVisibleItemPosition()
+    }
+    else -> try {
+        lm.javaClass.run {
+            val firstVisibleItem = getMethod("findFirstVisibleItemPosition").invoke(lm) as Int
+            val lastVisibleItem = getMethod("findLastVisibleItemPosition").invoke(lm) as Int
+            firstVisibleItem..lastVisibleItem
+        }
+    } catch (e: NoSuchMethodException) {
+        Log.d(TAG, "nearToPosition: cannot find visible range ${lm.javaClass.name} $lm", e)
+        0..Int.MAX_VALUE
+    }
+}
+
+/**
  * 接近目标猎物
  * 在开始滑动[RecyclerView.smoothMoveToPosition]前尽可能的接近目标，以减少其后续滑动时间
  *
@@ -45,45 +85,13 @@ fun RecyclerView.smoothMoveToPosition(position: Int) {
  *
  * @param targetPosition [RecyclerView.smoothMoveToPosition]的目标下标
  * @param maxOffsetSize 在进行滑动动画前让列表在其范围外最大多少个item位置停靠
+ * @param visibleRange 其item可见区域范围
  */
-fun RecyclerView.nearToPosition(targetPosition: Int, maxOffsetSize: Int = 5) {
-    // 获取其item可见区域范围
-    val visibleRange: IntRange = when (val lm = layoutManager) {
-        null -> {
-            return
-        }
-        is GridLayoutManager -> {
-            lm.findFirstVisibleItemPosition()..lm.findLastVisibleItemPosition()
-        }
-        is LinearLayoutManager -> {
-            lm.findFirstVisibleItemPosition()..lm.findLastVisibleItemPosition()
-        }
-        is StaggeredGridLayoutManager -> {
-            // 获取列表各列第一项
-            val positionsCache = IntArray(lm.spanCount) { 0 }
-            lm.findFirstVisibleItemPositions(positionsCache)
-            val firstVisibleItem = positionsCache.minOrNull() ?: 0
-            // 获取列表各列最后一项
-            positionsCache.fill(Int.MAX_VALUE)
-            lm.findLastVisibleItemPositions(positionsCache)
-            val lastVisibleItem = positionsCache.maxOrNull() ?: Int.MAX_VALUE
-            // 列表显示范围
-            firstVisibleItem..lastVisibleItem
-        }
-        is FlexboxLayoutManager -> {
-            lm.findFirstVisibleItemPosition()..lm.findLastVisibleItemPosition()
-        }
-        else -> try {
-            lm.javaClass.run {
-                val firstVisibleItem = getMethod("findFirstVisibleItemPosition").invoke(lm) as Int
-                val lastVisibleItem = getMethod("findLastVisibleItemPosition").invoke(lm) as Int
-                firstVisibleItem..lastVisibleItem
-            }
-        } catch (e: NoSuchMethodException) {
-            Log.d(TAG, "nearToPosition: cannot find visible range ${lm.javaClass.name} $lm", e)
-            0..Int.MAX_VALUE
-        }
-    }
+fun RecyclerView.nearToPosition(
+    targetPosition: Int,
+    maxOffsetSize: Int = 5,
+    visibleRange: IntRange = findVisibleRange()
+) {
     // 如果目标在可见范围外，先计算一个期望的列表滚动动画开始时的下标，防止动画滚动时间太长
     val scrollAnimationStartPosition = when {
         targetPosition < visibleRange.first -> {
