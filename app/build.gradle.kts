@@ -3,6 +3,7 @@ import io.github.chenfei0928.DepsAndroidx
 import io.github.chenfei0928.android.applyApp
 import io.github.chenfei0928.android.applyTest
 import io.github.chenfei0928.compiler.applyKotlin
+import io.github.chenfei0928.data.applyProtobuf
 
 plugins {
     android
@@ -10,7 +11,8 @@ plugins {
 
 applyApp()
 applyTest()
-applyKotlin()
+applyKotlin(parcelize = true)
+applyProtobuf()
 
 android {
     namespace = "io.github.chenfei0928.util"
@@ -40,6 +42,7 @@ dependencies {
     implementation(DepsAndroidx.appcompat)
     implementation(DepsAndroidx.constraintlayout.layout)
     implementation(DepsAndroidx.multidex.core)
+    implementation(DepsAndroidx.preference)
 
     implementation(Deps.widget.recyclerView.multiType)
 
