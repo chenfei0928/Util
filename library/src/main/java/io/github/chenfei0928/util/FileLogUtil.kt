@@ -1,6 +1,7 @@
 package io.github.chenfei0928.util
 
 import android.content.Context
+import android.os.Build
 import androidx.collection.ArrayMap
 import io.github.chenfei0928.app.RunningEnvironmentUtil
 import io.github.chenfei0928.io.FileUtil
@@ -117,7 +118,11 @@ private constructor(
         fun saveExceptionToLog(context: Context, throwable: Throwable): String {
             val file = getLogFile(context)
             try {
-                PrintWriter(file, "utf-8").use { pw ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    PrintWriter(file, Charsets.UTF_8)
+                } else {
+                    PrintWriter(file, "utf-8")
+                }.use { pw ->
                     pw.write(devicesInfoProvider(context))
                     pw.write("\n")
                     pw.flush()

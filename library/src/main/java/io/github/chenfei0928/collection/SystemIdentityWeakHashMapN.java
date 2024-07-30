@@ -1,9 +1,19 @@
-package java.util;
+package io.github.chenfei0928.collection;
 
 import android.os.Build;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.AbstractCollection;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Spliterator;
+import java.util.WeakHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -146,7 +156,7 @@ class SystemIdentityWeakHashMapN<K, V>
             while (entry != null) {
                 Object key = entry.get();
                 if (key != null) {
-                    action.accept((K) SystemIdentityWeakHashMapN.unmaskNull(key), entry.value);
+                    action.accept((K) unmaskNull(key), entry.value);
                 }
                 entry = entry.next;
 
@@ -168,7 +178,7 @@ class SystemIdentityWeakHashMapN<K, V>
             while (entry != null) {
                 Object key = entry.get();
                 if (key != null) {
-                    entry.value = function.apply((K) SystemIdentityWeakHashMapN.unmaskNull(key), entry.value);
+                    entry.value = function.apply((K) unmaskNull(key), entry.value);
                 }
                 entry = entry.next;
 
@@ -256,7 +266,7 @@ class SystemIdentityWeakHashMapN<K, V>
                         p = p.next;
                         if (x != null) {
                             @SuppressWarnings("unchecked") K k =
-                                    (K) SystemIdentityWeakHashMapN.unmaskNull(x);
+                                    (K) unmaskNull(x);
                             action.accept(k);
                         }
                     }
@@ -280,7 +290,7 @@ class SystemIdentityWeakHashMapN<K, V>
                         current = current.next;
                         if (x != null) {
                             @SuppressWarnings("unchecked") K k =
-                                    (K) SystemIdentityWeakHashMapN.unmaskNull(x);
+                                    (K) unmaskNull(x);
                             action.accept(k);
                             if (map.modCount != expectedModCount)
                                 throw new ConcurrentModificationException();
@@ -413,7 +423,7 @@ class SystemIdentityWeakHashMapN<K, V>
                         p = p.next;
                         if (x != null) {
                             @SuppressWarnings("unchecked") K k =
-                                    (K) SystemIdentityWeakHashMapN.unmaskNull(x);
+                                    (K) unmaskNull(x);
                             action.accept
                                     (new SimpleImmutableEntry<K, V>(k, v));
                         }
@@ -439,7 +449,7 @@ class SystemIdentityWeakHashMapN<K, V>
                         current = current.next;
                         if (x != null) {
                             @SuppressWarnings("unchecked") K k =
-                                    (K) SystemIdentityWeakHashMapN.unmaskNull(x);
+                                    (K) unmaskNull(x);
                             action.accept
                                     (new SimpleImmutableEntry<K, V>(k, v));
                             if (map.modCount != expectedModCount)

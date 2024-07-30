@@ -1,6 +1,6 @@
 package io.github.chenfei0928.util
 
-import java.util.SystemIdentityWeakHashMap
+import io.github.chenfei0928.collection.SystemIdentityWeakHashMap
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 

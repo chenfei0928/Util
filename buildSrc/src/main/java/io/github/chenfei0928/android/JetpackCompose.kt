@@ -1,11 +1,11 @@
 package io.github.chenfei0928.android
 
+import io.github.chenfei0928.Contract
 import io.github.chenfei0928.Deps
 import io.github.chenfei0928.DepsAndroidx
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debugImplementation
 import io.github.chenfei0928.util.implementation
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.dependencies
@@ -14,7 +14,7 @@ import java.lang.Integer.max
 
 // Compose 与 Kotlin 的兼容性对应关系
 // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-private const val composeVer = "1.5.10"
+private const val composeVer = "1.5.14"
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -34,12 +34,12 @@ fun Project.applyJetpackCompose() {
 
         // Set both the Java and Kotlin compilers to target Java 8.
         compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
+            sourceCompatibility = Contract.JAVA_VERSION
+            targetCompatibility = Contract.JAVA_VERSION
         }
 
         (this as ExtensionAware).extensions.configure<KotlinJvmOptions>("kotlinOptions") {
-            jvmTarget = JavaVersion.VERSION_1_8.toString()
+            jvmTarget = Contract.JAVA_VERSION.toString()
         }
 
         composeOptions {

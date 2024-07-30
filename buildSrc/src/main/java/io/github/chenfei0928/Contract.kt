@@ -45,7 +45,10 @@ object Contract {
      */
     internal const val PROGUARD_FILES_DIR = "proguard-rules"
 
-    internal val JAVA_VERSION = JavaVersion.VERSION_1_8
+    /**
+     * [编译系统对应的JDK版本](https://developer.android.com/build/jdks?hl=zh-cn)
+     */
+    internal val JAVA_VERSION = JavaVersion.VERSION_17
     //</editor-fold>
 
     //<editor-fold desc="工程Module的sdkVersion等配置">

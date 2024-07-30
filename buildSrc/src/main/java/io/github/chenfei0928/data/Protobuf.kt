@@ -16,13 +16,15 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 
 // https://github.com/grpc/grpc-java
-private const val grpcVersion = "1.65.0"
+private const val grpcVersion = "1.65.1"
 
 // https://github.com/grpc/grpc-kotlin
 private const val grpcKotlinVersion = "1.4.1"
 
 // https://github.com/protocolbuffers/protobuf
-private const val protobufVersion = "3.27.2"
+// https://github.com/protocolbuffers/protobuf/blob/main/java/lite.md
+// https://mvnrepository.com/artifact/com.google.protobuf/protobuf-javalite
+private const val protobufVersion = "4.27.2"
 
 private const val proguardFileName = "protobuf.pro"
 private const val proguardRules = """

@@ -1,8 +1,13 @@
 package io.github.chenfei0928.android
 
 import io.github.chenfei0928.Contract
-import io.github.chenfei0928.util.*
-import org.gradle.api.JavaVersion
+import io.github.chenfei0928.Env
+import io.github.chenfei0928.util.buildSrcAndroid
+import io.github.chenfei0928.util.debug
+import io.github.chenfei0928.util.implementation
+import io.github.chenfei0928.util.prerelease
+import io.github.chenfei0928.util.qatest
+import io.github.chenfei0928.util.release
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 
@@ -85,7 +90,7 @@ fun Project.applyCommon(appendBuildConfig: Boolean = true) {
 
         // Debug时禁用PNG优化
         aaptOptions {
-            cruncherEnabled = io.github.chenfei0928.Env.containsReleaseBuild
+            cruncherEnabled = Env.containsReleaseBuild
         }
 
         compileOptions {
