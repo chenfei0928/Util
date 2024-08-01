@@ -1,15 +1,22 @@
 package io.github.chenfei0928.graphics.drawable
 
+import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.ColorFilter
 import android.graphics.Outline
+import android.graphics.Paint
 import android.graphics.PixelFormat
+import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.View
 import android.widget.Checkable
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.view.isVisible
+import androidx.core.widget.ImageViewCompat
+import androidx.core.widget.TextViewCompat
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -19,26 +26,12 @@ class ViewDrawable(
     val view: View
 ) : Drawable() {
 
-    override fun getAlpha(): Int {
-        return (view.alpha * 255).toInt()
+    override fun getMinimumHeight(): Int {
+        return view.minimumHeight
     }
 
-    override fun setVisible(visible: Boolean, restart: Boolean): Boolean {
-        view.isVisible = visible
-        return super.setVisible(visible, restart)
-    }
-
-    override fun getOutline(outline: Outline) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            view.outlineProvider?.getOutline(view, outline)
-        } else {
-            super.getOutline(outline)
-        }
-    }
-
-    override fun onBoundsChange(bounds: Rect) {
-        super.onBoundsChange(bounds)
-        view.layout(bounds.left, bounds.top, bounds.right, bounds.bottom)
+    override fun getMinimumWidth(): Int {
+        return view.minimumWidth
     }
 
     override fun getIntrinsicWidth(): Int {
@@ -49,32 +42,67 @@ class ViewDrawable(
         return view.measuredHeight
     }
 
+    @Suppress("kotlin:S6518")
+    override fun getPadding(padding: Rect): Boolean {
+        padding.set(view.paddingLeft, view.paddingTop, view.paddingRight, view.paddingBottom)
+        return true
+    }
+
+    override fun onBoundsChange(bounds: Rect) {
+        super.onBoundsChange(bounds)
+        view.layout(bounds.left, bounds.top, bounds.right, bounds.bottom)
+    }
+
+    override fun getOutline(outline: Outline) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.outlineProvider?.getOutline(view, outline)
+                ?: super.getOutline(outline)
+        } else {
+            super.getOutline(outline)
+        }
+    }
+
+    override fun setVisible(visible: Boolean, restart: Boolean): Boolean {
+        view.isVisible = visible
+        return super.setVisible(visible, restart)
+    }
+
+    override fun invalidateSelf() {
+        super.invalidateSelf()
+        view.invalidate()
+    }
+
+    override fun onStateChange(state: IntArray): Boolean {
+        jumpToCurrentState()
+        return true
+    }
+
     override fun jumpToCurrentState() {
         val state = state
 //        view. = android.R.attr.state_above_anchor in state
-//        view. = android.R.attr.state_accelerated in state
+//        view.isHardwareAccelerated = android.R.attr.state_accelerated in state
         view.isActivated = android.R.attr.state_activated in state
 //        view. = android.R.attr.state_active in state
-//        view. = android.R.attr.state_checkable in state
+//        view is Checkable = android.R.attr.state_checkable in state
         if (view is Checkable) {
             view.isChecked = android.R.attr.state_checked in state
         }
-//        view.isPressed = android.R.attr.state_drag_can_accept in state
-//        view.isPressed = android.R.attr.state_drag_hovered in state
-//        view.isPressed = android.R.attr.state_empty in state
+//        view. = android.R.attr.state_drag_can_accept in state
+//        view. = android.R.attr.state_drag_hovered in state
+//        view. = android.R.attr.state_empty in state
         view.isEnabled = android.R.attr.state_enabled in state
-//        view.isPressed = android.R.attr.state_expanded in state
-//        view.isPressed = android.R.attr.state_first in state
-//        view.isf = android.R.attr.state_focused in state
-//        view.isPressed = android.R.attr.state_hovered in state
-//        view.isPressed = android.R.attr.state_last in state
-//        view.isPressed = android.R.attr.state_long_pressable in state
-//        view.isPressed = android.R.attr.state_middle in state
-//        view.isPressed = android.R.attr.state_multiline in state
+//        view. = android.R.attr.state_expanded in state
+//        view. = android.R.attr.state_first in state
+//        view. = android.R.attr.state_focused in state
+//        view. = android.R.attr.state_hovered in state
+//        view. = android.R.attr.state_last in state
+        view.isLongClickable = android.R.attr.state_long_pressable in state
+//        view. = android.R.attr.state_middle in state
+//        view. = android.R.attr.state_multiline in state
         view.isPressed = android.R.attr.state_pressed in state
         view.isSelected = android.R.attr.state_selected in state
-//        view.isPressed = android.R.attr.state_single in state
-//        view.isPressed = android.R.attr.state_window_focused in state
+//        view. = android.R.attr.state_single in state
+//        view. = android.R.attr.state_window_focused in state
     }
 
     override fun isStateful(): Boolean {
@@ -92,11 +120,37 @@ class ViewDrawable(
         view.alpha = alpha / 255f
     }
 
+    override fun getAlpha(): Int {
+        return (view.alpha * 255).toInt()
+    }
+
     override fun getOpacity(): Int {
         return PixelFormat.TRANSLUCENT
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
-        // noop
+        view.setLayerPaint(colorFilter?.let {
+            Paint().apply {
+                setColorFilter(colorFilter)
+            }
+        })
+    }
+
+    override fun setTintList(tint: ColorStateList?) {
+        view.backgroundTintList = tint
+        view.foregroundTintList = tint
+        when (view) {
+            is TextView -> TextViewCompat.setCompoundDrawableTintList(view, tint)
+            is ImageView -> ImageViewCompat.setImageTintList(view, tint)
+        }
+    }
+
+    override fun setTintMode(tintMode: PorterDuff.Mode?) {
+        view.backgroundTintMode = tintMode
+        view.foregroundTintMode = tintMode
+        when (view) {
+            is TextView -> TextViewCompat.setCompoundDrawableTintMode(view, tintMode)
+            is ImageView -> ImageViewCompat.setImageTintMode(view, tintMode)
+        }
     }
 }

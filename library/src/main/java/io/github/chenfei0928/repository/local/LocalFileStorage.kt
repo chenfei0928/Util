@@ -1,9 +1,9 @@
 package io.github.chenfei0928.repository.local
 
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import io.github.chenfei0928.concurrent.ExecutorUtil
+import io.github.chenfei0928.concurrent.updateAndGetCompat
 import io.github.chenfei0928.io.ShareFileLockHelper
 import java.io.File
 import java.io.FileDescriptor
@@ -95,15 +95,10 @@ abstract class LocalFileStorage<T>(
         return if (!memoryCacheable) {
             // 不使用内存缓存，每次都从磁盘文件反序列化
             loadFromLocalFile(context)
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        } else {
             // 从缓存中读取，缓存中没有值时从磁盘文件反序列化
-            cachedValue.get() ?: cachedValue.updateAndGet {
+            cachedValue.get() ?: cachedValue.updateAndGetCompat {
                 loadFromLocalFile(context)
-            }
-        } else synchronized(this) {
-            // 从缓存中读取，缓存中没有值时从磁盘文件反序列化
-            cachedValue.get() ?: loadFromLocalFile(context).also {
-                cachedValue.set(it)
             }
         }
     }

@@ -2,7 +2,7 @@ package io.github.chenfei0928.content.sp
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Build
+import io.github.chenfei0928.concurrent.updateAndGetCompat
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -53,21 +53,5 @@ open class BaseSpSaver(
         val editor = editorAtomicReference.get() ?: return
         editor.apply()
         editorAtomicReference.compareAndSet(editor, null)
-    }
-
-    private inline fun <T> AtomicReference<T>.updateAndGetCompat(
-        crossinline updateFunction: (T) -> T
-    ): T {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            updateAndGet { updateFunction(it) }
-        } else {
-            var prev: T?
-            var next: T
-            do {
-                prev = get()
-                next = prev ?: updateFunction(prev)
-            } while (!compareAndSet(prev, next))
-            next
-        }
     }
 }

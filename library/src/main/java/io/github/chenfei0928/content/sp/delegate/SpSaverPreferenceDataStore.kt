@@ -12,67 +12,69 @@ import kotlin.reflect.KMutableProperty0
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-04-24 10:42
  */
+@Suppress("TooManyFunctions")
 class SpSaverPreferenceDataStore(
     private val properties: Array<Field<*>>
 ) : PreferenceDataStore() {
 
     private inline fun <reified T> Array<Field<*>>.findByName(name: String): Field<T> {
+        @Suppress("UNCHECKED_CAST")
         return find { it.name == name } as Field<T>
     }
 
     override fun putString(key: String, value: String?) {
-        properties.findByName<String>(key).setter(value)
+        properties.findByName<String>(key).set(value)
     }
 
     override fun putStringSet(key: String, values: MutableSet<String>?) {
-        properties.findByName<Set<String>>(key).setter(values)
+        properties.findByName<Set<String>>(key).set(values)
     }
 
     override fun putInt(key: String, value: Int) {
-        properties.findByName<Int>(key).setter(value)
+        properties.findByName<Int>(key).set(value)
     }
 
     override fun putLong(key: String, value: Long) {
-        properties.findByName<Long>(key).setter(value)
+        properties.findByName<Long>(key).set(value)
     }
 
     override fun putFloat(key: String, value: Float) {
-        properties.findByName<Float>(key).setter(value)
+        properties.findByName<Float>(key).set(value)
     }
 
     override fun putBoolean(key: String, value: Boolean) {
-        properties.findByName<Boolean>(key).setter(value)
+        properties.findByName<Boolean>(key).set(value)
     }
 
     override fun getString(key: String, defValue: String?): String? {
-        return properties.findByName<String>(key).getter() ?: defValue
+        return properties.findByName<String>(key).get() ?: defValue
     }
 
     override fun getStringSet(key: String, defValues: MutableSet<String>?): MutableSet<String>? {
-        return properties.findByName<MutableSet<String>>(key).getter() ?: defValues
+        return properties.findByName<MutableSet<String>>(key).get() ?: defValues
     }
 
     override fun getInt(key: String, defValue: Int): Int {
-        return properties.findByName<Int>(key).getter() ?: defValue
+        return properties.findByName<Int>(key).get() ?: defValue
     }
 
     override fun getLong(key: String, defValue: Long): Long {
-        return properties.findByName<Long>(key).getter() ?: defValue
+        return properties.findByName<Long>(key).get() ?: defValue
     }
 
     override fun getFloat(key: String, defValue: Float): Float {
-        return properties.findByName<Float>(key).getter() ?: defValue
+        return properties.findByName<Float>(key).get() ?: defValue
     }
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean {
-        return properties.findByName<Boolean>(key).getter() ?: defValue
+        return properties.findByName<Boolean>(key).get() ?: defValue
     }
 
-    data class Field<T>(
-        val name: String,
-        val getter: () -> T?,
-        val setter: (T?) -> Unit
-    )
+    interface Field<T> {
+        val name: String
+        fun get(): T?
+        fun set(value: T?)
+    }
 }
 
 fun AbsSpSaver.toPreferenceDataStore(
@@ -83,7 +85,10 @@ fun AbsSpSaver.toPreferenceDataStore(
     })
 }
 
-private fun AbsSpSaver.findMutablePropertyField(property0: KMutableProperty0<*>): SpSaverPreferenceDataStore.Field<*> {
+@Suppress("UNCHECKED_CAST")
+private fun AbsSpSaver.findMutablePropertyField(
+    property0: KMutableProperty0<*>
+): SpSaverPreferenceDataStore.Field<*> {
     val name = getPropertySpKeyName(property0)
     var delegate: Any? = property0.getDelegate()
     var defaultValue: Any? = null
@@ -102,17 +107,20 @@ private fun AbsSpSaver.findMutablePropertyField(property0: KMutableProperty0<*>)
             }
             is AbsSpSaver.AbsSpDelegate<*> -> {
                 val localDelegate = delegate as AbsSpSaver.AbsSpDelegate<Any?>
-                return SpSaverPreferenceDataStore.Field(
-                    name = name,
-                    getter = {
-                        localDelegate.getValue(this, property0) ?: defaultValue
-                    },
-                    setter = {
-                        localDelegate.setValue(this, property0, it)
+                val spSaver = this@findMutablePropertyField
+                return object : SpSaverPreferenceDataStore.Field<Any> {
+                    override val name: String = name
+
+                    override fun get(): Any? {
+                        return localDelegate.getValue(spSaver, property0) ?: defaultValue
                     }
-                )
+
+                    override fun set(value: Any?) {
+                        localDelegate.setValue(spSaver, property0, value)
+                    }
+                }
             }
-            else -> throw IllegalArgumentException()
+            else -> throw IllegalArgumentException("不支持的委托类型: ${delegate?.javaClass} $delegate")
         }
     }
 }

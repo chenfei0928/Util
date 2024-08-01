@@ -16,14 +16,14 @@ import java.io.File
  * @date 2019-11-19 13:32
  */
 object FileProviderUtil {
-    var fileProviderClass: Class<out FileProvider> = FileProvider::class.java
+    var defaultFileProviderClass: Class<out FileProvider> = FileProvider::class.java
     private val schemeCache = LinkedHashMap<Class<out FileProvider>, String?>()
 
-    fun findManifestFileProviderScheme(context: Context): String =
-        findManifestFileProviderScheme(context, fileProviderClass)
-
-    fun <F : FileProvider> findManifestFileProviderScheme(
-        context: Context, clazz: Class<F>
+    /**
+     * 获取指定[FileProvider]在Manifest文件中注册的的authority信息
+     */
+    fun findManifestFileProviderScheme(
+        context: Context, clazz: Class<out FileProvider> = defaultFileProviderClass
     ): String = schemeCache.getContainOrPut(clazz) {
         val fileProviderClassName = clazz.name
         return@getContainOrPut context.packageManager.getPackageInfo(
@@ -31,17 +31,25 @@ object FileProviderUtil {
         ).providers.find {
             it.name == fileProviderClassName
         }?.authority
-    } ?: throw IllegalArgumentException("未找到 AndroidManifest.xml 组件注册：$fileProviderClass")
+    } ?: throw IllegalArgumentException(
+        "未找到 AndroidManifest.xml 组件注册：$defaultFileProviderClass"
+    )
 
-    fun createUriFromFile(context: Context, file: File): Uri {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            Uri.fromFile(file)
-        } else {
-            val fileProviderScheme = findManifestFileProviderScheme(context)
-            FileProvider.getUriForFile(context, fileProviderScheme, file)
-        }
+    /**
+     * 获取指定文件在指定[FileProvider]中的uri
+     */
+    fun createUriFromFile(
+        context: Context, file: File, clazz: Class<out FileProvider> = defaultFileProviderClass
+    ): Uri = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+        Uri.fromFile(file)
+    } else {
+        val fileProviderScheme = findManifestFileProviderScheme(context, clazz)
+        FileProvider.getUriForFile(context, fileProviderScheme, file)
     }
 
+    /**
+     * 创建指定Uri的分享[Intent]
+     */
     fun createShareIntent(label: String, fileUri: Uri): Intent {
         val intent = Intent(Intent.ACTION_SEND)
         // MIME 类型： http://www.w3school.com.cn/media/media_mimeref.asp

@@ -105,7 +105,7 @@ inline fun <reified E : Enum<E>> EnumSetNameSpConvertSaver(key: String? = null) 
 //<editor-fold defaultstate="collapsed" desc="使用Gson序列化对象">
 class GsonSpConvertSaver<T>(
     saver: AbsSpSaver.AbsSpDelegate0<String?>,
-    private val gson: Gson = io.github.chenfei0928.util.gson.gson,
+    private val gson: Gson = io.github.chenfei0928.json.gson.gson,
     private val type: Type
 ) : SpConvertSaver<String?, T?>(saver) {
     @Volatile
@@ -113,7 +113,7 @@ class GsonSpConvertSaver<T>(
 
     constructor(
         key: String,
-        gson: Gson = io.github.chenfei0928.util.gson.gson,
+        gson: Gson = io.github.chenfei0928.json.gson.gson,
         type: Type
     ) : this(StringDelegate(key), gson, type)
 
