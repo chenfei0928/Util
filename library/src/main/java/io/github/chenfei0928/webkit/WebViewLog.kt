@@ -7,12 +7,11 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import androidx.annotation.RequiresApi
+import androidx.annotation.Size
 import androidx.webkit.WebResourceErrorCompat
 import androidx.webkit.WebResourceRequestCompat
 import androidx.webkit.WebViewFeature
 import io.github.chenfei0928.util.Log
-
-private const val TAG = "KW_WebView"
 
 /**
  * WebView 诊断与排查问题的方法和技巧，日志输出格式化
@@ -60,10 +59,11 @@ fun ConsoleMessage.toSimpleString(): String {
 }
 
 internal fun debugWebViewMessage(
-    methodName: String, vararg params: Pair<String, String?>
-) = debugWebViewMessage(methodName, ConsoleMessage.MessageLevel.DEBUG, params = params)
+    @Size(max = 23) tag: String, methodName: String, vararg params: Pair<String, String?>
+) = debugWebViewMessage(tag, methodName, ConsoleMessage.MessageLevel.DEBUG, params = params)
 
 internal fun debugWebViewMessage(
+    @Size(max = 23) tag: String,
     methodName: String,
     level: ConsoleMessage.MessageLevel = ConsoleMessage.MessageLevel.DEBUG,
     vararg params: Pair<String, String?>
@@ -79,11 +79,11 @@ internal fun debugWebViewMessage(
         it.first + "+" + it.second
     }.toString()
     when (level) {
-        ConsoleMessage.MessageLevel.TIP -> Log.v(TAG, msg)
-        ConsoleMessage.MessageLevel.LOG -> Log.i(TAG, msg)
-        ConsoleMessage.MessageLevel.WARNING -> Log.w(TAG, msg)
-        ConsoleMessage.MessageLevel.ERROR -> Log.e(TAG, msg)
-        ConsoleMessage.MessageLevel.DEBUG -> Log.d(TAG, msg)
+        ConsoleMessage.MessageLevel.TIP -> Log.v(tag, msg)
+        ConsoleMessage.MessageLevel.LOG -> Log.i(tag, msg)
+        ConsoleMessage.MessageLevel.WARNING -> Log.w(tag, msg)
+        ConsoleMessage.MessageLevel.ERROR -> Log.e(tag, msg)
+        ConsoleMessage.MessageLevel.DEBUG -> Log.d(tag, msg)
     }
 }
 

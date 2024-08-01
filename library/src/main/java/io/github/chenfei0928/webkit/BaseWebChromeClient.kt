@@ -31,6 +31,7 @@ open class BaseWebChromeClient(
     override fun onConsoleMessage(message: String?, lineNumber: Int, sourceID: String?) {
         // 不需要调用super方法
         debugWebViewMessage(
+            TAG,
             "onConsoleMessage", ConsoleMessage.MessageLevel.DEBUG,
             "message" to message,
             "lineNumber" to lineNumber.toString(),
@@ -40,6 +41,7 @@ open class BaseWebChromeClient(
 
     override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
         debugWebViewMessage(
+            TAG,
             "onConsoleMessage", consoleMessage.messageLevel(),
             "message" to consoleMessage.toSimpleString()
         )

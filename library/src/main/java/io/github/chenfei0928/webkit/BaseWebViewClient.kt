@@ -41,6 +41,7 @@ open class BaseWebViewClient(
     ) {
         super.onReceivedError(view, request, error)
         debugWebViewMessage(
+            TAG,
             "onReceivedError",
             "request" to request.toSimpleString(),
             "error" to error.toSimpleString(),
@@ -63,6 +64,7 @@ open class BaseWebViewClient(
     ) {
         super.onSafeBrowsingHit(view, request, threatType, callback)
         debugWebViewMessage(
+            TAG,
             "onSafeBrowsingHit",
             "request" to request.toSimpleString(),
             "threatType" to threatType.toString(),
@@ -82,6 +84,7 @@ open class BaseWebViewClient(
     ) {
         super.onReceivedHttpError(view, request, errorResponse)
         debugWebViewMessage(
+            TAG,
             "onReceivedHttpError",
             "request" to request.toString(),
             "errorResponse" to errorResponse.toSimpleString(),
@@ -103,6 +106,7 @@ open class BaseWebViewClient(
         }
         // 弹出警告
         debugWebViewMessage(
+            TAG,
             "onReceivedSslError",
             "error" to error.toString(),
             "webview.info" to view.toSimpleString()
