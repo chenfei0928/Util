@@ -72,9 +72,8 @@ inline fun ActivityResultCaller.registerForSimplePermission(
 ): ActivityResultLauncher<Unit?> {
     var registerForPermission: PermissionLauncher? = null
     val resultCallback = object : PermissionResultCallback(permissions) {
-        override fun context(): Activity {
-            return context()
-        }
+        override val context: Activity
+            get() = context()
 
         override fun onAgree() {
             callback(true)

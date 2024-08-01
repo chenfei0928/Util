@@ -13,7 +13,6 @@ import io.github.chenfei0928.util.Log
 class WrapperAdapter(
     innerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
 ) : AbsWrapperAdapter(innerAdapter), ListUpdateCallback {
-    private val TAG = "KW_WrapperAdapter"
     private var recyclerView: RecyclerView? = null
     internal var lastIsEmpty: Boolean = false
     private var onLoadMoreListener: (WrapperAdapter) -> Unit = {}
@@ -111,5 +110,18 @@ class WrapperAdapter(
 
     override fun onChanged(position: Int, count: Int, payload: Any?) {
         notifyItemRangeChanged(position + headerSize, count, payload)
+    }
+
+    companion object {
+        private const val TAG = "KW_WrapperAdapter"
+
+        fun wrap(adapter: RecyclerView.Adapter<*>): WrapperAdapter {
+            return if (adapter is WrapperAdapter) {
+                adapter
+            } else {
+                @Suppress("UNCHECKED_CAST")
+                WrapperAdapter(adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
+            }
+        }
     }
 }

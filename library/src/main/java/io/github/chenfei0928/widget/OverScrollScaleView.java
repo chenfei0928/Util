@@ -16,7 +16,7 @@ import io.github.chenfei0928.animation.AnimatorKt;
  * Created by MrFeng on 2017/8/3.
  */
 public class OverScrollScaleView extends NestedScrollView {
-    private final static float OFFSET_RADIO = 1.8f; // support iOS like pull feature.
+    private static final float OFFSET_RADIO = 1.8f; // support iOS like pull feature.
     private float mLastY = -1; // save event y
     private View mOverScrollScaleView;
     private View mContent;

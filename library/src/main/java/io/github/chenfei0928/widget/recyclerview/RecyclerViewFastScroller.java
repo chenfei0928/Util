@@ -97,6 +97,8 @@ public class RecyclerViewFastScroller extends LinearLayoutCompat {
                 handle.setSelected(false);
                 hideBubble();
                 return true;
+            default:
+                break;
         }
         return super.onTouchEvent(event);
     }
@@ -134,9 +136,9 @@ public class RecyclerViewFastScroller extends LinearLayoutCompat {
         } else if (handle.getY() + handle.getHeight() >= height - TRACK_SNAP_RANGE) {
             proportion = 1f;
         } else {
-            proportion = y / (float) height;
+            proportion = y / height;
         }
-        final int targetPos = getValueInRange(0, itemCount - 1, (int) (proportion * (float) itemCount));
+        final int targetPos = getValueInRange(0, itemCount - 1, (int) (proportion * itemCount));
         recyclerView.scrollToPosition(targetPos);
         final String bubbleText = ((BubbleTextGetter) recyclerView.getAdapter()).getTextToShowInBubble(targetPos);
         if (bubble != null) {
@@ -158,7 +160,7 @@ public class RecyclerViewFastScroller extends LinearLayoutCompat {
         final int verticalScrollRange = recyclerView.computeVerticalScrollRange();
 
         int visible = verticalScrollRange == 0 ? INVISIBLE : VISIBLE;
-        if (getVisibility() != VISIBLE) {
+        if (getVisibility() != visible) {
             setVisibility(visible);
         }
 

@@ -2,7 +2,6 @@ package io.github.chenfei0928.util.retrofit
 
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -13,7 +12,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.net.URLConnection
 import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
 
 /**
  * User: ChenFei(chenfei0928@gmail.com)
@@ -26,11 +24,7 @@ object RetrofitUtil {
     val octetStreamType: MediaType = "application/octet-stream".toMediaType()
 
     @JvmField
-    val utf8Charset: Charset = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-        StandardCharsets.UTF_8
-    } else {
-        Charset.forName("UTF-8")
-    }
+    val utf8Charset: Charset = Charsets.UTF_8
 
     @JvmStatic
     fun wrap(content: String?): RequestBody? =

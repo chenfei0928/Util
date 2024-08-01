@@ -92,6 +92,8 @@ public class NestedWebView extends ObservableWebView implements NestedScrollingC
                 stopNestedScroll();
                 result = super.onTouchEvent(event);
                 break;
+            default:
+                break;
         }
         return result;
     }

@@ -23,7 +23,7 @@ private inline fun <SpSaver : AbsSpSaver, V> SpSaver.watchSharedPreferenceDelega
     owner: LifecycleOwner,
     key: String,
     crossinline valueGetter: () -> V,
-    noinline listener: (V) -> Unit
+    crossinline listener: (V) -> Unit
 ) {
     // 如果该字段是sp委托，获取其sp存储的key
     listener(valueGetter())

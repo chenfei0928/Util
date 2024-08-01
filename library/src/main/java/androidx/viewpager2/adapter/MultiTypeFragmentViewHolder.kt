@@ -1,8 +1,8 @@
 package androidx.viewpager2.adapter
 
+import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.core.view.ViewCompat
 import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
 
 /**
@@ -19,7 +19,7 @@ class MultiTypeFragmentViewHolder<T>(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
-            container.id = ViewCompat.generateViewId()
+            container.id = View.generateViewId()
             container.isSaveEnabled = false
             return MultiTypeFragmentViewHolder(container)
         }

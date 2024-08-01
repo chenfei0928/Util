@@ -23,6 +23,7 @@ object ExecutorUtil : BgTaskExecutor by BgTaskExecutorImpl(),
                 try {
                     throwableAction(t)
                 } catch (ignore: Exception) {
+                    // noop
                 }
             }
         }

@@ -17,31 +17,36 @@ internal class SpSaverAutoApply(
 
     fun autoSave() {
         val looper = Looper.myLooper()
-        if (ExecutorUtil.isRunOnBgThread()) {
-            // 在背景线程执行，发送任务到背景线程以提交
-            if (!ExecutorUtil.containInBg(spApplyTask)) {
-                ExecutorUtil.postToBg(spApplyTask)
+        when {
+            ExecutorUtil.isRunOnBgThread() -> {
+                // 在背景线程执行，发送任务到背景线程以提交
+                if (!ExecutorUtil.containInBg(spApplyTask)) {
+                    ExecutorUtil.postToBg(spApplyTask)
+                }
             }
-        } else if (looper == null) {
-            // 当前线程没有Looper，发送延时任务以自动提交
-            if (!ExecutorUtil.containInUi(spApplyTask)) {
-                ExecutorUtil.runOnUiThreadDelayed(spApplyTask, 100)
+            looper == null -> {
+                // 当前线程没有Looper，发送延时任务以自动提交
+                if (!ExecutorUtil.containInUi(spApplyTask)) {
+                    ExecutorUtil.runOnUiThreadDelayed(spApplyTask, 100)
+                }
             }
-        } else if (looper == Looper.getMainLooper()) {
-            // 当前是主线程，发送任务到队列中以提交
-            if (!ExecutorUtil.containInUi(spApplyTask)) {
-                ExecutorUtil.postToUiThread(spApplyTask)
+            looper == Looper.getMainLooper() -> {
+                // 当前是主线程，发送任务到队列中以提交
+                if (!ExecutorUtil.containInUi(spApplyTask)) {
+                    ExecutorUtil.postToUiThread(spApplyTask)
+                }
             }
-        } else {
-            // 有looper但不在主线程，发送到当前looper的handler执行
-            val handler = getOrCreateHandler(looper)
-            if (!handler.hasMessages(spApplyTask.hashCode())) {
-                Message
-                    .obtain(handler, spApplyTask)
-                    .apply {
-                        what = spApplyTask.hashCode()
-                    }
-                    .sendToTarget()
+            else -> {
+                // 有looper但不在主线程，发送到当前looper的handler执行
+                val handler = getOrCreateHandler(looper)
+                if (!handler.hasMessages(spApplyTask.hashCode())) {
+                    Message
+                        .obtain(handler, spApplyTask)
+                        .apply {
+                            what = spApplyTask.hashCode()
+                        }
+                        .sendToTarget()
+                }
             }
         }
     }

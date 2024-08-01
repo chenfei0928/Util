@@ -64,8 +64,7 @@ public class GlideSplitTransformation extends BitmapTransformation {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof GlideSplitTransformation) {
-            GlideSplitTransformation o = (GlideSplitTransformation) obj;
+        if (obj instanceof GlideSplitTransformation o) {
             return this.page == o.page
                     && this.pageHeight == o.pageHeight;
         }

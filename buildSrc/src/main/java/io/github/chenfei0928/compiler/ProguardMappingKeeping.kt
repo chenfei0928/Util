@@ -89,15 +89,11 @@ internal fun Project.applyProguardMappingKeeping() {
 }
 
 internal val Project.containsMappingKeepingFile: Boolean
-    get() {
-        return !mappingFileSaveDir.listFiles { dir: File ->
-            Contract.minifyBuildTypes.find {
-                dir.name.endsWith(it, true)
-            } != null
-                    && dir.isDirectory
-                    && File(dir, mappingKeepingFileName).exists()
-        }.isNullOrEmpty()
-    }
+    get() = !mappingFileSaveDir.listFiles { dir: File ->
+        Contract.minifyBuildTypes.find { dir.name.endsWith(it, true) } != null
+                && dir.isDirectory
+                && File(dir, mappingKeepingFileName).exists()
+    }.isNullOrEmpty()
 
 private const val mappingKeepingFileName = "mapping.txt"
 private const val mappingKeepingProguardContent = """

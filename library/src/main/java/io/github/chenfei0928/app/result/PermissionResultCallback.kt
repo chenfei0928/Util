@@ -15,12 +15,12 @@ abstract class PermissionResultCallback(
 
     override fun onActivityResult(result: Map<String, Boolean>) {
         when {
-            PermissionUtils.hasSelfPermissions(context(), permissions = permissions) -> {
+            PermissionUtils.hasSelfPermissions(context, permissions = permissions) -> {
                 // 如果有所有的权限，处理
                 onAgree()
             }
             PermissionUtils.shouldShowRequestPermissionRationale(
-                context(), permissions = permissions
+                context, permissions = permissions
             ) -> {
                 // 当被拒绝，可以再次提示请求权限的原因
                 onDenied()
@@ -32,7 +32,7 @@ abstract class PermissionResultCallback(
         }
     }
 
-    protected abstract fun context(): Activity
+    protected abstract val context: Activity
 
     /**
      * 权限已授权的回调

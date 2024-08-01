@@ -16,26 +16,26 @@ class EnvironmentObservableRegister {
     }
 
     static void register(Object observer, Object callback) {
-        if (observer instanceof Observable) {
-            ((Observable) observer).addOnPropertyChangedCallback((Observable.OnPropertyChangedCallback) callback);
-        } else if (observer instanceof ObservableList) {
-            ((ObservableList<?>) observer).addOnListChangedCallback((ObservableList.OnListChangedCallback) callback);
-        } else if (observer instanceof ObservableMap) {
-            ((ObservableMap<?, ?>) observer).addOnMapChangedCallback((ObservableMap.OnMapChangedCallback) callback);
-        } else if (observer instanceof LiveData) {
-            ((LiveData<?>) observer).observeForever((Observer) callback);
+        if (observer instanceof Observable o) {
+            o.addOnPropertyChangedCallback((Observable.OnPropertyChangedCallback) callback);
+        } else if (observer instanceof ObservableList o) {
+            o.addOnListChangedCallback((ObservableList.OnListChangedCallback) callback);
+        } else if (observer instanceof ObservableMap o) {
+            o.addOnMapChangedCallback((ObservableMap.OnMapChangedCallback) callback);
+        } else if (observer instanceof LiveData o) {
+            o.observeForever((Observer) callback);
         }
     }
 
     static void unregister(Object observer, Object callback) {
-        if (observer instanceof Observable) {
-            ((Observable) observer).removeOnPropertyChangedCallback((Observable.OnPropertyChangedCallback) callback);
-        } else if (observer instanceof ObservableList) {
-            ((ObservableList<?>) observer).removeOnListChangedCallback((ObservableList.OnListChangedCallback) callback);
-        } else if (observer instanceof ObservableMap) {
-            ((ObservableMap<?, ?>) observer).removeOnMapChangedCallback((ObservableMap.OnMapChangedCallback) callback);
-        } else if (observer instanceof LiveData) {
-            ((LiveData<?>) observer).removeObserver((Observer) callback);
+        if (observer instanceof Observable o) {
+            o.removeOnPropertyChangedCallback((Observable.OnPropertyChangedCallback) callback);
+        } else if (observer instanceof ObservableList o) {
+            o.removeOnListChangedCallback((ObservableList.OnListChangedCallback) callback);
+        } else if (observer instanceof ObservableMap o) {
+            o.removeOnMapChangedCallback((ObservableMap.OnMapChangedCallback) callback);
+        } else if (observer instanceof LiveData o) {
+            o.removeObserver((Observer) callback);
         }
     }
 }

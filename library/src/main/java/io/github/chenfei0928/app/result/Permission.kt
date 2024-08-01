@@ -74,9 +74,8 @@ inline fun ActivityResultCaller.registerForPermission(
     crossinline onNeverAskAgain: () -> Unit
 ): ActivityResultLauncher<Unit?> {
     val resultCallback = object : PermissionResultCallback(permissions) {
-        override fun context(): Activity {
-            return context()
-        }
+        override val context: Activity
+            get() = context()
 
         override fun onAgree() {
             onAgree()

@@ -14,7 +14,7 @@ import io.github.chenfei0928.app.RunningEnvironmentUtil;
  * @author ChenFei(chenfei0928 @ gmail.com)
  * @date 2021-01-13 16:10
  */
-class ProcessActivityLifecycleCallbackSender implements Application.ActivityLifecycleCallbacks {
+final class ProcessActivityLifecycleCallbackSender implements Application.ActivityLifecycleCallbacks {
     static final String ACTIVITY_INFO = "activityInfo";
     static final String ACTION = "io.github.chenfei0928.util.MULTI_PROCESS_ACTIVITY_LIFECYCLE_CALLBACK";
 
@@ -45,6 +45,7 @@ class ProcessActivityLifecycleCallbackSender implements Application.ActivityLife
 
     @Override
     public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+        // noop
     }
 
     @Override

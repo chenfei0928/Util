@@ -42,7 +42,7 @@ abstract class BaseFragmentMaxLifecycleEnforcer {
 
         // signal 3 of 3: we may have to catch-up after being in a lifecycle state that
         // prevented us to perform transactions
-        mLifecycleObserver = LifecycleEventObserver { source, event ->
+        mLifecycleObserver = LifecycleEventObserver { _, _ ->
             updateFragmentMaxLifecycle(false)
         }
         mLifecycle.addObserver(mLifecycleObserver!!)
