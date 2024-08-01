@@ -12,7 +12,6 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.widget.ProgressBar
-import androidx.annotation.Size
 import androidx.webkit.SafeBrowsingResponseCompat
 import androidx.webkit.WebResourceErrorCompat
 import androidx.webkit.WebViewAssetLoader
@@ -41,15 +40,11 @@ open class BaseWebViewClient(
         view: WebView, request: WebResourceRequest, error: WebResourceErrorCompat
     ) {
         super.onReceivedError(view, request, error)
-        debugMessage(
-            "onReceivedError", arrayOf(
-                "request",
-                request.toSimpleString(),
-                "error",
-                error.toSimpleString(),
-                "webview.info",
-                view.toSimpleString()
-            )
+        debugWebViewMessage(
+            "onReceivedError",
+            "request" to request.toSimpleString(),
+            "error" to error.toSimpleString(),
+            "webview.info" to view.toSimpleString()
         )
     }
 
@@ -67,15 +62,11 @@ open class BaseWebViewClient(
         callback: SafeBrowsingResponseCompat
     ) {
         super.onSafeBrowsingHit(view, request, threatType, callback)
-        debugMessage(
-            "onSafeBrowsingHit", arrayOf(
-                "request",
-                request.toSimpleString(),
-                "threatType",
-                threatType.toString(),
-                "webview.info",
-                view.toSimpleString()
-            )
+        debugWebViewMessage(
+            "onSafeBrowsingHit",
+            "request" to request.toSimpleString(),
+            "threatType" to threatType.toString(),
+            "webview.info" to view.toSimpleString()
         )
     }
 
@@ -90,15 +81,11 @@ open class BaseWebViewClient(
         view: WebView, request: WebResourceRequest, errorResponse: WebResourceResponse
     ) {
         super.onReceivedHttpError(view, request, errorResponse)
-        debugMessage(
-            "onReceivedHttpError", arrayOf(
-                "request",
-                request.toString(),
-                "errorResponse",
-                errorResponse.toSimpleString(),
-                "webview.info",
-                view.toSimpleString()
-            )
+        debugWebViewMessage(
+            "onReceivedHttpError",
+            "request" to request.toString(),
+            "errorResponse" to errorResponse.toSimpleString(),
+            "webview.info" to view.toSimpleString()
         )
     }
 
@@ -115,9 +102,10 @@ open class BaseWebViewClient(
             return
         }
         // 弹出警告
-        debugMessage(
+        debugWebViewMessage(
             "onReceivedSslError",
-            arrayOf("error", error.toString(), "webview.info", view.toSimpleString())
+            "error" to error.toString(),
+            "webview.info" to view.toSimpleString()
         )
         sslErrorHandler.emit(handler, error)
     }
@@ -198,19 +186,6 @@ open class BaseWebViewClient(
         if (debugLog) {
             Log.v(TAG, "onLoadResource: $url")
         }
-    }
-
-    private fun debugMessage(
-        methodName: String, @Size(multiple = 2, min = 0) params: Array<String?>
-    ) {
-        if (!debugLog) {
-            return
-        }
-        val sb = StringBuilder().append("debugMessage: ").append(methodName)
-        for (i in params.indices step 2) {
-            sb.append(params[i]).append('=').append(params[i + 1])
-        }
-        Log.d(TAG, sb.toString())
     }
     //</editor-fold>
 

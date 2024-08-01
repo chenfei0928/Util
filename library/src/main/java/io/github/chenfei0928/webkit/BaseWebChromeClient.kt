@@ -1,7 +1,6 @@
 package io.github.chenfei0928.webkit
 
 import android.annotation.TargetApi
-import android.content.DialogInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Message
@@ -12,7 +11,6 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.ProgressBar
-import androidx.annotation.Size
 import androidx.appcompat.app.AlertDialog
 import io.github.chenfei0928.app.EditorDialogBuilder
 import io.github.chenfei0928.base.fragment.FragmentHost
@@ -32,47 +30,21 @@ open class BaseWebChromeClient(
     //<editor-fold defaultstate="collapsed" desc="日志输出">
     override fun onConsoleMessage(message: String?, lineNumber: Int, sourceID: String?) {
         // 不需要调用super方法
-        debugMessage(
-            "onConsoleMessage", ConsoleMessage.MessageLevel.DEBUG, arrayOf(
-                "message", message, "lineNumber", lineNumber.toString(), "sourceID", sourceID
-            )
+        debugWebViewMessage(
+            "onConsoleMessage", ConsoleMessage.MessageLevel.DEBUG,
+            "message" to message,
+            "lineNumber" to lineNumber.toString(),
+            "sourceID" to sourceID
         )
     }
 
     override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
-        debugMessage(
-            "onConsoleMessage", consoleMessage.messageLevel(), arrayOf(
-                "message", consoleMessage.toSimpleString()
-            )
+        debugWebViewMessage(
+            "onConsoleMessage", consoleMessage.messageLevel(),
+            "message" to consoleMessage.toSimpleString()
         )
         // 返回true，不再需要webview内部处理
         return true
-    }
-
-    private fun debugMessage(
-        methodName: String,
-        level: ConsoleMessage.MessageLevel,
-        @Size(multiple = 2, min = 0) params: Array<String?>
-    ) {
-        if (!debugLog) {
-            return
-        }
-        val sb = StringBuilder()
-            .append("debugMessage: ")
-            .append(methodName)
-        for (i in params.indices step 2) {
-            sb
-                .append(params[i])
-                .append('=')
-                .append(params[i + 1])
-        }
-        when (level) {
-            ConsoleMessage.MessageLevel.TIP -> Log.v(TAG, sb.toString())
-            ConsoleMessage.MessageLevel.LOG -> Log.i(TAG, sb.toString())
-            ConsoleMessage.MessageLevel.WARNING -> Log.w(TAG, sb.toString())
-            ConsoleMessage.MessageLevel.ERROR -> Log.e(TAG, sb.toString())
-            ConsoleMessage.MessageLevel.DEBUG -> Log.d(TAG, sb.toString())
-        }
     }
     //</editor-fold>
 
@@ -124,16 +96,15 @@ open class BaseWebChromeClient(
             .setSingleLine()
             .setPositiveButton(android.R.string.ok) { _, ed, _ ->
                 result.confirm(if (ed.length() > 0) ed.text.toString() else defaultValue)
-                Unit
             }
-            .setNegativeButton(android.R.string.cancel, DialogInterface.OnClickListener { _, _ ->
+            .setNegativeButton(android.R.string.cancel) { _, _ ->
                 result.cancel()
-            })
-            .setOnKeyListener(DialogInterface.OnKeyListener { _, keyCode, event ->
+            }
+            .setOnKeyListener { _, keyCode, event ->
                 // 屏蔽keycode等于84之类的按键，避免按键后导致对话框消息而页面无法再弹出对话框的问题
                 Log.v("onJsPrompt", "keyCode==" + keyCode + "event=" + event)
                 true
-            })
+            }
             .setCancelable(false)
             .show()
         return true
@@ -207,6 +178,5 @@ open class BaseWebChromeClient(
 
     companion object {
         private const val TAG = "KW_BaseWebChromeClient"
-        var debugLog = false
     }
 }

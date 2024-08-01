@@ -10,6 +10,9 @@ import androidx.annotation.RequiresApi
 import androidx.webkit.WebResourceErrorCompat
 import androidx.webkit.WebResourceRequestCompat
 import androidx.webkit.WebViewFeature
+import io.github.chenfei0928.util.Log
+
+private const val TAG = "KW_WebView"
 
 /**
  * WebView 诊断与排查问题的方法和技巧，日志输出格式化
@@ -54,6 +57,34 @@ fun WebResourceResponse.toSimpleString(): String {
 
 fun ConsoleMessage.toSimpleString(): String {
     return "${message()}\nat ${sourceId()}:${lineNumber()}"
+}
+
+internal fun debugWebViewMessage(
+    methodName: String, vararg params: Pair<String, String?>
+) = debugWebViewMessage(methodName, ConsoleMessage.MessageLevel.DEBUG, params = params)
+
+internal fun debugWebViewMessage(
+    methodName: String,
+    level: ConsoleMessage.MessageLevel = ConsoleMessage.MessageLevel.DEBUG,
+    vararg params: Pair<String, String?>
+) {
+    if (!BaseWebViewClient.debugLog) {
+        return
+    }
+    val msg = params.joinTo(
+        StringBuilder()
+            .append("debugMessage: ")
+            .append(methodName)
+    ) {
+        it.first + "+" + it.second
+    }.toString()
+    when (level) {
+        ConsoleMessage.MessageLevel.TIP -> Log.v(TAG, msg)
+        ConsoleMessage.MessageLevel.LOG -> Log.i(TAG, msg)
+        ConsoleMessage.MessageLevel.WARNING -> Log.w(TAG, msg)
+        ConsoleMessage.MessageLevel.ERROR -> Log.e(TAG, msg)
+        ConsoleMessage.MessageLevel.DEBUG -> Log.d(TAG, msg)
+    }
 }
 
 sealed interface WebResourceRequestSupport {
