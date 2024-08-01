@@ -16,9 +16,11 @@ object ImmortalLifecycleOwner : LifecycleOwner {
 
     private object ImmortalLifecycle : Lifecycle() {
         override fun addObserver(observer: LifecycleObserver) {
+            // noop
         }
 
         override fun removeObserver(observer: LifecycleObserver) {
+            // noop
         }
 
         override val currentState: State

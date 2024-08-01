@@ -1,4 +1,4 @@
-package io.github.chenfei0928.util
+package io.github.chenfei0928.json
 
 import org.json.JSONStringer
 

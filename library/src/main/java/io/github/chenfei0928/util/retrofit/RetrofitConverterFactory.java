@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import okhttp3.RequestBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
+import retrofit2.internal.EverythingIsNonNull;
 
 /**
  * 用于将字符串请求直接转换为请求体
@@ -17,8 +18,8 @@ public class RetrofitConverterFactory extends Converter.Factory {
     @Override
     public Converter<?, RequestBody> requestBodyConverter(
             @NotNull Type type,
-            @NotNull Annotation[] parameterAnnotations,
-            @NotNull Annotation[] methodAnnotations,
+            @EverythingIsNonNull @NotNull Annotation[] parameterAnnotations,
+            @EverythingIsNonNull @NotNull Annotation[] methodAnnotations,
             @NotNull Retrofit retrofit
     ) {
         if (String.class == type) {

@@ -3,6 +3,7 @@ package io.github.chenfei0928.util
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import io.github.chenfei0928.util.databinding.ActivityMainBinding
+import io.github.chenfei0928.viewbinding.setContentViewBinding
 
 /**
  * @author chenf()

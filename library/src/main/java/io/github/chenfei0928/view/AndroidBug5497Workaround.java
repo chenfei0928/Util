@@ -1,4 +1,4 @@
-package io.github.chenfei0928.util;
+package io.github.chenfei0928.view;
 
 import android.app.Activity;
 import android.graphics.Rect;

@@ -23,18 +23,9 @@ class FileLogUtil
 private constructor(
     context: Context
 ) : Thread("FileLogUtil") {
-    private val pid: String = android.os.Process.myPid().toString()
     private val deviceInfo: String by lazy { devicesInfoProvider(context) }
     private val running = AtomicBoolean(true)
 
-    /**
-     * 日志等级：*:v , *:d , *:w , *:e , *:f , *:s
-     * 显示当前mPID程序的 E和W等级的日志：logcat *:e *:w | grep "mPID"
-     * 打印所有日志信息：logcat | grep "mPID"
-     * 打印标签过滤信息：logcat -s way
-     */
-    private val cmd: String
-        get() = "logcat | grep \"$pid\""
     val fullLogFile: File = getLogFile(context)
 
     fun stopLogs() {
@@ -42,6 +33,15 @@ private constructor(
     }
 
     override fun run() {
+        val pid: String = android.os.Process.myPid().toString()
+
+        /**
+         * 日志等级：*:v , *:d , *:w , *:e , *:f , *:s
+         * 显示当前mPID程序的 E和W等级的日志：logcat *:e *:w | grep "mPID"
+         * 打印所有日志信息：logcat | grep "mPID"
+         * 打印标签过滤信息：logcat -s way
+         */
+        val cmd: String = "logcat | grep \"$pid\""
         Log.i(TAG, "FileLogUtil is running.")
         try {
             // 执行logcat
@@ -86,17 +86,6 @@ private constructor(
 
         @Volatile
         private var INSTANCE: FileLogUtil? = null
-        private val dateEn: SimpleDateFormat by lazy {
-            SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
-        }
-        private val dataFormat: Map<String, SimpleDateFormat> by lazy {
-            arrayOf(
-                "yyyy-MM-dd HH:mm:ss.SSS", "yy-MM-dd HH:mm:ss.SSS", "MM-dd HH:mm:ss.SSS",
-                "yyyy-MM-dd HH:mm:ss", "yy-MM-dd HH:mm:ss", "MM-dd HH:mm:ss"
-            )
-                .associateByTo(ArrayMap(), { it },
-                    { SimpleDateFormat(it, Locale.US) })
-        }
         var devicesInfoProvider: (context: Context) -> String = { "" }
 
         @JvmStatic
@@ -107,13 +96,27 @@ private constructor(
             return INSTANCE as FileLogUtil
         }
 
+        //<editor-fold desc="判断日志中是否需要重写日期信息" defaultstatus="collapsed">
+        private val dataFormat: Map<String, SimpleDateFormat> by lazy {
+            arrayOf(
+                "yyyy-MM-dd HH:mm:ss.SSS", "yy-MM-dd HH:mm:ss.SSS", "MM-dd HH:mm:ss.SSS",
+                "yyyy-MM-dd HH:mm:ss", "yy-MM-dd HH:mm:ss", "MM-dd HH:mm:ss"
+            )
+                .associateByTo(ArrayMap(), { it },
+                    { SimpleDateFormat(it, Locale.US) })
+        }
+
         private fun needWriteData(logLine: String): Boolean {
             return dataFormat
                 .filterKeys { logLine.length > it.length }
                 .map { it.value.parse(logLine.substring(0, it.key.length), ParsePosition(0)) }
                 .any { it != null }
         }
+        //</editor-fold>
 
+        /**
+         * 写入异常信息到日志文件中并返回日志文件名
+         */
         @JvmStatic
         fun saveExceptionToLog(context: Context, throwable: Throwable): String {
             val file = getLogFile(context)
@@ -134,10 +137,14 @@ private constructor(
             return file.absolutePath
         }
 
+        /**
+         * 删除所有日志文件
+         */
         fun deleteAll(context: Context) {
             FileUtil.deleteFileOrDir(File(createLogDir(context)))
         }
 
+        //<editor-fold desc="私有获取文件名工具方法" defaultstatus="collapsed">
         private fun createLogDir(context: Context): String {
             var logDir = context.getExternalFilesDir("log")
             if (logDir == null) {
@@ -147,6 +154,12 @@ private constructor(
                 logDir.mkdirs()
             }
             return logDir.absolutePath
+        }
+
+        private fun getLogFile(context: Context): File {
+            val logDir = createLogDir(context)
+            val logFileName = getFileName(context) + ".log"
+            return File(logDir, logFileName)
         }
 
         private fun getFileName(context: Context): String {
@@ -160,15 +173,14 @@ private constructor(
             return logTime
         }
 
-        private fun getLogFile(context: Context): File {
-            val logDir = createLogDir(context)
-            val logFileName = getFileName(context) + ".log"
-            return File(logDir, logFileName)
+        private val dateEn: SimpleDateFormat by lazy {
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
         }
 
         // 2012-10-03 23:41:31.123
         private fun getDateEn(): String {
             return dateEn.format(Date(System.currentTimeMillis()))
         }
+        //</editor-fold>
     }
 }

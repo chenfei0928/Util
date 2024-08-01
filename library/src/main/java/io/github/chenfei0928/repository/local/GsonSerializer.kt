@@ -12,13 +12,13 @@ import java.lang.reflect.Type
  * 使用[Gson]来对结构体进行序列化和反序列化
  */
 class GsonSerializer<T>(
-    gson: Gson = io.github.chenfei0928.util.gson.gson,
+    gson: Gson = io.github.chenfei0928.json.gson.gson,
     private val typeToken: TypeToken<T>
 ) : LocalSerializer<T> {
     private val typeAdapter: TypeAdapter<T> = gson.getAdapter(typeToken) as TypeAdapter<T>
 
     constructor(
-        gson: Gson = io.github.chenfei0928.util.gson.gson,
+        gson: Gson = io.github.chenfei0928.json.gson.gson,
         type: Type
     ) : this(gson = gson, typeToken = TypeToken.get(type) as TypeToken<T>)
 

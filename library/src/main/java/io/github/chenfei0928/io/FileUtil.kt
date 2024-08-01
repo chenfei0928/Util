@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.os.FileUtils
+import android.util.Log
 import android.webkit.MimeTypeMap
 import okio.buffer
 import okio.sink
@@ -18,6 +19,8 @@ import java.io.IOException
  * Created by MrFeng on 2018/1/31.
  */
 object FileUtil {
+    private const val TAG = "KW_FileUtil"
+
     @JvmStatic
     fun joinPath(vararg path: String): String {
         return path.joinToString(File.separator)
@@ -101,10 +104,11 @@ object FileUtil {
             dest.parentFile.mkdirs()
             try {
                 dest.createNewFile()
-            } catch (e: IOException) {
+            } catch (ignore: IOException) {
+                // noop
             }
         }
-        return try {
+        try {
             FileInputStream(source).use { fis ->
                 FileOutputStream(dest).use { fos ->
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -118,34 +122,34 @@ object FileUtil {
                 }
             }
         } catch (e: IOException) {
-            e.printStackTrace()
-            false
+            Log.w(TAG, "copyFileToDest: $source to $dest", e)
+            return false
         }
     }
 
     @JvmStatic
     fun copyUriToDestFile(context: Context, source: Uri, dest: File): Boolean {
         if (!dest.exists()) {
+            dest.parentFile.mkdirs()
             try {
                 dest.createNewFile()
-            } catch (e: IOException) {
+            } catch (ignore: IOException) {
+                // noop
             }
         }
-        return try {
-            val fis = context.contentResolver.openInputStream(source) ?: return false
+        try {
+            val fis = context.contentResolver.openInputStream(source)
+                ?: return false
             fis.use {
                 FileOutputStream(dest).use { fos ->
-                    fos
-                        .sink()
-                        .buffer()
-                        .writeAll(fis.source())
+                    fos.sink().buffer().writeAll(fis.source())
                     fos.flush()
                     return true
                 }
             }
         } catch (e: IOException) {
-            e.printStackTrace()
-            false
+            Log.w(TAG, "copyUriToDestFile: $source to $dest", e)
+            return false
         }
     }
 

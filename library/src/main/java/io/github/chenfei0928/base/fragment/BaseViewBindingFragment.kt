@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.github.chenfei0928.reflect.parameterized.getParentParameterizedTypeClassDefinedImplInChild
-import io.github.chenfei0928.util.inflateFunc
+import io.github.chenfei0928.viewbinding.inflateFunc
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)

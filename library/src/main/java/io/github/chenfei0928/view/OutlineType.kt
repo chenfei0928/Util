@@ -150,6 +150,6 @@ sealed class OutlineType : ViewOutlineProvider() {
     }
 
     companion object {
-        private const val TAG = "OutlineType"
+        private const val TAG = "KW_OutlineType"
     }
 }

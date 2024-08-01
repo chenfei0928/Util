@@ -1,4 +1,4 @@
-package io.github.chenfei0928.util
+package io.github.chenfei0928.viewbinding
 
 import android.app.Activity
 import android.app.Dialog

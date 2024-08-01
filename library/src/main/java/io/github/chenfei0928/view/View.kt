@@ -99,7 +99,8 @@ class ViewTagDelegate<R>(
  * 字段委托类，通过viewTag来实现为viewHolder扩展字段
  */
 class ViewTagValDelegate<V : View, R>(
-    @IdRes private val id: Int, private val creator: (V) -> R
+    @IdRes private val id: Int,
+    private val creator: (V) -> R
 ) : ReadOnlyProperty<V, R> {
 
     override fun getValue(thisRef: V, property: KProperty<*>): R {

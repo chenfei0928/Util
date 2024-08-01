@@ -1,8 +1,6 @@
 package io.github.chenfei0928.os;
 
-import android.app.Application;
 import android.content.BroadcastReceiver;
-import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -40,13 +38,6 @@ public class PowerSaveUtil {
             }
         }
         return sIsInPowerSaveMode;
-    }
-
-    public static void trimMemory(Application application, int level) {
-        if (level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN && sReceiver != null) {
-            application.unregisterReceiver(sReceiver);
-            sReceiver = null;
-        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

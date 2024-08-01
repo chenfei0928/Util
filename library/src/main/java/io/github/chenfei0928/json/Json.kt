@@ -1,4 +1,4 @@
-package io.github.chenfei0928.util
+package io.github.chenfei0928.json
 
 import androidx.annotation.ReturnThis
 import org.json.JSONArray

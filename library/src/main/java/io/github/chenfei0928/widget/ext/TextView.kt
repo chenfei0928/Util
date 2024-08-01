@@ -15,6 +15,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.PrecomputedTextCompat
 import androidx.core.view.doOnLayout
 import androidx.core.widget.TextViewCompat
+import androidx.recyclerview.widget.RecyclerView
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.util.contains
 import kotlin.properties.ReadWriteProperty
@@ -91,8 +92,8 @@ private fun binaryMeasureTextSafeWidthForTextEndIndex(
 
 /**
  * 将耗时的文字测量操作放到异步执行，适用于在列表中显示大量文字时的优化
- * 需开启RecyclerView的LayoutManager预取：[androidx.recyclerview.widget.RecyclerView.LayoutManager.setItemPrefetchEnabled]
- * 并要求LayoutManager实现：[androidx.recyclerview.widget.RecyclerView.LayoutManager.collectAdjacentPrefetchPositions]
+ * 需开启RecyclerView的LayoutManager预取：[RecyclerView.LayoutManager.setItemPrefetchEnabled]
+ * 并要求LayoutManager实现：[RecyclerView.LayoutManager.collectAdjacentPrefetchPositions]
  * 不要在调用此方法后设置TextView属性
  */
 fun AppCompatTextView.setTextFuture(@Size(min = 200) text: CharSequence) {

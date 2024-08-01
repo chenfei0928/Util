@@ -557,7 +557,7 @@ abstract class FragmentBinder<T> : ItemViewDelegate<T, MultiTypeFragmentViewHold
     //</editor-fold>
 
     companion object {
-        private const val TAG = "FragmentBinder"
+        private const val TAG = "KW_FragmentBinder"
 
         // State saving config
         private const val KEY_PREFIX_FRAGMENT = "f#"

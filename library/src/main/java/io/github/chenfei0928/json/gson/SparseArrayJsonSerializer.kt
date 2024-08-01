@@ -1,4 +1,4 @@
-package io.github.chenfei0928.util.gson
+package io.github.chenfei0928.json.gson
 
 import android.util.SparseArray
 import androidx.core.util.forEach

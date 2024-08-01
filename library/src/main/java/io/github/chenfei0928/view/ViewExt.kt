@@ -20,7 +20,7 @@ inline fun View.watchEditorNotEmpty(
     vararg editors: EditText, crossinline action: View.(Boolean) -> Unit
 ): TextWatcher {
     val checkEditorNotEmpty = {
-        action(this, editors.find { it.isEmpty() } == null)
+        action(this, editors.none { it.isEmpty() })
     }
     checkEditorNotEmpty()
     val textWatcher = object : TextWatcherAdapter() {

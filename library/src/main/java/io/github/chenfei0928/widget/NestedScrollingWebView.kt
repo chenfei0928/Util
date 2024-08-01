@@ -6,7 +6,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewParent
 import android.widget.AbsListView
-import android.widget.GridView
 import android.widget.HorizontalScrollView
 import android.widget.ScrollView
 import androidx.viewpager.widget.ViewPager
@@ -44,21 +43,21 @@ open class NestedScrollingWebView
 
     private fun findViewParentIfNeeds(tag: View): ViewParent? {
         val parent = tag.parent
-        if (parent == null) {
-            return parent
-        }
-        return if (parent is ViewPager || parent is AbsListView || parent is ScrollView || parent is HorizontalScrollView || parent is GridView) {
-            parent
-        } else {
-            if (parent is View) {
+            ?: return null
+        return when (parent) {
+            is ViewPager, is AbsListView, is ScrollView, is HorizontalScrollView -> {
+                parent
+            }
+            is View -> {
                 findViewParentIfNeeds(parent as View)
-            } else {
+            }
+            else -> {
                 parent
             }
         }
     }
 
     companion object {
-        private const val TAG = "NestedScrollingWebView"
+        private const val TAG = "KW_NestedScrollingWebView"
     }
 }
