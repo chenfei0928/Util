@@ -3,7 +3,7 @@ package io.github.chenfei0928.webkit
 import android.content.Context
 import androidx.webkit.ProcessGlobalConfig
 import androidx.webkit.WebViewFeature
-import io.github.chenfei0928.app.RunningEnvironmentUtil.getProcessName
+import io.github.chenfei0928.app.ProcessUtil
 import io.github.chenfei0928.os.Debug
 
 /**
@@ -27,7 +27,7 @@ object WebViewIsolate {
             )
         ) {
             val config = ProcessGlobalConfig()
-            val processName = getProcessName(context)
+            val processName = ProcessUtil.getProcessName(context)
             // 如果运行的进程不是主进程中，添加前缀
             if (context.packageName != processName) {
                 config.setDataDirectorySuffix(context, processName)

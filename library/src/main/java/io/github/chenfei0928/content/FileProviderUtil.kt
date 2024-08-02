@@ -28,7 +28,7 @@ object FileProviderUtil {
         val fileProviderClassName = clazz.name
         return@getContainOrPut context.packageManager.getPackageInfo(
             context.packageName, PackageManager.GET_PROVIDERS
-        ).providers.find {
+        ).providers?.find {
             it.name == fileProviderClassName
         }?.authority
     } ?: throw IllegalArgumentException(

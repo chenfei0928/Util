@@ -3,7 +3,7 @@ package io.github.chenfei0928.util
 import android.content.Context
 import android.os.Build
 import androidx.collection.ArrayMap
-import io.github.chenfei0928.app.RunningEnvironmentUtil
+import io.github.chenfei0928.app.ProcessUtil
 import io.github.chenfei0928.io.FileUtil
 import io.github.chenfei0928.io.forEachLine
 import java.io.File
@@ -166,7 +166,7 @@ private constructor(
             val logTime = getDateEn().replace(' ', '_')
                 .replace(':', '-')
 
-            val name = RunningEnvironmentUtil.getProcessName(context)
+            val name = ProcessUtil.getProcessName(context)
             if (name.isNotEmpty()) {
                 return logTime + "_" + name
             }

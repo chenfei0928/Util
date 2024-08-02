@@ -22,6 +22,10 @@ withKotlinAndroidMavenPublication(
 android {
     namespace = "io.github.chenfei0928.util"
 
+    defaultConfig {
+        minSdk = 19
+    }
+
     buildFeatures {
         buildConfig = false
         viewBinding = true

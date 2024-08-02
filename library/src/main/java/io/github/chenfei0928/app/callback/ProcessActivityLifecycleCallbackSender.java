@@ -8,7 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
-import io.github.chenfei0928.app.RunningEnvironmentUtil;
+import io.github.chenfei0928.app.ProcessUtil;
 
 /**
  * @author ChenFei(chenfei0928 @ gmail.com)
@@ -55,7 +55,7 @@ final class ProcessActivityLifecycleCallbackSender implements Application.Activi
 
     private void sendBroadcast(@NonNull Activity activity, @NonNull Lifecycle.Event event) {
         ActivityInfo activityInfo = new ActivityInfo(
-                RunningEnvironmentUtil.getProcessName(activity),
+                ProcessUtil.getProcessName(activity),
                 activity.getPackageName(),
                 activity.getClass().getName(),
                 System.identityHashCode(activity),

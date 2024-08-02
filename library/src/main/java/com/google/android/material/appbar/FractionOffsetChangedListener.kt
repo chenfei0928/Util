@@ -3,7 +3,6 @@ package com.google.android.material.appbar
 import androidx.annotation.CallSuper
 import androidx.annotation.FloatRange
 import androidx.core.math.MathUtils
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import kotlin.math.abs
 
@@ -25,9 +24,8 @@ abstract class FractionOffsetChangedListener(
     override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
         val insetTop = WindowInsetsCompat.Type.statusBars()
         // Update the collapsing text's fraction
-        val expandRange = collapsingToolbarLayout.height - ViewCompat.getMinimumHeight(
-            collapsingToolbarLayout
-        ) - insetTop
+        val expandRange =
+            collapsingToolbarLayout.height - collapsingToolbarLayout.minimumHeight - insetTop
         expandedFraction = MathUtils.clamp(abs(verticalOffset) / expandRange.toFloat(), 0f, 1f)
         onExpandedFractionChanged(expandedFraction)
     }

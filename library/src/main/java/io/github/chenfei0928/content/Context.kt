@@ -13,7 +13,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.IBinder
 import android.os.RemoteException
 import androidx.core.content.pm.PackageInfoCompat
@@ -22,9 +21,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resumeWithException
 
 fun Context.checkIsDestroyed(): Boolean {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        return false
-    }
     return when (this) {
         is Activity -> isDestroyed
         is Application -> false
@@ -50,7 +46,7 @@ val PackageInfo.versionCodeLong: Long
 fun Context.getMetaDataString(name: String): String? {
     return this.packageManager.getPackageInfo(
         this.packageName, PackageManager.GET_META_DATA
-    ).applicationInfo.metaData.getString(name)
+    ).applicationInfo?.metaData?.getString(name)
 }
 
 suspend inline fun <T> Context.bindService(

@@ -86,18 +86,13 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
             new Property<View, Float>(Float.class, "paddingStart") {
                 @Override
                 public void set(@NonNull View object, @NonNull Float value) {
-                    ViewCompat.setPaddingRelative(
-                            object,
-                            value.intValue(),
-                            object.getPaddingTop(),
-                            ViewCompat.getPaddingEnd(object),
-                            object.getPaddingBottom());
+                    object.setPaddingRelative(value.intValue(), object.getPaddingTop(), object.getPaddingEnd(), object.getPaddingBottom());
                 }
 
                 @NonNull
                 @Override
                 public Float get(@NonNull View object) {
-                    return (float) ViewCompat.getPaddingStart(object);
+                    return (float) object.getPaddingStart();
                 }
             };
     /**
@@ -108,18 +103,13 @@ public class ExtendedFloatingActionLayout extends FrameLayout implements Coordin
             new Property<View, Float>(Float.class, "paddingEnd") {
                 @Override
                 public void set(@NonNull View object, @NonNull Float value) {
-                    ViewCompat.setPaddingRelative(
-                            object,
-                            ViewCompat.getPaddingStart(object),
-                            object.getPaddingTop(),
-                            value.intValue(),
-                            object.getPaddingBottom());
+                    object.setPaddingRelative(object.getPaddingStart(), object.getPaddingTop(), value.intValue(), object.getPaddingBottom());
                 }
 
                 @NonNull
                 @Override
                 public Float get(@NonNull View object) {
-                    return (float) ViewCompat.getPaddingEnd(object);
+                    return (float) object.getPaddingEnd();
                 }
             };
     private static final int ANIM_STATE_NONE = 0;

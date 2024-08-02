@@ -1,7 +1,9 @@
 package io.github.chenfei0928.media
 
 import android.Manifest
+import android.content.Context
 import android.media.MediaRecorder
+import android.os.Build
 import androidx.annotation.RequiresPermission
 import io.github.chenfei0928.util.Log
 import java.io.IOException
@@ -11,14 +13,20 @@ import kotlin.math.log10
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-10-25 17:00
  */
-class AudioRecorder(
+class AudioRecorder
+@RequiresPermission(Manifest.permission.RECORD_AUDIO)
+constructor(
+    context: Context,
     val fileName: String  // 录音生成的文件存储路径
 ) {
 
     // 录音类
-    private var recorder: MediaRecorder = MediaRecorder()
+    private var recorder: MediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        MediaRecorder(context)
+    } else {
+        MediaRecorder()
+    }
 
-    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     fun startRecord(): Boolean {
         return try {
             recorder.setOnInfoListener { _, what, extra ->

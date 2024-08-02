@@ -16,7 +16,6 @@ fun Project.applyLibrary(appendBuildConfig: Boolean = true) {
     buildSrcAndroid<com.android.build.gradle.LibraryExtension> {
         defaultConfig {
             minSdk = Contract.minSdkVersion
-            targetSdk = Contract.targetSdkVersion
         }
 
         lint {
