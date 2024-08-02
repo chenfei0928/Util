@@ -38,11 +38,11 @@ class AppBarLayoutHaltBehavior : AppBarLayout.Behavior {
             }
         } else if (ev.actionMasked == MotionEvent.ACTION_UP) {
             // 如果在自动滑动中点击的，则拦截此次点击事件
-            if (mNeedInterceptTouchEvent) {
+            return if (mNeedInterceptTouchEvent) {
                 super.onInterceptTouchEvent(parent, child, ev)
-                return true
+                true
             } else {
-                return super.onInterceptTouchEvent(parent, child, ev)
+                super.onInterceptTouchEvent(parent, child, ev)
             }
         }
         return super.onInterceptTouchEvent(parent, child, ev)

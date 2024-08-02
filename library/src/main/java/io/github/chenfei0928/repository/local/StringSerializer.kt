@@ -4,6 +4,8 @@ import java.io.InputStream
 import java.io.OutputStream
 
 /**
+ * 字符串序列化支持
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-08-20 16:28
  */

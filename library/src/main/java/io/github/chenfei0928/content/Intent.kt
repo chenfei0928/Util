@@ -77,12 +77,11 @@ fun Bundle.contentEquals(other: Bundle): Boolean {
 fun Intent.zipExtras(): Intent {
     val bundle = extras
         ?: return this
-    val zipped = ByteArrayOutputStream().use {
-        GZIPOutputStream(it).use {
+    val zipped = ByteArrayOutputStream().also { out ->
+        GZIPOutputStream(out).use {
             it.write(ParcelUtil.marshall(bundle))
         }
-        it.toByteArray()
-    }
+    }.toByteArray()
     bundle.keySet().forEach {
         removeExtra(it)
     }

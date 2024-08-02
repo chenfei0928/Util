@@ -1,3 +1,9 @@
+/**
+ * 数据Base64化修饰器
+ *
+ * @author chenfei(chenfei@gmail.com)
+ * @date 2022-01-12 10:25
+ */
 package io.github.chenfei0928.repository.local
 
 import android.util.Base64
@@ -7,6 +13,8 @@ import java.io.InputStream
 import java.io.OutputStream
 
 /**
+ * 数据Base64化修饰器
+ *
  * @author chenfei(chenfei@gmail.com)
  * @date 2022-01-12 10:25
  */
@@ -22,6 +30,12 @@ internal class Base64Serializer<T>(
     }
 }
 
+/**
+ * 数据Base64化修饰器
+ *
+ * @author chenfei(chenfei@gmail.com)
+ * @date 2022-01-12 10:25
+ */
 fun <T> LocalSerializer<T>.base64(): LocalSerializer<T> = if (this is Base64Serializer) {
     this
 } else {

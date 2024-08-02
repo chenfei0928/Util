@@ -1,10 +1,17 @@
+/**
+ * 数据Base64化修饰器
+ *
+ * @author chenfei(chenfei@gmail.com)
+ * @date 2022-01-12 10:25
+ */
 package io.github.chenfei0928.repository.local
 
 import java.io.InputStream
 import java.io.OutputStream
 
 /**
- * 数据保质期序列化
+ * 对数据添加数据保质期序列化
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-09-10 09:35
  */
@@ -48,6 +55,12 @@ abstract class BaseExpirationDateSerializer<T>(
     }
 }
 
+/**
+ * 数据Base64化修饰器
+ *
+ * @author chenfei(chenfei@gmail.com)
+ * @date 2022-01-12 10:25
+ */
 class ExpirationDateSerializer<T>(
     serializer: LocalSerializer<T>,
     private val timeout: Long

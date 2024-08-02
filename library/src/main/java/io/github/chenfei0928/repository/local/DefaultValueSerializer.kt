@@ -1,9 +1,17 @@
+/**
+ * 修改默认值的序列化
+ *
+ * @author chenfei()
+ * @date 2022-07-13 18:54
+ */
 package io.github.chenfei0928.repository.local
 
 import java.io.InputStream
 import java.io.OutputStream
 
 /**
+ * 修改默认值的序列化
+ *
  * @author chenfei()
  * @date 2022-07-13 18:54
  */
@@ -37,5 +45,11 @@ internal class DefaultValueSerializer<T>(
     }
 }
 
+/**
+ * 修改默认值的序列化
+ *
+ * @author chenfei()
+ * @date 2022-07-13 18:54
+ */
 fun <T> LocalSerializer<T?>.defaultValue(defaultValue: T): LocalSerializer<T> =
     DefaultValueSerializer(this, defaultValue)

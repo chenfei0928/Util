@@ -6,6 +6,8 @@ import java.io.InputStream
 import java.io.OutputStream
 
 /**
+ * 转换为DataStore的[Serializer]序列化器
+ *
  * @author chenfei()
  * @date 2022-06-20 15:10
  */

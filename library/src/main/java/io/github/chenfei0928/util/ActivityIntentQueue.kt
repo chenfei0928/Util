@@ -2,6 +2,7 @@ package io.github.chenfei0928.util
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.annotation.MainThread
 import androidx.annotation.ReturnThis
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -89,6 +90,7 @@ class ActivityIntentQueue : Fragment() {
         return this
     }
 
+    @MainThread
     @JvmOverloads
     fun emit(fragmentManager: FragmentManager, now: Boolean = false) {
         if (isAdded || emitted || pendingTaskQueue.isEmpty()) {

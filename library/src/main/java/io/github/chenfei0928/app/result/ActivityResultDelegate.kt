@@ -1,3 +1,7 @@
+/**
+ * @author ChenFei(chenfei0928@gmail.com)
+ * @date 2022-12-05 14:39
+ */
 package io.github.chenfei0928.app.result
 
 import androidx.activity.result.ActivityResultCaller
@@ -7,10 +11,6 @@ import java.util.WeakHashMap
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-/**
- * @author ChenFei(chenfei0928@gmail.com)
- * @date 2022-12-05 14:39
- */
 private val registerMap =
     WeakHashMap<ActivityResultCaller, MutableList<RegisterLauncherProperty<*, *>>>()
 

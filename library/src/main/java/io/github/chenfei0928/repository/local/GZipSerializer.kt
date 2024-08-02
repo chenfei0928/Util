@@ -1,3 +1,9 @@
+/**
+ * 对数据进行GZip压缩
+ *
+ * @author ChenFei(chenfei0928@gmail.com)
+ * @date 2021-08-19 16:48
+ */
 package io.github.chenfei0928.repository.local
 
 import java.io.InputStream
@@ -24,6 +30,12 @@ internal class GZipSerializer<T>(
     }
 }
 
+/**
+ * 对数据进行GZip压缩
+ *
+ * @author ChenFei(chenfei0928@gmail.com)
+ * @date 2021-08-19 16:48
+ */
 fun <T> LocalSerializer<T>.gzip(): LocalSerializer<T> {
     return if (this is GZipSerializer) {
         this

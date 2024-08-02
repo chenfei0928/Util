@@ -18,7 +18,9 @@ import org.jetbrains.anko.dip
 
 /**
  * 处理可以输入内容的Dialog
- * Created by MrFeng on 2018/1/24.
+ *
+ * @author MrFeng
+ * @date 2018/1/24.
  */
 class EditorDialogBuilder(
     val context: Context

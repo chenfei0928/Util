@@ -17,12 +17,13 @@ import kotlin.math.log10
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-11-05 10:37
  */
-class PcmAudioRecord(
+class PcmAudioRecord
+@RequiresPermission(Manifest.permission.RECORD_AUDIO)
+constructor(
     sampleRateInHz: Int = 16_000,
     channelConfig: Int = AudioFormat.CHANNEL_IN_MONO,
     audioFormat: Int = AudioFormat.ENCODING_PCM_16BIT
 ) {
-    private val TAG = "KW_PcmAudioRecord"
 
     // 最小缓冲区大小（单位：字节）
     private val bufferSize: Int =
@@ -36,7 +37,9 @@ class PcmAudioRecord(
             AudioFormat.ENCODING_PCM_8BIT -> 8
             AudioFormat.ENCODING_PCM_16BIT -> 16
             AudioFormat.ENCODING_PCM_FLOAT -> 32
-            else -> throw IllegalArgumentException("audioFormat $audioFormat must be ENCODING_PCM_8BIT or ENCODING_PCM_16BIT or ENCODING_PCM_FLOAT.")
+            else -> throw IllegalArgumentException(
+                "audioFormat $audioFormat must be ENCODING_PCM_8BIT or ENCODING_PCM_16BIT or ENCODING_PCM_FLOAT."
+            )
         }
         // 声道数
         val channelCount = Integer
@@ -50,7 +53,6 @@ class PcmAudioRecord(
         )
     }
 
-    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     fun startRecordBy16Bit(@WorkerThread callback: (buffer: ShortArray, bufferReadSize: Int) -> Unit) {
         IoScope.launch {
             // 开始录音并创建缓冲区
@@ -68,7 +70,6 @@ class PcmAudioRecord(
         }
     }
 
-    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     fun startRecordBy8Bit(@WorkerThread callback: (buffer: ByteArray, bufferReadSize: Int) -> Unit) {
         IoScope.launch {
             // 开始录音并创建缓冲区
@@ -125,4 +126,8 @@ class PcmAudioRecord(
      * 音量回调，可能会是 NaN 或 Infinite
      */
     var volumeCallback: ((volume: Double) -> Unit)? = null
+
+    companion object {
+        private const val TAG = "KW_PcmAudioRecord"
+    }
 }

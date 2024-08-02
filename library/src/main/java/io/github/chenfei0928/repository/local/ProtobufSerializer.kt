@@ -1,3 +1,9 @@
+/**
+ * 用于Protobuf的数据序列化
+ *
+ * @author chenfei(chenfei0928@gmail.com)
+ * @date 2021-11-22 16:03
+ */
 package io.github.chenfei0928.repository.local
 
 import com.google.protobuf.GeneratedMessageLite
