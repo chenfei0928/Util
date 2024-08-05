@@ -28,11 +28,11 @@ abstract class ProtobufParceler<MessageType : MessageLite>(
     private val parser: Parser<MessageType>,
 ) : Parceler<MessageType?> {
 
-    override fun create(parcel: Parcel): MessageType? {
+    final override fun create(parcel: Parcel): MessageType? {
         return parcel.createByteArray()?.let(parser::parseFrom)
     }
 
-    override fun MessageType?.write(parcel: Parcel, flags: Int) {
+    final override fun MessageType?.write(parcel: Parcel, flags: Int) {
         parcel.writeByteArray(this?.toByteArray())
     }
 }
@@ -51,14 +51,14 @@ abstract class ProtobufParceler<MessageType : MessageLite>(
 abstract class BaseProtobufParceler<MessageType : MessageLite> : Parceler<MessageType?> {
     protected abstract fun getParser(className: String): Parser<MessageType>
 
-    override fun create(parcel: Parcel): MessageType? {
+    final override fun create(parcel: Parcel): MessageType? {
         val className = parcel.readString()
             ?: return null
         val parser = getParser(className)
         return parcel.createByteArray().let(parser::parseFrom)
     }
 
-    override fun MessageType?.write(parcel: Parcel, flags: Int) {
+    final override fun MessageType?.write(parcel: Parcel, flags: Int) {
         if (this == null) {
             parcel.writeString(null)
         } else {

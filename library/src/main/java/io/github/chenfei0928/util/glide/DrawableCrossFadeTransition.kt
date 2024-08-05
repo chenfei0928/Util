@@ -226,8 +226,8 @@ class FixedSizeDrawable(
 
     @ReturnThis
     inline fun configMatrix(block: (Matrix) -> Unit): FixedSizeDrawable {
-        if (scaleType != ImageView.ScaleType.MATRIX) {
-            return this
+        require(scaleType == ImageView.ScaleType.MATRIX) {
+            "current drawable is not MATRIX"
         }
         drawMatrix?.let(block)
         return this

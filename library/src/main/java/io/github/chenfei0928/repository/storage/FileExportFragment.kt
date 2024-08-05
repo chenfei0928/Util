@@ -49,7 +49,7 @@ class FileExportFragment : BaseFragment() {
             return
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            coroutineScope.launch(Dispatchers.IO) {
+            coroutineScope.launch(Dispatchers.Default) {
                 parseArgToSave(context, bundle)
             }
         } else {

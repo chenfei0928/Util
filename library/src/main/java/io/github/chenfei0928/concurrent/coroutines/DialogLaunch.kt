@@ -6,7 +6,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
@@ -42,13 +41,9 @@ suspend inline fun <D : Dialog, T> D.showWithContext(
     crossinline block: suspend CoroutineScope.(D) -> T
 ): T = coroutineScope {
     show()
-    val cancelSelfJob = launch {
-        try {
-            awaitCancellation()
-        } finally {
-            if (isShowing) {
-                cancel()
-            }
+    val cancelSelfJob = onCancellation {
+        if (isShowing) {
+            cancel()
         }
     }
     return@coroutineScope try {

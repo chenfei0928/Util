@@ -6,10 +6,8 @@ package io.github.chenfei0928.widget.ext
 
 import android.annotation.SuppressLint
 import android.graphics.Paint
-import android.os.Build
 import android.text.TextPaint
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.annotation.Size
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.PrecomputedTextCompat
@@ -23,7 +21,6 @@ import kotlin.reflect.KProperty
 
 fun TextView.isEmpty() = length() <= 0
 
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
 fun TextView.setShrinkText(text: String, lastLinePadding: Int) =
     setShrinkText(text, lastLinePadding, maxLines)
 

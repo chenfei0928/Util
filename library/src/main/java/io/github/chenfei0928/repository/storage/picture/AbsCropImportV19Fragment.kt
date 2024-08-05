@@ -7,12 +7,12 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.annotation.RequiresApi
+import io.github.chenfei0928.app.result.registerAllActivityResultLauncher
+import io.github.chenfei0928.app.result.registerForActivityResultDelegate
 import io.github.chenfei0928.content.FileProviderUtil
 import io.github.chenfei0928.os.getParcelableCompat
 import io.github.chenfei0928.repository.storage.BaseFileImportUriFragment
@@ -25,16 +25,10 @@ import java.io.File
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-12-19 15:10
  */
-@RequiresApi(Build.VERSION_CODES.KITKAT)
 internal abstract class AbsCropImportV19Fragment : BaseFileImportUriFragment() {
     private lateinit var croppedImageUri: Uri
-    private lateinit var cropImageLauncher: ActivityResultLauncher<Pair<Uri, Bundle?>>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        croppedImageUri = savedInstanceState?.getParcelableCompat(KEY_CROPPED_IMAGE_URI)
-            ?: obtainPicturePathUri(requireContext())
-        cropImageLauncher = registerForActivityResult(CropImageContract(croppedImageUri)) { uri ->
+    private val cropImageLauncher: ActivityResultLauncher<Pair<Uri, Bundle?>> by registerForActivityResultDelegate {
+        registerForActivityResult(CropImageContract(croppedImageUri)) { uri ->
             if (uri != null) {
                 // 裁剪图片完成
                 // 撤销对Uri权限
@@ -45,6 +39,13 @@ internal abstract class AbsCropImportV19Fragment : BaseFileImportUriFragment() {
                 removeSelf(null)
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        croppedImageUri = savedInstanceState?.getParcelableCompat(KEY_CROPPED_IMAGE_URI)
+            ?: obtainPicturePathUri(requireContext())
+        registerAllActivityResultLauncher()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

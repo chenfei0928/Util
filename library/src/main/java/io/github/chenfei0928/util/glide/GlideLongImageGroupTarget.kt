@@ -112,14 +112,16 @@ abstract class GlideLongImageGroupTarget(
             // todo 添加检查解码格式不支持（webp、静态gif）时会不会报错或区域解码返回null
             if (null in list) {
                 // 如果解码方式是硬件加速，将其取消（硬件加速bitmap在裁剪时将会由硬件负责渲染和裁切，也会遇到pageHeight限制问题）
-                val bitmapOptions =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bitmapOptions.inPreferredConfig == Bitmap.Config.HARDWARE) {
-                        BitmapFactory.Options().apply {
-                            inPreferredConfig = Bitmap.Config.ARGB_8888
-                        }
-                    } else {
-                        bitmapOptions
+                val bitmapOptions = if (
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                    && bitmapOptions.inPreferredConfig == Bitmap.Config.HARDWARE
+                ) {
+                    BitmapFactory.Options().apply {
+                        inPreferredConfig = Bitmap.Config.ARGB_8888
                     }
+                } else {
+                    bitmapOptions
+                }
                 // 解码完整的bitmap
                 val fullBitmap = BitmapFactory.decodeFile(resource.absolutePath, bitmapOptions)
                 list.forEachIndexed { currentPage, bitmap ->

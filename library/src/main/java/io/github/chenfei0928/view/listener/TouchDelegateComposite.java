@@ -28,7 +28,7 @@ public class TouchDelegateComposite extends TouchDelegate {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
         for (TouchDelegate delegate : mDelegates) {
             if (delegate.onTouchEvent(event)) {
                 return true;

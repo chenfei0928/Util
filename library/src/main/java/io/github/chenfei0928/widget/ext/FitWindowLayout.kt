@@ -29,20 +29,14 @@ fun View.onMeasure(fitStatusBar: Boolean) {
 }
 
 fun View.fitSystemWindows(insets: Rect, fitStatusBar: Boolean) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        setPaddingRelative(insets.left, insets.top, insets.right, insets.bottom)
-    } else {
-        setPadding(insets.left, insets.top, insets.right, insets.bottom)
-    }
-    if (fitStatusBar) {
+    setPaddingRelative(insets.left, insets.top, insets.right, insets.bottom)
+    if (fitStatusBar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         // 修复状态栏边距
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            updatePadding(
-                top = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets)
-                    .getInsets(WindowInsetsCompat.Type.statusBars())
-                    .top
-            )
-        }
+        updatePadding(
+            top = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets)
+                .getInsets(WindowInsetsCompat.Type.statusBars())
+                .top
+        )
     }
 }
 

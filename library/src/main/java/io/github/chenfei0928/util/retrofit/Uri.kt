@@ -20,7 +20,9 @@ fun Uri.getLength(context: Context): Long {
             }
         }
     }
-    context.contentResolver.query(this@getLength, null, null, null, null)?.use { cursor ->
+    context.contentResolver.query(
+        this@getLength, null, null, null, null
+    )?.use { cursor ->
         if (!cursor.moveToFirst()) {
             return@use
         }
@@ -40,7 +42,9 @@ fun Uri.getLength(context: Context): Long {
         }
     }
     try {
-        context.contentResolver.openFileDescriptor(this@getLength, "r")?.use {
+        context.contentResolver.openFileDescriptor(
+            this@getLength, "r"
+        )?.use {
             return it.statSize
         }
     } catch (ignore: Exception) {

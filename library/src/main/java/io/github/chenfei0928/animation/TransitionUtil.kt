@@ -2,10 +2,8 @@ package io.github.chenfei0928.animation
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
@@ -41,10 +39,7 @@ private inline fun startActivityWithTransition(
     sharedElements: Array<View>,
     transition: (Array<Pair<View, String>>) -> ActivityOptionsCompat
 ) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
-        // 如果是省电模式，不执行动画
-        || PowerSaveUtil.isInPowerSaveMode(context) || sharedElements.isEmpty()
-    ) {
+    if (PowerSaveUtil.isInPowerSaveMode(context) || sharedElements.isEmpty()) {
         startActivityWithBundle(intent, null)
     } else {
         val options = context.createActivityOption(
@@ -75,10 +70,7 @@ private fun Activity.fillTransitionView(
     includeStatusBar: Boolean = true,
     vararg sharedElements: View?
 ): Array<Pair<View, String>> {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
-        // 如果是省电模式，不执行动画
-        || PowerSaveUtil.isInPowerSaveMode(this) || sharedElements.isEmpty()
-    ) {
+    if (PowerSaveUtil.isInPowerSaveMode(this) || sharedElements.isEmpty()) {
         return arrayOf()
     }
     // 收集View的transitionName
@@ -99,15 +91,14 @@ private fun Activity.fillTransitionView(
  * participant.
  * @return All transition participants.
  */
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 private fun createSafeTransitionParticipants(
     activity: Activity, includeStatusBar: Boolean, otherParticipants: List<Pair<View, String>>
 ): Array<Pair<View, String>> {
     // Avoid system UI glitches as described here:
     // https://plus.google.com/+AlexLockwood/posts/RPtwZ5nNebb
     val decor = activity.window.decorView
-    val statusBar =
-        if (includeStatusBar) decor.findViewById<View?>(android.R.id.statusBarBackground) else null
+    val statusBar = if (!includeStatusBar) null else
+        decor.findViewById<View?>(android.R.id.statusBarBackground)
     val navBar = decor.findViewById<View?>(android.R.id.navigationBarBackground)
     val toolbar = activity.findViewById<View?>(R.id.toolbar)
 
@@ -119,7 +110,6 @@ private fun createSafeTransitionParticipants(
     return list.toTypedArray()
 }
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 private fun View?.transitionToPair(collection: MutableCollection<Pair<View, String>>) {
     if (this?.transitionName?.isNotEmpty() == true) {
         collection.add(Pair(this, this.transitionName))

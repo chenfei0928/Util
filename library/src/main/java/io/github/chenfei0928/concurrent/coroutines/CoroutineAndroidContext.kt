@@ -4,7 +4,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.view.View
-import androidx.collection.LruCache
+import androidx.collection.ArrayMap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -39,22 +39,21 @@ private constructor(
     }
 
     private val Any?.staticTag: String?
-        get() = this?.javaClass?.let { classTagMap[it] }
-
-    companion object {
-        private val classTagMap: LruCache<Class<*>, String?> =
-            object : LruCache<Class<*>, String?>(20) {
-                override fun create(key: Class<*>): String? {
-                    return try {
-                        key.getDeclaredField("TAG").run {
-                            isAccessible = true
-                            get(null) as? String
-                        }
-                    } catch (e: Exception) {
-                        null
+        get() = this?.javaClass?.let {
+            classTagMap.getOrPut(it) {
+                try {
+                    it.getDeclaredField("TAG").run {
+                        isAccessible = true
+                        get(null) as? String
                     }
+                } catch (ignore: ReflectiveOperationException) {
+                    null
                 }
             }
+        }
+
+    companion object {
+        private val classTagMap = ArrayMap<Class<*>, String?>()
 
         fun newInstance(host: Any?): CoroutineAndroidContext {
             return newInstanceImpl(host, host)

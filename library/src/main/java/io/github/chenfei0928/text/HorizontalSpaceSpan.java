@@ -28,7 +28,9 @@ public class HorizontalSpaceSpan extends ReplacementSpan {
 
     @Override
     public void draw(@NonNull Canvas canvas,
-                     CharSequence text, @IntRange(from = 0) int start, @IntRange(from = 0) int end,
+                     CharSequence text,
+                     @IntRange(from = 0) int start,
+                     @IntRange(from = 0) int end,
                      float x, int top, int y, int bottom,
                      @NonNull Paint paint) {
     }

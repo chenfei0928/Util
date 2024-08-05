@@ -23,7 +23,7 @@ android {
     namespace = "io.github.chenfei0928.util"
 
     defaultConfig {
-        minSdk = 19
+        minSdk = 21
     }
 
     buildFeatures {

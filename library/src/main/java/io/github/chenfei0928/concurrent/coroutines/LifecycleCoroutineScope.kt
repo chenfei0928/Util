@@ -9,9 +9,7 @@ import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
 import io.github.chenfei0928.lifecycle.LifecycleCacheDelegate
 import io.github.chenfei0928.lifecycle.isAlive
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import java.io.Closeable
 import kotlin.coroutines.CoroutineContext
@@ -38,8 +36,8 @@ private val cancelledCoroutineScope by lazy(LazyThreadSafetyMode.NONE) {
  */
 val LifecycleOwner.coroutineScope: CoroutineScope by
 object : ReadOnlyProperty<LifecycleOwner, CoroutineScope> {
-    private val delegate =
-        LifecycleCacheDelegate<LifecycleOwner, LifecycleCoroutineScope> { owner, closeCallback ->
+    private val delegate: LifecycleCacheDelegate<LifecycleOwner, LifecycleCoroutineScope> =
+        LifecycleCacheDelegate { owner, closeCallback ->
             if (owner.lifecycle.isAlive) {
                 // 宿主存活时，创建或从缓存中获取一个与该宿主生命周期绑定的协程实例
                 LifecycleCoroutineScope(owner, closeCallback).init()
@@ -69,10 +67,8 @@ private class LifecycleCoroutineScope(
         super.coroutineContext + androidContextElement
 
     fun init(): LifecycleCoroutineScope = apply {
-        launch {
-            closeCallback.use {
-                awaitCancellation()
-            }
+        onCancellation {
+            closeCallback.close()
         }
     }
 

@@ -44,16 +44,18 @@ class CropPictureImportFragment : BaseFileImportUriFragment() {
 
         @JvmStatic
         @JvmOverloads
-        fun newInstance(source: Int, cropParam: Bundle? = Square) =
-            CropPictureImportFragment().apply {
-                arguments = createArg(source, cropParam)
-            }
+        fun newInstance(
+            source: Int,
+            cropParam: Bundle? = Square
+        ) = CropPictureImportFragment().apply {
+            arguments = createArg(source, cropParam)
+        }
 
-        private fun createArg(source: Int, cropParam: Bundle?): Bundle {
-            return Bundle().apply {
-                putInt(KEY_SOURCE, source)
-                putBundle(CROP_INTENT_PARAM, cropParam)
-            }
+        private fun createArg(
+            source: Int, cropParam: Bundle?
+        ): Bundle = Bundle().apply {
+            putInt(KEY_SOURCE, source)
+            putBundle(CROP_INTENT_PARAM, cropParam)
         }
 
         private val Square = Bundle().apply {

@@ -4,9 +4,7 @@ import android.view.View
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import java.util.WeakHashMap
 import kotlin.coroutines.CoroutineContext
@@ -41,15 +39,11 @@ private class ViewCoroutineScope(
                 cancel()
             }
         }
-        launch {
-            try {
-                awaitCancellation()
-            } finally {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    viewOwnerCoroutineScopeCache.remove(view, this@ViewCoroutineScope)
-                } else {
-                    viewOwnerCoroutineScopeCache.remove(view)
-                }
+        onCancellation {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                viewOwnerCoroutineScopeCache.remove(view, this@ViewCoroutineScope)
+            } else {
+                viewOwnerCoroutineScopeCache.remove(view)
             }
         }
     }

@@ -9,7 +9,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.annotation.RequiresApi
+import io.github.chenfei0928.app.result.registerAllActivityResultLauncher
+import io.github.chenfei0928.app.result.registerForActivityResultDelegate
 import io.github.chenfei0928.content.FileProviderUtil
 import io.github.chenfei0928.io.FileUtil
 import io.github.chenfei0928.os.getParcelableCompat
@@ -20,10 +21,9 @@ import io.github.chenfei0928.os.getParcelableCompat
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-12-19 17:27
  */
-@RequiresApi(Build.VERSION_CODES.KITKAT)
 internal class PictureCropImportV19Fragment : AbsCropImportV19Fragment() {
 
-    private val pictureSourceLauncher =
+    private val pictureSourceLauncher by registerForActivityResultDelegate {
         registerForActivityResult(PictureSourceContract(this::requireContext)) {
             if (it != null) {
                 // 获取到了图片，进行裁剪
@@ -32,6 +32,12 @@ internal class PictureCropImportV19Fragment : AbsCropImportV19Fragment() {
                 removeSelf(null)
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        registerAllActivityResultLauncher()
+    }
 
     override fun launchFileChoose() {
         pictureSourceLauncher.launch(null)
@@ -41,8 +47,8 @@ internal class PictureCropImportV19Fragment : AbsCropImportV19Fragment() {
         private val context: () -> Context
     ) : ActivityResultContract<Unit?, Uri?>() {
         // 将获取到的文件复制到缓存目录，以修复部分魅族9.0的设备对转发过去的uri无法授予权限的bug
-        private val needCopyFile =
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && Build.BRAND.equals("Meizu", true)
+        private val needCopyFile = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                && Build.BRAND.equals("Meizu", true)
 
         override fun createIntent(context: Context, input: Unit?): Intent {
             val intent = Intent()
@@ -81,7 +87,6 @@ internal class PictureCropImportV19Fragment : AbsCropImportV19Fragment() {
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-12-19 17:27
  */
-@RequiresApi(Build.VERSION_CODES.KITKAT)
 internal class TakePhotoCropImportV19Fragment : AbsCropImportV19Fragment() {
     private lateinit var takePhotoUri: Uri
 

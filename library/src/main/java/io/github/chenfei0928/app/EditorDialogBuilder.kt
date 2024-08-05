@@ -2,7 +2,6 @@ package io.github.chenfei0928.app
 
 import android.content.Context
 import android.content.DialogInterface
-import android.os.Build
 import android.text.InputFilter
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -12,6 +11,7 @@ import androidx.annotation.ReturnThis
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.content.getSystemService
 import androidx.core.view.updateLayoutParams
 import io.github.chenfei0928.widget.ToastUtil
 import org.jetbrains.anko.dip
@@ -73,9 +73,9 @@ class EditorDialogBuilder(
                 ToastUtil.showShort(context, emptyHint)
             } else {
                 // 隐藏输入法
-                val imm =
-                    context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(editor.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+                context.getSystemService<InputMethodManager>()?.hideSoftInputFromWindow(
+                    editor.windowToken, InputMethodManager.HIDE_NOT_ALWAYS
+                )
                 editor.clearFocus()
                 // 提交
                 listener(dialog, editor, code)
@@ -190,10 +190,8 @@ class EditorDialogBuilder(
             editor.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 val dp16 = context.dip(16f)
                 setMargins(dp16, topMargin, dp16, bottomMargin)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                    marginStart = dp16
-                    marginEnd = dp16
-                }
+                marginStart = dp16
+                marginEnd = dp16
             }
         }
         dialog.show()

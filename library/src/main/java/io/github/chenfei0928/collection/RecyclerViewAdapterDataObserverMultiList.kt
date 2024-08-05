@@ -84,10 +84,8 @@ open class RecyclerViewAdapterDataObserverMultiList<E>(
     }
 
     override fun set(index: Int, element: E): E {
-        return list
-            .set(index, element)
-            .apply {
-                adapterDataObserver?.onItemRangeChanged(index, 1, null)
-            }
+        return list.set(index, element).apply {
+            adapterDataObserver?.onItemRangeChanged(index, 1, null)
+        }
     }
 }

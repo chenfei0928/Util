@@ -2,7 +2,9 @@ package io.github.chenfei0928.concurrent.coroutines
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -21,3 +23,19 @@ suspend fun <T1, T2, R> zip(
 suspend fun <T1, T2> zip(
     block1: suspend CoroutineScope.() -> T1, block2: suspend CoroutineScope.() -> T2
 ): Pair<T1, T2> = zip(block1, block2, ::Pair)
+
+inline fun CoroutineScope.onCancellation(
+    crossinline block: () -> Unit
+) = launch {
+    try {
+        awaitCancellation()
+    } finally {
+        block()
+    }
+}
+
+suspend inline fun onSuspendCancellation(
+    crossinline block: () -> Unit
+) = coroutineScope {
+    onCancellation(block)
+}

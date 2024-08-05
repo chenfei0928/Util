@@ -1,6 +1,5 @@
 package io.github.chenfei0928.json.gson
 
-import android.os.Build
 import android.util.SparseArray
 import android.util.SparseLongArray
 import com.google.gson.Gson
@@ -37,9 +36,5 @@ inline fun <reified R> JsonDeserializationContext.deserialize(json: JsonElement)
 internal val gson: Gson = GsonBuilder()
     .registerTypeAdapter(BitSet::class.java, BitSetTypeAdapter)
     .registerTypeAdapter(SparseArray::class.java, SparseArrayJsonSerializer)
-    .apply {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            registerTypeAdapter(SparseLongArray::class.java, SparseLongArraySerializer)
-        }
-    }
+    .registerTypeAdapter(SparseLongArray::class.java, SparseLongArraySerializer)
     .create()

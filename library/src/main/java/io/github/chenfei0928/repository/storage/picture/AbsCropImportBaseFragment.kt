@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContract
+import io.github.chenfei0928.app.result.registerAllActivityResultLauncher
+import io.github.chenfei0928.app.result.registerForActivityResultDelegate
 import io.github.chenfei0928.repository.storage.BaseFileImportUriFragment
 import java.io.File
 
@@ -18,8 +20,13 @@ import java.io.File
 internal abstract class AbsCropImportBaseFragment : BaseFileImportUriFragment() {
     protected abstract val contract: AbsCropImportContract
 
-    private val cropImportUriLauncher = registerForActivityResult(contract) {
-        removeSelf(it)
+    private val cropImportUriLauncher by registerForActivityResultDelegate {
+        registerForActivityResult(contract) { removeSelf(it) }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        registerAllActivityResultLauncher()
     }
 
     /**

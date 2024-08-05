@@ -9,8 +9,8 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.R
 import androidx.appcompat.app.ActionBar
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
-import io.github.chenfei0928.graphics.blendColors
 
 /**
  * 根据AppBarLayout收起进度来调整ToolBar返回箭头的着色，类似[CollapsingToolbarLayout]Title效果
@@ -46,7 +46,7 @@ open class CollapsingToolbarBackListener(
         }
 
     @ColorInt
-    private fun getColor() = blendColors(expandedColor, collapsedColor, expandedFraction)
+    private fun getColor() = ColorUtils.blendARGB(expandedColor, collapsedColor, expandedFraction)
 
     /**
      * 设置菜单图标着色，将会给返回按钮、菜单图标进行着色

@@ -70,13 +70,13 @@ class FileImportFileFragment : BasePermissionFileImportFragment<File>(
             } else {
                 // 高于Android10，复制到缓存文件夹中
                 coroutineScope.launch {
-                    // 显示进度提示
-                    val dialog = ProgressDialog(context)
-                    dialog.setMessage("文件导入中...")
-                    dialog.setCanceledOnTouchOutside(false)
-                    dialog.setCancelable(false)
-                    // 在io线程中复制文件
-                    val tmpFile = dialog.showWithContext(Dispatchers.IO) {
+                    val tmpFile = ProgressDialog(context).apply {
+                        // 显示进度提示
+                        setMessage("文件导入中...")
+                        setCanceledOnTouchOutside(false)
+                        setCancelable(false)
+                        // 在io线程中复制文件
+                    }.showWithContext(Dispatchers.IO) {
                         // 创建临时文件
                         val extName = FileUtil.getFileExtensionFromUrl(uri.toString())
                         val tmpFile =

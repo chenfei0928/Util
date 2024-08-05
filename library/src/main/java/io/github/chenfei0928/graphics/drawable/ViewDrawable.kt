@@ -12,9 +12,14 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.View
 import android.widget.Checkable
+import android.widget.CheckedTextView
+import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.CheckedTextViewCompat
+import androidx.core.widget.CompoundButtonCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.core.widget.TextViewCompat
 
@@ -54,12 +59,8 @@ class ViewDrawable(
     }
 
     override fun getOutline(outline: Outline) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            view.outlineProvider?.getOutline(view, outline)
-                ?: super.getOutline(outline)
-        } else {
-            super.getOutline(outline)
-        }
+        view.outlineProvider?.getOutline(view, outline)
+            ?: super.getOutline(outline)
     }
 
     override fun setVisible(visible: Boolean, restart: Boolean): Boolean {
@@ -137,18 +138,38 @@ class ViewDrawable(
     }
 
     override fun setTintList(tint: ColorStateList?) {
-        view.backgroundTintList = tint
-        view.foregroundTintList = tint
+        ViewCompat.setBackgroundTintList(view, tint)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            view.foregroundTintList = tint
+        }
         when (view) {
+            is CheckedTextView -> {
+                CheckedTextViewCompat.setCheckMarkTintList(view, tint)
+                TextViewCompat.setCompoundDrawableTintList(view, tint)
+            }
+            is CompoundButton -> {
+                CompoundButtonCompat.setButtonTintList(view, tint)
+                TextViewCompat.setCompoundDrawableTintList(view, tint)
+            }
             is TextView -> TextViewCompat.setCompoundDrawableTintList(view, tint)
             is ImageView -> ImageViewCompat.setImageTintList(view, tint)
         }
     }
 
     override fun setTintMode(tintMode: PorterDuff.Mode?) {
-        view.backgroundTintMode = tintMode
-        view.foregroundTintMode = tintMode
+        ViewCompat.setBackgroundTintMode(view, tintMode)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            view.foregroundTintMode = tintMode
+        }
         when (view) {
+            is CheckedTextView -> {
+                CheckedTextViewCompat.setCheckMarkTintMode(view, tintMode)
+                TextViewCompat.setCompoundDrawableTintMode(view, tintMode)
+            }
+            is CompoundButton -> {
+                CompoundButtonCompat.setButtonTintMode(view, tintMode)
+                TextViewCompat.setCompoundDrawableTintMode(view, tintMode)
+            }
             is TextView -> TextViewCompat.setCompoundDrawableTintMode(view, tintMode)
             is ImageView -> ImageViewCompat.setImageTintMode(view, tintMode)
         }

@@ -22,12 +22,8 @@ internal class PictureImportPermissionFragment : BasePermissionFileImportParentF
     override val permissionName: String
         get() = "存储卡"
 
-    override fun createFragment(): BaseFileImportFragment<Uri>? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            PictureCropImportV19Fragment()
-        } else {
-            PictureCropImportBaseFragment()
-        }.also {
+    override fun createFragment(): BaseFileImportFragment<Uri> {
+        return PictureCropImportV19Fragment().also {
             it.arguments = arguments
         }
     }
@@ -46,11 +42,7 @@ internal class TakePhotoImportPermissionFragment : BasePermissionFileImportParen
         get() = "相机"
 
     override fun createFragment(): BaseFileImportFragment<Uri> {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            TakePhotoCropImportV19Fragment()
-        } else {
-            TakePhotoCropImportBaseFragment()
-        }.also {
+        return TakePhotoCropImportV19Fragment().also {
             it.arguments = arguments
         }
     }

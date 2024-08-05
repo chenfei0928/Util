@@ -31,9 +31,7 @@ internal class FragmentViewLifecycleCallback : FragmentManager.FragmentLifecycle
     }
 
     override fun onFragmentPreCreated(
-        fm: FragmentManager,
-        f: Fragment,
-        savedInstanceState: Bundle?
+        fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?
     ) {
         notifyStateUpdate(f, State.PreCreated)
     }
@@ -43,9 +41,7 @@ internal class FragmentViewLifecycleCallback : FragmentManager.FragmentLifecycle
     }
 
     override fun onFragmentActivityCreated(
-        fm: FragmentManager,
-        f: Fragment,
-        savedInstanceState: Bundle?
+        fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?
     ) {
         notifyStateUpdate(f, State.ActivityCreated)
     }

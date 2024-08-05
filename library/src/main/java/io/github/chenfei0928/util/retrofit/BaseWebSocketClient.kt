@@ -12,7 +12,9 @@ import okhttp3.WebSocketListener
 
 /**
  * WebSocket基类
- * Created by MrFeng on 2018/1/19.
+ *
+ * @author MrFeng
+ * @date 2018/1/19.
  */
 abstract class BaseWebSocketClient(
     private val okHttpClient: OkHttpClient,
@@ -48,9 +50,7 @@ abstract class BaseWebSocketClient(
             return
         }
         _socket = okHttpClient.newWebSocket(
-            Request.Builder()
-                .url(address)
-                .build(),
+            Request.Builder().url(address).build(),
             object : WebSocketListener() {
                 override fun onOpen(webSocket: WebSocket, response: Response) {
                     super.onOpen(webSocket, response)
@@ -74,8 +74,8 @@ abstract class BaseWebSocketClient(
                     handler.removeCallbacksAndMessages(TOKEN_SEND_MSG)
                     // 如果连接失败，重连
                     if (!isClosed && autoRetry) {
-                        handler.postDelayed(1000L, TOKEN_CONNECT) {
-                            connect(autoRetry)
+                        handler.postDelayed(RETRY_CONNECT_DELAY, TOKEN_CONNECT) {
+                            connect(true)
                         }
                     }
                 }
@@ -88,7 +88,7 @@ abstract class BaseWebSocketClient(
 
                 override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
                     super.onClosing(webSocket, code, reason)
-                    webSocket.close(1000, null)
+                    webSocket.close(CODE_NORMAL_CLOSURE, null)
                 }
 
                 override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
@@ -101,8 +101,8 @@ abstract class BaseWebSocketClient(
                     handler.removeCallbacksAndMessages(TOKEN_SEND_MSG)
                     // 如果连接失败，重连
                     if (!isClosed && autoRetry) {
-                        handler.postDelayed(1000L, TOKEN_CONNECT) {
-                            connect(autoRetry)
+                        handler.postDelayed(RETRY_CONNECT_DELAY, TOKEN_CONNECT) {
+                            connect(true)
                         }
                     }
                 }
@@ -129,25 +129,28 @@ abstract class BaseWebSocketClient(
         }
         // 关闭链接
         Log.i(TAG, "close ")
-        socket?.close(1000, null)
+        socket?.close(CODE_NORMAL_CLOSURE, null)
         _socket = null
         isReady = false
         isClosed = true
     }
 
-    abstract fun onOpen(webSocket: WebSocket)
+    protected abstract fun onOpen(webSocket: WebSocket)
 
     /**
      * 保活的心跳包内容
      */
-    abstract val keepAliveMsg: String
+    protected abstract val keepAliveMsg: String
 
-    abstract fun parseMsg(text: String)
+    protected abstract fun parseMsg(text: String)
 
     companion object {
         private const val TAG = "KW_BaseWebSocketClient"
         private const val TOKEN_CLOSE = "close"
         private const val TOKEN_CONNECT = "connect"
         const val TOKEN_SEND_MSG = "sendMsg"
+
+        private const val CODE_NORMAL_CLOSURE = 1000
+        private const val RETRY_CONNECT_DELAY = 1000L
     }
 }

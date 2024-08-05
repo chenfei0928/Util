@@ -8,6 +8,8 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.UiThread
+import io.github.chenfei0928.app.result.registerAllActivityResultLauncher
+import io.github.chenfei0928.app.result.registerForActivityResultDelegate
 import io.github.chenfei0928.os.safeHandler
 
 /**
@@ -26,8 +28,13 @@ open class FileImportUriFragment : BasePermissionFileImportFragment<Uri>(
     override val permissionName: String
         get() = "存储卡"
 
-    private val fileUriImportLauncher = registerForActivityResult(FileUriImportContract()) {
-        removeSelf(it)
+    private val fileUriImportLauncher by registerForActivityResultDelegate {
+        registerForActivityResult(FileUriImportContract()) { removeSelf(it) }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        registerAllActivityResultLauncher()
     }
 
     /**
@@ -58,14 +65,10 @@ open class FileImportUriFragment : BasePermissionFileImportFragment<Uri>(
     private class FileUriImportContract : ActivityResultContract<String, Uri?>() {
 
         override fun createIntent(context: Context, input: String): Intent {
-            val intent = Intent()
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-                intent.action = Intent.ACTION_GET_CONTENT
-                intent.type = input
-            } else {
-                intent.action = Intent.ACTION_OPEN_DOCUMENT
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
-                intent.type = input
+            val intent = Intent().apply {
+                action = Intent.ACTION_OPEN_DOCUMENT
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = input
             }
             return Intent.createChooser(intent, "选择要导入的文件")
         }

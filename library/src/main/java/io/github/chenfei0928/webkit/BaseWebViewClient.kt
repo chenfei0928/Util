@@ -126,24 +126,7 @@ open class BaseWebViewClient(
      */
     @TargetApi(Build.VERSION_CODES.O)
     override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail): Boolean {
-        if (!detail.didCrash()) {
-            // Renderer was killed because the system ran out of memory.
-            // The app can recover gracefully by creating a new WebView instance
-            // in the foreground.
-            if (debugLog) {
-                Log.e(
-                    TAG,
-                    "System killed the WebView rendering process to reclaim memory. Recreating..."
-                )
-            }
-
-            WebViewSettingsUtil.onDestroy(view)
-
-            // By this point, the instance variable "mWebView" is guaranteed
-            // to be null, so it's safe to reinitialize it.
-
-            return true // The app continues executing.
-        } else {
+        return if (detail.didCrash()) {
 
             // Renderer crashed because of an internal error, such as a memory
             // access violation.
@@ -156,7 +139,23 @@ open class BaseWebViewClient(
             // and allow your app to continue executing, you should 1) destroy the
             // current WebView instance, 2) specify logic for how the app can
             // continue executing, and 3) return "true" instead.
-            return false
+            false
+        } else {
+            // Renderer was killed because the system ran out of memory.
+            // The app can recover gracefully by creating a new WebView instance
+            // in the foreground.
+            if (debugLog) {
+                Log.e(TAG, run {
+                    "System killed the WebView rendering process to reclaim memory. Recreating..."
+                })
+            }
+
+            WebViewSettingsUtil.onDestroy(view)
+
+            // By this point, the instance variable "mWebView" is guaranteed
+            // to be null, so it's safe to reinitialize it.
+
+            true // The app continues executing.
         }
     }
 

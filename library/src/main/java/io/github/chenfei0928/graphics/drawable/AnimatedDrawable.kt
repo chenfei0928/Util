@@ -74,11 +74,7 @@ open class AnimatedDrawable(
     }
 
     override fun stop() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            animate.pause()
-        } else {
-            animate.cancel()
-        }
+        animate.pause()
     }
 
     override fun isRunning(): Boolean {

@@ -18,11 +18,11 @@ class EnvironmentObservableRegister {
     static void register(Object observer, Object callback) {
         if (observer instanceof Observable o) {
             o.addOnPropertyChangedCallback((Observable.OnPropertyChangedCallback) callback);
-        } else if (observer instanceof ObservableList o) {
+        } else if (observer instanceof ObservableList<?> o) {
             o.addOnListChangedCallback((ObservableList.OnListChangedCallback) callback);
-        } else if (observer instanceof ObservableMap o) {
+        } else if (observer instanceof ObservableMap<?, ?> o) {
             o.addOnMapChangedCallback((ObservableMap.OnMapChangedCallback) callback);
-        } else if (observer instanceof LiveData o) {
+        } else if (observer instanceof LiveData<?> o) {
             o.observeForever((Observer) callback);
         }
     }
@@ -30,11 +30,11 @@ class EnvironmentObservableRegister {
     static void unregister(Object observer, Object callback) {
         if (observer instanceof Observable o) {
             o.removeOnPropertyChangedCallback((Observable.OnPropertyChangedCallback) callback);
-        } else if (observer instanceof ObservableList o) {
+        } else if (observer instanceof ObservableList<?> o) {
             o.removeOnListChangedCallback((ObservableList.OnListChangedCallback) callback);
-        } else if (observer instanceof ObservableMap o) {
+        } else if (observer instanceof ObservableMap<?, ?> o) {
             o.removeOnMapChangedCallback((ObservableMap.OnMapChangedCallback) callback);
-        } else if (observer instanceof LiveData o) {
+        } else if (observer instanceof LiveData<?> o) {
             o.removeObserver((Observer) callback);
         }
     }

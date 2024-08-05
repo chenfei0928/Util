@@ -18,7 +18,12 @@ object NetWorkUtil {
     const val NETWORK_CLASS_5_G: Int = 4
     private const val NETWORK_TYPE_LTE_CA = 19
 
-    @RequiresPermission(Manifest.permission.ACCESS_WIFI_STATE)
+    @RequiresPermission(
+        allOf = [
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ]
+    )
     fun getNetworkName(context: Context): String? {
         return context.getSystemService<WifiManager>()?.connectionInfo?.ssid
     }
@@ -30,13 +35,13 @@ object NetWorkUtil {
     fun isNetWorkAvailable(context: Context): Boolean {
         val connMgr = context.getSystemService<ConnectivityManager>()
             ?: return false
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             val netInfo = connMgr.activeNetworkInfo
-            return netInfo != null && netInfo.isAvailable
+            netInfo != null && netInfo.isAvailable
         } else {
             val capabilities = connMgr.getNetworkCapabilities(connMgr.activeNetwork)
                 ?: return false
-            return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_FOREGROUND)
+            capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_FOREGROUND)
         }
     }
 
@@ -47,13 +52,13 @@ object NetWorkUtil {
     fun isWifiAvailable(context: Context): Boolean {
         val connMgr = context.getSystemService<ConnectivityManager>()
             ?: return false
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             val netInfo = connMgr.activeNetworkInfo
-            return netInfo != null && netInfo.type == ConnectivityManager.TYPE_WIFI
+            netInfo != null && netInfo.type == ConnectivityManager.TYPE_WIFI
         } else {
             val capabilities = connMgr.getNetworkCapabilities(connMgr.activeNetwork)
                 ?: return false
-            return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
         }
     }
 
@@ -64,13 +69,13 @@ object NetWorkUtil {
     fun isMobileAvailable(context: Context): Boolean {
         val connMgr = context.getSystemService<ConnectivityManager>()
             ?: return false
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             val netInfo = connMgr.activeNetworkInfo
-            return netInfo != null && netInfo.type == ConnectivityManager.TYPE_MOBILE
+            netInfo != null && netInfo.type == ConnectivityManager.TYPE_MOBILE
         } else {
             val capabilities = connMgr.getNetworkCapabilities(connMgr.activeNetwork)
                 ?: return false
-            return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
         }
     }
 

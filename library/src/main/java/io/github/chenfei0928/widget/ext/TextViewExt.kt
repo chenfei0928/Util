@@ -5,14 +5,11 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.widget.TextView
 import androidx.annotation.ColorInt
-import androidx.annotation.RequiresApi
-import io.github.chenfei0928.graphics.setTintCompat
 
 private fun setIntrinsicBounds(drawable: Drawable?) {
     drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
 }
 
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 fun TextView.updateDrawableRelative(
     start: Drawable? = compoundDrawablesRelative[0],
     top: Drawable? = compoundDrawablesRelative[1],
@@ -44,17 +41,13 @@ fun TextView.setDrawableTint(@ColorInt color: Int, fixLayoutXml: Boolean = true)
         if (!fixLayoutXml) {
             compoundDrawableTintList = ColorStateList.valueOf(color)
         }
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    } else {
         val drawables = this.compoundDrawablesRelative
         for (i in drawables.indices) {
-            drawables[i] = drawables[i]?.setTintCompat(color)
+            drawables[i]?.apply {
+                setTint(color)
+            }
         }
         setCompoundDrawablesRelative(drawables[0], drawables[1], drawables[2], drawables[3])
-    } else {
-        val drawables = this.compoundDrawables
-        for (i in drawables.indices) {
-            drawables[i] = drawables[i]?.setTintCompat(color)
-        }
-        setCompoundDrawables(drawables[0], drawables[1], drawables[2], drawables[3])
     }
 }

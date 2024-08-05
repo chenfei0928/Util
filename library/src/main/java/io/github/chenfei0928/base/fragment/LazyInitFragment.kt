@@ -1,15 +1,12 @@
 package io.github.chenfei0928.base.fragment
 
-import android.os.Build
 import android.os.Bundle
 import android.view.Choreographer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
-import io.github.chenfei0928.os.safeHandler
 import io.github.chenfei0928.reflect.parameterized.getParentParameterizedTypeClassDefinedImplInChild
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.view.asyncinflater.SuspendLayoutInflater
@@ -85,17 +82,11 @@ abstract class BaseLazyInitFragment : BaseFragment() {
 abstract class BaseDoubleCheckLazyInitFragment : BaseLazyInitFragment() {
     final override fun checkInflate() {
         if (isResumed && view != null && !isInflated) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                Choreographer
-                    .getInstance()
-                    .postFrameCallback {
-                        checkInflateImpl()
-                    }
-            } else {
-                safeHandler.postDelayed(30L) {
+            Choreographer
+                .getInstance()
+                .postFrameCallback {
                     checkInflateImpl()
                 }
-            }
         }
     }
 

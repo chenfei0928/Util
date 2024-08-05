@@ -3,7 +3,6 @@ package io.github.chenfei0928.app.arouter
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.app.ActivityOptionsCompat
@@ -31,13 +30,11 @@ class ARouterIntentBridgeActivity : Activity() {
                     greenChannel()
                 }
                 withAction(getStringExtra(KEY_ACTION))
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    withOptionsCompat(object : ActivityOptionsCompat() {
-                        override fun toBundle(): Bundle? {
-                            return getBundleExtra(KEY_OPTIONS_COMPAT)
-                        }
-                    })
-                }
+                withOptionsCompat(object : ActivityOptionsCompat() {
+                    override fun toBundle(): Bundle? {
+                        return getBundleExtra(KEY_OPTIONS_COMPAT)
+                    }
+                })
                 withTransition(
                     getIntExtra(KEY_ENTER_ANIM, -1),
                     getIntExtra(KEY_EXIT_ANIM, -1)

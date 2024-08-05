@@ -18,7 +18,7 @@ public class ClickRotationIconAnim {
     private final ObjectAnimator mDoubleClickAnim;
     // 动画当前执行到的角度
     private float mCurrentValue = 0;
-    private final Property<View, Float> ROTATION = new Property<View, Float>(Float.class, "rotation") {
+    private final Property<View, Float> rotation = new Property<>(Float.class, "rotation") {
         @Override
         public void set(View object, Float value) {
             object.setRotation(value);
@@ -35,11 +35,11 @@ public class ClickRotationIconAnim {
 
     public ClickRotationIconAnim(View target) {
         // 单击，1.5秒2圈，先加速后减速
-        mSingleClickAnim = ObjectAnimator.ofFloat(target, ROTATION, 0f, 720f);
+        mSingleClickAnim = ObjectAnimator.ofFloat(target, rotation, 0f, 720f);
         mSingleClickAnim.setInterpolator(new AccelerateDecelerateInterpolator());
         mSingleClickAnim.setDuration(1500);
         // 连续点击，1.5秒时间逐渐减速
-        mDoubleClickAnim = ObjectAnimator.ofFloat(target, ROTATION, 0, 0);
+        mDoubleClickAnim = ObjectAnimator.ofFloat(target, rotation, 0, 0);
         mDoubleClickAnim.setInterpolator(new DecelerateInterpolator());
         mDoubleClickAnim.addListener(new AnimatorListenerAdapter() {
             @Override
