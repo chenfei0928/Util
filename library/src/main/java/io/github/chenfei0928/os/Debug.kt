@@ -12,6 +12,15 @@ import java.text.DecimalFormat
 object Debug {
     const val msInNs = 1_000_000
 
+    inline fun <T> traceTime(
+        tag: String,
+        tracePath: String,
+        msg: String = tracePath,
+        block: () -> T
+    ) = trace(tracePath) {
+        countTime(tag, msg, block)
+    }
+
     inline fun <T> trace(tracePath: String, block: () -> T): T {
         Debug.startMethodTracing(tracePath)
         return try {
@@ -31,22 +40,26 @@ object Debug {
         return try {
             block()
         } finally {
-            val timeUsed = System.nanoTime() - l
-            if (timeUsed < msInNs) {
-                // 在一毫秒以内，展示为纳秒
-                Log.v(tag, "$msg, countTime: ${
-                    DecimalFormat()
-                        .apply { applyPattern(",###") }
-                        .format(timeUsed)
-                } ns.")
-            } else {
-                // 一毫秒以上，显示为毫秒，保留三位小数
-                Log.v(tag, "$msg, countTime: ${
-                    DecimalFormat()
-                        .apply { applyPattern(",###.###") }
-                        .format(timeUsed / msInNs.toFloat())
-                } ms.")
-            }
+            logCountTime(tag, msg, l)
+        }
+    }
+
+    fun logCountTime(tag: String, msg: String, nanoTime: Long) {
+        val timeUsed = System.nanoTime() - nanoTime
+        if (timeUsed < msInNs) {
+            // 在一毫秒以内，展示为纳秒
+            Log.v(tag, "$msg, countTime: ${
+                DecimalFormat()
+                    .apply { applyPattern(",###") }
+                    .format(timeUsed)
+            } ns.")
+        } else {
+            // 一毫秒以上，显示为毫秒，保留三位小数
+            Log.v(tag, "$msg, countTime: ${
+                DecimalFormat()
+                    .apply { applyPattern(",###.###") }
+                    .format(timeUsed / msInNs.toFloat())
+            } ms.")
         }
     }
 }

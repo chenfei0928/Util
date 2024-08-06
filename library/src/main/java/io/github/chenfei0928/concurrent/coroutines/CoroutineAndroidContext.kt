@@ -31,6 +31,7 @@ private constructor(
 ) : CoroutineAndroidContext, AbstractCoroutineContextElement(CoroutineAndroidContext) {
 
     override fun toString(): String {
+        @Suppress("MaxLineLength")
         return "CoroutineAndroidContextImpl(host=$host, androidContext=$androidContext, fragmentHost=$fragmentHost, tagOrNull=$tagOrNull)"
     }
 

@@ -15,8 +15,8 @@ interface CoroutineStackTraceRecordContext : CoroutineContext.Element {
 
 internal class CoroutineStackTraceRecordContextImpl(
     private val minStackIndex: Int
-) : CoroutineStackTraceRecordContext,
-    AbstractCoroutineContextElement(CoroutineStackTraceRecordContext) {
+) : AbstractCoroutineContextElement(CoroutineStackTraceRecordContext),
+    CoroutineStackTraceRecordContext {
     override val stackTrace: Array<StackTraceElement> = Thread.currentThread().stackTrace
 
     override fun toString(): String {

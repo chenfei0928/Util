@@ -4,11 +4,9 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import io.github.chenfei0928.app.fragment.removeSelf
 import io.github.chenfei0928.util.Log
@@ -16,11 +14,11 @@ import io.github.chenfei0928.widget.ToastUtil
 
 /**
  * webView 文件选择器启动者（打火器）
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-11-30 21:15
  */
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-class WebViewFileChooseLighterFragment : Fragment() {
+internal class WebViewFileChooseLighterFragment : Fragment() {
     var filePathCallback: ValueCallback<Array<Uri>>? = null
     var fileChooserParams: WebChromeClient.FileChooserParams? = null
 
@@ -29,7 +27,6 @@ class WebViewFileChooseLighterFragment : Fragment() {
         // 如果回调或参数不存在，移除自身
         if (filePathCallback == null || fileChooserParams == null) {
             removeSelf()
-
         }
     }
 

@@ -1,21 +1,17 @@
 package io.github.chenfei0928.util.glide
 
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.view.Gravity
 import android.widget.TextView
 import androidx.annotation.GravityInt
-import androidx.annotation.RequiresApi
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
-import io.github.chenfei0928.json.contains
 import io.github.chenfei0928.util.contains
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-07-23 10:16
  */
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 open class TextViewDrawableTarget
 @JvmOverloads constructor(
     view: TextView,

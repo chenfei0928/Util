@@ -1,8 +1,6 @@
 package io.github.chenfei0928.webkit
 
-import android.annotation.TargetApi
 import android.net.Uri
-import android.os.Build
 import android.os.Message
 import android.webkit.ConsoleMessage
 import android.webkit.JsPromptResult
@@ -27,18 +25,9 @@ open class BaseWebChromeClient(
     private val progressBar: ProgressBar? = null
 ) : WebChromeClient() {
 
-    //<editor-fold defaultstate="collapsed" desc="日志输出">
-    override fun onConsoleMessage(message: String?, lineNumber: Int, sourceID: String?) {
-        // 不需要调用super方法
-        debugWebViewMessage(
-            TAG,
-            "onConsoleMessage", ConsoleMessage.MessageLevel.DEBUG,
-            "message" to message,
-            "lineNumber" to lineNumber.toString(),
-            "sourceID" to sourceID
-        )
-    }
-
+    /**
+     * 日志输出
+     */
     override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
         debugWebViewMessage(
             TAG,
@@ -48,7 +37,6 @@ open class BaseWebChromeClient(
         // 返回true，不再需要webview内部处理
         return true
     }
-    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="JsDialogUi">
     /**
@@ -153,7 +141,6 @@ open class BaseWebChromeClient(
      * 打开文件选择器，此api为android 5.0（API 21）加入
      * 低于该版本系统中每个API-Level系统的api都不一致，4.4.4则没有相关接口提供
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onShowFileChooser(
         webView: WebView?,
         filePathCallback: ValueCallback<Array<Uri>>?,

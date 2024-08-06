@@ -45,7 +45,7 @@ fun copyTo(context: Context, uri: Uri?, dest: File): Boolean {
             }
         }
         true
-    } catch (e: IOException) {
+    } catch (ignore: IOException) {
         false
     }
 }

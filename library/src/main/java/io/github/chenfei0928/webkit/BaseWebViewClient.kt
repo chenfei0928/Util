@@ -1,5 +1,6 @@
 package io.github.chenfei0928.webkit
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Bitmap
@@ -45,7 +46,7 @@ open class BaseWebViewClient(
             "onReceivedError",
             "request" to request.toSimpleString(),
             "error" to error.toSimpleString(),
-            "webview.info" to view.toSimpleString()
+            "webView.info" to view.toSimpleString()
         )
     }
 
@@ -68,7 +69,7 @@ open class BaseWebViewClient(
             "onSafeBrowsingHit",
             "request" to request.toSimpleString(),
             "threatType" to threatType.toString(),
-            "webview.info" to view.toSimpleString()
+            "webView.info" to view.toSimpleString()
         )
     }
 
@@ -88,7 +89,7 @@ open class BaseWebViewClient(
             "onReceivedHttpError",
             "request" to request.toString(),
             "errorResponse" to errorResponse.toSimpleString(),
-            "webview.info" to view.toSimpleString()
+            "webView.info" to view.toSimpleString()
         )
     }
 
@@ -100,6 +101,7 @@ open class BaseWebViewClient(
     override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError?) {
         super.onReceivedSslError(view, handler, error)
         // 如果debug情况下忽略了证书错误，直接允许
+        @SuppressLint("WebViewClientOnReceivedSslError")
         if (ignoreSslError) {
             handler.proceed()
             return
@@ -109,7 +111,7 @@ open class BaseWebViewClient(
             TAG,
             "onReceivedSslError",
             "error" to error.toString(),
-            "webview.info" to view.toSimpleString()
+            "webView.info" to view.toSimpleString()
         )
         sslErrorHandler.emit(handler, error)
     }
@@ -159,7 +161,6 @@ open class BaseWebViewClient(
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
         if (debugLog) {
             Log.v(TAG, "shouldOverrideUrlLoading: ${request.toSimpleString()}")
@@ -206,40 +207,17 @@ open class BaseWebViewClient(
                 context, File(context.filesDir, "webViewPublic")
             )
         ).build()
-    val interceptRequest: MutableList<(WebResourceRequestSupport) -> WebResourceResponse?> =
+    val interceptRequest: MutableList<(WebResourceRequest) -> WebResourceResponse?> =
         mutableListOf()
 
-    final override fun shouldInterceptRequest(view: WebView, url: String): WebResourceResponse? {
-        if (debugLog) {
-            Log.i(TAG, "shouldInterceptRequest: $url")
-        }
-        return shouldInterceptRequest(view, WebResourceRequestSupportBase(url))
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     final override fun shouldInterceptRequest(
         view: WebView, request: WebResourceRequest
     ): WebResourceResponse? {
         if (debugLog) {
             Log.i(TAG, "shouldInterceptRequest: ${request.toSimpleString()}")
         }
-        return shouldInterceptRequest(view, WebResourceRequestSupportV21(request))
-    }
-
-    open fun shouldInterceptRequest(
-        view: WebView, request: WebResourceRequestSupport
-    ): WebResourceResponse? {
-        val shouldInterceptRequest = assetLoader.shouldInterceptRequest(request.url)
-        if (shouldInterceptRequest != null) {
-            return shouldInterceptRequest
-        }
-        interceptRequest.forEach {
-            val response = it(request)
-            if (response != null) {
-                return response
-            }
-        }
-        return null
+        return assetLoader.shouldInterceptRequest(request.url)
+            ?: interceptRequest.firstNotNullOfOrNull { it(request) }
     }
     //</editor-fold>
 

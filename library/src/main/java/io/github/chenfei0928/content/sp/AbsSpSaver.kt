@@ -7,7 +7,7 @@ import kotlin.reflect.KProperty
 
 /**
  * 对提供[SharedPreferences]字段存取框架进行支持，子类通过属性委托来快速实现对sp中字段的存取功能。
- * 但在对字段值进行修改时，其不会被立刻写入，需要手动调用[commit]或[apply]进行保存，或使用[AbsSpSaver.Companion.edit]来进行编辑。
+ * 但在对字段值进行修改时，其不会被立刻写入，需要手动调用[commit]或[apply]进行保存，或使用[edit]来进行编辑。
  *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-07-15 15:34

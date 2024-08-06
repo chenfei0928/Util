@@ -9,6 +9,7 @@ import android.view.Gravity
 import androidx.annotation.ColorInt
 import androidx.annotation.GravityInt
 import androidx.annotation.Px
+import io.github.chenfei0928.reflect.toProperty
 import kotlin.math.min
 
 /**

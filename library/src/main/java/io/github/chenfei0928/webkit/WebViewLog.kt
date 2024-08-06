@@ -1,12 +1,9 @@
 package io.github.chenfei0928.webkit
 
-import android.net.Uri
-import android.os.Build
 import android.webkit.ConsoleMessage
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
-import androidx.annotation.RequiresApi
 import androidx.annotation.Size
 import androidx.webkit.WebResourceErrorCompat
 import androidx.webkit.WebResourceRequestCompat
@@ -19,16 +16,16 @@ import io.github.chenfei0928.util.Log
  * [相关博客](https://droidyue.com/blog/2019/10/20/how-to-diagnose-webview-in-android/)
  */
 fun WebView.toSimpleString(): String {
-    return "url=${url}; originalUrl=${originalUrl}"
+    return "url=${url}, ${originalUrl}"
 }
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 fun WebResourceRequest.toSimpleString(): String {
+    @Suppress("MaxLineLength")
     var simpleString =
-        "uri=${url}; isForMainFrame=${isForMainFrame}; hasGesture=${hasGesture()}; method=${method}; headers=${requestHeaders}"
+        "uri=${url}, isForMainFrame=${isForMainFrame}, hasGesture=${hasGesture()}, method=${method}, headers=${requestHeaders}"
 
     if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_RESOURCE_REQUEST_IS_REDIRECT)) {
-        simpleString += "isRedirect=${WebResourceRequestCompat.isRedirect(this)}; "
+        simpleString += "isRedirect=${WebResourceRequestCompat.isRedirect(this)}"
     }
     return simpleString
 }
@@ -46,12 +43,11 @@ fun WebResourceErrorCompat.toSimpleString(): String {
         } else {
             "-"
         }
-    return "errorCode=${errorCode}; description=${description}"
+    return "errorCode=${errorCode}, description=${description}"
 }
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 fun WebResourceResponse.toSimpleString(): String {
-    return "statusCode=${statusCode}; reason=${reasonPhrase}; responseHeaders=${responseHeaders}"
+    return "statusCode=${statusCode}, reason=${reasonPhrase}, responseHeaders=${responseHeaders}"
 }
 
 fun ConsoleMessage.toSimpleString(): String {
@@ -71,13 +67,18 @@ internal fun debugWebViewMessage(
     if (!BaseWebViewClient.debugLog) {
         return
     }
-    val msg = params.joinTo(
-        StringBuilder()
-            .append("debugMessage: ")
-            .append(methodName)
-    ) {
-        it.first + "+" + it.second
-    }.toString()
+    val msg = buildString {
+        append("debugMessage: ")
+        append(methodName)
+        params.forEachIndexed { index, (key, value) ->
+            if (index != 0) {
+                append(", ")
+            }
+            append(key)
+            append('+')
+            append(value)
+        }
+    }
     when (level) {
         ConsoleMessage.MessageLevel.TIP -> Log.v(tag, msg)
         ConsoleMessage.MessageLevel.LOG -> Log.i(tag, msg)
@@ -85,46 +86,4 @@ internal fun debugWebViewMessage(
         ConsoleMessage.MessageLevel.ERROR -> Log.e(tag, msg)
         ConsoleMessage.MessageLevel.DEBUG -> Log.d(tag, msg)
     }
-}
-
-sealed interface WebResourceRequestSupport {
-    val url: Uri
-    val isForMainFrame: Boolean
-    val isRedirect: Boolean
-    val hasGesture: Boolean
-    val method: String
-    val requestHeaders: Map<String, String>
-}
-
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-internal class WebResourceRequestSupportV21(
-    private val target: WebResourceRequest
-) : WebResourceRequestSupport {
-    override val url: Uri
-        get() = target.url
-    override val isForMainFrame: Boolean
-        get() = target.isForMainFrame
-    override val isRedirect: Boolean
-        get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_RESOURCE_REQUEST_IS_REDIRECT)) {
-            WebResourceRequestCompat.isRedirect(target)
-        } else {
-            false
-        }
-    override val hasGesture: Boolean
-        get() = target.hasGesture()
-    override val method: String
-        get() = target.method
-    override val requestHeaders: Map<String, String>
-        get() = target.requestHeaders
-}
-
-internal class WebResourceRequestSupportBase(
-    url: String
-) : WebResourceRequestSupport {
-    override val url: Uri = Uri.parse(url)
-    override val isForMainFrame: Boolean = false
-    override val isRedirect: Boolean = false
-    override val hasGesture: Boolean = false
-    override val method: String = "GET"
-    override val requestHeaders: Map<String, String> = emptyMap()
 }

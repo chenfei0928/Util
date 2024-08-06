@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.collection.ArraySet
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -34,9 +33,12 @@ import io.github.chenfei0928.view.removeSelfFromParent
 import io.github.chenfei0928.widget.ToastUtil
 
 /**
+ * WebView设置工具
+ *
+ * [原博客](http://reezy.me/p/20170515/android-webview/)
+ *
  * @author MrFeng
  * @date 2017/3/8
- * @see [原博客](http://reezy.me/p/20170515/android-webview/)
  */
 object WebViewSettingsUtil {
     private const val TAG = "KW_WebSettingUtil"
@@ -206,7 +208,9 @@ object WebViewSettingsUtil {
                 Lifecycle.Event.ON_DESTROY -> {
                     onDestroy(webView)
                 }
-                else -> {}
+                else -> {
+                    // noop
+                }
             }
         })
         return webView
@@ -255,12 +259,9 @@ object WebViewSettingsUtil {
         settings.loadWithOverviewMode = true
         // 开启DOM storage API功能（HTML5 提供的一种标准的接口，主要将键值对存储在本地，在页面加载完毕后可以通过 javascript 来操作这些数据。）
         settings.domStorageEnabled = true
-        // 开启数据库缓存
-        settings.databaseEnabled = true
         // 支持缩放
         settings.builtInZoomControls = false
         settings.setSupportZoom(true)
-        settings.textZoom = 100
 
         // 不允许WebView对文件的操作，使用
         settings.allowFileAccess = false
@@ -277,7 +278,6 @@ object WebViewSettingsUtil {
         // 离屏渲染，优化滑动时的伪影（会消耗较多内存）
         // 设置此 WebView 在屏幕外但附加到窗口时是否应光栅化图块。在屏幕上为屏幕外的 WebView 设置动画时，打开此选项可以避免渲染伪影。
         // 此模式下的屏幕外 WebView 使用更多内存。默认值为false。
-        ContextCompat
         if (WebViewFeature.isFeatureSupported(WebViewFeature.OFF_SCREEN_PRERASTER)) {
             WebSettingsCompat.setOffscreenPreRaster(settings, true)
         }

@@ -16,7 +16,8 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 /**
- * Created by MrFeng on 2018/1/31.
+ * @author MrFeng
+ * @date 2018/1/31.
  */
 object FileUtil {
     private const val TAG = "KW_FileUtil"
