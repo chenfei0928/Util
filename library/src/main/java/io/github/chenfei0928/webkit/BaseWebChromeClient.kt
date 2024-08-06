@@ -29,11 +29,18 @@ open class BaseWebChromeClient(
      * 日志输出
      */
     override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
-        debugWebViewMessage(
-            TAG,
-            "onConsoleMessage", consoleMessage.messageLevel(),
-            "message" to consoleMessage.toSimpleString()
-        )
+        if (!BaseWebViewClient.debugLog) {
+            return true
+        }
+        val msg = "debugMessage: onConsoleMessage message=${consoleMessage.toSimpleString()}"
+        when (consoleMessage.messageLevel()) {
+            ConsoleMessage.MessageLevel.TIP -> Log.v(TAG, msg)
+            ConsoleMessage.MessageLevel.LOG -> Log.i(TAG, msg)
+            ConsoleMessage.MessageLevel.WARNING -> Log.w(TAG, msg)
+            ConsoleMessage.MessageLevel.ERROR -> Log.e(TAG, msg)
+            ConsoleMessage.MessageLevel.DEBUG -> Log.d(TAG, msg)
+            null -> Log.d(TAG, msg)
+        }
         // 返回true，不再需要webview内部处理
         return true
     }

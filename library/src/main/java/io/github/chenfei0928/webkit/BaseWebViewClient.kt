@@ -42,11 +42,10 @@ open class BaseWebViewClient(
     ) {
         super.onReceivedError(view, request, error)
         debugWebViewMessage(
-            TAG,
-            "onReceivedError",
-            "request" to request.toSimpleString(),
-            "error" to error.toSimpleString(),
-            "webView.info" to view.toSimpleString()
+            TAG, "onReceivedError", view, arrayOf(
+                "request", request.toSimpleString(),
+                "error", error.toSimpleString(),
+            )
         )
     }
 
@@ -65,11 +64,10 @@ open class BaseWebViewClient(
     ) {
         super.onSafeBrowsingHit(view, request, threatType, callback)
         debugWebViewMessage(
-            TAG,
-            "onSafeBrowsingHit",
-            "request" to request.toSimpleString(),
-            "threatType" to threatType.toString(),
-            "webView.info" to view.toSimpleString()
+            TAG, "onSafeBrowsingHit", view, arrayOf(
+                "request", request.toSimpleString(),
+                "threatType", threatType.toString(),
+            )
         )
     }
 
@@ -85,11 +83,10 @@ open class BaseWebViewClient(
     ) {
         super.onReceivedHttpError(view, request, errorResponse)
         debugWebViewMessage(
-            TAG,
-            "onReceivedHttpError",
-            "request" to request.toString(),
-            "errorResponse" to errorResponse.toSimpleString(),
-            "webView.info" to view.toSimpleString()
+            TAG, "onReceivedHttpError", view, arrayOf(
+                "request", request.toSimpleString(),
+                "errorResponse", errorResponse.toSimpleString(),
+            )
         )
     }
 
@@ -108,10 +105,9 @@ open class BaseWebViewClient(
         }
         // 弹出警告
         debugWebViewMessage(
-            TAG,
-            "onReceivedSslError",
-            "error" to error.toString(),
-            "webView.info" to view.toSimpleString()
+            TAG, "onReceivedSslError", view, arrayOf(
+                "error", error?.toString(),
+            )
         )
         sslErrorHandler.emit(handler, error)
     }

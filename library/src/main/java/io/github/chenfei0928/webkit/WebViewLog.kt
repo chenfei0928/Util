@@ -16,7 +16,7 @@ import io.github.chenfei0928.util.Log
  * [相关博客](https://droidyue.com/blog/2019/10/20/how-to-diagnose-webview-in-android/)
  */
 fun WebView.toSimpleString(): String {
-    return "url=${url}, ${originalUrl}"
+    return "url=${url}, $originalUrl"
 }
 
 fun WebResourceRequest.toSimpleString(): String {
@@ -51,39 +51,28 @@ fun WebResourceResponse.toSimpleString(): String {
 }
 
 fun ConsoleMessage.toSimpleString(): String {
-    return "${message()}\nat ${sourceId()}:${lineNumber()}"
+    return "${message()}\n at ${sourceId()}:${lineNumber()}"
 }
-
-internal fun debugWebViewMessage(
-    @Size(max = 23) tag: String, methodName: String, vararg params: Pair<String, String?>
-) = debugWebViewMessage(tag, methodName, ConsoleMessage.MessageLevel.DEBUG, params = params)
 
 internal fun debugWebViewMessage(
     @Size(max = 23) tag: String,
     methodName: String,
-    level: ConsoleMessage.MessageLevel = ConsoleMessage.MessageLevel.DEBUG,
-    vararg params: Pair<String, String?>
+    webView: WebView,
+    @Size(multiple = 2) params: Array<String?>
 ) {
     if (!BaseWebViewClient.debugLog) {
         return
     }
-    val msg = buildString {
+    Log.d(tag, buildString {
         append("debugMessage: ")
         append(methodName)
-        params.forEachIndexed { index, (key, value) ->
-            if (index != 0) {
-                append(", ")
-            }
-            append(key)
+        append(" webView.info")
+        append(webView.toSimpleString())
+        for (index in params.indices step 2) {
+            append(", ")
+            append(params[index])
             append('+')
-            append(value)
+            append(params[index + 1])
         }
-    }
-    when (level) {
-        ConsoleMessage.MessageLevel.TIP -> Log.v(tag, msg)
-        ConsoleMessage.MessageLevel.LOG -> Log.i(tag, msg)
-        ConsoleMessage.MessageLevel.WARNING -> Log.w(tag, msg)
-        ConsoleMessage.MessageLevel.ERROR -> Log.e(tag, msg)
-        ConsoleMessage.MessageLevel.DEBUG -> Log.d(tag, msg)
-    }
+    })
 }

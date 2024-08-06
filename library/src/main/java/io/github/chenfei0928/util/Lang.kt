@@ -93,7 +93,7 @@ fun Any.toStringKV(vararg field: Pair<String, Any?>) = buildString {
             append(", ")
         }
         append(key)
-        append('+')
+        append('=')
         append(value)
     }
     append(')')

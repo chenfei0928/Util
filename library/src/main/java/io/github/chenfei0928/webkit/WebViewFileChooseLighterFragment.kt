@@ -32,8 +32,10 @@ internal class WebViewFileChooseLighterFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        val fileChooserParams = fileChooserParams
-            ?: return
+        val fileChooserParams = fileChooserParams ?: run {
+            removeSelf()
+            return
+        }
         val intent = fileChooserParams.createIntent()
         try {
             startActivityForResult(intent, REQUEST_CODE)
