@@ -1,6 +1,7 @@
 package io.github.chenfei0928.webkit
 
 import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -11,6 +12,7 @@ import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.collection.ArraySet
+import androidx.core.content.getSystemService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -46,6 +48,7 @@ object WebViewSettingsUtil {
     //<editor-fold desc="初始化环境" defaultstatus="collapsed">
     private var safeBrowsingEnable = true
     private val initEnvironment by FragileBooleanDelegate()
+    private var isLowRamDevice = false
 
     /**
      * 为webView设置代理
@@ -70,6 +73,8 @@ object WebViewSettingsUtil {
             return
         }
         val appContext = context.applicationContext
+        isLowRamDevice = context.getSystemService<ActivityManager>()
+            ?.isLowRamDevice ?: false
         // 当前的webView提供者
         if (WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROCESS)) {
             val multiProcessEnabled = WebViewCompat.isMultiProcessEnabled()
@@ -238,7 +243,7 @@ object WebViewSettingsUtil {
         val settings = webView.settings
         // 安全浏览
         if (WebViewFeature.isFeatureSupported(WebViewFeature.SAFE_BROWSING_ENABLE)) {
-            WebSettingsCompat.setSafeBrowsingEnabled(webView.settings, safeBrowsingEnable)
+            WebSettingsCompat.setSafeBrowsingEnabled(settings, safeBrowsingEnable)
         }
         settings.blockNetworkImage = false
         // 允许使用Js
@@ -279,7 +284,7 @@ object WebViewSettingsUtil {
         // 设置此 WebView 在屏幕外但附加到窗口时是否应光栅化图块。在屏幕上为屏幕外的 WebView 设置动画时，打开此选项可以避免渲染伪影。
         // 此模式下的屏幕外 WebView 使用更多内存。默认值为false。
         if (WebViewFeature.isFeatureSupported(WebViewFeature.OFF_SCREEN_PRERASTER)) {
-            WebSettingsCompat.setOffscreenPreRaster(settings, true)
+            WebSettingsCompat.setOffscreenPreRaster(settings, config.openOffscreenPreRaster)
         }
 
         webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
@@ -322,6 +327,14 @@ object WebViewSettingsUtil {
     //</editor-fold>
 
     data class Config(
-        var algorithmicDarkeningAllowed: Boolean = true
+        var algorithmicDarkeningAllowed: Boolean = true,
+
+        /**
+         * 离屏渲染，优化滑动时的伪影（会消耗较多内存）
+         * 设置此 WebView 在屏幕外但附加到窗口时是否应光栅化图块。
+         * 在屏幕上为屏幕外的 WebView 设置动画时，打开此选项可以避免渲染伪影。
+         * 此模式下的屏幕外 WebView 使用更多内存。默认值为 ![isLowRamDevice]。
+         **/
+        var openOffscreenPreRaster: Boolean = !isLowRamDevice
     )
 }

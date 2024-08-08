@@ -1,5 +1,6 @@
 package io.github.chenfei0928.content.sp.delegate
 
+import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.collection.ArrayMap
 import androidx.lifecycle.LifecycleOwner
@@ -96,7 +97,8 @@ private object AbsSpSaverKProperty1Cache {
  * @date 2020-08-05 16:12
  */
 fun <SpSaver : AbsSpSaver> SpSaver.registerOnSharedPreferenceChangeListener(
-    owner: LifecycleOwner, callback: (key: KProperty1<SpSaver, *>) -> Unit
+    owner: LifecycleOwner,
+    @MainThread callback: (key: KProperty1<SpSaver, *>) -> Unit
 ) {
     val spSaver = this
     AbsSpSaverKProperty1Cache.prepare(owner, this)

@@ -1,6 +1,7 @@
 package io.github.chenfei0928.content.sp.delegate
 
 import android.os.Looper
+import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -124,8 +125,10 @@ fun <SpSaver : AbsSpSaver, V> SpSaver.watchSharedPreferenceDelegatePropertyChang
  * @param owner 生命周期宿主
  * @param property 需要监听的属性字段
  */
-fun <SpSaver : AbsSpSaver, V, R> SpSaver.liveDataPropertyChange(
-    owner: LifecycleOwner, property: KProperty1<SpSaver, V>, mapCast: (V) -> R
+inline fun <SpSaver : AbsSpSaver, V, R> SpSaver.liveDataPropertyChange(
+    owner: LifecycleOwner,
+    property: KProperty1<SpSaver, V>,
+    @MainThread crossinline mapCast: (V) -> R
 ): LiveData<R> = MutableLiveData<R>().apply {
     // 监听sp属性变化
     watchSharedPreferenceDelegatePropertyChange(owner, property) {

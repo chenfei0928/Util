@@ -1,29 +1,27 @@
 package io.github.chenfei0928.content.sp
 
 import android.content.SharedPreferences
-import androidx.fragment.app.Fragment
+import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.lifecycle.isAlive
-import io.github.chenfei0928.util.Log
-
-private const val TAG = "KW_SharedPreferences"
 
 /**
  * 注册一个监听器以监听sp值变更，其可以监听生命周期变化以自动取消
  */
-fun SharedPreferences.registerOnSharedPreferenceChangeListener(
-    owner: LifecycleOwner, callback: SharedPreferences.(key: String?) -> Unit
+inline fun SharedPreferences.registerOnSharedPreferenceChangeListener(
+    owner: LifecycleOwner,
+    @MainThread
+    crossinline callback: SharedPreferences.(key: String?) -> Unit
 ) {
-    if (owner is Fragment) {
-        Log.w(TAG, buildString {
-            append("registerOnSharedPreferenceChangeListener: ")
-            append("owner($owner) is a Fragment, ")
-            append("use viewLifecycleOwner as LifecycleOwner in Fragment.")
-        })
+    val changeListener = object : LifecycleOwnerOnSharedPreferenceChangeListener(owner, this) {
+        override fun onSharedPreferenceChanged(
+            sharedPreferences: SharedPreferences?, key: String?
+        ) {
+            callback(this@registerOnSharedPreferenceChangeListener, key)
+        }
     }
-    val changeListener = SharedPreferencesOnSharedPreferenceChangeListener(owner, this, callback)
     owner.lifecycle.addObserver(changeListener)
     registerOnSharedPreferenceChangeListener(changeListener)
 }
@@ -34,15 +32,10 @@ fun SharedPreferences.registerOnSharedPreferenceChangeListener(
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-08-04 16:43
  */
-private class SharedPreferencesOnSharedPreferenceChangeListener(
+abstract class LifecycleOwnerOnSharedPreferenceChangeListener(
     private val owner: LifecycleOwner,
     private val sharedPreferences: SharedPreferences,
-    private val callback: SharedPreferences.(key: String?) -> Unit
 ) : SharedPreferences.OnSharedPreferenceChangeListener, LifecycleEventObserver {
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-        callback(this.sharedPreferences, key)
-    }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         if (!owner.lifecycle.isAlive) {
