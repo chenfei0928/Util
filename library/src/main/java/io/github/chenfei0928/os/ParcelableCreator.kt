@@ -4,7 +4,7 @@ import android.os.BadParcelableException
 import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
-import io.github.chenfei0928.util.WeakCache
+import io.github.chenfei0928.util.MapCache
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
@@ -17,7 +17,7 @@ import java.lang.reflect.Modifier
 val <T : Parcelable> Class<T>.PARCELABLE_CREATOR: Parcelable.Creator<T>
     get() = parcelableCache[this as Class<Parcelable>] as Parcelable.Creator<T>
 
-private val parcelableCache = WeakCache<Class<*>, Parcelable.Creator<*>> {
+private val parcelableCache = MapCache<Class<*>, Parcelable.Creator<*>> {
     getParcelableCreator(it as Class<Parcelable>)
 }
 

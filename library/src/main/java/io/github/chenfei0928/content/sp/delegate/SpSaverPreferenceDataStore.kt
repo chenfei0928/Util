@@ -22,6 +22,7 @@ class SpSaverPreferenceDataStore(
         return find { it.name == name } as Field<T>
     }
 
+    //<editor-fold desc="put/get" defaultstatus="collapsed">
     override fun putString(key: String, value: String?) {
         properties.findByName<String>(key).set(value)
     }
@@ -69,6 +70,7 @@ class SpSaverPreferenceDataStore(
     override fun getBoolean(key: String, defValue: Boolean): Boolean {
         return properties.findByName<Boolean>(key).get() ?: defValue
     }
+    //</editor-fold>
 
     interface Field<T> {
         val name: String
@@ -79,13 +81,10 @@ class SpSaverPreferenceDataStore(
 
 fun AbsSpSaver.toPreferenceDataStore(
     vararg properties: KMutableProperty0<*>
-): PreferenceDataStore {
-    return SpSaverPreferenceDataStore(properties.mapToArray {
-        findMutablePropertyField(it)
-    })
-}
+): PreferenceDataStore = SpSaverPreferenceDataStore(properties.mapToArray {
+    findMutablePropertyField(it)
+})
 
-@Suppress("UNCHECKED_CAST")
 private fun AbsSpSaver.findMutablePropertyField(
     property0: KMutableProperty0<*>
 ): SpSaverPreferenceDataStore.Field<*> {
@@ -100,13 +99,16 @@ private fun AbsSpSaver.findMutablePropertyField(
                 delegate = delegate.saver
             }
             is SpConvertSaver<*, *> -> {
+                @Suppress("UNCHECKED_CAST")
                 delegate as SpConvertSaver<Any, Any?>
                 // 转换器装饰器，将其解装饰，并处理默认值
                 defaultValue = delegate.onSave(defaultValue)
                 delegate = delegate.saver
             }
             is AbsSpSaver.AbsSpDelegate<*> -> {
-                val localDelegate = delegate as AbsSpSaver.AbsSpDelegate<Any?>
+                @Suppress("UNCHECKED_CAST")
+                delegate as AbsSpSaver.AbsSpDelegate<Any?>
+                val localDelegate: AbsSpSaver.AbsSpDelegate<Any?> = delegate
                 val spSaver = this@findMutablePropertyField
                 return object : SpSaverPreferenceDataStore.Field<Any> {
                     override val name: String = name

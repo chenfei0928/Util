@@ -7,6 +7,7 @@ import androidx.preference.PreferenceGroup
 import androidx.preference.PreferenceScreen
 import io.github.chenfei0928.content.sp.AbsSpSaver
 import io.github.chenfei0928.content.sp.delegate.getPropertySpKeyName
+import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 
@@ -22,19 +23,19 @@ class PreferenceGroupBuilder<SpSaver : AbsSpSaver>(
     context, spSaver, preferenceGroup
 ) {
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     override fun createInstance(): PreferenceGroupBuilder<SpSaver> {
         return PreferenceGroupBuilder(context, spSaver, preferenceGroup)
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     override fun getPropertySpKeyName(property: KProperty0<*>): String {
-        return spSaver.getPropertySpKeyName(property)
+        return spSaver.getPropertySpKeyName(property as KProperty<*>)
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     override fun SpSaver.getPropertySpKeyName(property: KProperty1<SpSaver, *>): String {
-        return getPropertySpKeyName(property)
+        return getPropertySpKeyName(property as KProperty<*>)
     }
 }
 

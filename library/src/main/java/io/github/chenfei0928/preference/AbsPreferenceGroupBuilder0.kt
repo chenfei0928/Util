@@ -23,7 +23,7 @@ abstract class AbsPreferenceGroupBuilder0<Builder>(
 ) : AbsPreferenceGroupBuilder<Builder>(context, preferenceGroup) {
 
     //<editor-fold desc="KProperty0来获取字段名" defaultstate="collapsed">
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     abstract fun getPropertySpKeyName(property: KProperty0<*>): String
 
     inline fun checkBoxPreference(

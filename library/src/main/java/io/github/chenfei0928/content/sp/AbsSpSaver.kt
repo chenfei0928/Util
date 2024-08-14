@@ -16,6 +16,7 @@ abstract class AbsSpSaver : SpCommit {
     protected abstract val sp: SharedPreferences
     protected abstract val editor: SharedPreferences.Editor
 
+    //<editor-fold desc="字段委托" defaultstatus="collapsed">
     abstract class AbsSpDelegate<T> : ReadWriteProperty<AbsSpSaver, T> {
 
         abstract fun obtainDefaultKey(property: KProperty<*>): String
@@ -47,6 +48,7 @@ abstract class AbsSpSaver : SpCommit {
             return key ?: property.name
         }
     }
+    //</editor-fold>
 
     companion object {
         @JvmStatic

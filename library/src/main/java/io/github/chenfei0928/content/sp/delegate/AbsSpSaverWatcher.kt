@@ -21,6 +21,7 @@ private const val TAG = "KW_AbsSpSaverWatcher"
  * 建立并缓存[AbsSpSaver]子类的字段映射
  */
 private object AbsSpSaverKProperty1Cache {
+    //<editor-fold desc="创建并缓存字段" defaultstatus="collapsed">
     private val spSaverKProperty1Cache =
         mutableMapOf<Class<out AbsSpSaver>, Map<String, KProperty1<out AbsSpSaver, *>?>>()
 
@@ -37,6 +38,7 @@ private object AbsSpSaverKProperty1Cache {
             spSaverKProperty1Cache[clazz] as Map<String, KProperty1<SpSaver, *>?>
         } else {
             // 如果缓存中没有，在子线程中生成缓存并返回
+            @Suppress("kotlin:S6310")
             withContext(Dispatchers.Default) {
                 synchronized(clazz) {
                     spSaverKProperty1Cache.getOrPut(clazz) {
@@ -72,14 +74,15 @@ private object AbsSpSaverKProperty1Cache {
         }
         return cacheOutput
     }
+    //</editor-fold>
 
     /**
      * 预先准备保存实例类的字段缓存
      */
-    fun <SpSaver : AbsSpSaver> prepare(owner: LifecycleOwner, spSaver: SpSaver) {
-        owner.coroutineScope.launch {
-            getKotlinClassFieldsCache(spSaver)
-        }
+    fun <SpSaver : AbsSpSaver> prepare(
+        owner: LifecycleOwner, spSaver: SpSaver
+    ) = owner.coroutineScope.launch {
+        getKotlinClassFieldsCache(spSaver)
     }
 
     /**

@@ -24,7 +24,7 @@ abstract class AbsPreferenceGroupBuilder<Builder>(
     val context: Context,
     val preferenceGroup: PreferenceGroup
 ) {
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     abstract fun createInstance(): Builder
 
     @Suppress("UNCHECKED_CAST")

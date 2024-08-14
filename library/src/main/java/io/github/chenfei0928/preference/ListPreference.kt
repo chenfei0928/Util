@@ -18,12 +18,28 @@ fun <E> ListPreference.bindEnum(enumValues: Array<E>) where E : Enum<E>, E : Vis
     entryValues = enumValues.mapToArray { it.name }
 }
 
+inline fun <reified E> ListPreference.bindEnum(
+    enumValues: Array<E> = enumValues<E>(),
+    visibleNamed: (context: Context, enum: E) -> CharSequence
+) where E : Enum<E>, E : VisibleNamed {
+    entries = enumValues.mapToArray { visibleNamed(context, it) }
+    entryValues = enumValues.mapToArray { it.name }
+}
+
 inline fun <reified E> MultiSelectListPreference.bindEnum() where E : Enum<E>, E : VisibleNamed {
     bindEnum(enumValues<E>())
 }
 
 fun <E> MultiSelectListPreference.bindEnum(enumValues: Array<E>) where E : Enum<E>, E : VisibleNamed {
     entries = enumValues.mapToArray { it.getVisibleName(context) }
+    entryValues = enumValues.mapToArray { it.name }
+}
+
+inline fun <reified E : Enum<E>> MultiSelectListPreference.bindEnum(
+    enumValues: Array<E> = enumValues<E>(),
+    visibleNamed: (context: Context, enum: E) -> CharSequence
+) {
+    entries = enumValues.mapToArray { visibleNamed(context, it) }
     entryValues = enumValues.mapToArray { it.name }
 }
 

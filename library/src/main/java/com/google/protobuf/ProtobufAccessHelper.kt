@@ -4,7 +4,7 @@
  */
 package com.google.protobuf
 
-import io.github.chenfei0928.util.WeakCache
+import io.github.chenfei0928.util.MapCache
 
 fun <T : GeneratedMessageLite<T, *>> Class<T>.getProtobufLiteDefaultInstance(): T {
     return GeneratedMessageLite.getDefaultInstance(this)
@@ -14,7 +14,7 @@ fun <T : GeneratedMessageLite<T, *>> Class<T>.getProtobufLiteParserForType(): Pa
     return getProtobufLiteDefaultInstance().getParserForType()
 }
 
-private val protobufDefaultInstanceCache = WeakCache<Class<*>, GeneratedMessageV3> {
+private val protobufDefaultInstanceCache = MapCache<Class<*>, GeneratedMessageV3> {
     it.getMethod("getDefaultInstance").invoke(null) as GeneratedMessageV3
 }
 

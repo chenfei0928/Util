@@ -11,10 +11,13 @@ import java.util.WeakHashMap
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-06-29 14:09
  */
-open class WeakCache<T, R>(
-    private val creator: (T) -> R
+open class MapCache<T, R>(
+    private val cache: MutableMap<T, R> = WeakHashMap(),
+    private val creator: (T) -> R,
 ) {
-    private val cache: MutableMap<T, R> = WeakHashMap()
+    operator fun set(context: T, value: R) {
+        cache[context] = value
+    }
 
     open operator fun get(context: T): R {
         return cache.getOrPut(context) {
@@ -23,9 +26,10 @@ open class WeakCache<T, R>(
     }
 }
 
-class ContextWeakCache<R>(
+class ContextMapCache<R>(
+    cache: MutableMap<Context, R> = WeakHashMap(),
     creator: (Context) -> R
-) : WeakCache<Context, R>(creator) {
+) : MapCache<Context, R>(cache, creator) {
 
     override fun get(context: Context): R {
         return if (context is ContextWrapper && context !is Activity) {

@@ -25,7 +25,7 @@ abstract class AbsPreferenceGroupBuilder1<SpSaver, Builder>(
 ) : AbsPreferenceGroupBuilder0<Builder>(context, preferenceGroup) {
 
     //<editor-fold desc="KProperty1来获取字段名" defaultstate="collapsed">
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     abstract fun SpSaver.getPropertySpKeyName(property: KProperty1<SpSaver, *>): String
 
     inline fun checkBoxPreference(

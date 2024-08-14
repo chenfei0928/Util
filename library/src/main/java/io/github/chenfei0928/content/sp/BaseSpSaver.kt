@@ -21,6 +21,8 @@ open class BaseSpSaver(
     ) : this(context.getSharedPreferences(name, mode))
 
     private val editorAtomicReference = AtomicReference<SharedPreferences.Editor?>()
+
+    @get:Synchronized
     override val editor: SharedPreferences.Editor
         get() = editorAtomicReference.get() ?: (editorAtomicReference.updateAndGetCompat {
             it ?: sp.edit()
@@ -42,15 +44,19 @@ open class BaseSpSaver(
         editor.clear()
     }
 
+    @Synchronized
     override fun commit(): Boolean {
-        val editor = editorAtomicReference.get() ?: return false
+        val editor = editorAtomicReference.get()
+            ?: return false
         val result = editor.commit()
         val compareAndSet = editorAtomicReference.compareAndSet(editor, null)
         return result && compareAndSet
     }
 
+    @Synchronized
     override fun apply() {
-        val editor = editorAtomicReference.get() ?: return
+        val editor = editorAtomicReference.get()
+            ?: return
         editor.apply()
         editorAtomicReference.compareAndSet(editor, null)
     }
