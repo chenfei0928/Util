@@ -15,10 +15,11 @@ import java.io.OutputStream
  * @author chenfei()
  * @date 2022-07-13 18:54
  */
-internal class DefaultValueSerializer<T>(
+class DefaultValueSerializer<T>
+private constructor(
     private val serializer: LocalSerializer<T?>,
     override val defaultValue: T
-) : LocalSerializer<T>, LocalSerializer.IODecorator {
+) : LocalSerializer.IODecorator<T> {
 
     override fun write(outputStream: OutputStream, obj: T & Any) {
         serializer.write(outputStream, obj)
@@ -43,13 +44,12 @@ internal class DefaultValueSerializer<T>(
             outputStream
         }
     }
-}
 
-/**
- * 修改默认值的序列化
- *
- * @author chenfei()
- * @date 2022-07-13 18:54
- */
-fun <T> LocalSerializer<T?>.defaultValue(defaultValue: T): LocalSerializer<T> =
-    DefaultValueSerializer(this, defaultValue)
+    companion object {
+        /**
+         * 修改默认值的序列化
+         */
+        fun <T> LocalSerializer<T?>.defaultValue(defaultValue: T): LocalSerializer<T> =
+            DefaultValueSerializer(this, defaultValue)
+    }
+}

@@ -11,7 +11,7 @@ import io.github.chenfei0928.widget.ext.isEmpty
  * 使View监听其他的EditText内容不为空时才可用
  */
 fun View.watchEditorNotEmpty(vararg editors: EditText): TextWatcher {
-    return watchEditorNotEmpty(*editors) {
+    return watchEditorNotEmpty(editors = editors) {
         isEnabled = it
     }
 }

@@ -7,6 +7,7 @@ package io.github.chenfei0928.concurrent.coroutines
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.plus
 import java.io.Closeable
 import kotlin.coroutines.CoroutineContext
 
@@ -20,11 +21,11 @@ val AndroidViewModel.coroutineScope: CoroutineScope
     get() {
         val scope: CoroutineScope? = this.getCloseable(SCOPE_KEY)
         if (scope != null) {
-            return scope
+            return scope + CoroutineStackTraceRecordContextImpl(4)
         }
         val coroutineScope = AndroidViewModelCoroutineScope(this)
         addCloseable(SCOPE_KEY, coroutineScope)
-        return coroutineScope
+        return coroutineScope + CoroutineStackTraceRecordContextImpl(4)
     }
 
 /**

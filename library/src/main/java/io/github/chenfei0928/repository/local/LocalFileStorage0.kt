@@ -16,7 +16,7 @@ abstract class LocalFileStorage0<T>(
     cacheDir: Boolean = false,
     private val memoryCacheable: Boolean = true
 ) {
-    private val serializer = LocalSerializer.NoopIODecorator(serializer)
+    private val serializer = NoopIODecorator.wrap(serializer)
     private val atomicFile: AtomicFile = AtomicFile(
         if (cacheDir) {
             File(File(context.cacheDir, "localFileStorage"), fileName)
@@ -107,6 +107,6 @@ abstract class LocalFileStorage0<T>(
     }
 
     companion object {
-        protected const val TAG = "KW_LocalJsonStorage"
+        private const val TAG = "KW_LocalJsonStorage"
     }
 }

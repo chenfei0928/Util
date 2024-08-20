@@ -23,7 +23,7 @@ import androidx.core.view.updateMargins
 import androidx.core.view.updateMarginsRelative
 import androidx.core.view.updatePadding
 import androidx.core.view.updatePaddingRelative
-import io.github.chenfei0928.util.contains
+import io.github.chenfei0928.lang.contains
 
 fun View.applySystemInsetMargin(@GravityInt direction: Int) {
     val originalMarginLeft = marginLeft

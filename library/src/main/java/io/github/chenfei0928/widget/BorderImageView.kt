@@ -23,10 +23,10 @@ class BorderImageView
     var borderColor: ColorStateList? = null
         set(value) {
             field = value
-            mBorderPaint.color = borderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
+            borderPaint.color = borderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
                 ?: DEFAULT_BORDER_COLOR
         }
-    private val mBorderPaint = Paint().apply {
+    private val borderPaint = Paint().apply {
         style = Paint.Style.STROKE
         isAntiAlias = true
         color = borderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
@@ -35,29 +35,31 @@ class BorderImageView
 
     var borderWidth: Float
         set(value) {
-            mBorderPaint.strokeWidth = value
+            borderPaint.strokeWidth = value
         }
-        get() = mBorderPaint.strokeWidth
+        get() = borderPaint.strokeWidth
 
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.BorderImageView, defStyleAttr, 0)
-        borderWidth = a.getDimension(R.styleable.BorderImageView_biv_borderWidth, 0f)
-        borderColor = a.getColorStateList(R.styleable.BorderImageView_biv_borderColor)
-        a.recycle()
+        context.obtainStyledAttributes(
+            attrs, R.styleable.BorderImageView, defStyleAttr, 0
+        ).use { a ->
+            borderWidth = a.getDimension(R.styleable.BorderImageView_biv_borderWidth, 0f)
+            borderColor = a.getColorStateList(R.styleable.BorderImageView_biv_borderColor)
+        }
     }
 
     override fun drawableStateChanged() {
         super.drawableStateChanged()
         val newColor = borderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
             ?: DEFAULT_BORDER_COLOR
-        if (mBorderPaint.color != newColor) {
-            mBorderPaint.color = newColor
+        if (borderPaint.color != newColor) {
+            borderPaint.color = newColor
         }
     }
 
     override fun setColorFilter(cf: ColorFilter?) {
         super.setColorFilter(cf)
-        mBorderPaint.colorFilter = cf
+        borderPaint.colorFilter = cf
     }
 
     override fun draw(canvas: Canvas) {
@@ -72,7 +74,7 @@ class BorderImageView
             height - paddingBottom.toFloat() - borderWidth / 2
         )
         val provider = outlineProvider as? OutlineType
-        provider?.drawBorder(canvas, mBorderPaint, rectF)
+        provider?.drawBorder(canvas, borderPaint, rectF)
     }
 
     companion object {

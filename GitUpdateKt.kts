@@ -94,14 +94,13 @@ private fun syncGitCurrentBranch(gitDir: GitDir) {
     gitDir.dir.runCommand("git", "pull", "--all").waitFor()
 }
 
-fun File.runCommand(vararg command: String): Process {
-    return ProcessBuilder()
-        .command(*command)
-        .directory(this)
-        .redirectErrorStream(true)
-        .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-        .start()
-}
+fun File.runCommand(
+    vararg command: String
+): Process = ProcessBuilder(*command)
+    .directory(this)
+    .redirectError(ProcessBuilder.Redirect.INHERIT)
+    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+    .start()
 
 fun Process.lines(): ProcessLinesSequence = ProcessLinesSequence(this)
 

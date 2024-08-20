@@ -24,6 +24,7 @@ import kotlin.reflect.jvm.jvmErasure
  * @author chenf()
  * @date 2024-07-08 10:47
  */
+@Suppress("UNCHECKED_CAST", "kotlin:S6531")
 class ParameterizedTypeReflect2<Parent : Any>(
     private val parentKClass: KClass<Parent>,
     private val finalChildKClass: KClass<out Parent>,

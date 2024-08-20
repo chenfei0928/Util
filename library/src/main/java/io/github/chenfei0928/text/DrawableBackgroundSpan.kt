@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.text.style.ReplacementSpan
+import androidx.annotation.IntRange
 import kotlin.math.max
 
 /**
@@ -14,7 +15,7 @@ import kotlin.math.max
  * @date 2020-08-04 15:27
  */
 class DrawableBackgroundSpan(
-    private val background: Drawable
+    private val background: Drawable,
 ) : ReplacementSpan() {
     private val bgPaddingRect = Rect().apply {
         background.getPadding(this)
@@ -52,12 +53,9 @@ class DrawableBackgroundSpan(
     override fun draw(
         canvas: Canvas,
         text: CharSequence?,
-        start: Int,
-        end: Int,
-        x: Float,
-        top: Int,
-        y: Int,
-        bottom: Int,
+        @IntRange(from = 0) start: Int,
+        @IntRange(from = 0) end: Int,
+        x: Float, top: Int, y: Int, bottom: Int,
         paint: Paint
     ) {
         background.setBounds(x.toInt(), top, size, bottom)

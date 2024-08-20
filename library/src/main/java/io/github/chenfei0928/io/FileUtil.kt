@@ -5,11 +5,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.os.FileUtils
+import android.os.ParcelFileDescriptor
 import android.util.Log
 import android.webkit.MimeTypeMap
 import okio.buffer
 import okio.sink
 import okio.source
+import okio.use
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -78,8 +80,8 @@ object FileUtil {
         if (!source.isDirectory) {
             return false
         }
-        if (!dest.exists()) {
-            dest.mkdir()
+        if (!dest.exists() && !dest.mkdirs()) {
+            return false
         }
         val files = source.listFiles()
             ?: return false
@@ -102,7 +104,7 @@ object FileUtil {
     @JvmStatic
     fun copyFileToDest(source: File, dest: File): Boolean {
         if (!dest.exists()) {
-            dest.parentFile.mkdirs()
+            dest.parentFile?.mkdirs()
             try {
                 dest.createNewFile()
             } catch (ignore: IOException) {
@@ -129,9 +131,12 @@ object FileUtil {
     }
 
     @JvmStatic
-    fun copyUriToDestFile(context: Context, source: Uri, dest: File): Boolean {
+    fun copyUriToDestFile(context: Context, source: Uri?, dest: File): Boolean {
+        if (source == null) {
+            return false
+        }
         if (!dest.exists()) {
-            dest.parentFile.mkdirs()
+            dest.parentFile?.mkdirs()
             try {
                 dest.createNewFile()
             } catch (ignore: IOException) {
@@ -139,17 +144,40 @@ object FileUtil {
             }
         }
         try {
-            val fis = context.contentResolver.openInputStream(source)
-                ?: return false
-            fis.use {
+            context.contentResolver.openFileDescriptor(source, "r")?.use { fis ->
                 FileOutputStream(dest).use { fos ->
-                    fos.sink().buffer().writeAll(fis.source())
-                    fos.flush()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        FileUtils.copy(fis.fileDescriptor, fos.fd)
+                        fos.flush()
+                    } else {
+                        ParcelFileDescriptor.AutoCloseInputStream(fis).use { inputStream ->
+                            inputStream.copyTo(fos)
+                            fos.flush()
+                        }
+                    }
                     return true
                 }
             }
         } catch (e: IOException) {
-            Log.w(TAG, "copyUriToDestFile: $source to $dest", e)
+            Log.w(TAG, "copyUriToDestFile: openFileDescriptor $source to $dest", e)
+            dest.delete()
+            dest.createNewFile()
+        }
+        try {
+            context.contentResolver.openInputStream(source)?.use { fis ->
+                FileOutputStream(dest).use { fos ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        FileUtils.copy(fis, fos)
+                    } else {
+                        fos.sink().buffer().writeAll(fis.source())
+                    }
+                    fos.flush()
+                    return true
+                }
+            }
+            return false
+        } catch (e: IOException) {
+            Log.w(TAG, "copyUriToDestFile: openInputStream $source to $dest", e)
             return false
         }
     }

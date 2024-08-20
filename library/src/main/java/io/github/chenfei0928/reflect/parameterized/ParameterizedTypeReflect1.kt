@@ -48,6 +48,7 @@ class ParameterizedTypeReflect1<Parent>(
      * @param positionInParentParameter 要获取的父类声明范型的指定下标
      * @param R 在子类实现的父类中指定声明的类型
      */
+    @Suppress("UNCHECKED_CAST")
     fun <R> getParentParameterizedTypeDefinedImplInChild(
         @IntRange(from = 0) positionInParentParameter: Int
     ): Class<R> = getErasedTypeClass(
@@ -184,6 +185,7 @@ class ParameterizedTypeReflect1<Parent>(
             // Child<ChildR> extends Parent<List<ChildR>[]>
             // 将生成ChildR的数组
             // 由于有范型擦除机制，此处定义的 ChildR 在 List<ChildR>[] 中会被擦除，无法维持到运行时，只获取数组元素类型即可
+            @Suppress("SpreadOperator")
             com.google.gson.internal.`$Gson$Types`.newParameterizedTypeWithOwner(
                 typeImplOnParent.ownerType,
                 typeImplOnParent.rawType,

@@ -61,12 +61,6 @@ fun <F> Fragment.findFragmentWithChildByType(clazz: Class<F>): F? {
 }
 
 inline fun <reified F : Fragment> FragmentManager.findOrAddChild(
-    @Size(min = 1) tag: String, commitNow: Boolean = false, noinline creator: () -> F
-): F {
-    return findOrAddChild(tag, F::class.java, commitNow, creator)
-}
-
-inline fun <reified F : Fragment> FragmentManager.findOrAddChild(
     @IdRes id: Int,
     @Size(min = 1) tag: String,
     commitNow: Boolean = false,
@@ -88,6 +82,12 @@ fun <F : Fragment> FragmentManager.findOrAddChild(
     return findOrOptionChild(tag, clazz, commitNow, creator) {
         add(id, it, tag)
     }
+}
+
+inline fun <reified F : Fragment> FragmentManager.findOrAddChild(
+    @Size(min = 1) tag: String, commitNow: Boolean = false, noinline creator: () -> F
+): F {
+    return findOrAddChild(tag, F::class.java, commitNow, creator)
 }
 
 /**

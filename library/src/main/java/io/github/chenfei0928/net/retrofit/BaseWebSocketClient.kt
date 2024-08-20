@@ -1,4 +1,4 @@
-package io.github.chenfei0928.util.retrofit
+package io.github.chenfei0928.net.retrofit
 
 import android.os.Handler
 import android.os.Looper

@@ -204,9 +204,7 @@ abstract class AbsWrapperAdapter(
 
     private fun ViewCreator.createViewHolder(parent: ViewGroup): WrapperViewHolder {
         val view = if (layoutId != 0) {
-            LayoutInflater
-                .from(parent.context)
-                .inflate(layoutId, parent, false)
+            LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
         } else {
             view
         } ?: throw IllegalArgumentException("无效的ViewCreator: $this")

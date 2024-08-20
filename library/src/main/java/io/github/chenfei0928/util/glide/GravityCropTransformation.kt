@@ -27,7 +27,7 @@ class GravityCropTransformation(
     @Px
     private val height: Int,
     @GravityInt
-    private val gravity: Int = Gravity.CENTER
+    private val gravity: Int = Gravity.CENTER,
 ) : BitmapTransformation() {
 
     override fun transform(

@@ -21,8 +21,10 @@ class RecyclerViewScrollPositionOutOfIndexMenuVisibleListener(
         if (targetSearchBarVisible == outOfIndex) {
             return
         }
-        val menu = menuGetter() ?: return
-        val icon = menu.icon ?: return
+        val menu = menuGetter()
+            ?: return
+        val icon = menu.icon
+            ?: return
         val animator = iconAnimator ?: ValueAnimator
             .ofInt(0, 255)
             .apply {

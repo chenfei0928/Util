@@ -36,20 +36,18 @@ class WrapperAdapter(
     }
 
     override fun isRealEmpty(): Boolean {
-        return super
-            .isRealEmpty()
-            .also {
-                if (lastIsEmpty != it && recyclerView?.isComputingLayout != true) {
-                    recyclerView?.post {
-                        try {
-                            notifyDataSetChanged()
-                        } catch (e: IllegalStateException) {
-                            Log.w(TAG, "isRealEmpty: ", e)
-                        }
+        return super.isRealEmpty().also {
+            if (lastIsEmpty != it && recyclerView?.isComputingLayout != true) {
+                recyclerView?.post {
+                    try {
+                        notifyDataSetChanged()
+                    } catch (e: IllegalStateException) {
+                        Log.w(TAG, "isRealEmpty: ", e)
                     }
                 }
-                lastIsEmpty = it
             }
+            lastIsEmpty = it
+        }
     }
 
     fun setLoadMoreEnable(enable: Boolean) {

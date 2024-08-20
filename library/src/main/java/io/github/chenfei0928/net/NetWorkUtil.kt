@@ -1,4 +1,4 @@
-package io.github.chenfei0928.util
+package io.github.chenfei0928.net
 
 import android.Manifest
 import android.content.Context

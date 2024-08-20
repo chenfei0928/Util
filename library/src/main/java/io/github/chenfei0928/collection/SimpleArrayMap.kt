@@ -19,7 +19,7 @@ fun <K, V> Map<K, V>.asSimpleArrayMap(): SimpleArrayMap<K, V> = if (this is Simp
     }
 }
 
-inline operator fun <K, V> SimpleArrayMap<K, V>.set(key: K, value: V) = put(key, value)
+inline operator fun <K, V> SimpleArrayMap<K, V>.set(key: K, value: V): V? = put(key, value)
 
 /**
  * 使用专属优化的根据[SimpleArrayMap.size]大小进行遍历，减少对象创建，同时该实现性能更好

@@ -53,7 +53,7 @@ public abstract class ViewBackgroundTarget<T extends View, Z> implements Target<
     /**
      * Constructor that defaults {@code waitForLayout} to {@code false}.
      */
-    public ViewBackgroundTarget(@NonNull T view) {
+    protected ViewBackgroundTarget(@NonNull T view) {
         this.view = Preconditions.checkNotNull(view);
         sizeDeterminer = new SizeDeterminer(view);
     }

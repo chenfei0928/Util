@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.text.style.ReplacementSpan
+import androidx.annotation.IntRange
 import androidx.annotation.Px
 import kotlin.math.max
 
@@ -18,7 +19,7 @@ class BadgeDrawableBackgroundSpan(
     private val drawableLeft: Drawable?,
     @Px
     private val drawablePadding: Int,
-    private val background: Drawable
+    private val background: Drawable,
 ) : ReplacementSpan() {
     private val bgPaddingRect = Rect().apply {
         background.getPadding(this)
@@ -62,12 +63,9 @@ class BadgeDrawableBackgroundSpan(
     override fun draw(
         canvas: Canvas,
         text: CharSequence?,
-        start: Int,
-        end: Int,
-        x: Float,
-        top: Int,
-        y: Int,
-        bottom: Int,
+        @IntRange(from = 0) start: Int,
+        @IntRange(from = 0) end: Int,
+        x: Float, top: Int, y: Int, bottom: Int,
         paint: Paint
     ) {
         // 计算得到使文字居中的基线位置

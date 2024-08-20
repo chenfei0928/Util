@@ -84,14 +84,14 @@ private class ImageViewGlideAwait(
  * @param view 目标ImageView
  * @return 加载到的图片资源
  */
-suspend fun RequestBuilder<Drawable>.await(view: ImageView): Drawable {
-    return suspendCancellableCoroutine { continuation ->
-        // 获取view尺寸后开启加载过程
-        val glideAwait = ImageViewGlideAwait(continuation, view)
-        into(glideAwait)
-        continuation.invokeOnCancellation {
-            glideAwait.request?.clear()
-        }
+suspend fun RequestBuilder<Drawable>.await(
+    view: ImageView
+): Drawable = suspendCancellableCoroutine { continuation ->
+    // 获取view尺寸后开启加载过程
+    val glideAwait = ImageViewGlideAwait(continuation, view)
+    into(glideAwait)
+    continuation.invokeOnCancellation {
+        glideAwait.request?.clear()
     }
 }
 
@@ -129,13 +129,11 @@ private class GlideAwait<TranscodeType>(
 suspend fun <TranscodeType> RequestBuilder<TranscodeType>.await(
     @Px width: Int = Target.SIZE_ORIGINAL,
     @Px height: Int = Target.SIZE_ORIGINAL
-): TranscodeType {
-    return suspendCancellableCoroutine { continuation ->
-        // 获取view尺寸后开启加载过程
-        val glideAwait = GlideAwait(width, height, continuation)
-        into(glideAwait)
-        continuation.invokeOnCancellation {
-            glideAwait.request?.clear()
-        }
+): TranscodeType = suspendCancellableCoroutine { continuation ->
+    // 获取view尺寸后开启加载过程
+    val glideAwait = GlideAwait(width, height, continuation)
+    into(glideAwait)
+    continuation.invokeOnCancellation {
+        glideAwait.request?.clear()
     }
 }

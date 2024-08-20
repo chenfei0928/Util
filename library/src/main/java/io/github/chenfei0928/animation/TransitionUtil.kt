@@ -1,3 +1,5 @@
+@file:Suppress("SpreadOperator")
+
 package io.github.chenfei0928.animation
 
 import android.app.Activity

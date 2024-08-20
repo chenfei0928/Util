@@ -14,6 +14,9 @@ import io.github.chenfei0928.reflect.ReflectKt;
  */
 public class ParameterizedTypeReflect0 {
 
+    private ParameterizedTypeReflect0() {
+    }
+
     /**
      * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
      * <pre>{@code
@@ -28,6 +31,7 @@ public class ParameterizedTypeReflect0 {
      * @param positionInParentParameter 要获取的父类声明范型的指定下标
      * @return 在子类实现的父类中指定声明的类型
      */
+    @SuppressWarnings({"unchecked", "java:S4968", "java:S125", "java:S3776"})
     public static <P, C extends P, R> TypeBoundsContract<R> getParentParameterizedTypeDefinedImplInChild(
             Class<P> parentClass,
             Class<C> finalChildClass,
@@ -85,15 +89,14 @@ public class ParameterizedTypeReflect0 {
                         }
                     }
                 }
-            } else if (childActualTypeArgument instanceof GenericArrayType) {
+            } else if (childActualTypeArgument instanceof GenericArrayType genericArrayType) {
                 // 如果是数组范型，还要查找子类中该范型数组元素的具体实现
                 // Child extends Parent<XXX[]>
                 return findParameterizedArrayTypeDefinedImplInChild(
-                        (Class<? super C>) childClass.nodeClass, finalChildClass, (GenericArrayType) childActualTypeArgument);
-            } else if (childActualTypeArgument instanceof ParameterizedType) {
+                        (Class<? super C>) childClass.nodeClass, finalChildClass, genericArrayType);
+            } else if (childActualTypeArgument instanceof ParameterizedType parameterizedType) {
                 // 子类的范型约束ChildP虽然是一个Interface或Class，但其仍有范型定义
                 // Child<ChildR> extends Parent<ChildParameterized<ChildR>>
-                ParameterizedType parameterizedType = (ParameterizedType) childActualTypeArgument;
                 // 由于有范型擦除机制，此处定义的 ChildR 在 ChildP<ChildR> 中会被擦除，无法维持到运行时，只获取ChildR的类型即可
                 Class<R> childParameterizedClass = (Class<R>) parameterizedType.getRawType();
                 return new TypeBoundsContract<>(childParameterizedClass, null, null);
@@ -131,6 +134,7 @@ public class ParameterizedTypeReflect0 {
      * @param <R>             父类类声明的范型类型
      * @return 子类实现的范型约束范围
      */
+    @SuppressWarnings("unchecked")
     private static <P, C extends P, R> TypeBoundsContract<R> findParameterizedArrayTypeDefinedImplInChild(
             Class<P> parentClass,
             Class<C> finalChildClass,
@@ -142,8 +146,8 @@ public class ParameterizedTypeReflect0 {
         if (genericComponentType instanceof Class<?>) {
             // 如果当前类直接指定了范型元素类型
             // Child extends Parent<R-Element[]>
-            Class<?> arrayClass = ReflectKt.arrayClass((Class<?>) genericComponentType);
-            return new TypeBoundsContract(arrayClass, null, null);
+            Class<R> arrayClass = (Class<R>) ReflectKt.arrayClass((Class<?>) genericComponentType);
+            return new TypeBoundsContract<>(arrayClass, null, null);
         } else if (genericComponentType instanceof TypeVariable<?>) {
             // 这一层子类只实现了范型为数组（且未约束范围），但数组元素仍由范型约束由子类提供
             // Child<ChildR> extends Parent<ChildR[]>
@@ -151,27 +155,26 @@ public class ParameterizedTypeReflect0 {
             TypeBoundsContract<Object> parameterizedTypeDefinedImplInChild = findParameterizedTypeDefinedImplInChild(
                     parentClass, finalChildClass, (TypeVariable<?>) genericComponentType);
             // 将生成ChildR的数组
-            Class<?> arrayClass = ReflectKt.arrayClass(parameterizedTypeDefinedImplInChild.getClazz());
-            return new TypeBoundsContract(arrayClass, null, null);
-        } else if (genericComponentType instanceof GenericArrayType) {
+            Class<R> arrayClass = (Class<R>) ReflectKt.arrayClass(parameterizedTypeDefinedImplInChild.getClazz());
+            return new TypeBoundsContract<>(arrayClass, null, null);
+        } else if (genericComponentType instanceof GenericArrayType genericArrayType) {
             // 二阶或多阶数组
             // Child extends Parent<XXX[][]>
             TypeBoundsContract<Object> typeBoundsContract =
-                    findParameterizedArrayTypeDefinedImplInChild(parentClass, finalChildClass, (GenericArrayType) genericComponentType);
+                    findParameterizedArrayTypeDefinedImplInChild(parentClass, finalChildClass, genericArrayType);
             // 将生成ChildR的数组
-            Class<?> arrayClass = ReflectKt.arrayClass(typeBoundsContract.getClazz());
-            return new TypeBoundsContract(arrayClass, null, null);
-        } else if (genericComponentType instanceof ParameterizedType) {
+            Class<R> arrayClass = (Class<R>) ReflectKt.arrayClass(typeBoundsContract.getClazz());
+            return new TypeBoundsContract<>(arrayClass, null, null);
+        } else if (genericComponentType instanceof ParameterizedType parameterizedType) {
             // 子类的范型约束虽然是一个Interface或Class，但其仍有范型定义
             // Child<ChildR> extends Parent<List<ChildR>[]>
-            ParameterizedType parameterizedType = (ParameterizedType) genericComponentType;
             // 将生成ChildR的数组
             // 由于有范型擦除机制，此处定义的 ChildR 在 List<ChildR>[] 中会被擦除，无法维持到运行时，只获取数组元素类型即可
-            Class<?> arrayClass = ReflectKt.arrayClass((Class<?>) parameterizedType.getRawType());
-            return new TypeBoundsContract(arrayClass, null, null);
-        } else if (genericComponentType instanceof WildcardType) {
+            Class<R> arrayClass = (Class<R>) ReflectKt.arrayClass((Class<?>) parameterizedType.getRawType());
+            return new TypeBoundsContract<>(arrayClass, null, null);
+        } else if (genericComponentType instanceof WildcardType wildcardType) {
             // 范型约束只约束了范围，而没有继续约束实现，通常不会被类实现，或许为字段或方法（？）
-            return new TypeBoundsContract(null, null, (WildcardType) genericComponentType);
+            return new TypeBoundsContract<>(null, null, wildcardType);
         } else {
             throw new IllegalArgumentException("数组范型参数类型不匹配：" +
                     "定义范型约束的当前子类：" + parentClass +
@@ -201,6 +204,7 @@ public class ParameterizedTypeReflect0 {
      * @param <R>                       父类类声明的范型类型
      * @return 子类实现的范型约束范围
      */
+    @SuppressWarnings("java:S4968")
     private static <P, C extends P, R> TypeBoundsContract<R> findParameterizedTypeDefinedImplInChild(
             Class<P> parentClass,
             Class<C> finalChildClass,
@@ -208,6 +212,7 @@ public class ParameterizedTypeReflect0 {
     ) {
         if (parentClass == finalChildClass) {
             // 当前子类就是最终子类，使用当前子类的泛型约束范围
+            //noinspection unchecked
             return new TypeBoundsContract<>(null,
                     (TypeVariable<? extends Class<R>>) typeVariableInParentClass, null);
         }

@@ -12,33 +12,32 @@ import java.lang.reflect.WildcardType
  */
 data class TypeBoundsContract<T>
 constructor(
-    private val _clazz: Class<T>? = null,
+    private val tClass: Class<T>? = null,
     private val childClassTypeParameter: TypeVariable<out Class<T>>? = null,
     private val childClassWildcardType: WildcardType? = null,
 ) {
-    val clazz: Class<T>
-        get() = _clazz ?: childClassTypeParameter?.run {
-            // 当前子类直接实现了一个范围
-            bounds
-                .filterIsInstance<Class<T>>()
-                .firstOrNull()
-        } ?: childClassTypeParameter?.run {
-            // 当前类有泛型约束范围，且该范围有子泛型，但没有子类实现该范围时
-            // Child<T : List<E>, E> : Parent<T>
-            bounds
-                .filterIsInstance<ParameterizedType>()
-                .map { it.rawType }
-                .filterIsInstance<Class<T>>()
-                .firstOrNull()
-        } ?: childClassWildcardType?.run {
-            upperBounds
-                .filterIsInstance<Class<T>>()
-                .firstOrNull()
-        } ?: Any::class.java as Class<T>
+    val clazz: Class<T> = tClass ?: childClassTypeParameter?.run {
+        // 当前子类直接实现了一个范围
+        bounds
+            .filterIsInstance<Class<T>>()
+            .firstOrNull()
+    } ?: childClassTypeParameter?.run {
+        // 当前类有泛型约束范围，且该范围有子泛型，但没有子类实现该范围时
+        // Child<T : List<E>, E> : Parent<T>
+        bounds
+            .filterIsInstance<ParameterizedType>()
+            .map { it.rawType }
+            .filterIsInstance<Class<T>>()
+            .firstOrNull()
+    } ?: childClassWildcardType?.run {
+        upperBounds
+            .filterIsInstance<Class<T>>()
+            .firstOrNull()
+    } ?: Any::class.java as Class<T>
 
     fun isInstance(obj: Any?): Boolean {
-        if (_clazz != null) {
-            return _clazz.isInstance(obj)
+        if (tClass != null) {
+            return tClass.isInstance(obj)
         }
         val bounds = childClassTypeParameter?.bounds
             ?: childClassWildcardType?.upperBounds

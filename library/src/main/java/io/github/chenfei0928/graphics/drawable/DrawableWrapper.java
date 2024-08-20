@@ -49,6 +49,7 @@ public class DrawableWrapper extends Drawable implements Drawable.Callback {
     }
 
     @Override
+    @Deprecated
     public void setDither(boolean dither) {
         mDrawable.setDither(dither);
     }

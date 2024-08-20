@@ -102,12 +102,17 @@ class DataStorePreferenceGroupBuilder<SpSaver : Any>(
         switchPreference(property.name, block)
     }
     //</editor-fold>
-}
 
-inline fun <T : Any> PreferenceFragmentCompat.buildPreferenceScreen(
-    dataStore: DataStoreDataStore<T>,
-    builder: DataStorePreferenceGroupBuilder<T>.() -> Unit
-): PreferenceScreen {
-    return preferenceManager.createPreferenceScreen(requireContext())
-        .apply { DataStorePreferenceGroupBuilder(requireContext(), this, dataStore).builder() }
+    companion object {
+        inline fun <T : Any> PreferenceFragmentCompat.buildPreferenceScreen(
+            dataStore: DataStoreDataStore<T>,
+            builder: DataStorePreferenceGroupBuilder<T>.() -> Unit
+        ): PreferenceScreen {
+            return preferenceManager.createPreferenceScreen(requireContext()).apply {
+                DataStorePreferenceGroupBuilder(
+                    requireContext(), this, dataStore
+                ).builder()
+            }
+        }
+    }
 }

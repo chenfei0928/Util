@@ -1,10 +1,34 @@
-package io.github.chenfei0928.util.retrofit
+package io.github.chenfei0928.net
 
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import java.io.File
+import java.io.IOException
+
+/**
+ * 用于 ContentResolver 的Uri工具
+ * Created by MrFeng on 2016/9/19.
+ */
+fun Context.isExists(uri: Uri?): Boolean {
+    return if (uri == null) {
+        return false
+    } else if (!uri.isLocalUri()) {
+        return false
+    } else try {
+        this.contentResolver.openFileDescriptor(uri, "r").use { }
+        true
+    } catch (ignore: IOException) {
+        false
+    }
+}
+
+private fun Uri.isLocalUri(): Boolean {
+    return ContentResolver.SCHEME_FILE == this.scheme
+            || ContentResolver.SCHEME_CONTENT == this.scheme
+            || ContentResolver.SCHEME_ANDROID_RESOURCE == this.scheme
+}
 
 /**
  * @author chenfei()
@@ -21,7 +45,7 @@ fun Uri.getLength(context: Context): Long {
         }
     }
     context.contentResolver.query(
-        this@getLength, null, null, null, null
+        this@getLength, arrayOf(OpenableColumns.SIZE, "_data"), null, null, null
     )?.use { cursor ->
         if (!cursor.moveToFirst()) {
             return@use

@@ -14,11 +14,12 @@ import java.lang.reflect.Modifier
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2021-11-24 16:33
  */
+@Suppress("UNCHECKED_CAST", "kotlin:S6531")
 val <T : Parcelable> Class<T>.PARCELABLE_CREATOR: Parcelable.Creator<T>
-    get() = parcelableCache[this as Class<Parcelable>] as Parcelable.Creator<T>
+    get() = parcelableCache[this] as Parcelable.Creator<T>
 
-private val parcelableCache = MapCache<Class<*>, Parcelable.Creator<*>> {
-    getParcelableCreator(it as Class<Parcelable>)
+private val parcelableCache = MapCache<Class<out Parcelable>, Parcelable.Creator<out Parcelable>> {
+    getParcelableCreator(it)
 }
 
 private val parcelReadParcelableCreator: Method by lazy(LazyThreadSafetyMode.NONE) {
@@ -33,20 +34,20 @@ private fun <T : Parcelable> getParcelableCreator(clazz: Class<T>): Parcelable.C
     val creator: Parcelable.Creator<T>? = ParcelUtil.use {
         writeString(clazz.name)
         setDataPosition(0)
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                readParcelableCreator(clazz.classLoader, clazz)
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                readParcelableCreator(clazz.classLoader) as Parcelable.Creator<T>?
-            } else {
-                val creator = parcelReadParcelableCreator.invoke(this, clazz.classLoader)
-                creator as Parcelable.Creator<T>?
-            }
-        } catch (e: BadParcelableException) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            readParcelableCreator(clazz.classLoader, clazz)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            @Suppress("DEPRECATION")
+            val creator: Parcelable.Creator<*>? = readParcelableCreator(clazz.classLoader)
+            @Suppress("UNCHECKED_CAST")
+            creator as Parcelable.Creator<T>?
+        } else try {
+            val creator = parcelReadParcelableCreator.invoke(this, clazz.classLoader)
+            @Suppress("UNCHECKED_CAST")
+            creator as Parcelable.Creator<T>?
+        } catch (ignore: ReflectiveOperationException) {
             null
-        } catch (e: ReflectiveOperationException) {
-            null
-        } catch (e: SecurityException) {
+        } catch (ignore: SecurityException) {
             null
         }
     }
@@ -67,5 +68,6 @@ private fun <T : Parcelable> getParcelableCreator(clazz: Class<T>): Parcelable.C
             "Parcelable protocol requires a " + "Parcelable.Creator object called " + "CREATOR on class " + clazz.name
         )
     }
+    @Suppress("UNCHECKED_CAST", "kotlin:S6518")
     return f.get(null) as Parcelable.Creator<T>
 }

@@ -1,13 +1,13 @@
 package io.github.chenfei0928.content
 
 import android.annotation.TargetApi
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.core.content.getSystemService
 
 @TargetApi(Build.VERSION_CODES.O)
 fun Context.openChannelSetting(channelId: String) {
@@ -29,12 +29,13 @@ fun Context.openNotificationSetting() {
 }
 
 fun Context.createSystemSettingsIntent(action: String): Intent {
+    val manager = getSystemService<PackageManager>()
     val packageUri = Uri.parse("package:$packageName")
-    return try {
-        // 兼容部分手机可能会没有系统Action处理的问题
-        Intent(action, packageUri)
-    } catch (e: ActivityNotFoundException) {
-        // 则跳转应用详情页
+    val intent = Intent(action, packageUri)
+    // 兼容部分手机可能会没有系统Action处理的问题
+    return if (!manager?.queryIntentActivities(intent, 0).isNullOrEmpty()) {
+        intent
+    } else {
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageUri)
     }
 }

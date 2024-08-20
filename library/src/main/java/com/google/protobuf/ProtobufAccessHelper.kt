@@ -14,14 +14,18 @@ fun <T : GeneratedMessageLite<T, *>> Class<T>.getProtobufLiteParserForType(): Pa
     return getProtobufLiteDefaultInstance().getParserForType()
 }
 
-private val protobufDefaultInstanceCache = MapCache<Class<*>, GeneratedMessageV3> {
-    it.getMethod("getDefaultInstance").invoke(null) as GeneratedMessageV3
-}
+private val protobufDefaultInstanceCache =
+    MapCache<Class<out GeneratedMessageV3>, GeneratedMessageV3> {
+        @Suppress("kotlin:S6531")
+        it.getMethod("getDefaultInstance").invoke(null) as GeneratedMessageV3
+    }
 
 fun <T : GeneratedMessageV3> Class<T>.getProtobufV3DefaultInstance(): T {
+    @Suppress("UNCHECKED_CAST", "kotlin:S6531")
     return protobufDefaultInstanceCache[this] as T
 }
 
 fun <T : GeneratedMessageV3> Class<T>.getProtobufV3ParserForType(): Parser<T> {
+    @Suppress("UNCHECKED_CAST")
     return getProtobufV3DefaultInstance().parserForType as Parser<T>
 }

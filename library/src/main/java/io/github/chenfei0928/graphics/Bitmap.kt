@@ -15,7 +15,11 @@ private const val TAG = "KW_Bitmap"
  * Created by MrFeng on 2018/5/15.
  */
 @JvmOverloads
-fun Bitmap.save(outputFile: File, @IntRange(from = 0, to = 100) quality: Int = 100): Boolean {
+fun Bitmap.save(
+    outputFile: File,
+    @IntRange(from = 0, to = 100)
+    quality: Int = 100
+): Boolean {
     return try {
         FileOutputStream(outputFile).use {
             this.compress(getCompressFormat(outputFile.extension), quality, it)
@@ -29,7 +33,8 @@ fun Bitmap.save(outputFile: File, @IntRange(from = 0, to = 100) quality: Int = 1
 }
 
 private fun getCompressFormat(
-    extName: String, default: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
+    extName: String,
+    default: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
 ): Bitmap.CompressFormat {
     return when (extName.lowercase(Locale.getDefault())) {
         "jpg", "jpe", "jpeg" ->

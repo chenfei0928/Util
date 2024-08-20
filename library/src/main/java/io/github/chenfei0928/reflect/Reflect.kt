@@ -7,6 +7,7 @@ inline fun <reified T> Any?.asType(): T? {
     return this as? T
 }
 
+@Suppress("UNCHECKED_CAST")
 fun <T> Class<T>.arrayClass(): Class<Array<T>> =
     java.lang.reflect.Array.newInstance(this, 0).javaClass as Class<Array<T>>
 

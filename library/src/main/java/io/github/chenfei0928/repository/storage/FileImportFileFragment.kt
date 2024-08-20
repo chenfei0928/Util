@@ -9,7 +9,6 @@ import io.github.chenfei0928.app.ProgressDialog
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.concurrent.coroutines.showWithContext
 import io.github.chenfei0928.content.PictureUriUtil
-import io.github.chenfei0928.content.copyTo
 import io.github.chenfei0928.io.FileUtil
 import io.github.chenfei0928.os.safeHandler
 import kotlinx.coroutines.Dispatchers
@@ -82,7 +81,7 @@ class FileImportFileFragment : BasePermissionFileImportFragment<File>(
                         val tmpFile =
                             File(context.cacheDir, "${System.currentTimeMillis()}.$extName")
                         // 如果文件复制成功，返回该文件
-                        if (copyTo(requireContext(), uri, tmpFile)) {
+                        if (FileUtil.copyUriToDestFile(requireContext(), uri, tmpFile)) {
                             tmpFile
                         } else {
                             null

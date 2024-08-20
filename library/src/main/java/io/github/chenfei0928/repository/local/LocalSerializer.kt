@@ -35,7 +35,7 @@ interface LocalSerializer<T> {
      *
      * 实现时需要先判断序列化实现是否也是一个装饰器，建议继承[BaseIODecorator]类来实现。
      */
-    interface IODecorator {
+    interface IODecorator<T> : LocalSerializer<T> {
         @Throws(IOException::class)
         fun onOpenInputStream(inputStream: InputStream): InputStream
 
@@ -43,11 +43,16 @@ interface LocalSerializer<T> {
         fun onOpenOutStream(outputStream: OutputStream): OutputStream
     }
 
+    /**
+     * IO装饰器，实现对子序列化器是否是装饰器的判断
+     *
+     * 子类重写[onOpenOutStream1]与[onOpenInputStream1]即可对io流进行包装
+     *
+     * 如果子类需要对数据进行添加校验头，也是重写该方法并在实际写入/读取前处理校验数据并直接返回入参
+     */
     abstract class BaseIODecorator<T>(
         private val serializer: LocalSerializer<T>
-    ) : LocalSerializer<T> by serializer, IODecorator {
-        override val defaultValue: T
-            get() = serializer.defaultValue
+    ) : LocalSerializer<T> by serializer, IODecorator<T> {
 
         final override fun onOpenInputStream(inputStream: InputStream): InputStream {
             return if (serializer is IODecorator) {
@@ -70,26 +75,5 @@ interface LocalSerializer<T> {
 
         @Throws(IOException::class)
         abstract fun onOpenOutStream1(outputStream: OutputStream): OutputStream
-    }
-
-    open class NoopIODecorator<T>(
-        private val serializer: LocalSerializer<T>
-    ) : LocalSerializer<T> by serializer, IODecorator {
-
-        override fun onOpenInputStream(inputStream: InputStream): InputStream {
-            return if (serializer is IODecorator) {
-                serializer.onOpenInputStream(inputStream)
-            } else {
-                inputStream
-            }
-        }
-
-        override fun onOpenOutStream(outputStream: OutputStream): OutputStream {
-            return if (serializer is IODecorator) {
-                serializer.onOpenOutStream(outputStream)
-            } else {
-                outputStream
-            }
-        }
     }
 }

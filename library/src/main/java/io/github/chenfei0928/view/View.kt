@@ -25,7 +25,8 @@ fun <T : View> ViewGroup.findChildById(@IdRes id: Int): T? {
 fun View.checkContextIsDestroyed(): Boolean = context.checkIsDestroyed()
 
 fun View?.removeSelfFromParent() {
-    val viewGroup = this?.parent as? ViewGroup ?: return
+    val viewGroup = this?.parent as? ViewGroup
+        ?: return
     viewGroup.removeView(this)
 }
 
@@ -57,7 +58,8 @@ fun View.findParentFragment(): Fragment? {
 }
 
 private fun findAllSupportFragmentsWithViews(
-    topLevelFragments: Collection<Fragment?>?, result: MutableMap<View, Fragment>
+    topLevelFragments: Collection<Fragment?>?,
+    result: MutableMap<View, Fragment>
 ) {
     topLevelFragments?.forEach { fragment ->
         // getFragment()s in the support FragmentManager may contain null values, see #1991.
@@ -69,7 +71,10 @@ private fun findAllSupportFragmentsWithViews(
     }
 }
 
-inline fun <V : View, R> V.getTagOrPut(@IdRes id: Int, creator: (V) -> R): R {
+inline fun <V : View, R> V.getTagOrPut(
+    @IdRes id: Int,
+    creator: (V) -> R
+): R {
     val tag = this.getTag(id)
     return if (tag != null) {
         tag as R

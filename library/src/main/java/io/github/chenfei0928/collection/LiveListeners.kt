@@ -88,5 +88,6 @@ open class LiveListeners<T>(
 
     @EmptySuper
     protected open fun onRemoved(element: T) {
+        // noop
     }
 }

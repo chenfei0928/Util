@@ -15,7 +15,7 @@ import io.github.chenfei0928.util.MapCache
  */
 object PowerSaveUtil {
     private val powerManagerCache = MapCache<Context, PowerManager?> {
-        it.getSystemService<PowerManager>()
+        it.getSystemService()
     }
 
     private val sReceiver: BroadcastReceiver = object : BroadcastReceiver() {

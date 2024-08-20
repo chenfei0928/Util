@@ -22,37 +22,26 @@ fun <T> KClass<*>.findConstantNameByValue(value: T): String? {
 fun <T> getConstantNameByValueFromNormalClass(kClass: KClass<*>, value: T): String? {
     value ?: return null
     return kClass.staticProperties
-        .filter {
-            it.isFinal
-        }
-        .firstOrNull {
-            it.getter.call() == value
-        }?.name
+        .filter { it.isFinal }
+        .firstOrNull { it.getter.call() == value }
+        ?.name
 }
 
 fun <T> getConstantNameByValueForObject(kClass: KClass<*>, value: T): String? {
     value ?: return null
     return kClass.memberProperties
-        .filter {
-            it.isFinal
-        }
-        .firstOrNull {
-            it.getter.call() == value
-        }?.name
+        .filter { it.isFinal }
+        .firstOrNull { it.getter.call() == value }
+        ?.name
 }
 
 fun <T> Class<*>.getConstantNameByValues(value: T): String? {
     value ?: return null
     return declaredFields
-        .mapNotNull {
-            it.kotlinProperty
-        }
-        .filter {
-            it.isFinal
-        }
-        .firstOrNull {
-            it.getter.call() == value
-        }?.name
+        .mapNotNull { it.kotlinProperty }
+        .filter { it.isFinal }
+        .firstOrNull { it.getter.call() == value }
+        ?.name
 }
 
 fun KClass<*>.isKotlinObject(): Boolean {

@@ -1,4 +1,4 @@
-package io.github.chenfei0928.util.retrofit
+package io.github.chenfei0928.net.retrofit
 
 import retrofit2.Call
 import retrofit2.Callback

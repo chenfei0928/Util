@@ -37,12 +37,14 @@ class PreferenceGroupBuilder<SpSaver : AbsSpSaver>(
     override fun SpSaver.getPropertySpKeyName(property: KProperty1<SpSaver, *>): String {
         return getPropertySpKeyName(property as KProperty<*>)
     }
-}
 
-inline fun <SpSaver : AbsSpSaver> PreferenceFragmentCompat.buildPreferenceScreen(
-    spSaver: SpSaver,
-    builder: PreferenceGroupBuilder<SpSaver>.() -> Unit
-): PreferenceScreen {
-    return preferenceManager.createPreferenceScreen(requireContext())
-        .apply { PreferenceGroupBuilder(requireContext(), spSaver, this).builder() }
+    companion object {
+        inline fun <SpSaver : AbsSpSaver> PreferenceFragmentCompat.buildPreferenceScreen(
+            spSaver: SpSaver,
+            builder: PreferenceGroupBuilder<SpSaver>.() -> Unit
+        ): PreferenceScreen {
+            return preferenceManager.createPreferenceScreen(requireContext())
+                .apply { PreferenceGroupBuilder(requireContext(), spSaver, this).builder() }
+        }
+    }
 }

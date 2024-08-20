@@ -11,7 +11,7 @@ import java.io.Serializable
  * 对JDK的 [Serializable] 实现序列化和反序列化
  */
 class SerializableSerializer<T : Serializable>
-    : LocalSerializer<T?>, LocalSerializer.IODecorator {
+    : LocalSerializer.IODecorator<T?> {
 
     override val defaultValue: T? = null
 

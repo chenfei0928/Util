@@ -20,14 +20,15 @@ abstract class IntentFilterBroadcastReceiver(
 ) : BroadcastReceiver() {
 
     open fun register(context: Context, owner: LifecycleOwner) {
-        if (owner.lifecycle.isAlive) {
-            register(context)
-            owner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_DESTROY) {
-                    context.unregisterReceiver(this@IntentFilterBroadcastReceiver)
-                }
-            })
+        if (!owner.lifecycle.isAlive) {
+            return
         }
+        register(context)
+        owner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                context.unregisterReceiver(this@IntentFilterBroadcastReceiver)
+            }
+        })
     }
 
     open fun register(context: Context) {

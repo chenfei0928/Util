@@ -149,7 +149,7 @@ constructor(
     }
 
     override fun removeAt(index: Int): E {
-        return get(index).also {
+        return this[index].also {
             remove(it)
         }
     }

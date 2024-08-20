@@ -34,16 +34,17 @@ object Installation : LocalFileStorage<String>(
         // 优先获取广告id
         try {
             if (AdvertisingIdClient.isAdvertisingIdProviderAvailable(context)) {
+                val debugMsg = "getAdId: "
                 try {
-                    return Debug.countTime(TAG, "getAdId: ") {
+                    return Debug.countTime(TAG, debugMsg) {
                         AdvertisingIdClient.getAdvertisingIdInfo(context)[300L, TimeUnit.MILLISECONDS].id
                     }
                 } catch (e: ExecutionException) {
-                    Log.e(TAG, "getAdId: ", e)
+                    Log.e(TAG, debugMsg, e)
                 } catch (e: InterruptedException) {
-                    Log.e(TAG, "getAdId: ", e)
+                    Log.e(TAG, debugMsg, e)
                 } catch (e: TimeoutException) {
-                    Log.e(TAG, "getAdId: ", e)
+                    Log.e(TAG, debugMsg, e)
                 }
             } else {
                 Log.d(TAG, "getAdId: AdvertisingId 不可用")

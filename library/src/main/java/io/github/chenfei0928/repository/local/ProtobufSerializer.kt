@@ -10,7 +10,6 @@ import com.google.protobuf.GeneratedMessageLite
 import com.google.protobuf.MessageLite
 import com.google.protobuf.Parser
 import com.google.protobuf.getProtobufLiteDefaultInstance
-import com.google.protobuf.getProtobufLiteParserForType
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -53,13 +52,15 @@ class ProtobufSerializer<MessageType : MessageLite>(
  * @date 2021-11-22 16:03
  */
 class ProtobufLiteSerializer<MessageType, BuilderType>(
-    messageType: Class<MessageType>
+    override val defaultValue: MessageType
 ) : BaseProtobufSerializer<MessageType>()
         where
 MessageType : GeneratedMessageLite<MessageType, BuilderType>,
 BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
 
-    override val parser: Parser<MessageType> = messageType.getProtobufLiteParserForType()
+    constructor(
+        messageType: Class<MessageType>
+    ) : this(messageType.getProtobufLiteDefaultInstance())
 
-    override val defaultValue: MessageType = messageType.getProtobufLiteDefaultInstance()
+    override val parser: Parser<MessageType> = defaultValue.parserForType
 }

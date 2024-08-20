@@ -8,7 +8,7 @@ import com.google.protobuf.GeneratedMessageLite
 import com.google.protobuf.getProtobufLiteParserForType
 import io.github.chenfei0928.base.ContextProvider
 import io.github.chenfei0928.os.ParcelUtil
-import io.github.chenfei0928.util.deepEquals
+import io.github.chenfei0928.lang.deepEquals
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPInputStream

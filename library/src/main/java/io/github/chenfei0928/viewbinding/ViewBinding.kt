@@ -81,6 +81,7 @@ fun <T : ViewBinding> Class<T>.inflateFunc(): (LayoutInflater, ViewGroup?, Boole
     }
 //</editor-fold>
 
+@Suppress("SameParameterValue", "kotlin:S125")
 private fun <T : ViewBinding> bindToAddedViews(
     parent: ViewGroup, startChildren: Int, bindBlock: (View) -> T
 ): T {

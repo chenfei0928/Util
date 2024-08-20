@@ -6,6 +6,7 @@
  */
 package io.github.chenfei0928.repository.local
 
+import io.github.chenfei0928.lang.toLong
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -17,46 +18,35 @@ import java.io.OutputStream
  */
 abstract class BaseExpirationDateSerializer<T>(
     serializer: LocalSerializer<T>
-) : LocalSerializer.NoopIODecorator<T>(serializer) {
+) : LocalSerializer.BaseIODecorator<T>(serializer) {
 
-    override fun write(outputStream: OutputStream, obj: T & Any) {
-        // 记录保存时间
-        val currentTimeMillis = System.currentTimeMillis()
-        outputStream.write((currentTimeMillis shr 32).toInt())
-        outputStream.write(currentTimeMillis.toInt())
-        super.write(outputStream, obj)
-    }
-
-    override fun read(inputStream: InputStream): T {
+    override fun onOpenInputStream1(inputStream: InputStream): InputStream {
         // long 类型8字节
         val savedVersionCode = ByteArray(8)
         // 读取本地保存的内容的数据结构版本号
         inputStream.read(savedVersionCode)
-        if (check(savedVersionCode.toLong())) {
-            // 版本号校验一致，读取内容
-            return super.read(inputStream)
-        } else {
+        // 版本号校验一致，读取内容
+        require(check(savedVersionCode.toLong())) {
             // 抛出异常，通知对数据进行反序列化失败，交由调用处LocalFileModule删除缓存文件
-            throw IllegalArgumentException(
-                "本地文件的标记时间是${savedVersionCode.toLong()}，数据已过期"
-            )
+            "本地文件的标记时间是${savedVersionCode.toLong()}，数据已过期"
         }
+        // 版本号校验一致，读取内容
+        return inputStream
+    }
+
+    override fun onOpenOutStream1(outputStream: OutputStream): OutputStream {
+        // 记录保存时间
+        val currentTimeMillis = System.currentTimeMillis()
+        outputStream.write((currentTimeMillis shr 32).toInt())
+        outputStream.write(currentTimeMillis.toInt())
+        return outputStream
     }
 
     abstract fun check(localSavedTimeMillis: Long): Boolean
-
-    private fun ByteArray.toLong(): Long {
-        var count = 0L
-        forEach {
-            count = count shl 8
-            count = count or it.toLong()
-        }
-        return count
-    }
 }
 
 /**
- * 数据Base64化修饰器
+ * 超时保质期序列化
  *
  * @author chenfei(chenfei@gmail.com)
  * @date 2022-01-12 10:25

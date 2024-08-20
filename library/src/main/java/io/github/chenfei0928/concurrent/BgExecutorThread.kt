@@ -27,11 +27,11 @@ internal class BgExecutorThread(
 
         try {
             request.run()
-        } catch (ex: RuntimeException) {
+        } catch (e: RuntimeException) {
             // Probably a Looper failure, retry on the UI thread
             Log.w(TAG, run {
                 "Failed to inflate resource in the background! Retrying on the UI thread"
-            }, ex)
+            }, e)
         }
     }
 

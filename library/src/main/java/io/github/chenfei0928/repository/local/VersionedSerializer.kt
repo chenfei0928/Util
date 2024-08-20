@@ -1,5 +1,7 @@
 package io.github.chenfei0928.repository.local
 
+import io.github.chenfei0928.lang.toByteArray
+import io.github.chenfei0928.lang.toLong
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -10,30 +12,14 @@ import java.io.OutputStream
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-09-05 15:20
  */
-internal class VersionedSerializer<T>(
-    private val serializer: LocalSerializer<T>, versionCodeLong: Long
-) : LocalSerializer.NoopIODecorator<T>(serializer) {
-    private val versionCode: ByteArray = versionCodeLong.run {
-        byteArrayOf(
-            (this shr 56).toByte(),
-            (this shr 48).toByte(),
-            (this shr 40).toByte(),
-            (this shr 32).toByte(),
-            (this shr 24).toByte(),
-            (this shr 16).toByte(),
-            (this shr 8).toByte(),
-            this.toByte()
-        )
-    }
+class VersionedSerializer<T>
+private constructor(
+    serializer: LocalSerializer<T>,
+    versionCodeLong: Long
+) : LocalSerializer.BaseIODecorator<T>(serializer) {
+    private val versionCode: ByteArray = versionCodeLong.toByteArray()
 
-    override fun write(outputStream: OutputStream, obj: T & Any) {
-        // 写入应用版本号
-        outputStream.write(versionCode)
-        // 将数据结构版本号写入io流
-        serializer.write(outputStream, obj)
-    }
-
-    override fun read(inputStream: InputStream): T {
+    override fun onOpenInputStream1(inputStream: InputStream): InputStream {
         // long 类型8字节
         val savedVersionCode = ByteArray(8)
         // 读取本地保存的内容的数据结构版本号
@@ -43,22 +29,23 @@ internal class VersionedSerializer<T>(
             "当前版本是${versionCode.toLong()}, 本地文件的版本是${savedVersionCode.toLong()}，版本不匹配！数据结构可能已经被修改"
         }
         // 版本号校验一致，读取内容
-        return serializer.read(inputStream)
+        return inputStream
     }
 
-    private fun ByteArray.toLong(): Long {
-        var count = 0L
-        forEach {
-            count shl 8
-            count = count or it.toLong()
+    override fun onOpenOutStream1(outputStream: OutputStream): OutputStream {
+        // 写入应用版本号
+        outputStream.write(versionCode)
+        // 将数据结构版本号写入io流
+        return outputStream
+    }
+
+    companion object {
+        fun <T> LocalSerializer<T>.versioned(
+            versionCodeInt: Long
+        ): LocalSerializer<T> = if (this is VersionedSerializer) {
+            this
+        } else {
+            VersionedSerializer(this, versionCodeInt)
         }
-        return count
     }
 }
-
-fun <T> LocalSerializer<T>.versioned(versionCodeInt: Long): LocalSerializer<T> =
-    if (this is VersionedSerializer) {
-        this
-    } else {
-        VersionedSerializer(this, versionCodeInt)
-    }

@@ -7,7 +7,6 @@ import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -47,7 +46,9 @@ suspend inline fun <D : Dialog, T> D.showWithContext(
         }
     }
     return@coroutineScope try {
-        withContext(currentCoroutineContext() + context) {
+        if (context == EmptyCoroutineContext) {
+            block(this@showWithContext)
+        } else withContext(context) {
             block(this@showWithContext)
         }
     } finally {

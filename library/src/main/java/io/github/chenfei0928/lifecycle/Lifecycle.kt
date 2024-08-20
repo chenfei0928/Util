@@ -17,12 +17,13 @@ inline fun Lifecycle.onEvent(crossinline action: (Lifecycle.Event) -> Unit): Lif
 }
 
 inline fun Lifecycle.bindUntilFirstEvent(
-    event: Lifecycle.Event, crossinline action: (Lifecycle.Event) -> Unit
+    e: Lifecycle.Event, crossinline action: (Lifecycle.Event) -> Unit
 ): LifecycleEventObserver {
+    @Suppress("kotlin:S6516")
     val observer = object : LifecycleEventObserver {
-        override fun onStateChanged(source: LifecycleOwner, e: Lifecycle.Event) {
-            if (e == event) {
-                action(e)
+        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+            if (event == e) {
+                action(event)
                 removeObserver(this)
             }
         }

@@ -1,4 +1,4 @@
-package io.github.chenfei0928.util.retrofit
+package io.github.chenfei0928.net.retrofit
 
 import android.os.Looper
 import io.github.chenfei0928.concurrent.ExecutorUtil

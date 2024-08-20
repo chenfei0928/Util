@@ -16,7 +16,7 @@ abstract class LocalFileStorage<T>(
     private val cacheDir: Boolean = false,
     private val memoryCacheable: Boolean = true
 ) {
-    private val serializer = LocalSerializer.NoopIODecorator(serializer)
+    private val serializer = NoopIODecorator.wrap(serializer)
 
     private fun getFile(context: Context, fileName: String): File {
         val dir = if (cacheDir) {
@@ -128,7 +128,7 @@ abstract class LocalFileStorage<T>(
     }
 
     companion object {
-        protected const val TAG = "KW_LocalJsonStorage"
+        private const val TAG = "KW_LocalJsonStorage"
         private const val LOCK_FILE_SUFFIX = "_lock"
 
         private fun makeTmpFile(prefsFile: File): File {

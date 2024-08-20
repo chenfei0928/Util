@@ -62,18 +62,18 @@ public class AsyncLayoutInflater {
     /**
      * 通过布局文件创建者在子线程创建子布局
      *
-     * @param resid    子视图布局id
+     * @param resId    子视图布局id
      * @param parent   父布局，用于生成LayoutParam
      * @param callback 子视图创建完成后在主线程的回调
      * @param <V>      父布局的类型
      */
     @UiThread
     public <V extends ViewGroup> void inflate(
-            @LayoutRes int resid, @Nullable V parent,
+            @LayoutRes int resId, @Nullable V parent,
             @NonNull OnInflateFinishedListener callback) {
         ExecutorUtil.execute(() -> {
             try {
-                return mInflater.inflate(resid, parent, false);
+                return mInflater.inflate(resId, parent, false);
             } catch (RuntimeException ex) {
                 // Probably a Looper failure, retry on the UI thread
                 Log.w(TAG, "Failed to inflate resource in the background! Retrying on the UI"
@@ -82,7 +82,7 @@ public class AsyncLayoutInflater {
             }
         }, view -> {
             if (view == null) {
-                view = mInflater.inflate(resid, parent, false);
+                view = mInflater.inflate(resId, parent, false);
             }
             callback.onInflateFinished(view);
         });

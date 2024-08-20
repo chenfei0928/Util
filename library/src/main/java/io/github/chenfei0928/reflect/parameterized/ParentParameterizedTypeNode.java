@@ -55,10 +55,10 @@ class ParentParameterizedTypeNode {
     }
 
     private ParentParameterizedTypeNode takeParentNode(Class<?> superNodeType) {
-        ParentParameterizedTypeNode parentNode = new ParentParameterizedTypeNode(superNodeType);
-        this.parentNode = parentNode;
-        parentNode.childNode = this;
-        return parentNode;
+        ParentParameterizedTypeNode parentTypeNode = new ParentParameterizedTypeNode(superNodeType);
+        this.parentNode = parentTypeNode;
+        parentTypeNode.childNode = this;
+        return parentTypeNode;
     }
 
     private String toChildString() {

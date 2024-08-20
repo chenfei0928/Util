@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.text.style.ReplacementSpan;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 public class TopGravitySpan extends ReplacementSpan {
@@ -14,7 +15,12 @@ public class TopGravitySpan extends ReplacementSpan {
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
+    public void draw(@NonNull Canvas canvas,
+                     CharSequence text,
+                     @IntRange(from = 0) int start,
+                     @IntRange(from = 0) int end,
+                     float x, int top, int y, int bottom,
+                     @NonNull Paint paint) {
         // 此行顶端坐标减去上文字顶端距离基线距离（负数）
         // y参数传入的是要绘制文字的基线baseline
         canvas.drawText(text, start, end, x, top - paint.ascent(), paint);

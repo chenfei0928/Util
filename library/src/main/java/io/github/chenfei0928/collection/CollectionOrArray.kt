@@ -11,7 +11,8 @@ inline fun <T, reified R> Collection<T>.mapToArray(transform: (T) -> R): Array<R
     this.forEachIndexed { index, item ->
         output[index] = transform(item)
     }
-    @Suppress("UNCHECKED_CAST") return output as Array<R>
+    @Suppress("UNCHECKED_CAST")
+    return output as Array<R>
 }
 
 inline fun <T, reified R> List<T>.mapToArray(transform: (T) -> R): Array<R> {

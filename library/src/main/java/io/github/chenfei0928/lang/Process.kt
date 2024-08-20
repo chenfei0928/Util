@@ -2,7 +2,7 @@
  * @author chenf()
  * @date 2024-08-01 14:50
  */
-package io.github.chenfei0928.util
+package io.github.chenfei0928.lang
 
 import io.github.chenfei0928.concurrent.coroutines.onSuspendCancellation
 import kotlinx.coroutines.CoroutineScope
@@ -10,13 +10,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-inline fun <R> Process.use(block: (Process) -> R): R {
-    try {
-        return block(this)
-    } finally {
-        this.destroy()
-    }
+inline fun <T, R> T.use(
+    close: (T) -> Unit,
+    block: (T) -> R
+): R = try {
+    block(this)
+} finally {
+    close(this)
 }
+
+inline fun <R> Process.use(
+    block: (Process) -> R
+): R = use(Process::destroy, block)
 
 suspend inline fun <R> Process.useSuspend(
     context: CoroutineContext = Dispatchers.IO,

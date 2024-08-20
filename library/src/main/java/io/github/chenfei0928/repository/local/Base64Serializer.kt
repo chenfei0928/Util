@@ -18,7 +18,8 @@ import java.io.OutputStream
  * @author chenfei(chenfei@gmail.com)
  * @date 2022-01-12 10:25
  */
-internal class Base64Serializer<T>(
+class Base64Serializer<T>
+private constructor(
     serializer: LocalSerializer<T>
 ) : LocalSerializer.BaseIODecorator<T>(serializer) {
     override fun onOpenInputStream1(inputStream: InputStream): InputStream {
@@ -28,16 +29,15 @@ internal class Base64Serializer<T>(
     override fun onOpenOutStream1(outputStream: OutputStream): OutputStream {
         return Base64OutputStream(outputStream, Base64.DEFAULT)
     }
-}
 
-/**
- * 数据Base64化修饰器
- *
- * @author chenfei(chenfei@gmail.com)
- * @date 2022-01-12 10:25
- */
-fun <T> LocalSerializer<T>.base64(): LocalSerializer<T> = if (this is Base64Serializer) {
-    this
-} else {
-    Base64Serializer(this)
+    companion object {
+        /**
+         * 数据Base64化修饰器
+         */
+        fun <T> LocalSerializer<T>.base64(): LocalSerializer<T> = if (this is Base64Serializer) {
+            this
+        } else {
+            Base64Serializer(this)
+        }
+    }
 }
