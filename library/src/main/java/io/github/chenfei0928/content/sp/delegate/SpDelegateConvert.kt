@@ -6,8 +6,8 @@ import io.github.chenfei0928.collection.mapToIntArray
 import io.github.chenfei0928.content.sp.AbsSpSaver
 import io.github.chenfei0928.reflect.typeOf
 import io.github.chenfei0928.repository.local.Base64Serializer
+import io.github.chenfei0928.repository.local.Base64Serializer.Companion.base64
 import io.github.chenfei0928.repository.local.LocalSerializer
-import io.github.chenfei0928.repository.local.base64
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.lang.reflect.Type

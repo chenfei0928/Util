@@ -118,26 +118,16 @@ class LikeLayout
             ),
             // p1
             PointF(
-                random
-                    .nextInt(mWidth)
-                    .toFloat(),
+                random.nextInt(mWidth).toFloat(),
                 (random.nextInt(mHeight / 2) + mHeight / 2 + iv.drawable.intrinsicHeight).toFloat()
             ),
             // p2
             PointF(
-                random
-                    .nextInt(mWidth)
-                    .toFloat(),
-                random
-                    .nextInt(mHeight / 2)
-                    .toFloat()
+                random.nextInt(mWidth).toFloat(),
+                random.nextInt(mHeight / 2).toFloat()
             ),
             // p3
-            PointF(
-                random
-                    .nextInt(mWidth)
-                    .toFloat(), 0f
-            ),
+            PointF(random.nextInt(mWidth).toFloat(), 0f),
         )
     }
 }

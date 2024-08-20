@@ -25,8 +25,8 @@ fun ByteArray.toLong(): Long {
     return count
 }
 
-fun Long.toByteArray() = run {
-    byteArrayOf(
+fun Long.toByteArray(): ByteArray {
+    return byteArrayOf(
         (this shr 56).toByte(),
         (this shr 48).toByte(),
         (this shr 40).toByte(),

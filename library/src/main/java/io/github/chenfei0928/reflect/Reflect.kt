@@ -11,6 +11,7 @@ inline fun <reified T> Any?.asType(): T? {
 fun <T> Class<T>.arrayClass(): Class<Array<T>> =
     java.lang.reflect.Array.newInstance(this, 0).javaClass as Class<Array<T>>
 
+@Suppress("SpreadOperator")
 @Throws(
     IllegalAccessException::class, IllegalArgumentException::class, InvocationTargetException::class
 )
