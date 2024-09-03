@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.widget.ImageView
+import androidx.core.graphics.values
 import com.bumptech.glide.request.transition.Transition
 import io.github.chenfei0928.graphics.drawable.FixedScaleDrawable
 
@@ -43,9 +44,8 @@ class DrawableCrossFadeTransition(
                     currentDrawable, current.intrinsicHeight, current.intrinsicWidth,
                     ImageView.ScaleType.MATRIX
                 ).configMatrix {
-                    val imageMatrixValues = FloatArray(9).apply {
-                        // 加载matrix阵列，并对操作数取反/倒数
-                        imageView.imageMatrix.getValues(this)
+                    // 加载matrix阵列，并对操作数取反/倒数
+                    val imageMatrixValues = imageView.imageMatrix.values().apply {
                         this[Matrix.MSCALE_X] = 1 / this[Matrix.MSCALE_X]
                         this[Matrix.MSKEW_X] = -this[Matrix.MSKEW_X]
                         this[Matrix.MTRANS_X] = -this[Matrix.MTRANS_X]

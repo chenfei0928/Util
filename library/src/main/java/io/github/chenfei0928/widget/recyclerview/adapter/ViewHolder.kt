@@ -12,7 +12,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import org.jetbrains.anko.dimen
 import org.jetbrains.anko.dimenF
 import org.jetbrains.anko.dip
@@ -49,7 +48,3 @@ open class ViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView),
     inline fun dimen(@DimenRes resource: Int): Int = context.dimen(resource)
     inline fun dimenF(@DimenRes resource: Int): Float = context.dimenF(resource)
 }
-
-open class ViewBindingHolder<T, V : ViewBinding>(
-    val viewBinding: V
-) : ViewHolder<T>(viewBinding.root)

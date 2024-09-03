@@ -15,34 +15,31 @@ class RecyclerViewScrollPositionOutOfIndexMenuVisibleListener(
     override var focusIndex: Int = -1
 
     private var targetSearchBarVisible: Boolean = false
-    private var iconAnimator: ValueAnimator? = null
+    private val iconAnimator: ValueAnimator by lazy {
+        ValueAnimator.ofInt(0, 255).setDuration(300L).apply {
+            addUpdateListener {
+                val menu = menuGetter()
+                    ?: return@addUpdateListener
+                val icon = menu.icon
+                    ?: return@addUpdateListener
+                val alpha = it.animatedValue as Int
+                icon.alpha = alpha
+                icon.invalidateSelf()
+                menu.isEnabled = alpha != 0
+            }
+        }
+    }
 
     override fun onPositionOutOfFocusIndex(outOfIndex: Boolean) {
         if (targetSearchBarVisible == outOfIndex) {
             return
         }
-        val menu = menuGetter()
-            ?: return
-        val icon = menu.icon
-            ?: return
-        val animator = iconAnimator ?: ValueAnimator
-            .ofInt(0, 255)
-            .apply {
-                duration = 300L
-                addUpdateListener {
-                    val alpha = it.animatedValue as Int
-                    icon.alpha = alpha
-                    icon.invalidateSelf()
-                    menu.isEnabled = alpha != 0
-                }
-                iconAnimator = this
-            }
         if (outOfIndex) {
-            animator.setIntValues(0, 255)
+            iconAnimator.setIntValues(0, 255)
         } else {
-            animator.setIntValues(255, 0)
+            iconAnimator.setIntValues(255, 0)
         }
-        animator.start()
+        iconAnimator.start()
         targetSearchBarVisible = outOfIndex
     }
 }

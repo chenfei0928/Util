@@ -35,7 +35,9 @@ object ProcessUtil {
     fun getProcessName(context: Context): String {
         return processName.get() ?: processName.updateAndGetCompat {
             @SuppressLint("ObsoleteSdkInt")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Process.myProcessName()
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 Application.getProcessName()
             } else try {
                 @SuppressLint("PrivateApi", "DiscouragedPrivateApi")

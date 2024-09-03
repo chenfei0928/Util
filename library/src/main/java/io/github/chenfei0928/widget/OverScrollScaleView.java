@@ -1,6 +1,7 @@
 package io.github.chenfei0928.widget;
 
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -46,6 +47,7 @@ public class OverScrollScaleView extends NestedScrollView {
     }
 
     @Override
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(@NonNull MotionEvent ev) {
         if (mLastY == -1) {
             mLastY = ev.getY();

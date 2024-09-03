@@ -29,10 +29,7 @@ class GlideSplitTransformation(
     ): Bitmap {
         val config = toTransform.config
         val currentPageStartY = page * pageHeight
-        val currentPageHeight = min(
-            (toTransform.height - currentPageStartY).toDouble(),
-            pageHeight.toDouble()
-        ).toInt()
+        val currentPageHeight = min(toTransform.height - currentPageStartY, pageHeight)
         val result = pool[toTransform.width, currentPageHeight, config]
         result.setHasAlpha(true)
 

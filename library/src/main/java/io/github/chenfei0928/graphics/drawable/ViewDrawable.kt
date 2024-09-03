@@ -16,6 +16,7 @@ import android.widget.CheckedTextView
 import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.graphics.withTranslation
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.CheckedTextViewCompat
@@ -111,10 +112,9 @@ class ViewDrawable(
     }
 
     override fun draw(canvas: Canvas) {
-        val save = canvas.save()
-        canvas.translate(view.left.toFloat(), view.top.toFloat())
-        view.draw(canvas)
-        canvas.restoreToCount(save)
+        canvas.withTranslation(view.left.toFloat(), view.top.toFloat()) {
+            view.draw(canvas)
+        }
     }
 
     override fun setAlpha(alpha: Int) {

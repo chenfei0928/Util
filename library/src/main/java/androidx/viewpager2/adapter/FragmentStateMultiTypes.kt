@@ -23,7 +23,8 @@ class FragmentStateMultiTypes(
 
     override fun <T> register(type: Type<T>) {
         super.register(type)
-        val recyclerView = attachedRecyclerView ?: return
+        val recyclerView = attachedRecyclerView
+            ?: return
         // FragmentBinder.onAttachedToRecyclerView 需要adapter
         delegateAdapterSetter.set(type.delegate, adapter)
         // 如果已经 attached 到RecyclerView，将其注册到binder/delegate中

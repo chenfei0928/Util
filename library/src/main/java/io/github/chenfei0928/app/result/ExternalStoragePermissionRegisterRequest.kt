@@ -5,7 +5,6 @@
 package io.github.chenfei0928.app.result
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCaller
@@ -18,18 +17,20 @@ import io.github.chenfei0928.util.R
  * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
  */
 fun Fragment.registerForExternalStoragePermission(
-    @SuppressLint("MissingPermission") callback: (isHasPermission: Boolean) -> Unit
-): ActivityResultLauncher<Unit?> =
-    registerForExternalStoragePermission(this::requireActivity, callback)
+    callback: (isHasPermission: Boolean) -> Unit
+): ActivityResultLauncher<Unit?> = registerForExternalStoragePermission(
+    this::requireActivity, callback
+)
 
 /**
  * 快速请求并处理扩展卡权限
  * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
  */
 fun ComponentActivity.registerForExternalStoragePermission(
-    @SuppressLint("MissingPermission") callback: (isHasPermission: Boolean) -> Unit
-): ActivityResultLauncher<Unit?> =
-    registerForExternalStoragePermission({ this }, callback)
+    callback: (isHasPermission: Boolean) -> Unit
+): ActivityResultLauncher<Unit?> = registerForExternalStoragePermission(
+    { this }, callback
+)
 
 /**
  * 快速请求并处理扩展卡权限
@@ -37,7 +38,7 @@ fun ComponentActivity.registerForExternalStoragePermission(
  */
 inline fun ActivityResultCaller.registerForExternalStoragePermission(
     crossinline context: () -> Activity,
-    @SuppressLint("MissingPermission") noinline callback: (isHasPermission: Boolean) -> Unit
+    noinline callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> = registerForSimplePermission(
     context = context,
     permissions = arrayOf(

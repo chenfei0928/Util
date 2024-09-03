@@ -11,7 +11,6 @@ inline fun <reified T> Any?.asType(): T? {
 fun <T> Class<T>.arrayClass(): Class<Array<T>> =
     java.lang.reflect.Array.newInstance(this, 0).javaClass as Class<Array<T>>
 
-@Suppress("SpreadOperator")
 @Throws(
     IllegalAccessException::class, IllegalArgumentException::class, InvocationTargetException::class
 )
@@ -19,6 +18,7 @@ inline fun Method.safeInvoke(target: Any?, args: Array<Any?>?): Any? {
     return if (args == null) {
         this.invoke(target)
     } else {
+        @Suppress("SpreadOperator")
         this.invoke(target, *args)
     }
 }

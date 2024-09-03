@@ -57,7 +57,8 @@ abstract class BaseObservableTwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>(
         var holder: VH? = null,
     ) : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            val holder = holder ?: return
+            val holder = holder
+                ?: return
             binder.syncBeanChanged(holder, sender, propertyId)
         }
     }

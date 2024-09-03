@@ -3,7 +3,6 @@ package io.github.chenfei0928.widget.recyclerview.adapter.zhy
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.LayoutRes
 import androidx.collection.SparseArrayCompat
 import androidx.recyclerview.widget.RecyclerView
 import io.github.chenfei0928.collection.contains
@@ -211,21 +210,14 @@ abstract class AbsWrapperAdapter(
         return WrapperViewHolder(view)
     }
 
+    private class WrapperViewHolder(
+        itemView: View
+    ) : RecyclerView.ViewHolder(itemView)
+
     companion object {
         const val ITEM_TYPE_EMPTY = Integer.MAX_VALUE - 1
         const val ITEM_TYPE_LOAD_MORE = Integer.MAX_VALUE - 2
         const val BASE_ITEM_TYPE_HEADER = 100000
         const val BASE_ITEM_TYPE_FOOTER = 200000
     }
-}
-
-private class WrapperViewHolder(
-    itemView: View
-) : RecyclerView.ViewHolder(itemView)
-
-data class ViewCreator(
-    @LayoutRes val layoutId: Int, val view: View?
-) {
-    var enable: Boolean = true
-        get() = (layoutId != 0 || view != null) && field
 }

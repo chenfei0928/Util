@@ -24,6 +24,12 @@ suspend fun <T1, T2> zip(
     block1: suspend CoroutineScope.() -> T1, block2: suspend CoroutineScope.() -> T2
 ): Pair<T1, T2> = zip(block1, block2, ::Pair)
 
+/**
+ * 注册一个函数，用于在[CoroutineScope]被取消时执行
+ *
+ * @param block
+ * @receiver
+ */
 inline fun CoroutineScope.onCancellation(
     crossinline block: () -> Unit
 ) = launch {
@@ -34,6 +40,12 @@ inline fun CoroutineScope.onCancellation(
     }
 }
 
+/**
+ * 在无 [CoroutineScope] 的 suspend 函数中调用的 [onCancellation]
+ *
+ * @param block
+ * @receiver
+ */
 suspend inline fun onSuspendCancellation(
     crossinline block: () -> Unit
 ) = coroutineScope {

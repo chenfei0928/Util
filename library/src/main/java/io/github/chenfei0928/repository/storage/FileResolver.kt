@@ -24,7 +24,10 @@ object FileResolver {
     private const val TAG = "KW_FileResolver"
 
     fun save(
-        context: Context, uri: Uri, contentValues: ContentValues, writer: ContentValuesWriter
+        context: Context,
+        uri: Uri,
+        contentValues: ContentValues,
+        writer: ContentValuesWriter
     ): Uri? {
         val resolver = context.contentResolver
 

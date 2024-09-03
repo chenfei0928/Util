@@ -4,6 +4,7 @@ import android.os.BadParcelableException
 import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.core.os.ParcelCompat
 import io.github.chenfei0928.util.MapCache
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -34,13 +35,8 @@ private fun <T : Parcelable> getParcelableCreator(clazz: Class<T>): Parcelable.C
     val creator: Parcelable.Creator<T>? = ParcelUtil.use {
         writeString(clazz.name)
         setDataPosition(0)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            readParcelableCreator(clazz.classLoader, clazz)
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            @Suppress("DEPRECATION")
-            val creator: Parcelable.Creator<*>? = readParcelableCreator(clazz.classLoader)
-            @Suppress("UNCHECKED_CAST")
-            creator as Parcelable.Creator<T>?
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            ParcelCompat.readParcelableCreator(this, clazz.classLoader, clazz)
         } else try {
             val creator = parcelReadParcelableCreator.invoke(this, clazz.classLoader)
             @Suppress("UNCHECKED_CAST")

@@ -23,6 +23,15 @@ inline fun <R> Process.use(
     block: (Process) -> R
 ): R = use(Process::destroy, block)
 
+/**
+ * 在suspend函数中使用[block]代码块处理[Process]并返回返回值
+ *
+ * @param R 返回值类型
+ * @param context 执行[block]时要附加的协程上下文
+ * @param block 要执行的协程代码块
+ * @receiver 将会在该[Process]上启动
+ * @return
+ */
 suspend inline fun <R> Process.useSuspend(
     context: CoroutineContext = Dispatchers.IO,
     crossinline block: suspend CoroutineScope.(Process) -> R

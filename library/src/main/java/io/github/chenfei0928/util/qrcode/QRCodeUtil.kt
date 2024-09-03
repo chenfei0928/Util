@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import androidx.annotation.Px
+import androidx.core.graphics.withScale
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.WriterException
@@ -125,18 +126,11 @@ object QRCodeUtil {
 
             val canvas = Canvas(bitmap)
             canvas.drawBitmap(src, 0f, 0f, null)
-            canvas.scale(
+            canvas.withScale(
                 scaleFactor, scaleFactor, (srcWidth / 2).toFloat(), (srcHeight / 2).toFloat()
-            )
-            canvas.drawBitmap(
-                logo,
-                ((srcWidth - logoWidth) / 2).toFloat(),
-                ((srcHeight - logoHeight) / 2).toFloat(),
-                null
-            )
-
-            canvas.save()
-            canvas.restore()
+            ) {
+                drawBitmap(logo, (srcWidth - logoWidth) / 2f, (srcHeight - logoHeight) / 2f, null)
+            }
             bitmap
         } catch (e: Exception) {
             Log.e(TAG, "addLogo: ", e)

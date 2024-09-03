@@ -16,7 +16,8 @@ private const val TAG = "KW_FragmentViewPager2"
 fun ViewPager2.findFragment(
     fragmentManager: FragmentManager, position: Int = currentItem
 ): Fragment? {
-    val adapter = adapter as? FragmentStateAdapter ?: return null
+    val adapter = adapter as? FragmentStateAdapter
+        ?: return null
     return when {
         adapter.itemCount == 0 -> null
         adapter.itemCount <= position -> {

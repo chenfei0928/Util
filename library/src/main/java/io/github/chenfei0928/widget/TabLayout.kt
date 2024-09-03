@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import io.github.chenfei0928.reflect.ListenersProxy
+import io.github.chenfei0928.view.asyncinflater.AsyncLayoutInflater
 import io.github.chenfei0928.view.asyncinflater.LikeListViewInjector
 
 /**
@@ -16,7 +17,7 @@ import io.github.chenfei0928.view.asyncinflater.LikeListViewInjector
  * @date 2021-05-24 13:59
  */
 class TabLayout : LinearLayout {
-    lateinit var childTabViewCreator: LikeListViewInjector.Adapter<TabLayout, TabState>
+    lateinit var childTabViewCreator: LikeListViewInjector.AsyncAdapter<TabLayout, TabState>
     private var privateOnTabSelectListener: OnTabSelectListener =
         ListenersProxy.newEmptyListener(OnTabSelectListener::class.java)
     val onTabSelectListeners: MutableList<OnTabSelectListener> =
@@ -93,9 +94,9 @@ class TabLayout : LinearLayout {
     }
 
     private fun setupWithAdapter(viewPager: ViewPager, adapter: PagerAdapter) {
-        LikeListViewInjector.inject(this,
+        LikeListViewInjector.inject(AsyncLayoutInflater(context), this,
             (0 until adapter.count).map { TabState(it, viewPager.currentItem == it) },
-            object : LikeListViewInjector.Adapter<TabLayout, TabState> {
+            object : LikeListViewInjector.AsyncAdapter<TabLayout, TabState> {
                 override fun onCreateView(inflater: LayoutInflater, parent: TabLayout): View {
                     val childTabView = childTabViewCreator.onCreateView(inflater, parent)
                     childTabView.setOnClickListener {
@@ -107,6 +108,10 @@ class TabLayout : LinearLayout {
                         }
                     }
                     return childTabView
+                }
+
+                override fun onViewCreated(view: View) {
+                    // noop
                 }
 
                 override fun onBindView(view: View, bean: TabState) {

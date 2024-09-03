@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.documentfile.provider.DocumentFile
-import io.github.chenfei0928.net.getLength
 import io.github.chenfei0928.io.FileUtil
+import io.github.chenfei0928.net.getLength
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody

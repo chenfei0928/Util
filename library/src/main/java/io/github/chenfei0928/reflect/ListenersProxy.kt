@@ -17,36 +17,40 @@ object ListenersProxy {
     ) = newListenersProxy(T::class.java, listenerImpls)
 
     @SuppressWarnings("kotlin:S6530")
-    @Suppress("UNCHECKED_CAST", "SpreadOperator")
+    @Suppress("UNCHECKED_CAST")
     fun <T : Any> newListenersProxy(
         clazz: Class<T>, listenerImpls: MutableCollection<T> = arrayListOf()
     ): T = Proxy.newProxyInstance(
         clazz.classLoader, arrayOf(clazz, MutableCollection::class.java)
     ) { proxy, method, args ->
         // If the method is a method from Object then defer to normal invocation.
-        if (method.declaringClass == Any::class.java) {
-            return@newProxyInstance method.safeInvoke(this, args)
-        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O && method.isDefault) {
-            // Because the service interface might not be public, we need to use a MethodHandle lookup
-            // that ignores the visibility of the declaringClass.
-            val constructor = MethodHandles.Lookup::class.java.getDeclaredConstructor(
-                Class::class.java, Int::class.javaPrimitiveType
-            )
-            constructor.isAccessible = true
-            val methodHandle = constructor
-                .newInstance(method.declaringClass, -1 /* trusted */)
-                .unreflectSpecial(method, method.declaringClass)
-                .bindTo(proxy)
-            return@newProxyInstance if (args == null) {
-                methodHandle.invokeWithArguments()
-            } else {
-                methodHandle.invokeWithArguments(*args)
+        return@newProxyInstance when {
+            method.declaringClass == Any::class.java -> {
+                method.safeInvoke(this, args)
             }
-        } else {
-            // 如果该方法是集合接口定义的方法，对监听器集合进行操作
-            return@newProxyInstance if (method.declaringClass == MutableCollection::class.java) {
+            android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O && method.isDefault -> {
+                // Because the service interface might not be public, we need to use a MethodHandle lookup
+                // that ignores the visibility of the declaringClass.
+                val constructor = MethodHandles.Lookup::class.java.getDeclaredConstructor(
+                    Class::class.java, Int::class.javaPrimitiveType
+                )
+                constructor.isAccessible = true
+                val methodHandle = constructor
+                    .newInstance(method.declaringClass, -1 /* trusted */)
+                    .unreflectSpecial(method, method.declaringClass)
+                    .bindTo(proxy)
+                if (args == null) {
+                    methodHandle.invokeWithArguments()
+                } else {
+                    @Suppress("SpreadOperator")
+                    methodHandle.invokeWithArguments(*args)
+                }
+            }
+            method.declaringClass == MutableCollection::class.java -> {
+                // 如果该方法是集合接口定义的方法，对监听器集合进行操作
                 method.safeInvoke(listenerImpls, args)
-            } else {
+            }
+            else -> {
                 // 否则执行监听器
                 var rst: Any? = null
                 listenerImpls.forEach {

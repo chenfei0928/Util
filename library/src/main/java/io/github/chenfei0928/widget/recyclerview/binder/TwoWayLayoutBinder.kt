@@ -1,6 +1,9 @@
 package io.github.chenfei0928.widget.recyclerview.binder
 
-import androidx.databinding.*
+import androidx.databinding.ListChanges
+import androidx.databinding.Observable
+import androidx.databinding.ObservableList
+import androidx.databinding.ObservableMap
 import androidx.lifecycle.LiveData
 import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
 

@@ -10,6 +10,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.GravityInt
 import androidx.annotation.IntRange
 import androidx.annotation.Px
+import androidx.core.graphics.withTranslation
 import kotlin.math.max
 
 /**
@@ -36,9 +37,7 @@ class AdvanceBadgeDrawableBackgroundSpan(
     ): Int {
         val orgTextSize = paint.textSize
         paint.textSize = textSize
-        val textWidth = paint
-            .measureText(text, start, end)
-            .toInt()
+        val textWidth = paint.measureText(text, start, end).toInt()
         paint.textSize = orgTextSize
         width = bgPaddingRect.left + if (drawableLeft == null) {
             0
@@ -50,7 +49,7 @@ class AdvanceBadgeDrawableBackgroundSpan(
             // 计算出文字与图标高度差的一半，为文字偏移
             val heightDif = run {
                 val fontHeight = fm.bottom - fm.top
-                val contentHeight = max((drawableLeft?.intrinsicHeight ?: 0), fontHeight)
+                val contentHeight = max(drawableLeft?.intrinsicHeight ?: 0, fontHeight)
                 val drawableHeight = max(
                     contentHeight + bgPaddingRect.bottom + bgPaddingRect.top,
                     background.minimumHeight
@@ -104,10 +103,9 @@ class AdvanceBadgeDrawableBackgroundSpan(
         background.draw(canvas)
         // 绘制左侧图标
         drawableLeft?.let {
-            val saveCount = canvas.save()
-            canvas.translate(bgPaddingRect.left.toFloat(), bgPaddingRect.top.toFloat())
-            drawableLeft.draw(canvas)
-            canvas.restoreToCount(saveCount)
+            canvas.withTranslation(bgPaddingRect.left.toFloat(), bgPaddingRect.top.toFloat()) {
+                drawableLeft.draw(canvas)
+            }
         }
         // 绘制文字
         text?.let {
@@ -117,9 +115,7 @@ class AdvanceBadgeDrawableBackgroundSpan(
                 drawableLeft.bounds.right + drawablePadding.toFloat()
             }
             canvas.drawText(
-                text,
-                start,
-                end,
+                text, start, end,
                 x + bgPaddingRect.left.toFloat() + drawableLeftWidthAndPadding,
                 baseline.toFloat(),
                 paint

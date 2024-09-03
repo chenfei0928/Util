@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.text.style.ReplacementSpan
 import androidx.annotation.IntRange
 import androidx.annotation.Px
+import androidx.core.graphics.withTranslation
 import kotlin.math.max
 
 /**
@@ -42,7 +43,7 @@ class BadgeDrawableBackgroundSpan(
             // 计算出文字与图标高度差的一半，为文字偏移
             val heightDif = run {
                 val fontHeight = fm.bottom - fm.top
-                val contentHeight = max((drawableLeft?.intrinsicHeight ?: 0), fontHeight)
+                val contentHeight = max(drawableLeft?.intrinsicHeight ?: 0, fontHeight)
                 val drawableHeight = max(
                     contentHeight + bgPaddingRect.bottom + bgPaddingRect.top,
                     background.minimumHeight
@@ -83,10 +84,9 @@ class BadgeDrawableBackgroundSpan(
         background.draw(canvas)
         // 绘制左侧图标
         drawableLeft?.let {
-            val saveCount = canvas.save()
-            canvas.translate(bgPaddingRect.left.toFloat(), bgPaddingRect.top.toFloat())
-            drawableLeft.draw(canvas)
-            canvas.restoreToCount(saveCount)
+            canvas.withTranslation(bgPaddingRect.left.toFloat(), bgPaddingRect.top.toFloat()) {
+                drawableLeft.draw(canvas)
+            }
         }
         // 绘制文字
         text?.let {

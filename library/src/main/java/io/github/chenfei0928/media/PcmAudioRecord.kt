@@ -93,7 +93,8 @@ constructor(
     }
 
     private fun calculateDb(shorts: ShortArray, size: Int) {
-        val volumeCallback = volumeCallback ?: return
+        val volumeCallback = volumeCallback
+            ?: return
         // 将 buffer 内容取出，进行平方和运算
         var sum = 0L
         for (i in 0 until size) {
@@ -108,7 +109,8 @@ constructor(
     }
 
     private fun calculateDb(shorts: ByteArray, size: Int) {
-        val volumeCallback = volumeCallback ?: return
+        val volumeCallback = volumeCallback
+            ?: return
         // 将 buffer 内容取出，进行平方和运算
         var sum = 0L
         for (i in 0 until size) {

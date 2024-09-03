@@ -62,6 +62,7 @@ dependencies {
     compileOnly(DepsAndroidx.databinding.viewBinding)
     compileOnly(DepsAndroidx.databinding.runtime)
     compileOnly(DepsAndroidx.ads)
+    compileOnly(DepsAndroidx.concurrentFuturesKtx)
 
     // https://github.com/bumptech/glide
     compileOnly(Deps.glide.core)

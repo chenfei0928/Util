@@ -15,7 +15,8 @@ private object ViewNoDoubleClickListener : View.OnClickListener {
     val map = WeakHashMap<View, ViewOnClickInfo>()
 
     override fun onClick(v: View?) {
-        val viewOnClickInfo = map[v] ?: return
+        val viewOnClickInfo = map[v]
+            ?: return
         val currentTimeMillis = System.currentTimeMillis()
         // 如果两次点击间隔时间小于指定间隔之间，不处理
         if (currentTimeMillis - viewOnClickInfo.lastClickTime < viewOnClickInfo.interval) {

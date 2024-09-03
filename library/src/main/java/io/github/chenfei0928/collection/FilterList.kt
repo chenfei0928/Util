@@ -175,10 +175,12 @@ constructor(
             else -> list.indexOf(list.filter(filterPredicate)[index - if (neighbor) 1 else 0])
         }
     }
-}
 
-fun <E> MutableList<E>.toFilterList(
-    realtimeFilter: Boolean = true, predicate: (E) -> Boolean
-): FilterList<E> {
-    return FilterList(this, realtimeFilter, predicate)
+    companion object {
+        fun <E> MutableList<E>.toFilterList(
+            realtimeFilter: Boolean = true, predicate: (E) -> Boolean
+        ): FilterList<E> {
+            return FilterList(this, realtimeFilter, predicate)
+        }
+    }
 }

@@ -21,8 +21,10 @@ import io.github.chenfei0928.widget.recyclerview.binding.grid.BaseGridSpanRecycl
  * 关于各个子类使用建议：
  * - [GridLayoutManager]、一bean类型对多binder --> [BaseGridSpanRecyclerViewBinderRecorderBinding]；
  * - [GridLayoutManager]、一bean类型对一binder --> [BaseGridSpanRecyclerViewBinding]；
- * - [LinearLayoutManager]或其它[LayoutManager]、一bean类型对多binder --> [BaseRecyclerViewBinderRecorderBinding]（需初始化时设置[LayoutManager]）；
- * - [LinearLayoutManager]或其它[LayoutManager]、一bean类型对一binder --> [AbsRecyclerViewBinding]（需初始化时设置[LayoutManager]）。
+ * - [LinearLayoutManager]或其它[LayoutManager]、一bean类型对多binder -->
+ * [BaseRecyclerViewBinderRecorderBinding]（需初始化时设置[LayoutManager]）；
+ * - [LinearLayoutManager]或其它[LayoutManager]、一bean类型对一binder -->
+ * [AbsRecyclerViewBinding]（需初始化时设置[LayoutManager]）。
  *
  * 进行额外扩展时（支持其它[LayoutManager]）的父类建议：
  * - 需要每个item有额外属性配置、一bean类型对多binder --> [AbsRecyclerViewBinderRecorderBinding]；

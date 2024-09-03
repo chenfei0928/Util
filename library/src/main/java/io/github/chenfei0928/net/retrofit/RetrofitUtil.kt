@@ -54,9 +54,7 @@ object RetrofitUtil {
             null
         } else {
             values.joinToString(separator = ",", transform = {
-                getId
-                    .getId(it)
-                    .toString()
+                getId.getId(it).toString()
             })
         }
     }

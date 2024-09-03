@@ -50,12 +50,12 @@ class FixedScaleDrawable(
     }
 
     override fun draw(canvas: Canvas) {
-        canvas.save()
+        val save = canvas.save()
         if (drawMatrix != null) {
             canvas.concat(drawMatrix)
         }
         drawable.draw(canvas)
-        canvas.restore()
+        canvas.restoreToCount(save)
     }
 
     //<editor-fold desc="像 ImageView 一样处理内容显示范围" defaultstatus="collapsed">

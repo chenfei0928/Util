@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.core.widget.TextViewCompat
 
 private fun setIntrinsicBounds(drawable: Drawable?) {
     drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
@@ -39,7 +40,7 @@ fun TextView.setDrawableTint(@ColorInt color: Int, fixLayoutXml: Boolean = true)
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
         // 如果不是从xml文件加载的，设置tint
         if (!fixLayoutXml) {
-            compoundDrawableTintList = ColorStateList.valueOf(color)
+            TextViewCompat.setCompoundDrawableTintList(this, ColorStateList.valueOf(color))
         }
     } else {
         val drawables = this.compoundDrawablesRelative

@@ -7,8 +7,11 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.annotation.UiThread
 import androidx.lifecycle.LifecycleOwner
+import io.github.chenfei0928.concurrent.ExecutorAndCallback
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.util.Log
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -20,9 +23,29 @@ import kotlinx.coroutines.withContext
  */
 class SuspendLayoutInflater(
     context: Context,
-    private val lifecycle: LifecycleOwner
-) {
-    private val inflater = AsyncLayoutInflater.BasicInflater(context)
+    private val lifecycle: LifecycleOwner,
+    override val inflater: LayoutInflater = BasicInflater(context),
+) : IAsyncLayoutInflater {
+    override val executor: ExecutorAndCallback = object : ExecutorAndCallback {
+        override fun <R> execute(commend: () -> R, callback: (R) -> Unit) {
+            lifecycle.coroutineScope.launch {
+                val view = withContext(Dispatchers.Default) {
+                    try {
+                        commend()
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: RuntimeException) {
+                        null
+                    }
+                } ?: commend()
+                if (isActive) {
+                    callback(view)
+                }
+            }
+        }
+    }
+    override val executorOrScope: CoroutineScope
+        get() = lifecycle.coroutineScope
 
     /**
      * 通过自定义的布局创建者在子线程创建子布局
@@ -33,10 +56,10 @@ class SuspendLayoutInflater(
      * @param <VG>         父布局的类型
     </VG> */
     @UiThread
-    fun <VG : ViewGroup> inflate(
-        onCreateView: (LayoutInflater, VG) -> View?,
+    override fun <VG : ViewGroup, R> inflate(
+        onCreateView: (LayoutInflater, VG) -> R,
         parent: VG,
-        callback: (View) -> Unit
+        callback: (R) -> Unit
     ) {
         lifecycle.coroutineScope.launch(Dispatchers.Main) {
             val view = withContext(Dispatchers.Default) {
@@ -65,7 +88,7 @@ class SuspendLayoutInflater(
      * @param <VG>     父布局的类型
     </VG> */
     @UiThread
-    fun <VG : ViewGroup> inflate(
+    override fun <VG : ViewGroup> inflate(
         @LayoutRes resId: Int,
         parent: VG?,
         callback: (View) -> Unit

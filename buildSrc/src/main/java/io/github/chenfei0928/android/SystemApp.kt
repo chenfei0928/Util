@@ -88,7 +88,7 @@ private fun signAndInstallApk(
         ).start().waitFor()
         installApk(appExtension, apkFile)
     } catch (e: IOException) {
-        Env.logger.error("adb 执行失败，跳过安装")
+        Env.logger.error("adb 执行失败，跳过安装", e)
     }
 }
 

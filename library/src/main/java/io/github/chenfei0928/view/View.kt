@@ -63,7 +63,8 @@ private fun findAllSupportFragmentsWithViews(
 ) {
     topLevelFragments?.forEach { fragment ->
         // getFragment()s in the support FragmentManager may contain null values, see #1991.
-        val view = fragment?.view ?: return@forEach
+        val view = fragment?.view
+            ?: return@forEach
         result[view] = fragment
         findAllSupportFragmentsWithViews(
             fragment.childFragmentManager.fragments, result
@@ -90,12 +91,12 @@ inline fun <V : View, R> V.getTagOrPut(
  */
 class ViewTagDelegate<R>(
     @IdRes private val id: Int
-) : ReadWriteProperty<View, R?> {
-    override fun getValue(thisRef: View, property: KProperty<*>): R? {
-        return thisRef.getTag(id) as? R
+) : ReadWriteProperty<View, R> {
+    override fun getValue(thisRef: View, property: KProperty<*>): R {
+        return thisRef.getTag(id) as R
     }
 
-    override fun setValue(thisRef: View, property: KProperty<*>, value: R?) {
+    override fun setValue(thisRef: View, property: KProperty<*>, value: R) {
         thisRef.setTag(id, value)
     }
 }

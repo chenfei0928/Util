@@ -7,8 +7,8 @@ import androidx.collection.ArrayMap
 import com.google.protobuf.GeneratedMessageLite
 import com.google.protobuf.getProtobufLiteParserForType
 import io.github.chenfei0928.base.ContextProvider
-import io.github.chenfei0928.os.ParcelUtil
 import io.github.chenfei0928.lang.deepEquals
+import io.github.chenfei0928.os.ParcelUtil
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPInputStream
@@ -90,7 +90,8 @@ fun Intent.zipExtras(): Intent {
 }
 
 fun Intent.unzipExtras(classLoader: ClassLoader = ContextProvider::class.java.classLoader!!): Bundle {
-    val zipped = getByteArrayExtra("zipped") ?: return Bundle.EMPTY
+    val zipped = getByteArrayExtra("zipped")
+        ?: return Bundle.EMPTY
     val unzipped = GZIPInputStream(ByteArrayInputStream(zipped)).use {
         it.readBytes()
     }

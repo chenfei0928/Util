@@ -4,7 +4,6 @@
  */
 package io.github.chenfei0928.app.result
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCaller
@@ -26,7 +25,7 @@ import androidx.fragment.app.Fragment
 inline fun Fragment.registerForPermission(
     permissions: Array<String>,
     crossinline onRationale: (request: PermissionRequest) -> Unit,
-    @SuppressLint("MissingPermission") crossinline onAgree: () -> Unit,
+    crossinline onAgree: () -> Unit,
     crossinline onDenied: () -> Unit,
     crossinline onNeverAskAgain: () -> Unit
 ): ActivityResultLauncher<Unit?> = registerForPermission(
@@ -47,7 +46,7 @@ inline fun Fragment.registerForPermission(
 inline fun ComponentActivity.registerForPermission(
     permissions: Array<String>,
     crossinline onRationale: (request: PermissionRequest) -> Unit,
-    @SuppressLint("MissingPermission") crossinline onAgree: () -> Unit,
+    crossinline onAgree: () -> Unit,
     crossinline onDenied: () -> Unit,
     crossinline onNeverAskAgain: () -> Unit
 ): ActivityResultLauncher<Unit?> = registerForPermission(
@@ -69,7 +68,7 @@ inline fun ActivityResultCaller.registerForPermission(
     crossinline context: () -> Activity,
     permissions: Array<String>,
     crossinline onRationale: (request: PermissionRequest) -> Unit,
-    @SuppressLint("MissingPermission") crossinline onAgree: () -> Unit,
+    crossinline onAgree: () -> Unit,
     crossinline onDenied: () -> Unit,
     crossinline onNeverAskAgain: () -> Unit
 ): ActivityResultLauncher<Unit?> {

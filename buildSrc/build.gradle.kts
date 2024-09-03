@@ -11,7 +11,7 @@ tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
 
 dependencies {
     // https://github.com/JetBrains/kotlin
-    val kotlinVersion = "2.0.10"
+    val kotlinVersion = "2.0.20"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
     val agpVersion = "8.5.1"
@@ -71,14 +71,14 @@ dependencies {
     // https://github.com/Meituan-Dianping/walle
     implementation("com.meituan.android.walle:plugin:1.1.7")
     // https://github.com/google/guava
-    implementation("com.google.guava:guava:33.2.1-jre")
+    implementation("com.google.guava:guava:33.3.0-jre")
     // 腾讯Bugly混淆表上传工具
     // https://bugly.qq.com/docs/utility-tools/plugin-gradle-bugly/
     // https://repo1.maven.org/maven2/com/tencent/bugly/symtabfileuploader/
 //    implementation("com.tencent.bugly:symtabfileuploader:2.2.1")
     // 腾讯补丁包工具
     // https://github.com/Tencent/tinker
-    implementation("com.tencent.tinker:tinker-patch-gradle-plugin:1.9.14.26.3")
+    implementation("com.tencent.tinker:tinker-patch-gradle-plugin:1.9.14.27")
     implementation("com.tencent.tinker:tinker-patch-lib:1.9.14.26.3") {
         exclude(group = "com.google.guava")
     }
