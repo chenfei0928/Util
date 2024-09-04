@@ -37,23 +37,7 @@ class AsyncLayoutInflater(
         onCreateView: (LayoutInflater, VG) -> R,
         parent: VG,
         callback: (R) -> Unit
-    ) {
-        executor.execute({
-            try {
-                return@execute onCreateView.invoke(inflater, parent)
-            } catch (ex: RuntimeException) {
-                // Probably a Looper failure, retry on the UI thread
-                Log.w(
-                    TAG,
-                    "Failed to inflate resource in the background! Retrying on the UI thread",
-                    ex
-                )
-                return@execute null
-            }
-        }, { view ->
-            callback(view ?: onCreateView.invoke(inflater, parent)!!)
-        })
-    }
+    ) = inflate({ onCreateView.invoke(inflater, parent) }, callback)
 
     /**
      * 通过布局文件创建者在子线程创建子布局
@@ -64,21 +48,28 @@ class AsyncLayoutInflater(
      * @param <V>      父布局的类型
      */
     @UiThread
-    override fun <VG : ViewGroup> inflate(resId: Int, parent: VG?, callback: (View) -> Unit) {
-        executor.execute({
-            try {
-                return@execute inflater.inflate(resId, parent, false)
-            } catch (ex: RuntimeException) {
-                // Probably a Looper failure, retry on the UI thread
-                Log.w(TAG, run {
-                    "Failed to inflate resource in the background! Retrying on the UI thread"
-                }, ex)
-                return@execute null
-            }
-        }, { view ->
-            callback(view ?: inflater.inflate(resId, parent, false))
-        })
-    }
+    override fun <VG : ViewGroup> inflate(
+        resId: Int,
+        parent: VG?,
+        callback: (View) -> Unit
+    ) = inflate({ inflater.inflate(resId, parent, false) }, callback)
+
+    private inline fun <V> inflate(
+        crossinline inflate: () -> V,
+        crossinline callback: (V) -> Unit
+    ) = executor.execute({
+        try {
+            return@execute inflate()
+        } catch (ex: RuntimeException) {
+            // Probably a Looper failure, retry on the UI thread
+            Log.w(TAG, run {
+                "Failed to inflate resource in the background! Retrying on the UI thread"
+            }, ex)
+            return@execute null
+        }
+    }, { view ->
+        callback(view ?: inflate())
+    })
 
     companion object {
         private const val TAG = "KW_AsyncLayoutInflater"

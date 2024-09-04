@@ -53,7 +53,7 @@ object LikeListViewInjector {
         viewGroup: VG,
         beanIterable: Iterable<Bean>?,
         @LayoutRes layoutId: Int,
-        adapter: AsyncAdapter<VG, Bean>
+        adapter: AsyncAdapter<VG, Bean>,
     ) {
         BaseLikeListViewInjector.injectImpl(
             viewGroup, beanIterable, adapter

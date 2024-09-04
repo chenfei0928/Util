@@ -35,10 +35,12 @@ object LikeListViewBinderInjector {
         asyncLayoutInflater: IAsyncLayoutInflater,
         viewGroup: VG,
         beanIterable: Iterable<Bean>?,
-        binder: ItemViewDelegate<Bean, ViewHolder>
+        binder: ItemViewDelegate<Bean, ViewHolder>,
     ) {
         val binderClassName = binder.javaClass.name
-        injectImpl(viewGroup, beanIterable, binder)?.forEachInject(asyncLayoutInflater.executorOrScope, {
+        injectImpl(
+            viewGroup, beanIterable, binder
+        )?.forEachInject(asyncLayoutInflater.executorOrScope, {
             // 加载视图
             val holder = if (binder is ItemViewBinder) {
                 binder.onCreateViewHolder(asyncLayoutInflater.inflater, viewGroup)
@@ -68,31 +70,30 @@ object LikeListViewBinderInjector {
         viewGroup: VG,
         beanIterable: Iterable<Bean>?,
         binder: ItemViewDelegate<Bean, ViewHolder>,
-    ): Iterator<Bean>? {
-        val binderClassName = binder.javaClass.name
-        return BaseLikeListViewInjector.injectImpl(
-            viewGroup, beanIterable, object : BasicAdapter<VG, Bean> {
-                override fun isView(view: View): Boolean =
-                    view.injectorClassNameTag == binderClassName
+    ): Iterator<Bean>? = BaseLikeListViewInjector.injectImpl(
+        viewGroup, beanIterable, object : BasicAdapter<VG, Bean> {
+            private val binderClassName = binder.javaClass.name
 
-                override fun onBindView(view: View, bean: Bean) {
-                    val holder = view.viewHolderTag as ViewHolder
-                    binder.onViewDetachedFromWindow(holder)
-                    binder.onViewRecycled(holder)
-                    binder.onBindViewHolder(holder, bean, emptyList())
-                    binder.onViewAttachedToWindow(holder)
-                }
+            override fun isView(view: View): Boolean =
+                view.injectorClassNameTag == binderClassName
 
-                override fun onAddOrShow(view: View) {
-                    val holder = view.viewHolderTag as ViewHolder
-                    binder.onViewAttachedToWindow(holder)
-                }
+            override fun onBindView(view: View, bean: Bean) {
+                val holder = view.viewHolderTag as ViewHolder
+                binder.onViewDetachedFromWindow(holder)
+                binder.onViewRecycled(holder)
+                binder.onBindViewHolder(holder, bean, emptyList())
+                binder.onViewAttachedToWindow(holder)
+            }
 
-                override fun onRemoveOrHide(view: View) {
-                    val holder = view.viewHolderTag as ViewHolder
-                    binder.onViewDetachedFromWindow(holder)
-                    binder.onViewRecycled(holder)
-                }
-            })
-    }
+            override fun onAddOrShow(view: View) {
+                val holder = view.viewHolderTag as ViewHolder
+                binder.onViewAttachedToWindow(holder)
+            }
+
+            override fun onRemoveOrHide(view: View) {
+                val holder = view.viewHolderTag as ViewHolder
+                binder.onViewDetachedFromWindow(holder)
+                binder.onViewRecycled(holder)
+            }
+        })
 }

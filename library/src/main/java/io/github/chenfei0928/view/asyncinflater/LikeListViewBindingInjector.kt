@@ -53,7 +53,7 @@ object LikeListViewBindingInjector {
         asyncLayoutInflater: IAsyncLayoutInflater,
         viewGroup: ViewGroup,
         beanIterable: Iterable<Bean>?,
-        adapter: DataBindingAdapter<Binding, Bean>
+        adapter: DataBindingAdapter<Binding, Bean>,
     ) {
         val binderClassName = adapter.javaClass.name
         BaseLikeListViewInjector.injectImpl(

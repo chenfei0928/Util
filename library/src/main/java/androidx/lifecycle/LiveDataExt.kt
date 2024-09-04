@@ -19,10 +19,12 @@ suspend fun <T> LiveData<T>.await(): T? = if (version != LiveData.START_VERSION)
 suspend fun <T> LiveData<T>.nextValue(): T? {
     return suspendCancellableCoroutine { continuation ->
         val oldVersion = version
+
+        @Suppress("kotlin:S6516")
         val observer = object : Observer<T?> {
-            override fun onChanged(it: T?) {
+            override fun onChanged(value: T?) {
                 if (oldVersion != version) {
-                    continuation.resume(it)
+                    continuation.resume(value)
                     removeObserver(this)
                 }
             }
@@ -51,13 +53,13 @@ inline fun <T> LiveData<T>.observeWithOldValue(
     crossinline observer: (oldValue: T?, newValue: T) -> Unit
 ) {
     var oldValue: Pair<Int, T?> = versionKt to value
-    observe(owner, Observer {
+    observe(owner) {
         val old = oldValue
         if (old.first != versionKt) {
             oldValue = versionKt to it
         }
         observer(old.second, it)
-    })
+    }
 }
 
 val <T> LiveData<T>.versionKt

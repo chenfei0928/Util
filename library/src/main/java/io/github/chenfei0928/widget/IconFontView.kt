@@ -9,8 +9,8 @@ import android.graphics.Typeface
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
-import androidx.collection.LruCache
-import io.github.chenfei0928.util.ContextMapCache
+import io.github.chenfei0928.util.MapCache
+import io.github.chenfei0928.util.MapWeakCache
 import io.github.chenfei0928.util.R
 import kotlin.math.abs
 import kotlin.math.max
@@ -61,7 +61,7 @@ class IconFontView
         }
 
         textPaint.typeface = fontAsset?.let {
-            typefaceCache[getContext().applicationContext].get(it)
+            typefaceCache[getContext().applicationContext][it]
         }
         textPaint.color = textColor?.defaultColor ?: Color.BLACK
     }
@@ -91,12 +91,8 @@ class IconFontView
     }
 
     companion object {
-        private val typefaceCache = ContextMapCache<LruCache<String, Typeface>> { context ->
-            object : LruCache<String, Typeface>(16) {
-                override fun create(key: String): Typeface {
-                    return Typeface.createFromAsset(context.assets, key)
-                }
-            }
+        private val typefaceCache = MapCache<Context, MapWeakCache<String, Typeface>> { context ->
+            MapWeakCache { key -> Typeface.createFromAsset(context.assets, key) }
         }
     }
 }

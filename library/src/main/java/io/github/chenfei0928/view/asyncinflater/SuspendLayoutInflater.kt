@@ -28,20 +28,7 @@ class SuspendLayoutInflater(
 ) : IAsyncLayoutInflater {
     override val executor: ExecutorAndCallback = object : ExecutorAndCallback {
         override fun <R> execute(commend: () -> R, callback: (R) -> Unit) {
-            lifecycle.coroutineScope.launch {
-                val view = withContext(Dispatchers.Default) {
-                    try {
-                        commend()
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (e: RuntimeException) {
-                        null
-                    }
-                } ?: commend()
-                if (isActive) {
-                    callback(view)
-                }
-            }
+            inflate(commend, callback)
         }
     }
     override val executorOrScope: CoroutineScope
@@ -54,30 +41,13 @@ class SuspendLayoutInflater(
      * @param parent       父布局，用于生成LayoutParam
      * @param callback     子视图创建完成后在主线程的回调
      * @param <VG>         父布局的类型
-    </VG> */
+     */
     @UiThread
     override fun <VG : ViewGroup, R> inflate(
         onCreateView: (LayoutInflater, VG) -> R,
         parent: VG,
         callback: (R) -> Unit
-    ) {
-        lifecycle.coroutineScope.launch(Dispatchers.Main) {
-            val view = withContext(Dispatchers.Default) {
-                try {
-                    onCreateView(inflater, parent)
-                } catch (ex: RuntimeException) {
-                    // Probably a Looper failure, retry on the UI thread
-                    Log.w(TAG, run {
-                        "Failed to inflate resource in the background! Retrying on the UI thread"
-                    }, ex)
-                    null
-                }
-            } ?: onCreateView(inflater, parent)!!
-            if (isActive) {
-                callback(view)
-            }
-        }
-    }
+    ) = inflate({ onCreateView(inflater, parent) }, callback)
 
     /**
      * 通过布局文件创建者在子线程创建子布局
@@ -86,25 +56,31 @@ class SuspendLayoutInflater(
      * @param parent   父布局，用于生成LayoutParam
      * @param callback 子视图创建完成后在主线程的回调
      * @param <VG>     父布局的类型
-    </VG> */
+     */
     @UiThread
     override fun <VG : ViewGroup> inflate(
         @LayoutRes resId: Int,
         parent: VG?,
         callback: (View) -> Unit
+    ) = inflate({ inflater.inflate(resId, parent, false) }, callback)
+
+    private inline fun <V> inflate(
+        crossinline inflate: () -> V,
+        crossinline callback: (V) -> Unit
     ) {
         lifecycle.coroutineScope.launch(Dispatchers.Main) {
             val view = withContext(Dispatchers.Default) {
                 try {
-                    inflater.inflate(resId, parent, false)
-                } catch (ex: RuntimeException) {
-                    // Probably a Looper failure, retry on the UI thread
+                    inflate()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: RuntimeException) {
                     Log.w(TAG, run {
                         "Failed to inflate resource in the background! Retrying on the UI thread"
-                    }, ex)
+                    }, e)
                     null
                 }
-            } ?: inflater.inflate(resId, parent, false)
+            } ?: inflate()
             if (isActive) {
                 callback(view)
             }
