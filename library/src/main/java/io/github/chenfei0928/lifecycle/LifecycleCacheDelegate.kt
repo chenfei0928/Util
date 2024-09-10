@@ -18,6 +18,10 @@ import kotlin.reflect.KProperty
  */
 open class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObserver>(
     /**
+     * 如果要在宿主死亡后固定返回一个失效对象，传递不为null的此值
+     */
+    private val deadValue: V? = null,
+    /**
      * 传入宿主与值对象的关闭回调以创建值 [V]。
      *
      * 返回值必须直接监听宿主生命周期变化以清理资源。
@@ -29,6 +33,9 @@ open class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObse
     private val cache: MutableMap<Owner, V> = WeakHashMap()
 
     override fun getValue(thisRef: Owner, property: KProperty<*>): V {
+        if (!thisRef.lifecycle.isAlive && deadValue != null) {
+            return deadValue
+        }
         // 宿主存活时，创建或从缓存中获取一个与该宿主生命周期绑定的协程实例
         return cache.getOrPut(thisRef) {
             val closeCallback = CloseCallback(thisRef)

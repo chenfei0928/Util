@@ -5,7 +5,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
+import io.github.chenfei0928.lifecycle.EventLifecycleOwner
 import io.github.chenfei0928.lifecycle.LifecycleCacheDelegate
 import io.github.chenfei0928.lifecycle.isAlive
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +20,7 @@ import kotlin.reflect.KProperty
  * 被取消的协程实例，在该实例上创建的协程子任务将永远不会被执行。
  */
 private val cancelledCoroutineScope by lazy(LazyThreadSafetyMode.NONE) {
-    LifecycleCoroutineScope(ImmortalLifecycleOwner) {}.apply {
+    LifecycleCoroutineScope(EventLifecycleOwner.immortal) {}.apply {
         job.cancel()
     }
 }

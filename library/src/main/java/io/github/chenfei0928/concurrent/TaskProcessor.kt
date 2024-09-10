@@ -8,7 +8,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
-import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
+import io.github.chenfei0928.lifecycle.EventLifecycleOwner
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.WeakHashMap
@@ -22,7 +22,7 @@ interface BgTaskExecutor : Executor {
     }
 
     fun postToBg(r: Runnable): Boolean {
-        return postToBg(ImmortalLifecycleOwner, Lifecycle.Event.ON_DESTROY, r)
+        return postToBg(EventLifecycleOwner.immortal, Lifecycle.Event.ON_DESTROY, r)
     }
 
     fun postToBg(lifecycleOwner: LifecycleOwner, event: Lifecycle.Event, r: Runnable): Boolean
@@ -103,14 +103,14 @@ interface UiTaskExecutor {
     fun removeUiCallback(r: Runnable)
 
     fun postToUiThread(r: Runnable): Boolean {
-        return postToUiThread(ImmortalLifecycleOwner, Lifecycle.Event.ON_DESTROY, r)
+        return postToUiThread(EventLifecycleOwner.immortal, Lifecycle.Event.ON_DESTROY, r)
     }
 
     fun postToUiThread(lifecycleOwner: LifecycleOwner, event: Lifecycle.Event, r: Runnable): Boolean
 
     fun runOnUiThreadDelayed(r: Runnable, delayMillis: Long): Boolean {
         return runOnUiThreadDelayed(
-            ImmortalLifecycleOwner, Lifecycle.Event.ON_DESTROY, r, delayMillis
+            EventLifecycleOwner.immortal, Lifecycle.Event.ON_DESTROY, r, delayMillis
         )
     }
 

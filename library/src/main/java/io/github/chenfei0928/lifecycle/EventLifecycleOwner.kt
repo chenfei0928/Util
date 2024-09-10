@@ -1,6 +1,7 @@
 package io.github.chenfei0928.lifecycle
 
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.State
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 
@@ -10,11 +11,10 @@ import androidx.lifecycle.LifecycleOwner
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-08-10 16:08
  */
-object ImmortalLifecycleOwner : LifecycleOwner {
-    override val lifecycle: Lifecycle
-        get() = ImmortalLifecycle
-
-    private object ImmortalLifecycle : Lifecycle() {
+class EventLifecycleOwner(
+    private val state: State
+) : LifecycleOwner {
+    override val lifecycle: Lifecycle = object : Lifecycle() {
         override fun addObserver(observer: LifecycleObserver) {
             // noop
         }
@@ -23,7 +23,11 @@ object ImmortalLifecycleOwner : LifecycleOwner {
             // noop
         }
 
-        override val currentState: State
-            get() = State.RESUMED
+        override val currentState: State = state
+    }
+
+    companion object {
+        val immortal = EventLifecycleOwner(State.RESUMED)
+        val dead = EventLifecycleOwner(State.DESTROYED)
     }
 }

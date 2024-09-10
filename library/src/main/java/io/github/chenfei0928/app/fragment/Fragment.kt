@@ -7,6 +7,7 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import io.github.chenfei0928.os.safeHandler
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -78,10 +79,14 @@ fun <T> Fragment.findParentByType(clazz: Class<T>): T? {
  */
 suspend fun LifecycleOwner.awaitDestroy() {
     suspendCancellableCoroutine { continuation ->
-        lifecycle.addObserver(LifecycleEventObserver { _, event ->
+        val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_DESTROY && continuation.isActive) {
                 continuation.resume(Unit)
             }
-        })
+        }
+        lifecycle.addObserver(observer)
+        continuation.invokeOnCancellation {
+            safeHandler.post { lifecycle.removeObserver(observer) }
+        }
     }
 }

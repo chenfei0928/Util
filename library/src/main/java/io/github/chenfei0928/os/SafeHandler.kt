@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import io.github.chenfei0928.lifecycle.EventLifecycleOwner
 import io.github.chenfei0928.lifecycle.LifecycleCacheDelegate
 import io.github.chenfei0928.lifecycle.isAlive
 import java.io.Closeable
@@ -87,6 +88,8 @@ private class SafeHandler(
  *     - [Fragment.onDestroy]
  *     - [Fragment.onDetach]
  */
-val LifecycleOwner.safeHandler: Handler by LifecycleCacheDelegate<LifecycleOwner, SafeHandler> { owner, closeCallback ->
+val LifecycleOwner.safeHandler: Handler by LifecycleCacheDelegate<LifecycleOwner, SafeHandler>(
+    SafeHandler(EventLifecycleOwner.dead) {}
+) { owner, closeCallback ->
     SafeHandler(owner, closeCallback)
 }

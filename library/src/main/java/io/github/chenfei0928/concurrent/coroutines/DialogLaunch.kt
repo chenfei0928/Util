@@ -5,7 +5,7 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.lifecycle.ImmortalLifecycleOwner
+import io.github.chenfei0928.lifecycle.EventLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -26,7 +26,7 @@ import kotlin.coroutines.resume
  */
 @MainThread
 inline fun <D> D.launchWithShow(
-    parentLifecycleOwner: LifecycleOwner = ImmortalLifecycleOwner,
+    parentLifecycleOwner: LifecycleOwner = EventLifecycleOwner.immortal,
     crossinline block: suspend CoroutineScope.(D) -> Unit
 ) where D : Dialog, D : LifecycleOwner {
     val callback = LifecycleEventObserver { _, event ->
