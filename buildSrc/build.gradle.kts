@@ -14,7 +14,7 @@ dependencies {
     val kotlinVersion = "2.0.20"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "8.5.1"
+    val agpVersion = "8.7.0"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
     implementation(kotlin("reflect", kotlinVersion))
@@ -25,7 +25,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.25.0")
     // Kotlin Symbol Processing 符号处理器编译器插件，需伴随Kotlin版本一同升级
     // https://github.com/google/ksp
-    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.24")
+    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.25")
     implementation(gradleApi())
 
     implementation(localGroovy())
