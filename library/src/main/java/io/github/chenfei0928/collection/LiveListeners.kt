@@ -46,6 +46,7 @@ open class LiveListeners<T>(
             // ignore
             return
         }
+        @Suppress("kotlin:S6516")
         val observer = object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                 if (owner.lifecycle.currentState >= state) {

@@ -33,6 +33,7 @@ class DrawableCrossFadeFactory(
 
     companion object {
         /**
+         * Glide 默认的淡入淡出时长：
          * [com.bumptech.glide.request.transition.DrawableCrossFadeFactory.Builder.DEFAULT_DURATION_MS]
          */
         internal const val DEFAULT_DURATION_MS = 300
