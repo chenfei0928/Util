@@ -13,7 +13,7 @@ import kotlin.math.roundToInt
 
 /**
  * 像 [ImageView] 一样对 [drawable] 的尺寸进行修复，以达到适配当前显示的drawable的宽高
- * 目的是可以在Glide/操作系统Modena的 [TransitionDrawable] 动画时不会产生额外的拉伸
+ * 目的是可以在Glide/操作系统的 [TransitionDrawable] 动画时不会产生额外的拉伸
  *
  * @property drawable 要修复处理的图像
  * @property targetHeight 目标高度
