@@ -41,9 +41,8 @@ fun View.findParentFragment(): Fragment? {
     }
     val activity = context.findActivity() as? FragmentActivity
         ?: return null
-    val viewsToFragment = mutableMapOf<View, Fragment>()
-    findAllSupportFragmentsWithViews(
-        activity.supportFragmentManager.fragments, viewsToFragment
+    val viewsToFragment: Map<View, Fragment> = findAllSupportFragmentsWithViews(
+        activity.supportFragmentManager.fragments, mutableMapOf()
     )
     val activityRootView = activity.findViewById<View>(android.R.id.content)
     var view: View? = this
@@ -60,7 +59,7 @@ fun View.findParentFragment(): Fragment? {
 private fun findAllSupportFragmentsWithViews(
     topLevelFragments: Collection<Fragment?>?,
     result: MutableMap<View, Fragment>
-) {
+): Map<View, Fragment> {
     topLevelFragments?.forEach { fragment ->
         // getFragment()s in the support FragmentManager may contain null values, see #1991.
         val view = fragment?.view
@@ -70,6 +69,7 @@ private fun findAllSupportFragmentsWithViews(
             fragment.childFragmentManager.fragments, result
         )
     }
+    return result
 }
 
 inline fun <V : View, R> V.getTagOrPut(

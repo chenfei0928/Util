@@ -19,7 +19,7 @@ infix fun Int.anyIn(other: Int): Boolean {
 fun ByteArray.toLong(): Long {
     var count = 0L
     forEach {
-        count = count shl 8
+        count = count shl Byte.SIZE_BITS
         count = count or it.toLong()
     }
     return count

@@ -93,7 +93,6 @@ fun Project.withKotlinMavenPublication(
     }
 }
 
-@Suppress("UnstableApiUsage")
 fun Project.withKotlinAndroidMavenPublication(
     mavenPublicationName: String = "maven",
     versionName: String = version.toString(),

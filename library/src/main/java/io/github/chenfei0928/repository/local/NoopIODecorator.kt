@@ -14,11 +14,11 @@ internal class NoopIODecorator<T>
 private constructor(
     serializer: LocalSerializer<T>
 ) : BaseIODecorator<T>(serializer) {
-    override fun onOpenOutStream1(outputStream: OutputStream): OutputStream {
+    override fun wrapOutputStream(outputStream: OutputStream): OutputStream {
         return outputStream
     }
 
-    override fun onOpenInputStream1(inputStream: InputStream): InputStream {
+    override fun wrapInputStream(inputStream: InputStream): InputStream {
         return inputStream
     }
 

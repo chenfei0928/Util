@@ -25,6 +25,11 @@ object BaseLikeListViewInjector {
         if (!hasNext()) {
             return
         } else when (executorOrScope) {
+            is ExecutorAndCallback.DirectExecutor -> {
+                forEach { bean ->
+                    callback(command(bean), bean)
+                }
+            }
             is CoroutineScope -> {
                 executorOrScope.launch {
                     forEach { bean ->

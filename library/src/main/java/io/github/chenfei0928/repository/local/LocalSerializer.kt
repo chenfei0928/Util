@@ -46,7 +46,7 @@ interface LocalSerializer<T> {
     /**
      * IO装饰器，实现对子序列化器是否是装饰器的判断
      *
-     * 子类重写[onOpenOutStream1]与[onOpenInputStream1]即可对io流进行包装
+     * 子类重写[wrapOutputStream]与[wrapInputStream]即可对io流进行包装
      *
      * 如果子类需要对数据进行添加校验头，也是重写该方法并在实际写入/读取前处理校验数据并直接返回入参
      */
@@ -56,24 +56,26 @@ interface LocalSerializer<T> {
 
         final override fun onOpenInputStream(inputStream: InputStream): InputStream {
             return if (serializer is IODecorator) {
-                serializer.onOpenInputStream(onOpenInputStream1(inputStream))
+                // 先自己将输入流包装后传入子装饰器
+                serializer.onOpenInputStream(wrapInputStream(inputStream))
             } else {
-                onOpenInputStream1(inputStream)
+                wrapInputStream(inputStream)
             }
         }
 
         final override fun onOpenOutStream(outputStream: OutputStream): OutputStream {
             return if (serializer is IODecorator) {
-                serializer.onOpenOutStream(onOpenOutStream1(outputStream))
+                // 先自己将输出流包装后传入子装饰器
+                serializer.onOpenOutStream(wrapOutputStream(outputStream))
             } else {
-                onOpenOutStream1(outputStream)
+                wrapOutputStream(outputStream)
             }
         }
 
         @Throws(IOException::class)
-        abstract fun onOpenInputStream1(inputStream: InputStream): InputStream
+        abstract fun wrapInputStream(inputStream: InputStream): InputStream
 
         @Throws(IOException::class)
-        abstract fun onOpenOutStream1(outputStream: OutputStream): OutputStream
+        abstract fun wrapOutputStream(outputStream: OutputStream): OutputStream
     }
 }

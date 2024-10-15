@@ -19,9 +19,9 @@ private constructor(
 ) : LocalSerializer.BaseIODecorator<T>(serializer) {
     private val versionCode: ByteArray = versionCodeLong.toByteArray()
 
-    override fun onOpenInputStream1(inputStream: InputStream): InputStream {
+    override fun wrapInputStream(inputStream: InputStream): InputStream {
         // long 类型8字节
-        val savedVersionCode = ByteArray(8)
+        val savedVersionCode = ByteArray(Long.SIZE_BYTES)
         // 读取本地保存的内容的数据结构版本号
         inputStream.read(savedVersionCode)
         require(versionCode contentEquals savedVersionCode) {
@@ -32,7 +32,7 @@ private constructor(
         return inputStream
     }
 
-    override fun onOpenOutStream1(outputStream: OutputStream): OutputStream {
+    override fun wrapOutputStream(outputStream: OutputStream): OutputStream {
         // 写入应用版本号
         outputStream.write(versionCode)
         // 将数据结构版本号写入io流

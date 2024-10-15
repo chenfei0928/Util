@@ -53,7 +53,6 @@ class GsonSerializer<T>(
          */
         inline fun <reified T> create() = GsonSerializer(typeToken = object : TypeToken<T>() {})
 
-        inline fun <reified T> createGzipped() =
-            GsonSerializer(typeToken = object : TypeToken<T>() {}).gzip()
+        inline fun <reified T> createGzipped() = create<T>().gzip()
     }
 }

@@ -22,11 +22,11 @@ class Base64Serializer<T>
 private constructor(
     serializer: LocalSerializer<T>
 ) : LocalSerializer.BaseIODecorator<T>(serializer) {
-    override fun onOpenInputStream1(inputStream: InputStream): InputStream {
+    override fun wrapInputStream(inputStream: InputStream): InputStream {
         return Base64InputStream(inputStream, Base64.DEFAULT)
     }
 
-    override fun onOpenOutStream1(outputStream: OutputStream): OutputStream {
+    override fun wrapOutputStream(outputStream: OutputStream): OutputStream {
         return Base64OutputStream(outputStream, Base64.DEFAULT)
     }
 
