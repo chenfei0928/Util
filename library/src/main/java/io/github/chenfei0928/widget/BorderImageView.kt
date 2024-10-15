@@ -62,19 +62,22 @@ class BorderImageView
         borderPaint.colorFilter = cf
     }
 
+    private val tmpRectF = RectF()
+
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
         if (borderWidth <= 0) {
             return
         }
-        val rectF = RectF(
+        @Suppress("kotlin:S6518")
+        tmpRectF.set(
             paddingLeft.toFloat() + borderWidth / 2,
             paddingTop.toFloat() + borderWidth / 2,
             width - paddingRight.toFloat() - borderWidth / 2,
             height - paddingBottom.toFloat() - borderWidth / 2
         )
         val provider = outlineProvider as? OutlineType
-        provider?.drawBorder(canvas, borderPaint, rectF)
+        provider?.drawBorder(this, canvas, borderPaint, tmpRectF)
     }
 
     companion object {

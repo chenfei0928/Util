@@ -33,13 +33,13 @@ sealed class OutlineType : ViewOutlineProvider() {
      * @param paint
      * @param rectF
      */
-    abstract fun drawBorder(canvas: Canvas, paint: Paint, rectF: RectF)
+    abstract fun drawBorder(view: View, canvas: Canvas, paint: Paint, rectF: RectF)
 
     /**
      * 裁剪到圆形
      */
     data object Oval : OutlineType() {
-        override fun drawBorder(canvas: Canvas, paint: Paint, rectF: RectF) {
+        override fun drawBorder(view: View, canvas: Canvas, paint: Paint, rectF: RectF) {
             canvas.drawOval(rectF, paint)
         }
 
@@ -57,8 +57,51 @@ sealed class OutlineType : ViewOutlineProvider() {
      * 根据[View.getBackground]的[Drawable.getOutline]裁剪
      */
     data object Background : OutlineType() {
-        override fun drawBorder(canvas: Canvas, paint: Paint, rectF: RectF) {
-            Log.w(TAG, "drawBorder: clipToBackground 时不支持绘制边框")
+        val path: Path = Path()
+
+        override fun drawBorder(view: View, canvas: Canvas, paint: Paint, rectF: RectF) {
+            when (val d = view.background) {
+                is GradientDrawable -> drawBroder(view, d, canvas, paint, rectF)
+                else -> {
+                    Log.w(TAG, "drawBorder: clipToBackground 时不支持绘制边框: ${d.javaClass}")
+                }
+            }
+        }
+
+        private fun drawBroder(
+            view: View, d: GradientDrawable, canvas: Canvas, paint: Paint, rectF: RectF
+        ): Unit = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            Log.w(TAG, "drawBorder: clipToBackground 时不支持绘制边框: GradientDrawable")
+        } else when (d.shape) {
+            GradientDrawable.LINE -> Log.w(TAG, run {
+                "drawBorder: clipToBackground 时不支持绘制边框: GradientDrawable shape is LINE"
+            })
+            GradientDrawable.OVAL -> {
+                canvas.drawOval(rectF, paint)
+            }
+            GradientDrawable.RECTANGLE -> {
+                val radius = d.cornerRadius
+                if (radius != 0f) {
+                    canvas.drawRoundRect(rectF, radius, radius, paint)
+                } else {
+                    path.rewind()
+                    path.addRoundRect(
+                        view.paddingLeft.toFloat(),
+                        view.paddingTop.toFloat(),
+                        view.width - view.paddingRight.toFloat(),
+                        view.height - view.paddingBottom.toFloat(),
+                        d.cornerRadii!!,
+                        Path.Direction.CW
+                    )
+                    canvas.drawPath(path, paint)
+                }
+            }
+            GradientDrawable.RING -> {
+                canvas.drawOval(rectF, paint)
+            }
+            else -> Log.w(TAG, run {
+                "drawBorder: clipToBackground 时不支持绘制边框: GradientDrawable shape is ${d.shape}"
+            })
         }
 
         override fun getOutline(view: View?, outline: Outline?) {
@@ -74,7 +117,7 @@ sealed class OutlineType : ViewOutlineProvider() {
     data class SameCornerRadius(
         var cornerRadius: Float
     ) : OutlineType() {
-        override fun drawBorder(canvas: Canvas, paint: Paint, rectF: RectF) {
+        override fun drawBorder(view: View, canvas: Canvas, paint: Paint, rectF: RectF) {
             canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint)
         }
 
@@ -97,7 +140,7 @@ sealed class OutlineType : ViewOutlineProvider() {
     open class PathType : OutlineType() {
         val path: Path = Path()
 
-        override fun drawBorder(canvas: Canvas, paint: Paint, rectF: RectF) {
+        override fun drawBorder(view: View, canvas: Canvas, paint: Paint, rectF: RectF) {
             canvas.drawPath(path, paint)
         }
 
