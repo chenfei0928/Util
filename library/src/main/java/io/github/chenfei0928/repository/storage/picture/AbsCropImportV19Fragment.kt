@@ -123,7 +123,7 @@ internal abstract class AbsCropImportV19Fragment : BaseFileImportUriFragment() {
 
     companion object {
         private const val KEY_CROPPED_IMAGE_URI = "croppedImageUri"
-        private const val CROP_INTENT_PARAM = AbsCropImportBaseFragment.CROP_INTENT_PARAM
+        private const val CROP_INTENT_PARAM = "cropParam"
 
         /**
          * 授予对某个意向的uri授权

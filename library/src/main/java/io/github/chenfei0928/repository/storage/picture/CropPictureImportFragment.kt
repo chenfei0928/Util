@@ -38,7 +38,7 @@ class CropPictureImportFragment : BaseFileImportUriFragment() {
 
     companion object {
         private const val KEY_SOURCE = "source"
-        private const val CROP_INTENT_PARAM = AbsCropImportBaseFragment.CROP_INTENT_PARAM
+        private const val CROP_INTENT_PARAM = "cropParam"
         const val PICTURE = 0
         const val TAKE_PHOTO = 1
 
