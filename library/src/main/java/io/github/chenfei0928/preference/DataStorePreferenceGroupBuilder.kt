@@ -33,7 +33,7 @@ class DataStorePreferenceGroupBuilder<SpSaver : Any>(
 
     //<editor-fold desc="Field来获取字段名" defaultstate="collapsed">
     inline fun checkBoxPreference(
-        property: DataStoreDataStore.Field<SpSaver, Boolean>,
+        property: FieldAccessor.Field<SpSaver, Boolean>,
         block: CheckBoxPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<SpSaver> = applyBuilder {
         require(property in dataStore) {
@@ -43,7 +43,7 @@ class DataStorePreferenceGroupBuilder<SpSaver : Any>(
     }
 
     inline fun <reified E> dropDownPreference(
-        property: DataStoreDataStore.Field<SpSaver, E>,
+        property: FieldAccessor.Field<SpSaver, E>,
         block: DropDownPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<SpSaver> where E : Enum<E>, E : VisibleNamed = applyBuilder {
         require(property in dataStore) {
@@ -53,7 +53,7 @@ class DataStorePreferenceGroupBuilder<SpSaver : Any>(
     }
 
     inline fun editTextPreference(
-        property: DataStoreDataStore.Field<SpSaver, String?>,
+        property: FieldAccessor.Field<SpSaver, String?>,
         block: EditTextPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<SpSaver> = applyBuilder {
         require(property in dataStore) {
@@ -63,7 +63,7 @@ class DataStorePreferenceGroupBuilder<SpSaver : Any>(
     }
 
     inline fun <reified E> listPreference(
-        property: DataStoreDataStore.Field<SpSaver, E>,
+        property: FieldAccessor.Field<SpSaver, E>,
         block: ListPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<SpSaver> where E : Enum<E>, E : VisibleNamed = applyBuilder {
         require(property in dataStore) {
@@ -73,7 +73,7 @@ class DataStorePreferenceGroupBuilder<SpSaver : Any>(
     }
 
     inline fun <reified E> multiSelectListPreference(
-        property: DataStoreDataStore.Field<SpSaver, Set<E>>,
+        property: FieldAccessor.Field<SpSaver, Set<E>>,
         block: MultiSelectListPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<SpSaver> where E : Enum<E>, E : VisibleNamed = applyBuilder {
         require(property in dataStore) {
@@ -83,7 +83,7 @@ class DataStorePreferenceGroupBuilder<SpSaver : Any>(
     }
 
     inline fun seekBarPreference(
-        property: DataStoreDataStore.Field<SpSaver, Int>,
+        property: FieldAccessor.Field<SpSaver, Int>,
         block: SeekBarPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<SpSaver> = applyBuilder {
         require(property in dataStore) {
@@ -93,7 +93,7 @@ class DataStorePreferenceGroupBuilder<SpSaver : Any>(
     }
 
     inline fun switchPreference(
-        property: DataStoreDataStore.Field<SpSaver, Boolean>,
+        property: FieldAccessor.Field<SpSaver, Boolean>,
         block: SwitchPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<SpSaver> = applyBuilder {
         require(property in dataStore) {
