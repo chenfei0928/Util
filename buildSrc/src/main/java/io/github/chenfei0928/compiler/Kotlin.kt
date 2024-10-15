@@ -110,11 +110,11 @@ fun Project.applyKotlin(
         // Json序列化支持
         // https://github.com/Kotlin/kotlinx.serialization
         if (json) {
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
         }
         // 协程库
         // https://github.com/Kotlin/kotlinx.coroutines
-        val coroutinesVersion = "1.8.1"
+        val coroutinesVersion = "1.9.0"
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
         // Kotlin官方解决方案，需要在Kotlin协程库在入前调用 System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
         // https://github.com/Kotlin/kotlinx.coroutines/blob/master/docs/topics/debugging.md

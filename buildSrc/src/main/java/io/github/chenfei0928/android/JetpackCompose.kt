@@ -14,7 +14,7 @@ import java.lang.Integer.max
 
 // Compose 与 Kotlin 的兼容性对应关系
 // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-private const val composeVer = "1.5.14"
+private const val composeVer = "1.5.15"
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
