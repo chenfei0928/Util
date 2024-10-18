@@ -24,13 +24,13 @@ object Env {
         // 从启动任务中寻找是否含有Release/QaTest编译的task
         val containsReleaseBuild: Boolean = gradle.startParameter.taskRequests
             .flatMap { it.args }
-            .find { startTaskRequestArg ->
-                Contract.minifyBuildTypes.find { minifyBuildType ->
+            .any { startTaskRequestArg ->
+                Contract.minifyBuildTypes.any { minifyBuildType ->
                     startTaskRequestArg.contains(minifyBuildType.replaceFirstChar {
                         if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
                     })
-                } != null
-            } != null
+                }
+            }
         // 创建impl
         impl = EnvImpl(containsReleaseBuild, protobufType)
         logger.lifecycle("Env环境初始化：$containsReleaseBuild")

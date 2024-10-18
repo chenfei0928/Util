@@ -6,6 +6,7 @@ import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.checkApp
 import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.tmpProguardFilesDir
+import io.github.chenfei0928.util.writeTmpProguardFile
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -92,7 +93,7 @@ private abstract class GenObfuscationDictTask : DefaultTask() {
         chars.forEach { c ->
             val m = r.nextInt(startSize - 3)
             val n = m + 3
-            (m..n).forEach { j ->
+            for (j in m..n) {
                 dict.add(startChars[j] + c)
             }
         }

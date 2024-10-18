@@ -1,9 +1,9 @@
 package io.github.chenfei0928.android
 
-import io.github.chenfei0928.Env
-import io.github.chenfei0928.util.implementation
 import com.didi.drouter.RouterPluginKt
 import com.didi.drouter.plugin.RouterSetting
+import io.github.chenfei0928.Env
+import io.github.chenfei0928.util.implementation
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies

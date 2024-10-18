@@ -1,3 +1,6 @@
+//@file:Repository("https://maven.pkg.jetbrains.space/public/p/kotlinx-coroutines/maven")
+//@file:DependsOn("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0-RC3-Beta")
+
 package io.github0928.script
 
 import java.io.Closeable

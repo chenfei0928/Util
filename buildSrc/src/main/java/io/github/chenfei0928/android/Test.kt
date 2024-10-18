@@ -1,8 +1,8 @@
 package io.github.chenfei0928.android
 
-import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.Deps
 import io.github.chenfei0928.DepsAndroidx
+import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debugImplementation
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.DependencyHandlerScope
