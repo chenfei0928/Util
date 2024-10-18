@@ -3,24 +3,30 @@ package io.github.chenfei0928.android
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.Deps
 import io.github.chenfei0928.DepsAndroidx
+import io.github.chenfei0928.compiler.buildSrcKotlinOptions
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debugImplementation
 import io.github.chenfei0928.util.implementation
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradleSubplugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import java.lang.Integer.max
 
-// Compose 与 Kotlin 的兼容性对应关系
-// https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-private const val composeVer = "1.5.15"
-
 /**
+ * [Document](https://developer.android.com/develop/ui/compose/documentation)
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-07-31 18:27
  */
-fun Project.applyJetpackCompose() {
+fun Project.applyJetpackCompose(
+    block: ComposeCompilerGradlePluginExtension.() -> Unit = {}
+) {
+    apply<ComposeCompilerGradleSubplugin>()
+
     // https://developer.android.com/jetpack/compose/setup?hl=zh-cn
     buildSrcAndroid<com.android.build.gradle.BaseExtension> {
         defaultConfig {
@@ -38,18 +44,18 @@ fun Project.applyJetpackCompose() {
             targetCompatibility = Contract.JAVA_VERSION
         }
 
-        (this as ExtensionAware).extensions.configure<KotlinJvmOptions>("kotlinOptions") {
+        (this as ExtensionAware).buildSrcKotlinOptions<KotlinJvmOptions> {
             jvmTarget = Contract.JAVA_VERSION.toString()
         }
+    }
 
-        composeOptions {
-            kotlinCompilerExtensionVersion = composeVer
-        }
+    extensions.configure<ComposeCompilerGradlePluginExtension>("composeCompiler") {
+        block()
     }
 
     dependencies {
         // https://developer.android.com/jetpack/compose/bom/bom-mapping
-        val composeBom = platform("androidx.compose:compose-bom:2023.08.00")
+        val composeBom = platform("androidx.compose:compose-bom:2024.09.03")
         implementation(composeBom)
         androidTestImplementation(composeBom)
 

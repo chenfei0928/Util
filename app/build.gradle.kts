@@ -1,6 +1,7 @@
 import io.github.chenfei0928.Deps
 import io.github.chenfei0928.DepsAndroidx
 import io.github.chenfei0928.android.applyApp
+import io.github.chenfei0928.android.applyJetpackCompose
 import io.github.chenfei0928.android.applyTest
 import io.github.chenfei0928.compiler.applyKotlin
 import io.github.chenfei0928.data.applyProtobuf
@@ -12,6 +13,7 @@ plugins {
 applyApp()
 applyTest()
 applyKotlin(parcelize = true)
+applyJetpackCompose()
 applyProtobuf()
 
 android {

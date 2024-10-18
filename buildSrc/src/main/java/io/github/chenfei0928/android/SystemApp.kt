@@ -122,3 +122,31 @@ private fun installApk(appExtension: AppExtension, apkFile: File) {
 //                }.start().waitFor()
 //                Env.logger.lifecycle("adb shell am start ${buildSrcAndroid<AppExtension>().defaultConfig.applicationId} result $amStartCode")
 }
+
+private fun installApkToPrivilegeApp(
+    appExtension: AppExtension, apkFile: File, targetFilePath: String
+): Unit = appExtension.run {
+    adbCommend("root")
+    adbCommend("remount")
+    adbCommend("shell", "mkdir", targetFilePath.substringBeforeLast('/'))
+    adbCommend("push", apkFile.absolutePath, targetFilePath)
+    adbCommend("shell", "sync")
+    adbCommend("reboot")
+}
+
+private fun command(
+    vararg args: String?
+): Int = ProcessBuilder().command(*args).apply {
+    redirectErrorStream(true)
+    redirectOutput(ProcessBuilder.Redirect.INHERIT)
+}.start().waitFor()
+
+private fun AppExtension.adbCommend(
+    vararg args: String?
+): Int = command(adbExecutable.absolutePath, *args).also {
+    if (args.firstOrNull() == "shell") {
+        Env.logger.debug("\"adb shell ${args[1]}\" return $it")
+    } else {
+        Env.logger.debug("\"adb ${args.firstOrNull() ?: ""}\" return $it")
+    }
+}
