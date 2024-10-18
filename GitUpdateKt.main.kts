@@ -1,18 +1,14 @@
-//@file:Repository("https://maven.pkg.jetbrains.space/public/p/kotlinx-coroutines/maven")
-//@file:DependsOn("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0-RC3-Beta")
+// 以 .main.kts 后缀才可以使用远端依赖
+@file:Repository("https://maven.pkg.jetbrains.space/public/p/kotlinx-coroutines/maven")
+@file:DependsOn("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0-RC3-Beta")
 
-package io.github0928.script
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import java.io.Closeable
 import java.io.File
 import java.io.IOException
 import java.util.Collections
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-
-private val EXECUTOR: ExecutorService = Executors.newFixedThreadPool(
-    Runtime.getRuntime().availableProcessors() * 4
-)
 
 private val targetDir = File("/mnt/f/open_source")
 
@@ -22,28 +18,29 @@ println("工作目录：$targetDir")
 val ignoreDirs = File(targetDir, "ignore.txt").readLines()
 println("忽略的Git工程：$ignoreDirs")
 
-val files: Array<File> = targetDir.listFiles { f ->
-    f.isDirectory && f.name !in ignoreDirs
-}!!
-files.shuffle()
-val filesList = Collections.synchronizedList(files.toMutableList())
-files.map {
-    EXECUTOR.submit {
-        try {
-            checkToSync(GitDir(it))
-        } catch (e: Throwable) {
-            System.err.println("项目：$it 同步失败：$e")
+runBlocking {
+    val files: Array<File> = targetDir.listFiles { f ->
+        f.isDirectory && f.name !in ignoreDirs
+    }!!
+    files.shuffle()
+    val filesList = Collections.synchronizedList(files.toMutableList())
+    files.map {
+        async(Dispatchers.IO) {
+            try {
+                checkToSync(GitDir(it))
+            } catch (e: Throwable) {
+                System.err.println("项目：$it 同步失败：$e")
+            }
+            filesList.remove(it)
+            println("剩余进度项目：${filesList.size}/${files.size}")
+            if (filesList.size < 10) {
+                println("剩余项目：$filesList")
+            }
         }
-        filesList.remove(it)
-        println("剩余进度项目：${filesList.size}/${files.size}")
-        if (filesList.size < 10) {
-            println("剩余项目：$filesList")
-        }
+    }.forEach {
+        it.await()
     }
-}.forEach {
-    it.get()
 }
-EXECUTOR.shutdown()
 
 @Throws(IOException::class, InterruptedException::class)
 private fun checkToSync(gitDir: GitDir) {
