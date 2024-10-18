@@ -17,17 +17,16 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ModuleDependency
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import java.util.Locale
 import java.util.regex.Pattern
 
 internal fun <Android : BaseExtension> Project.buildSrcAndroid(
     configure: Action<Android>
-): Unit = this.extensions.configure("android", configure)
+): Unit = extensions.configure("android", configure)
 
 internal fun <Android : BaseExtension> Project.buildSrcAndroid(
-): Android = this.extensions.getByName("android") as Android
+): Android = extensions.getByName("android") as Android
 
 /**
  * Android components
@@ -37,9 +36,7 @@ internal fun <Android : BaseExtension> Project.buildSrcAndroid(
  */
 internal fun <Android : AndroidComponentsExtension<*, *, *>> Project.buildSrcAndroidComponents(
     configure: Action<Android>
-): Unit = (this as ExtensionAware).extensions.configure(
-    "androidComponents", configure
-)
+): Unit = extensions.configure("androidComponents", configure)
 
 internal fun Project.checkApp(methodName: String) {
     extensions.getByName("android") as? BaseAppModuleExtension

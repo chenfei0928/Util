@@ -7,7 +7,6 @@ import io.github.chenfei0928.util.checkApp
 import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.tmpProguardFilesDir
 import io.github.chenfei0928.util.writeTmpProguardFile
-import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
@@ -50,14 +49,14 @@ fun Project.applyAppDictObfuscation() {
 
     // 将混淆字典生成任务添加到编译任务的依赖中
     afterEvaluate {
-        extensions.configure("android", Action<AppExtension> {
+        buildSrcAndroid<AppExtension> {
             applicationVariants.all {
                 val preBuildName = getPreBuildName(name)
                     ?: return@all
                 val task = tasks.getByName(preBuildName)
                 task.dependsOn(genObfuscationDict)
             }
-        })
+        }
     }
 }
 

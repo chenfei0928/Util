@@ -1,6 +1,7 @@
 package io.github.chenfei0928.compiler
 
 import io.github.chenfei0928.util.compileOnly
+import net.ltgt.gradle.errorprone.ErrorProneOptions
 import net.ltgt.gradle.errorprone.ErrorPronePlugin
 import net.ltgt.gradle.errorprone.errorprone
 import org.gradle.api.Project
@@ -17,6 +18,9 @@ import org.gradle.kotlin.dsl.withType
  */
 fun Project.applyErrorProne() {
     apply<ErrorPronePlugin>()
+
+    extensions.configure<ErrorProneOptions>("errorprone") {
+    }
 
     tasks.withType<JavaCompile>().configureEach {
         options.errorprone.run {
