@@ -20,7 +20,7 @@ object DepsAndroidx {
     const val activityKtx = "androidx.activity:activity-ktx:1.9.1"
 
     // https://dl.google.com/dl/android/maven2/androidx/activity/activity-compose/maven-metadata.xml
-    const val activityCompose = "androidx.activity:activity-compose:1.7.2"
+    const val activityCompose = "androidx.activity:activity-compose:1.9.3"
 
     // https://dl.google.com/dl/android/maven2/androidx/fragment/fragment/maven-metadata.xml
     const val fragment = "androidx.fragment:fragment:1.8.1"
@@ -90,7 +90,7 @@ object DepsAndroidx {
     // https://developer.android.com/jetpack/androidx/releases/webkit
     // https://developer.android.com/reference/androidx/webkit/package-summary?hl=zh-cn
     // https://dl.google.com/dl/android/maven2/androidx/webkit/webkit/maven-metadata.xml
-    const val webkit = "androidx.webkit:webkit:1.11.0"
+    const val webkit = "androidx.webkit:webkit:1.12.1"
 
     // https://developer.android.com/jetpack/androidx/releases/datastore
     // https://dl.google.com/dl/android/maven2/androidx/datastore/datastore-core/maven-metadata.xml
@@ -291,7 +291,7 @@ object DepsAndroidx {
     // https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/maven-metadata.xml
     object lifecycle {
         // https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/maven-metadata.xml
-        private const val lifecycleVer = "2.8.4"
+        private const val lifecycleVer = "2.8.6"
 
         const val common = "androidx.lifecycle:lifecycle-common:$lifecycleVer"
         const val commonJ8 = "androidx.lifecycle:lifecycle-common-java8:$lifecycleVer"

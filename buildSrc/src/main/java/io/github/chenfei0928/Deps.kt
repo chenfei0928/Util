@@ -428,8 +428,8 @@ object Deps {
         val numberProgressBar = "com.daimajia.numberprogressbar:library:1.4@aar"
 
         // https://github.com/airbnb/lottie-android
-        val lottie = "com.airbnb.android:lottie:6.1.0"
-        val lottieCompose = "com.airbnb.android:lottie-compose:6.1.0"
+        val lottie = "com.airbnb.android:lottie:6.5.2"
+        val lottieCompose = "com.airbnb.android:lottie-compose:6.5.2"
 
         // https://github.com/akexorcist/Android-RoundCornerProgressBar
         val roundCornerProgressBar = "com.akexorcist:round-corner-progress-bar:2.2.1"

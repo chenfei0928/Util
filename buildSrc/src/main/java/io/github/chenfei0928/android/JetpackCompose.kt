@@ -14,7 +14,7 @@ import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradleSubplugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
-import java.lang.Integer.max
+import kotlin.math.max
 
 /**
  * [Document](https://developer.android.com/develop/ui/compose/documentation)

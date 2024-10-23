@@ -24,7 +24,7 @@ class GsonSerializer<T>(
     ) : this(gson = gson, typeToken = TypeToken.get(type) as TypeToken<T>)
 
     override val defaultValue: T by lazy {
-        typeToken.rawType.newInstance() as T
+        typeToken.rawType.getDeclaredConstructor().newInstance() as T
     }
 
     @Throws(IOException::class)

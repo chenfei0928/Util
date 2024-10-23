@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.drakeet.multitype.ItemViewDelegate
 import com.drakeet.multitype.MultiTypeAdapter
+import io.github.chenfei0928.os.getParcelableCompat
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -446,7 +447,7 @@ abstract class FragmentBinder<T> : ItemViewDelegate<T, MultiTypeFragmentViewHold
             }
             if (isValidKey(key, KEY_PREFIX_STATE)) {
                 val itemId = parseIdFromKey(key, KEY_PREFIX_STATE)
-                val state = bundle.getParcelable<Fragment.SavedState>(key)
+                val state = bundle.getParcelableCompat<Fragment.SavedState>(key)
                 if (containsItem(itemId)) {
                     mSavedStates.put(itemId, state)
                 }

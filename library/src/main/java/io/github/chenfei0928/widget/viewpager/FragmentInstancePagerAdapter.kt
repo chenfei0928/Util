@@ -13,6 +13,7 @@ import io.github.chenfei0928.content.contentEquals
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-06-13 15:57
  */
+@Deprecated("使用 ViewPager2 与 FragmentInstancePager2Adapter")
 class FragmentInstancePagerAdapter
 @JvmOverloads constructor(
     fm: FragmentManager,
@@ -20,6 +21,7 @@ class FragmentInstancePagerAdapter
 ) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT),
     FragmentInstancePagerList by pagerList {
 
+    //<editor-fold defaultstate="collapsed" desc="适配器父类方法">
     override fun getItem(position: Int): Fragment {
         return createFragment(position)
     }

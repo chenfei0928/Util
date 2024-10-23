@@ -190,7 +190,7 @@ open class BaseWebViewClient(
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="请求拦截返回">
-    var assetLoader: WebViewAssetLoader = WebViewAssetLoader.Builder().apply { }
+    var assetLoader: WebViewAssetLoader = WebViewAssetLoader.Builder()
         // https://appassets.androidplatform.net/assets/index.html
         .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
         // https://appassets.androidplatform.net/resources/mipmap/ic_launcher.png

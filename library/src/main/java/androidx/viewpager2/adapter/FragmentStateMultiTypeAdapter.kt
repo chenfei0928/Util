@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
+import io.github.chenfei0928.os.getParcelableCompat
 import io.github.chenfei0928.widget.recyclerview.adapter.IMultiTypeAdapterStringer
 
 /**
@@ -129,7 +130,7 @@ constructor(
         for (i in 0 until types.size) {
             val type = types.getType<Any>(i).delegate
             if (type is FragmentBinder<*>) {
-                savedState.getParcelable<Parcelable>(
+                savedState.getParcelableCompat<Parcelable>(
                     type.javaClass.name
                 )?.let {
                     type.restoreState(it)
