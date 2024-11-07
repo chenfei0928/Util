@@ -81,7 +81,7 @@ abstract class BaseProtobufParceler<MessageType : MessageLite> : Parceler<Messag
  * @author chenf()
  * @date 2023-03-28 14:27
  */
-class ProtobufV3Parceler<MessageType : GeneratedMessageV3>(
+open class ProtobufV3Parceler<MessageType : GeneratedMessageV3>(
     cacheSize: Int = 10
 ) : BaseProtobufParceler<MessageType>() {
 
@@ -113,11 +113,9 @@ class ProtobufV3Parceler<MessageType : GeneratedMessageV3>(
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2021-12-21 16:29
  */
-class ProtobufLiteParceler<MessageType, BuilderType>(
+open class ProtobufLiteParceler<MessageType : GeneratedMessageLite<MessageType, *>>(
     cacheSize: Int = 10
-) : BaseProtobufParceler<MessageType>() where
-MessageType : GeneratedMessageLite<MessageType, BuilderType>,
-BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
+) : BaseProtobufParceler<MessageType>() {
 
     private val parserCache = object : LruCache<String, Parser<MessageType>>(cacheSize) {
         override fun create(key: String): Parser<MessageType> {
@@ -133,6 +131,5 @@ BuilderType : GeneratedMessageLite.Builder<MessageType, BuilderType> {
 
     @Suppress("UNCHECKED_CAST")
     companion object Instance : Parceler<GeneratedMessageLite<*, *>?>
-    by ProtobufLiteParceler::class.java.getDeclaredConstructor()
-        .newInstance() as Parceler<GeneratedMessageLite<*, *>?>
+    by ProtobufLiteParceler() as Parceler<GeneratedMessageLite<*, *>?>
 }

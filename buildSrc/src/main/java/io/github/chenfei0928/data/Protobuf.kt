@@ -24,7 +24,7 @@ private const val grpcKotlinVersion = "1.4.2"
 // https://github.com/protocolbuffers/protobuf
 // https://github.com/protocolbuffers/protobuf/blob/main/java/lite.md
 // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-javalite
-private const val protobufVersion = "4.28.2"
+private const val protobufVersion = "4.28.3"
 
 private const val proguardFileName = "protobuf.pro"
 private const val proguardRules = """

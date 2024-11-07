@@ -17,7 +17,7 @@ import kotlin.coroutines.resumeWithException
  */
 private class GlideAwait<TranscodeType>(
     width: Int, height: Int,
-    private val continuation: CancellableContinuation<TranscodeType>
+    private val continuation: CancellableContinuation<TranscodeType>,
 ) : CustomTarget<TranscodeType>(width, height) {
 
     override fun onLoadFailed(errorDrawable: Drawable?) {
@@ -44,7 +44,7 @@ private class GlideAwait<TranscodeType>(
  */
 suspend fun <TranscodeType> RequestBuilder<TranscodeType>.await(
     @Px width: Int = Target.SIZE_ORIGINAL,
-    @Px height: Int = Target.SIZE_ORIGINAL
+    @Px height: Int = Target.SIZE_ORIGINAL,
 ): TranscodeType = suspendCancellableCoroutine { continuation ->
     // 获取view尺寸后开启加载过程
     val glideAwait = GlideAwait(width, height, continuation)

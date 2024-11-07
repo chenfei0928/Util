@@ -4,7 +4,7 @@ import android.animation.Animator
 import androidx.annotation.ReturnThis
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.lifecycle.onEvent
+import io.github.chenfei0928.lifecycle.bindUntilFirstEvent
 
 @ReturnThis
 fun Animator.bindToLifecycle(owner: LifecycleOwner): Animator {
@@ -13,10 +13,8 @@ fun Animator.bindToLifecycle(owner: LifecycleOwner): Animator {
 }
 
 private fun Animator.bindUntilEvent(owner: LifecycleOwner, event: Lifecycle.Event) {
-    owner.lifecycle.onEvent { e ->
-        if (e == event) {
-            this.cancel()
-        }
+    owner.bindUntilFirstEvent(event) {
+        this.cancel()
     }
 }
 

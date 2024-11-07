@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.annotation.IntRange
 import io.github.chenfei0928.util.Log
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Locale
 
@@ -21,7 +20,7 @@ fun Bitmap.save(
     quality: Int = 100
 ): Boolean {
     return try {
-        FileOutputStream(outputFile).use {
+        outputFile.outputStream().use {
             this.compress(getCompressFormat(outputFile.extension), quality, it)
             it.flush()
             true

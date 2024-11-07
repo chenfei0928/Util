@@ -27,7 +27,7 @@ import kotlin.coroutines.resume
 @MainThread
 inline fun <D> D.launchWithShow(
     parentLifecycleOwner: LifecycleOwner = EventLifecycleOwner.immortal,
-    crossinline block: suspend CoroutineScope.(D) -> Unit
+    crossinline block: suspend CoroutineScope.(D) -> Unit,
 ) where D : Dialog, D : LifecycleOwner {
     val callback = LifecycleEventObserver { _, event ->
         if (event == Lifecycle.Event.ON_DESTROY) {
@@ -59,7 +59,7 @@ inline fun <D> D.launchWithShow(
  */
 suspend inline fun <D : Dialog, R> D.showWithContext(
     context: CoroutineContext = EmptyCoroutineContext,
-    crossinline block: suspend CoroutineScope.(D) -> R
+    crossinline block: suspend CoroutineScope.(D) -> R,
 ): R = coroutineScope {
     show()
     val cancelSelfJob = onCancellation {

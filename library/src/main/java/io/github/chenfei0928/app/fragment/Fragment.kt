@@ -1,15 +1,9 @@
 package io.github.chenfei0928.app.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.os.safeHandler
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
 
 fun Fragment.isVisibleForUser(): Boolean {
     return activity?.lifecycle?.currentState == Lifecycle.State.RESUMED
@@ -24,7 +18,6 @@ fun Fragment.visibleStatus(): String = this::class.java.simpleName +
         " isHidden:$isHidden" +
         " isResumed:$isResumed" +
         " isVisible:$isVisible" +
-        " userVisibleHint:$userVisibleHint" +
         " view:$view" +
         (parentFragment?.let {
             "\nparent: " + it.visibleStatus()
@@ -43,8 +36,7 @@ fun Fragment.removeSelf() {
 }
 
 inline fun <reified T> Fragment.findParentByType(block: T.() -> Unit) {
-    findParentByType(T::class.java)
-        ?.run(block)
+    findParentByType(T::class.java)?.run(block)
 }
 
 inline fun <reified T> Fragment.findParentByType(): T? {
@@ -72,21 +64,4 @@ fun <T> Fragment.findParentByType(clazz: Class<T>): T? {
         return clazz.cast(activity)
     }
     return null
-}
-
-/**
- * 等待指定fragment销毁，通常可以用于[DialogFragment]的showAndAwait功能
- */
-suspend fun LifecycleOwner.awaitDestroy() {
-    suspendCancellableCoroutine { continuation ->
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_DESTROY && continuation.isActive) {
-                continuation.resume(Unit)
-            }
-        }
-        lifecycle.addObserver(observer)
-        continuation.invokeOnCancellation {
-            safeHandler.post { lifecycle.removeObserver(observer) }
-        }
-    }
 }

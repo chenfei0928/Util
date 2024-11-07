@@ -80,7 +80,7 @@ private object AbsSpSaverKProperty1Cache {
      * 预先准备保存实例类的字段缓存
      */
     fun <SpSaver : AbsSpSaver> prepare(
-        owner: LifecycleOwner, spSaver: SpSaver
+        owner: LifecycleOwner, spSaver: SpSaver,
     ) = owner.coroutineScope.launch {
         getKotlinClassFieldsCache(spSaver)
     }
@@ -89,7 +89,7 @@ private object AbsSpSaverKProperty1Cache {
      * 根据sp保存实例和其在sp文件中所保存的字段名获取其属性字段
      */
     suspend fun <SpSaver : AbsSpSaver> findSpKProperty1BySpKey(
-        spSaver: SpSaver, key: String
+        spSaver: SpSaver, key: String,
     ): KProperty1<SpSaver, *>? = getKotlinClassFieldsCache(spSaver)[key]
 }
 
@@ -101,7 +101,7 @@ private object AbsSpSaverKProperty1Cache {
  */
 fun <SpSaver : AbsSpSaver> SpSaver.registerOnSharedPreferenceChangeListener(
     owner: LifecycleOwner,
-    @MainThread callback: (key: KProperty1<SpSaver, *>) -> Unit
+    @MainThread callback: (key: KProperty1<SpSaver, *>) -> Unit,
 ) {
     val spSaver = this
     AbsSpSaverKProperty1Cache.prepare(owner, this)

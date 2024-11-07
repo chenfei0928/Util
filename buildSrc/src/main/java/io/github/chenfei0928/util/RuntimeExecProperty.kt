@@ -32,8 +32,8 @@ constructor(
                 val l = System.currentTimeMillis()
                 val result = Runtime.getRuntime().exec(
                     cmdarray, envp, dir
-                ).inputReader().use {
-                    it.readText().trim()
+                ).use {
+                    inputReader().readText().trim()
                 }
                 Env.logger.quiet("VCS ${property.name}: $result, time cost ${System.currentTimeMillis() - l} ms.")
                 when (property.returnType.classifier) {

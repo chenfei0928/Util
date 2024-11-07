@@ -39,22 +39,22 @@ private constructor(
         host?.staticTag ?: fragmentHost?.staticTag ?: androidContext.staticTag
     }
 
-    private val Any?.staticTag: String?
-        get() = this?.javaClass?.let {
-            classTagMap.getOrPut(it) {
-                try {
-                    it.getDeclaredField("TAG").run {
-                        isAccessible = true
-                        get(null) as? String
-                    }
-                } catch (ignore: ReflectiveOperationException) {
-                    null
-                }
-            }
-        }
-
     companion object {
         private val classTagMap = ArrayMap<Class<*>, String?>()
+
+        private val Any?.staticTag: String?
+            get() = this?.javaClass?.let {
+                classTagMap.getOrPut(it) {
+                    try {
+                        it.getDeclaredField("TAG").run {
+                            isAccessible = true
+                            get(null) as? String
+                        }
+                    } catch (ignore: ReflectiveOperationException) {
+                        null
+                    }
+                }
+            }
 
         fun newInstance(host: Any?): CoroutineAndroidContext {
             return newInstanceImpl(host, host)

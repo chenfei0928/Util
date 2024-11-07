@@ -1,8 +1,11 @@
 package androidx.gridlayout.widget
 
 import android.view.Gravity
+import androidx.annotation.Px
 import androidx.transition.Slide
 
+@get:Px
+@setparam:Px
 var GridLayout.defaultGap: Int
     get() = mDefaultGap
     set(value) {
@@ -22,7 +25,8 @@ inline fun GridLayout.LayoutParams.row(block: GridLayoutLayoutParamsSpecBuilder.
     rowSpec = builder.build()
 }
 
-class GridLayoutLayoutParamsSpecBuilder(
+class GridLayoutLayoutParamsSpecBuilder
+private constructor(
     private val isHorizontal: Boolean
 ) {
     @Slide.GravityFlag

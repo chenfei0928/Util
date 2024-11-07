@@ -18,7 +18,8 @@ import kotlin.coroutines.resumeWithException
  * @date 2021-03-12 16:37
  */
 private class ImageViewGlideAwait(
-    private val continuation: CancellableContinuation<Drawable>, view: ImageView
+    private val continuation: CancellableContinuation<Drawable>,
+    view: ImageView,
 ) : CustomViewTarget<ImageView, Drawable>(view), Transition.ViewAdapter {
     private var animatable: Animatable? = null
 
@@ -82,7 +83,7 @@ private class ImageViewGlideAwait(
  * @return 加载到的图片资源
  */
 suspend fun RequestBuilder<Drawable>.await(
-    view: ImageView
+    view: ImageView,
 ): Drawable = suspendCancellableCoroutine { continuation ->
     // 获取view尺寸后开启加载过程
     val glideAwait = ImageViewGlideAwait(continuation, view)

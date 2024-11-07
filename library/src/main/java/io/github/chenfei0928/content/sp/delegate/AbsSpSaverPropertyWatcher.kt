@@ -25,16 +25,14 @@ inline fun <SpSaver : AbsSpSaver, V> SpSaver.internalInlineRegisterOnSharedPrefe
     owner: LifecycleOwner,
     key: String,
     crossinline valueGetter: () -> V,
-    crossinline listener: (V) -> Unit
+    crossinline listener: (V) -> Unit,
 ) {
     // 如果该字段是sp委托，获取其sp存储的key
     listener(valueGetter())
     // 监听sp变化并调用回调
     AbsSpSaver.getSp(this)
         .registerOnSharedPreferenceChangeListener(owner) {
-            if (it == key) {
-                listener(valueGetter())
-            }
+            if (it == key) listener(valueGetter())
         }
 }
 
@@ -73,13 +71,13 @@ fun <SpSaver : AbsSpSaver, V> KProperty<V>.get(owner: SpSaver): V {
  * 监听sp字段的变化并通知回调进行更新，可以方便的传入字段以保证类型安全和一个监听器只监听一个值的变化
  */
 inline fun <SpSaver : AbsSpSaver, V> SpSaver.internalInlineRegisterOnSharedPreferenceChangeListener(
-    owner: LifecycleOwner, property: KProperty<V>, crossinline listener: (V) -> Unit
+    owner: LifecycleOwner, property: KProperty<V>, crossinline listener: (V) -> Unit,
 ) = internalInlineRegisterOnSharedPreferenceChangeListener(
     owner, getPropertySpKeyName(property), { property.get(this) }, listener
 )
 
 fun <SpSaver : AbsSpSaver, V> SpSaver.registerOnSharedPreferenceChangeListener(
-    owner: LifecycleOwner, property: KProperty<V>, listener: (V) -> Unit
+    owner: LifecycleOwner, property: KProperty<V>, listener: (V) -> Unit,
 ) = internalInlineRegisterOnSharedPreferenceChangeListener(
     owner, getPropertySpKeyName(property), { property.get(this) }, listener
 )
@@ -91,7 +89,7 @@ fun <SpSaver : AbsSpSaver, V> SpSaver.registerOnSharedPreferenceChangeListener(
  * @param property 需要监听的属性字段
  */
 inline fun <SpSaver : AbsSpSaver, V, R> SpSaver.internalInlineLiveDataPropertyChange(
-    owner: LifecycleOwner, property: KProperty<V>, crossinline mapCast: (V) -> R
+    owner: LifecycleOwner, property: KProperty<V>, crossinline mapCast: (V) -> R,
 ): LiveData<R> = MutableLiveData<R>().apply {
     // 监听sp属性变化
     internalInlineRegisterOnSharedPreferenceChangeListener(owner, property) {
@@ -107,10 +105,10 @@ inline fun <SpSaver : AbsSpSaver, V, R> SpSaver.internalInlineLiveDataPropertyCh
 }
 
 fun <SpSaver : AbsSpSaver, V> SpSaver.toLiveData(
-    owner: LifecycleOwner, property: KProperty<V>
+    owner: LifecycleOwner, property: KProperty<V>,
 ): LiveData<V> = internalInlineLiveDataPropertyChange(owner, property) { it }
 
 fun <SpSaver : AbsSpSaver, V, R> SpSaver.toLiveData(
-    owner: LifecycleOwner, property: KProperty<V>, mapCast: (V) -> R
+    owner: LifecycleOwner, property: KProperty<V>, mapCast: (V) -> R,
 ): LiveData<R> = internalInlineLiveDataPropertyChange(owner, property, mapCast)
 //</editor-fold>
