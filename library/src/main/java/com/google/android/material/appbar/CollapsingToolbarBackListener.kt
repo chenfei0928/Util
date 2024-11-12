@@ -1,6 +1,5 @@
 package com.google.android.material.appbar
 
-import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.view.MenuItem
@@ -21,8 +20,8 @@ import androidx.core.graphics.drawable.DrawableCompat
 open class CollapsingToolbarBackListener(
     collapsingToolbarLayout: CollapsingToolbarLayout,
     protected val actionBar: ActionBar,
-    @DrawableRes @SuppressLint("PrivateResource")
-    drawableIcon: Int = R.drawable.abc_ic_ab_back_material
+    @DrawableRes
+    drawableIcon: Int = R.drawable.abc_ic_ab_back_material,
 ) : FractionOffsetChangedListener(collapsingToolbarLayout) {
     protected val backIcon: Drawable = ContextCompat
         .getDrawable(actionBar.themedContext, drawableIcon)!!

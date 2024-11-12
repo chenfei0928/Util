@@ -38,7 +38,7 @@ private const val TAG = "KW_MultiType"
 fun <T> MultiTypeAdapter.registerWithTypeRecordClassMap(
     clazz: Class<T>,
     binders: Array<ItemViewDelegate<T, *>>,
-    viewTypeRecord: Map<T, Class<out ItemViewDelegate<T, *>>>
+    viewTypeRecord: Map<T, Class<out ItemViewDelegate<T, *>>>,
 ) = registerWithTypeRecord(clazz, binders) { item ->
     viewTypeRecord[item]
 }
@@ -68,7 +68,7 @@ fun <T> MultiTypeAdapter.registerWithTypeRecordClassMap(
 fun <T> MultiTypeAdapter.registerWithTypeRecorderMap(
     clazz: Class<T>,
     binders: Array<ItemViewDelegate<T, *>>,
-    viewTypeRecord: Map<in T, ViewTypeProvider>
+    viewTypeRecord: Map<in T, ViewTypeProvider>,
 ) = registerWithTypeRecord(clazz, binders) { item ->
     viewTypeRecord[item]?.binderClazz
 }
@@ -90,7 +90,7 @@ fun <T> MultiTypeAdapter.registerWithTypeRecorderMap(
 private inline fun <T> MultiTypeAdapter.registerWithTypeRecord(
     clazz: Class<T>,
     binders: Array<ItemViewDelegate<T, *>>,
-    crossinline viewTypeRecorder: (T) -> Class<out ItemViewDelegate<*, *>>?
+    crossinline viewTypeRecorder: (T) -> Class<out ItemViewDelegate<*, *>>?,
 ) = registerWithLinker(clazz, binders) linker@{ localBinders, _, item ->
     // 获取该item所使用的binder类
     val binderClazz = viewTypeRecorder(item)
@@ -120,7 +120,7 @@ private inline fun <T> MultiTypeAdapter.registerWithTypeRecord(
  */
 inline fun <reified T> MultiTypeAdapter.registerWithLinker(
     binders: Array<ItemViewDelegate<T, *>>,
-    crossinline linker: BindersLinker<T>
+    crossinline linker: BindersLinker<T>,
 ) = registerWithLinker(T::class.java, binders, linker)
 
 /**
@@ -129,7 +129,7 @@ inline fun <reified T> MultiTypeAdapter.registerWithLinker(
 inline fun <T> MultiTypeAdapter.registerWithLinker(
     clazz: Class<T>,
     binders: Array<ItemViewDelegate<T, *>>,
-    crossinline linker: BindersLinker<T>
+    crossinline linker: BindersLinker<T>,
 ) = register(clazz).to(delegates = binders).withLinker(object : Linker<T> {
     override fun index(position: Int, item: T): Int {
         return linker(binders, position, item)

@@ -1,4 +1,4 @@
-package io.github.chenfei0928.content.sp
+package io.github.chenfei0928.content.sp.saver
 
 import android.content.Context
 import android.content.SharedPreferences

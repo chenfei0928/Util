@@ -14,7 +14,7 @@ import kotlin.math.abs
  * @data 2017/7/19
  */
 abstract class FractionOffsetChangedListener(
-    private val collapsingToolbarLayout: CollapsingToolbarLayout
+    private val collapsingToolbarLayout: CollapsingToolbarLayout,
 ) : AppBarLayout.OnOffsetChangedListener {
     @FloatRange(from = 0.0, to = 1.0)
     var expandedFraction = 0f

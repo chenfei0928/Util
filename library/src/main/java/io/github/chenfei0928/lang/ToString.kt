@@ -106,9 +106,9 @@ private fun getValue(
         else -> field
     }
     is KFunction<*> -> when (field) {
-        is kotlin.jvm.functions.Function0<*> ->
+        is Function0<*> ->
             field()
-        is kotlin.jvm.functions.Function1<*, *> ->
+        is Function1<*, *> ->
             (field as Any.() -> Any)(thisRef)
         else -> field
     }

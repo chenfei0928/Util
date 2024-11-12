@@ -28,22 +28,3 @@ internal class PictureImportPermissionFragment : BasePermissionFileImportParentF
         }
     }
 }
-
-/**
- * 请求权限的相机裁图文件导入
- *
- * @author ChenFei(chenfei0928@gmail.com)
- * @date 2019-12-23 16:03
- */
-internal class TakePhotoImportPermissionFragment : BasePermissionFileImportParentFragment<Uri>(
-    requestPermission = arrayOf(Manifest.permission.CAMERA)
-) {
-    override val permissionName: String
-        get() = "相机"
-
-    override fun createFragment(): BaseFileImportFragment<Uri> {
-        return TakePhotoCropImportV19Fragment().also {
-            it.arguments = arguments
-        }
-    }
-}

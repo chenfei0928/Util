@@ -4,14 +4,11 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import android.provider.MediaStore
-import androidx.fragment.app.Fragment
 import io.github.chenfei0928.content.FileProviderUtil
 import io.github.chenfei0928.util.Log
 import java.io.File
 import java.io.IOException
-import java.io.OutputStream
 
 /**
  * 保存到系统所提供的 contentResolver 目录
@@ -100,13 +97,4 @@ object FileResolver {
         Log.e(TAG, "save: $file", e)
         false
     }
-}
-
-interface ContentValuesWriter {
-    fun parseArg(host: Fragment, arg: Bundle?): Boolean {
-        return true
-    }
-
-    @Throws(IOException::class)
-    fun write(outputStream: OutputStream)
 }

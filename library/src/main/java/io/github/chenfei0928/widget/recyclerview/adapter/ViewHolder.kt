@@ -9,6 +9,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
+import androidx.annotation.Px
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -32,19 +33,34 @@ open class ViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView),
     open val context: Context
         get() = itemView.context
 
-    fun getString(@StringRes id: Int, vararg args: Any?): String = context.getString(id, *args)
+    inline fun getString(@StringRes id: Int, vararg args: Any?): String =
+        context.getString(id, *args)
 
     @ColorInt
-    fun getColor(@ColorRes id: Int): Int = ContextCompat.getColor(context, id)
-    fun getColorStateList(@ColorRes id: Int): ColorStateList? =
+    inline fun getColor(@ColorRes id: Int): Int =
+        ContextCompat.getColor(context, id)
+
+    inline fun getColorStateList(@ColorRes id: Int): ColorStateList? =
         ContextCompat.getColorStateList(context, id)
 
-    fun getDrawable(@DrawableRes id: Int): Drawable? = ContextCompat.getDrawable(context, id)
+    inline fun getDrawable(@DrawableRes id: Int): Drawable? =
+        ContextCompat.getDrawable(context, id)
 
+    @Px
     inline fun dipI(@Dimension(Dimension.DP) value: Float): Int = context.dip(value)
+
+    @Px
     inline fun dipF(@Dimension(Dimension.DP) value: Float): Float = context.dipF(value)
+
+    @Px
     inline fun spI(@Dimension(Dimension.SP) value: Float): Int = context.sp(value)
+
+    @Px
     inline fun spF(@Dimension(Dimension.SP) value: Float): Float = context.spF(value)
+
+    @Px
     inline fun dimen(@DimenRes resource: Int): Int = context.dimen(resource)
+
+    @Px
     inline fun dimenF(@DimenRes resource: Int): Float = context.dimenF(resource)
 }

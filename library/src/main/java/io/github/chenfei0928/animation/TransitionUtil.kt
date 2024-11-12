@@ -39,7 +39,7 @@ private inline fun startActivityWithTransition(
     startActivityWithBundle: (Intent, Bundle?) -> Unit,
     intent: Intent,
     sharedElements: Array<View>,
-    transition: (Array<Pair<View, String>>) -> ActivityOptionsCompat
+    transition: (Array<Pair<View, String>>) -> ActivityOptionsCompat,
 ) {
     if (PowerSaveUtil.isInPowerSaveMode(context) || sharedElements.isEmpty()) {
         startActivityWithBundle(intent, null)
@@ -62,7 +62,7 @@ fun Activity.createActivityOptionWithSceneTransition(vararg sharedElements: View
 private inline fun Activity.createActivityOption(
     includeStatusBar: Boolean = true,
     vararg sharedElements: View?,
-    transition: (Array<Pair<View, String>>) -> ActivityOptionsCompat
+    transition: (Array<Pair<View, String>>) -> ActivityOptionsCompat,
 ): ActivityOptionsCompat {
     val fillTransitionView = fillTransitionView(includeStatusBar, *sharedElements)
     return transition(fillTransitionView)
@@ -70,7 +70,7 @@ private inline fun Activity.createActivityOption(
 
 private fun Activity.fillTransitionView(
     includeStatusBar: Boolean = true,
-    vararg sharedElements: View?
+    vararg sharedElements: View?,
 ): Array<Pair<View, String>> {
     if (PowerSaveUtil.isInPowerSaveMode(this) || sharedElements.isEmpty()) {
         return arrayOf()
@@ -94,7 +94,7 @@ private fun Activity.fillTransitionView(
  * @return All transition participants.
  */
 private fun createSafeTransitionParticipants(
-    activity: Activity, includeStatusBar: Boolean, otherParticipants: List<Pair<View, String>>
+    activity: Activity, includeStatusBar: Boolean, otherParticipants: List<Pair<View, String>>,
 ): Array<Pair<View, String>> {
     // Avoid system UI glitches as described here:
     // https://plus.google.com/+AlexLockwood/posts/RPtwZ5nNebb

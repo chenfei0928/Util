@@ -14,7 +14,7 @@ import java.lang.reflect.Type
  */
 class GsonSerializer<T>(
     gson: Gson = io.github.chenfei0928.json.gson.gson,
-    private val typeToken: TypeToken<T>
+    private val typeToken: TypeToken<T>,
 ) : LocalSerializer<T> {
     private val typeAdapter: TypeAdapter<T> = gson.getAdapter(typeToken) as TypeAdapter<T>
 

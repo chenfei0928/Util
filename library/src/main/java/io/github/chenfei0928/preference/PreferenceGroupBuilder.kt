@@ -5,8 +5,8 @@ import androidx.annotation.RestrictTo
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceGroup
 import androidx.preference.PreferenceScreen
-import io.github.chenfei0928.content.sp.AbsSpSaver
-import io.github.chenfei0928.content.sp.delegate.getPropertySpKeyName
+import io.github.chenfei0928.content.sp.saver.AbsSpSaver
+import io.github.chenfei0928.content.sp.saver.getPropertySpKeyName
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1

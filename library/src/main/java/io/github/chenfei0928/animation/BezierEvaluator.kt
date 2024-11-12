@@ -10,7 +10,7 @@ import android.graphics.PointF
  */
 class BezierEvaluator(
     private val p1: PointF,
-    private val p2: PointF
+    private val p2: PointF,
 ) : TypeEvaluator<PointF> {
     private val pointf = PointF()
 

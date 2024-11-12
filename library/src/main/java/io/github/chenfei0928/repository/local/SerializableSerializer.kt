@@ -1,5 +1,6 @@
 package io.github.chenfei0928.repository.local
 
+import androidx.annotation.Discouraged
 import java.io.IOException
 import java.io.InputStream
 import java.io.ObjectInputStream
@@ -10,6 +11,7 @@ import java.io.Serializable
 /**
  * 对JDK的 [Serializable] 实现序列化和反序列化
  */
+@Discouraged("don't use Serializable interface")
 class SerializableSerializer<T : Serializable>
     : LocalSerializer.IODecorator<T?> {
 

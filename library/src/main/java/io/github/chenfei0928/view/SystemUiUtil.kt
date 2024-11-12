@@ -45,9 +45,7 @@ object SystemUiUtil {
         val resources = context.resources
         if (status_bar_height == View.NO_ID) {
             status_bar_height = resources.getIdentifier(
-                "status_bar_height",
-                "dimen",
-                "android"
+                "status_bar_height", "dimen", "android"
             )
         }
         return if (status_bar_height == View.NO_ID) {
@@ -73,9 +71,7 @@ object SystemUiUtil {
         val resources = context.resources
         if (navigation_bar_height == View.NO_ID) {
             navigation_bar_height = resources.getIdentifier(
-                "navigation_bar_height",
-                "dimen",
-                "android"
+                "navigation_bar_height", "dimen", "android"
             )
         }
         // 获取NavigationBar的高度
