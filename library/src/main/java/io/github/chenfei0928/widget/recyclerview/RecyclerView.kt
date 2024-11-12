@@ -64,7 +64,7 @@ fun RecyclerView.findVisibleRange(): IntRange = when (val lm = layoutManager) {
             val lastVisibleItem = getMethod("findLastVisibleItemPosition").invoke(lm) as Int
             firstVisibleItem..lastVisibleItem
         }
-    } catch (e: NoSuchMethodException) {
+    } catch (e: ReflectiveOperationException) {
         Log.d(TAG, "nearToPosition: cannot find visible range ${lm.javaClass.name} $lm", e)
         0..Int.MAX_VALUE
     }

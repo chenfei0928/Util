@@ -92,8 +92,7 @@ public class RecyclerViewFastScroller extends LinearLayoutCompat {
                 setBubbleAndHandlePosition(y, true);
                 setRecyclerViewPosition(y);
                 return true;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL:
                 handle.setSelected(false);
                 hideBubble();
                 return true;

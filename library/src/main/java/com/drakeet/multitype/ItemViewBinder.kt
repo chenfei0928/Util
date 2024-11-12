@@ -14,7 +14,7 @@ import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
 inline fun <T : Any, VH : ViewHolder<T>> ItemViewBinder<T, VH>.notifyItemChanged(
     holder: VH, item: T, rebindBlock: VH.() -> Unit
 ) {
-    if (holder.item == item) {
+    if (holder.item === item) {
         rebindBlock(holder)
     } else {
         adapter.notifyItemChanged(item)

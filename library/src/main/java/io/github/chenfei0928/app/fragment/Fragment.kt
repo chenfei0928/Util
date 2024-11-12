@@ -13,18 +13,33 @@ fun Fragment.isVisibleForUser(): Boolean {
     }
 }
 
-fun Fragment.visibleStatus(): String = this::class.java.simpleName +
-        " isAdded:$isAdded" +
-        " isHidden:$isHidden" +
-        " isResumed:$isResumed" +
-        " isVisible:$isVisible" +
-        " view:$view" +
-        (parentFragment?.let {
-            "\nparent: " + it.visibleStatus()
-        } ?: "")
+fun Fragment.toVisibleStatusString(): String = buildString {
+    var f: Fragment? = this@toVisibleStatusString
+    while (f != null) {
+        append(f.javaClass.simpleName)
+        append(" isAdded:")
+        append(f.isAdded)
+        append(" isHidden:")
+        append(f.isHidden)
+        append(" isResumed:")
+        append(f.isResumed)
+        append(" isVisible:")
+        append(f.isVisible)
+        append(" view:")
+        append(f.view)
 
-inline fun <F : Fragment> F.applyArgumentBundle(block: Bundle.() -> Unit): F =
-    apply { arguments = (arguments ?: Bundle()).apply(block) }
+        f = f.parentFragment
+        if (f != null) {
+            append("\nparent: ")
+        }
+    }
+}
+
+inline fun <F : Fragment> F.applyArgumentBundle(
+    block: Bundle.() -> Unit
+): F = apply {
+    arguments = (arguments ?: Bundle()).apply(block)
+}
 
 fun Fragment.removeSelf() {
     if (!isAdded) {
