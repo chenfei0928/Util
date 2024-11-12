@@ -74,7 +74,10 @@ class GravityCropTransformation(
                 scaleX
             }
             else -> {
-                Log.i(TAG, "getScale: ${Companion.toString(gravity)}")
+                Log.i(TAG, buildString {
+                    append("getScale: ")
+                    toString(this, gravity)
+                })
                 maxOf(scaleX, scaleY)
             }
         }
@@ -120,7 +123,16 @@ class GravityCropTransformation(
     }
 
     override fun toString(): String {
-        return "CropTransformation(width=$width, height=$height, gravity=$gravity:${toString(gravity)})"
+        return buildString {
+            append("CropTransformation(width=")
+            append(width)
+            append(", height=")
+            append(height)
+            append(", gravity=")
+            append(gravity)
+            append(':')
+            Companion.toString(this, gravity)
+        }
     }
 
     override fun updateDiskCacheKey(messageDigest: MessageDigest) {
@@ -137,8 +149,7 @@ class GravityCropTransformation(
          * 参考自 [Gravity.toString]
          * @hide
          */
-        fun toString(@GravityInt gravity: Int): String {
-            val result = StringBuilder()
+        fun toString(result: StringBuilder, @GravityInt gravity: Int) {
             if (gravity and Gravity.FILL == Gravity.FILL) {
                 result.append("FILL").append(' ')
             } else {
@@ -187,7 +198,6 @@ class GravityCropTransformation(
                 result.append("DISPLAY_CLIP_HORIZONTAL").append(' ')
             }
             result.deleteCharAt(result.length - 1)
-            return result.toString()
         }
         //</editor-fold>
     }

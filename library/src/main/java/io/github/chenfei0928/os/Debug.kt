@@ -4,6 +4,7 @@ import android.os.Debug
 import androidx.annotation.Size
 import io.github.chenfei0928.util.Log
 import java.text.DecimalFormat
+import java.text.FieldPosition
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -11,6 +12,7 @@ import java.text.DecimalFormat
  */
 object Debug {
     const val msInNs = 1_000_000
+    private val fieldPosition = FieldPosition(0)
 
     inline fun <T> traceTime(
         tag: String,
@@ -48,18 +50,22 @@ object Debug {
         val timeUsed = System.nanoTime() - nanoTime
         if (timeUsed < msInNs) {
             // 在一毫秒以内，展示为纳秒
-            Log.v(tag, "$msg, countTime: ${
-                DecimalFormat()
-                    .apply { applyPattern(",###") }
-                    .format(timeUsed)
-            } ns.")
+            Log.v(tag, StringBuffer().apply {
+                append(msg)
+                append(", countTime: ")
+                DecimalFormat(",###")
+                    .format(timeUsed, this, fieldPosition)
+                append(" ns.")
+            }.toString())
         } else {
             // 一毫秒以上，显示为毫秒，保留三位小数
-            Log.v(tag, "$msg, countTime: ${
-                DecimalFormat()
-                    .apply { applyPattern(",###.###") }
-                    .format(timeUsed / msInNs.toFloat())
-            } ms.")
+            Log.v(tag, StringBuffer().apply {
+                append(msg)
+                append(", countTime: ")
+                DecimalFormat(",###.###")
+                    .format(timeUsed / msInNs.toFloat(), this, fieldPosition)
+                append(" ms.")
+            }.toString())
         }
     }
 }

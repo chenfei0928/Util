@@ -8,7 +8,7 @@ import com.github.lzyzsd.jsbridge.OnBridgeCallback
 import io.github.chenfei0928.app.fragment.findOrAddChild
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.util.Log
-import io.github.chenfei0928.webkit.BaseWebViewClient
+import io.github.chenfei0928.webkit.BaseLogWebViewClient
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -34,7 +34,7 @@ abstract class BaseJsBridgeFragment : Fragment() {
         handlerName: String, data: String?, responseCallback: OnBridgeCallback? = null
     ) {
         ExecutorUtil.postToUiThread {
-            if (BaseWebViewClient.debugLog) {
+            if (BaseLogWebViewClient.debugLog) {
                 Log.v(TAG, "send: $handlerName $data")
             }
             // 如果在前台，则转发回调

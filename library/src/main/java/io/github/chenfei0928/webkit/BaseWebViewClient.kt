@@ -13,10 +13,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.widget.ProgressBar
-import androidx.webkit.SafeBrowsingResponseCompat
-import androidx.webkit.WebResourceErrorCompat
 import androidx.webkit.WebViewAssetLoader
-import androidx.webkit.WebViewClientCompat
 import io.github.chenfei0928.util.Log
 import java.io.File
 
@@ -27,68 +24,7 @@ import java.io.File
 open class BaseWebViewClient(
     private val context: Context,
     private val progressBar: ProgressBar? = null
-) : WebViewClientCompat() {
-
-    //<editor-fold defaultstate="collapsed" desc="日志">
-    /**
-     * 接收到错误信息时触发
-     * [ApiDocs](https://developer.android.com/reference/android/webkit/WebViewClient.html#onReceivedError(android.webkit.WebView,%20android.webkit.WebResourceRequest,%20android.webkit.WebResourceError))
-     *
-     * Added in API level 23
-     */
-    @TargetApi(Build.VERSION_CODES.M)
-    override fun onReceivedError(
-        view: WebView, request: WebResourceRequest, error: WebResourceErrorCompat
-    ) {
-        super.onReceivedError(view, request, error)
-        debugWebViewMessage(
-            TAG, "onReceivedError", view, arrayOf(
-                "request", request.toSimpleString(),
-                "error", error.toSimpleString(),
-            )
-        )
-    }
-
-    /**
-     * 安全浏览提醒
-     * [ApiDocs](https://developer.android.com/reference/android/webkit/WebViewClient.html#onSafeBrowsingHit(android.webkit.WebView,%20android.webkit.WebResourceRequest,%20int,%20android.webkit.SafeBrowsingResponse))
-     *
-     * Added in API level 27
-     */
-    @TargetApi(Build.VERSION_CODES.O_MR1)
-    override fun onSafeBrowsingHit(
-        view: WebView,
-        request: WebResourceRequest,
-        threatType: Int,
-        callback: SafeBrowsingResponseCompat
-    ) {
-        super.onSafeBrowsingHit(view, request, threatType, callback)
-        debugWebViewMessage(
-            TAG, "onSafeBrowsingHit", view, arrayOf(
-                "request", request.toSimpleString(),
-                "threatType", threatType.toString(),
-            )
-        )
-    }
-
-    /**
-     * http请求错误的回调
-     * [ApiDocs](https://developer.android.com/reference/android/webkit/WebViewClient.html#onReceivedHttpError(android.webkit.WebView,%20android.webkit.WebResourceRequest,%20android.webkit.WebResourceResponse))
-     *
-     * Added in API level 23
-     */
-    @TargetApi(Build.VERSION_CODES.M)
-    override fun onReceivedHttpError(
-        view: WebView, request: WebResourceRequest, errorResponse: WebResourceResponse
-    ) {
-        super.onReceivedHttpError(view, request, errorResponse)
-        debugWebViewMessage(
-            TAG, "onReceivedHttpError", view, arrayOf(
-                "request", request.toSimpleString(),
-                "errorResponse", errorResponse.toSimpleString(),
-            )
-        )
-    }
+) : BaseLogWebViewClient() {
 
     /**
      * 接收到ssl证书错误的回调
@@ -104,11 +40,6 @@ open class BaseWebViewClient(
             return
         }
         // 弹出警告
-        debugWebViewMessage(
-            TAG, "onReceivedSslError", view, arrayOf(
-                "error", error?.toString(),
-            )
-        )
         sslErrorHandler.emit(handler, error)
     }
 
@@ -157,37 +88,16 @@ open class BaseWebViewClient(
         }
     }
 
-    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-        if (debugLog) {
-            Log.v(TAG, "shouldOverrideUrlLoading: ${request.toSimpleString()}")
-        }
-        return super.shouldOverrideUrlLoading(view, request)
-    }
-
     override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
         super.onPageStarted(view, url, favicon)
-        if (debugLog) {
-            Log.v(TAG, "onPageStarted: $url")
-        }
         progressBar?.visibility = View.VISIBLE
         progressBar?.progress = 0
     }
 
     override fun onPageFinished(view: WebView, url: String) {
         progressBar?.visibility = View.GONE
-        if (debugLog) {
-            Log.v(TAG, "onPageFinished: $url")
-        }
         super.onPageFinished(view, url)
     }
-
-    override fun onLoadResource(view: WebView?, url: String?) {
-        super.onLoadResource(view, url)
-        if (debugLog) {
-            Log.v(TAG, "onLoadResource: $url")
-        }
-    }
-    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="请求拦截返回">
     var assetLoader: WebViewAssetLoader = WebViewAssetLoader.Builder()
@@ -209,9 +119,6 @@ open class BaseWebViewClient(
     final override fun shouldInterceptRequest(
         view: WebView, request: WebResourceRequest
     ): WebResourceResponse? {
-        if (debugLog) {
-            Log.i(TAG, "shouldInterceptRequest: ${request.toSimpleString()}")
-        }
         return assetLoader.shouldInterceptRequest(request.url)
             ?: interceptRequest.firstNotNullOfOrNull { it(request) }
     }
@@ -220,6 +127,5 @@ open class BaseWebViewClient(
     companion object {
         private const val TAG = "KW_BaseWebViewClient"
         var ignoreSslError = false
-        var debugLog = false
     }
 }
