@@ -59,7 +59,7 @@ private fun syncGit(gitDir: GitDir) {
             "git", "branch", "--track", branchName, remote
         ).waitFor()
     }
-    // 更新所有本地分支
+    // 更新所有本地分支列表
     gitDir.reCalculateLocalBranch()
     gitDir.localBranch.forEach { branch ->
         syncGitSomeoneBranch(gitDir, branch)
@@ -72,7 +72,7 @@ private fun syncGit(gitDir: GitDir) {
 @Throws(IOException::class, InterruptedException::class)
 private fun syncGitSomeoneBranch(gitDir: GitDir, branchName: String) {
     println("同步Git目录：" + gitDir.dir + " 分支：" + branchName)
-    gitDir.dir.runCommand(
+    val code = gitDir.dir.runCommand(
         "git",
         "--no-optional-locks",
         "-c",
@@ -83,6 +83,9 @@ private fun syncGitSomeoneBranch(gitDir: GitDir, branchName: String) {
         "origin",
         "$branchName:$branchName"
     ).waitFor()
+    if (code != 0) {
+        System.err.println("Git 目录 ${gitDir.dir} 分支：$branchName 同步失败: $code")
+    }
 }
 
 @Throws(IOException::class, InterruptedException::class)
@@ -91,7 +94,10 @@ private fun syncGitCurrentBranch(gitDir: GitDir) {
     gitDir.dir.runCommand("git", "checkout", "--", ".").waitFor()
     gitDir.dir.runCommand("git", "clean", "-xdf").waitFor()
     gitDir.dir.runCommand("git", "reset", "--hard").waitFor()
-    gitDir.dir.runCommand("git", "pull", "--all").waitFor()
+    val code = gitDir.dir.runCommand("git", "pull", "--all").waitFor()
+    if (code != 0) {
+        System.err.println("Git 目录 ${gitDir.dir} 当前分支同步失败: $code")
+    }
 }
 
 fun File.runCommand(
@@ -129,8 +135,8 @@ class ProcessLinesSequence(
 private class GitDir(
     val dir: File
 ) {
-    var localBranch: Set<String> = calculateLocalBranch()
-    var defBranch: Set<String> = checkDefBranch()
+    var localBranch: List<String> = calculateLocalBranch()
+    var defBranch: List<String> = checkDefBranch()
 
     fun reCalculateLocalBranch() {
         localBranch = calculateLocalBranch()
@@ -145,11 +151,11 @@ private class GitDir(
                 it.trim().replace("* ", "")
             }.filter {
                 it.isNotEmpty()
-            }.toSet()
+            }.toList()
         }
 
     @Throws(IOException::class, InterruptedException::class)
-    private fun checkDefBranch(): Set<String> {
+    private fun checkDefBranch(): List<String> {
         // 抓取远端分支
         dir.runCommand(
             "git",
@@ -184,6 +190,6 @@ private class GitDir(
         }.filter { s: String ->
             // 求差集
             s.substringAfter('/') !in localBranch
-        }.toSet()
+        }.toList()
     }
 }

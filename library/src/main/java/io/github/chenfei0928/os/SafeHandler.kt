@@ -48,7 +48,7 @@ import java.io.Closeable
  */
 private class SafeHandler(
     owner: LifecycleOwner,
-    private val closeCallback: Closeable
+    private val closeCallback: Closeable? = null
 ) : Handler(Looper.getMainLooper()), LifecycleEventObserver {
     private var mIsAlive = !owner.lifecycle.isAlive
 
@@ -62,7 +62,7 @@ private class SafeHandler(
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         if (event == Lifecycle.Event.ON_DESTROY) {
             removeCallbacksAndMessages(null)
-            closeCallback.close()
+            closeCallback?.close()
             mIsAlive = false
         } else if (event == Lifecycle.Event.ON_CREATE) {
             mIsAlive = true
@@ -89,7 +89,5 @@ private class SafeHandler(
  *     - [Fragment.onDetach]
  */
 val LifecycleOwner.safeHandler: Handler by LifecycleCacheDelegate<LifecycleOwner, SafeHandler>(
-    SafeHandler(EventLifecycleOwner.dead) {}
-) { owner, closeCallback ->
-    SafeHandler(owner, closeCallback)
-}
+    SafeHandler(EventLifecycleOwner.dead, null), ::SafeHandler
+)
