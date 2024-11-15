@@ -45,7 +45,7 @@ object ProcessUtil {
                     .getDeclaredMethod("currentProcessName")
                 method.isAccessible = true
                 method.invoke(null) as String
-            } catch (ignore: ReflectiveOperationException) {
+            } catch (_: ReflectiveOperationException) {
                 val myPid = Process.myPid()
                 val am = context.getSystemService<ActivityManager>()!!
                 am.runningAppProcesses.find { it.pid == myPid }!!.processName

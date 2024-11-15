@@ -50,7 +50,7 @@ private constructor(
                             isAccessible = true
                             get(null) as? String
                         }
-                    } catch (ignore: ReflectiveOperationException) {
+                    } catch (_: ReflectiveOperationException) {
                         null
                     }
                 }

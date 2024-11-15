@@ -19,8 +19,10 @@ inline fun <reified T> Bundle.getParcelableCompat(key: String): T? {
 inline fun <reified T : Parcelable> Bundle.getParcelableArrayCompat(key: String): Array<T>? {
     return if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         getParcelableArray(key, T::class.java)
-    } else {
-        BundleCompat.getParcelableArray(this, key, T::class.java)?.let { array ->
+    } else BundleCompat.getParcelableArray(this, key, T::class.java)?.let { array ->
+        if (array.isArrayOf<T>()) {
+            array as Array<T>
+        } else {
             Array(array.size) { array[it] as T }
         }
     }
@@ -41,8 +43,10 @@ inline fun <reified T> Intent.getParcelableExtraCompat(key: String): T? {
 inline fun <reified T : Parcelable> Intent.getParcelableArrayExtraCompat(key: String): Array<T>? {
     return if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         getParcelableArrayExtra(key, T::class.java)
-    } else {
-        IntentCompat.getParcelableArrayExtra(this, key, T::class.java)?.let { array ->
+    } else IntentCompat.getParcelableArrayExtra(this, key, T::class.java)?.let { array ->
+        if (array.isArrayOf<T>()) {
+            array as Array<T>
+        } else {
             Array(array.size) { array[it] as T }
         }
     }

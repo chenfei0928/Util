@@ -19,7 +19,7 @@ fun Context.isExists(uri: Uri?): Boolean {
     } else try {
         this.contentResolver.openFileDescriptor(uri, "r").use { }
         true
-    } catch (ignore: IOException) {
+    } catch (_: IOException) {
         false
     }
 }
@@ -39,7 +39,7 @@ fun Uri.getLength(context: Context): Long {
         this@getLength.path?.let {
             try {
                 return File(it).length()
-            } catch (ignore: Exception) {
+            } catch (_: Exception) {
                 // noop
             }
         }
@@ -60,7 +60,7 @@ fun Uri.getLength(context: Context): Long {
         if (filePathIndex >= 0 && !cursor.isNull(filePathIndex)) {
             try {
                 return File(cursor.getString(filePathIndex)).length()
-            } catch (ignore: Exception) {
+            } catch (_: Exception) {
                 // noop
             }
         }
@@ -71,14 +71,14 @@ fun Uri.getLength(context: Context): Long {
         )?.use {
             return it.statSize
         }
-    } catch (ignore: Exception) {
+    } catch (_: Exception) {
         // noop
     }
     try {
         context.contentResolver.openInputStream(this@getLength)?.use {
             return it.available().toLong()
         }
-    } catch (ignore: Exception) {
+    } catch (_: Exception) {
         // noop
     }
     return -1L

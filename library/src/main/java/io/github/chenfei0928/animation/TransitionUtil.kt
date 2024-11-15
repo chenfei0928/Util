@@ -41,7 +41,7 @@ private inline fun startActivityWithTransition(
     sharedElements: Array<View>,
     transition: (Array<Pair<View, String>>) -> ActivityOptionsCompat,
 ) {
-    if (PowerSaveUtil.isInPowerSaveMode(context) || sharedElements.isEmpty()) {
+    if (PowerSaveUtil.isInPowerSaveMode.value == true || sharedElements.isEmpty()) {
         startActivityWithBundle(intent, null)
     } else {
         val options = context.createActivityOption(
@@ -72,7 +72,7 @@ private fun Activity.fillTransitionView(
     includeStatusBar: Boolean = true,
     vararg sharedElements: View?,
 ): Array<Pair<View, String>> {
-    if (PowerSaveUtil.isInPowerSaveMode(this) || sharedElements.isEmpty()) {
+    if (PowerSaveUtil.isInPowerSaveMode.value == true || sharedElements.isEmpty()) {
         return arrayOf()
     }
     // 收集View的transitionName

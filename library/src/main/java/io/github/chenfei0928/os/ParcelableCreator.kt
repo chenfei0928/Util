@@ -41,9 +41,9 @@ private fun <T : Parcelable> getParcelableCreator(clazz: Class<T>): Parcelable.C
             val creator = parcelReadParcelableCreator.invoke(this, clazz.classLoader)
             @Suppress("UNCHECKED_CAST")
             creator as Parcelable.Creator<T>?
-        } catch (ignore: ReflectiveOperationException) {
+        } catch (_: ReflectiveOperationException) {
             null
-        } catch (ignore: SecurityException) {
+        } catch (_: SecurityException) {
             null
         }
     }

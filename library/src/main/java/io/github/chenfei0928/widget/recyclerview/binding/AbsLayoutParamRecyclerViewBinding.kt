@@ -25,14 +25,13 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
      */
     protected var adapterWrapperHeaderSize = 0
 
-    private val _layoutParamsRecord = SystemIdentityArrayMap<Any, LP>()
-
     /**
      * 记录某个bean的布局信息
      * 提供给子类查找，禁止直接对其add，
      * 添加操作使用本类提供的[addSingleItem]、[addListItems]进行添加操作
      */
-    protected val layoutParamsRecord: Map<Any, LP> = _layoutParamsRecord
+    protected val layoutParamsRecord: Map<Any, LP>
+        private field: MutableMap<Any, LP> = SystemIdentityArrayMap<Any, LP>()
 
     /**
      * 使用在[RecyclerView]中的子视图获取指定显示内容的布局参数
@@ -42,7 +41,7 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
         // 先检查viewHolder，如果viewHolder内保存了显示的数据，这直接使用其数据来获取布局参数
         val holder = lp.holder
         if (holder is RecyclerViewHolderModelProvider<*>) {
-            return _layoutParamsRecord[holder.item]
+            return layoutParamsRecord[holder.item]
         }
         val position = lp.bindingAdapterPosition
         // 如果在header或footer内，span占满
@@ -54,7 +53,7 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
         val any = list[position - adapterWrapperHeaderSize]
         // 获取其布局参数信息
         Log.d(TAG, "getItemOffsets: $position $any layoutParams not found")
-        return _layoutParamsRecord[any]
+        return layoutParamsRecord[any]
     }
 
     /**
@@ -85,7 +84,7 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
         super.addListItems(position, data)
         // 记录边距、span
         data.forEachIndexed { index, any ->
-            _layoutParamsRecord[any] = layoutParamsGenerator(index, any)
+            layoutParamsRecord[any] = layoutParamsGenerator(index, any)
         }
     }
 
@@ -105,7 +104,7 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
     ) {
         super.addSingleItem(position, item)
         // 记录边距、span
-        _layoutParamsRecord[item] = layoutParams
+        layoutParamsRecord[item] = layoutParams
     }
 
     @Deprecated(level = DeprecationLevel.HIDDEN, message = "使用[removeLast(Boolean)]移除")
@@ -126,13 +125,13 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
     protected fun removeLast(removeLayoutParams: Boolean = true): Any {
         val last = super.removeLast()
         if (removeLayoutParams) {
-            _layoutParamsRecord.remove(last)
+            layoutParamsRecord.remove(last)
         }
         return last
     }
 
     override fun clear() {
-        _layoutParamsRecord.clear()
+        layoutParamsRecord.clear()
         super.clear()
     }
 

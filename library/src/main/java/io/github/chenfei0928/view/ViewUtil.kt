@@ -98,7 +98,7 @@ object ViewUtil {
                 out.append(typename)
                 out.append("/")
                 out.append(entryName)
-            } catch (ignore: Resources.NotFoundException) {
+            } catch (_: Resources.NotFoundException) {
                 out.append(v)
             }
         }

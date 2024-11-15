@@ -141,7 +141,7 @@ object WebViewSettingsUtil {
         val tryCreateWebView: Function1<Context, V?> = label@{ context: Context ->
             return@label try {
                 creator.invoke(context)
-            } catch (ignore: Resources.NotFoundException) {
+            } catch (_: Resources.NotFoundException) {
                 null
             }
         }

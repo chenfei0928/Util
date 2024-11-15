@@ -68,7 +68,7 @@ object FileResolver {
             // 写入失败时，删除文件
             try {
                 resolver.delete(insertUri, null, null)
-            } catch (ignore: Exception) {
+            } catch (_: Exception) {
                 // noop
             }
             null

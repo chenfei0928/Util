@@ -39,7 +39,7 @@ suspend inline fun <R> Process.useSuspend(
     onSuspendCancellation {
         try {
             exitValue()
-        } catch (ignore: IllegalThreadStateException) {
+        } catch (_: IllegalThreadStateException) {
             this@useSuspend.destroy()
         }
     }

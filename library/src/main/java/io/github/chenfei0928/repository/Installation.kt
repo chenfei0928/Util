@@ -49,7 +49,7 @@ object Installation : LocalFileStorage<String>(
             } else {
                 Log.d(TAG, "getAdId: AdvertisingId 不可用")
             }
-        } catch (ignore: Throwable) {
+        } catch (_: Throwable) {
             Log.d(TAG, "getAdId: 不使用 Google AdvertisingId 库")
         }
         // 如果获取到的是模拟器ID，使用生成的随机id

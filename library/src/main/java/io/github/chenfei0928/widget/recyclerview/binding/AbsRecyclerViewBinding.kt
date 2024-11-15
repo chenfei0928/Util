@@ -34,17 +34,17 @@ import io.github.chenfei0928.widget.recyclerview.binding.grid.BaseGridSpanRecycl
 abstract class AbsRecyclerViewBinding(
     contentView: RecyclerView, list: MutableList<Any> = arrayListOf()
 ) {
-    private val _list: MutableList<Any> = list
 
     /**
      * 暴露给子类查找，禁止直接对其add，
      * 添加操作使用本类提供的[addSingleItem]、[addListItems]进行添加操作
      */
-    protected val list: List<Any> = _list
-    protected val adapter = IMultiTypeAdapterStringer.IMultiTypeAdapter(_list).apply {
+    protected val list: List<Any>
+        private field: MutableList<Any> = list
+    protected val adapter = IMultiTypeAdapterStringer.IMultiTypeAdapter(list).apply {
         binding = this@AbsRecyclerViewBinding
-        if (_list is RecyclerViewAdapterDataSource) {
-            _list.adapterDataObserver = DelegateAdapterDataObserver(this)
+        if (list is RecyclerViewAdapterDataSource) {
+            list.adapterDataObserver = DelegateAdapterDataObserver(this)
         }
     }
 
@@ -58,9 +58,9 @@ abstract class AbsRecyclerViewBinding(
      */
     protected open fun <E : Any> addListItems(position: Int = list.size, data: List<E>) {
         if (position == list.size) {
-            _list.addAll(data)
+            list.addAll(data)
         } else {
-            _list.addAll(position, data)
+            list.addAll(position, data)
         }
     }
 
@@ -71,9 +71,9 @@ abstract class AbsRecyclerViewBinding(
      */
     protected open fun addSingleItem(position: Int = list.size, item: Any) {
         if (position == list.size) {
-            _list.add(item)
+            list.add(item)
         } else {
-            _list.add(position, item)
+            list.add(position, item)
         }
     }
 
@@ -81,18 +81,18 @@ abstract class AbsRecyclerViewBinding(
      * 移除最后加入的一项
      */
     protected open fun removeLast(): Any {
-        return _list.removeAt(list.lastIndex)
+        return list.removeAt(list.lastIndex)
     }
 
     protected open fun clear() {
-        _list.clear()
+        list.clear()
     }
 
     protected open val partAccessor: BindingAccessor = object : BindingAccessor {
         override val adapter: MultiTypeAdapter
             get() = this@AbsRecyclerViewBinding.adapter
         override val list: MutableList<Any>
-            get() = this@AbsRecyclerViewBinding._list
+            get() = this@AbsRecyclerViewBinding.list
 
         override fun addSingleItem(position: Int, item: Any) {
             this@AbsRecyclerViewBinding.addSingleItem(position, item)

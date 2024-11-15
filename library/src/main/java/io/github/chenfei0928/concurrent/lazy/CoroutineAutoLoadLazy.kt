@@ -21,15 +21,12 @@ private class CoroutineAutoLoadLazy<T>(
     initializer: suspend () -> T,
     lock: Any? = null
 ) : Lazy<T> {
-    @Volatile
-    private var _value: Any? = UNINITIALIZED_VALUE
-
     // final field is required to enable safe publication of constructed instance
     private val lock: Any = lock ?: this
 
     init {
         val async = scope.async(start = start) {
-            _value = initializer.invoke()
+            value = initializer.invoke()
             notifyLock()
         }
         async.start()
@@ -41,9 +38,11 @@ private class CoroutineAutoLoadLazy<T>(
         }
     }
 
-    override val value: T
+    @field:Volatile
+    override var value: T
+        private field: Any? = UNINITIALIZED_VALUE
         get() {
-            val _v1 = _value
+            val _v1 = field
             if (_v1 !== UNINITIALIZED_VALUE) {
                 @Suppress("UNCHECKED_CAST") return _v1 as T
             }
@@ -51,18 +50,18 @@ private class CoroutineAutoLoadLazy<T>(
                 synchronized(lock) {
                     try {
                         (lock as Object).wait()
-                    } catch (ignore: InterruptedException) {
+                    } catch (_: InterruptedException) {
                         // noop
                     }
                 }
-                val _v2 = _value
+                val _v2 = field
                 if (_v2 !== UNINITIALIZED_VALUE) {
                     @Suppress("UNCHECKED_CAST") return (_v2 as T)
                 }
             }
         }
 
-    override fun isInitialized(): Boolean = _value !== UNINITIALIZED_VALUE
+    override fun isInitialized(): Boolean = value !== UNINITIALIZED_VALUE
 
     override fun toString(): String =
         if (isInitialized()) value.toString() else "Lazy value not initialized yet."

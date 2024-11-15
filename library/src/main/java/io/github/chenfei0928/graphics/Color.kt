@@ -11,7 +11,7 @@ import androidx.annotation.ColorInt
 fun String.toColorIntOrNull(): Int? {
     return try {
         Color.parseColor(this)
-    } catch (ignore: IllegalArgumentException) {
+    } catch (_: IllegalArgumentException) {
         null
     }
 }

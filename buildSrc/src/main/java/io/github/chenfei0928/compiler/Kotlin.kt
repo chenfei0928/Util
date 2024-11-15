@@ -14,6 +14,7 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
@@ -95,6 +96,12 @@ fun Project.applyKotlin(
 //                    "-Xdebug"
                 )
             }
+        }
+    }
+
+    extensions.configure<KotlinAndroidProjectExtension>("kotlin") {
+        sourceSets.all {
+            languageSettings.enableLanguageFeature("ExplicitBackingFields")
         }
     }
 

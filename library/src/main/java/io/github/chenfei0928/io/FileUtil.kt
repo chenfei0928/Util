@@ -107,7 +107,7 @@ object FileUtil {
             dest.parentFile?.mkdirs()
             try {
                 dest.createNewFile()
-            } catch (ignore: IOException) {
+            } catch (_: IOException) {
                 // noop
             }
         }
@@ -139,7 +139,7 @@ object FileUtil {
             dest.parentFile?.mkdirs()
             try {
                 dest.createNewFile()
-            } catch (ignore: IOException) {
+            } catch (_: IOException) {
                 // noop
             }
         }

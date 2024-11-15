@@ -67,7 +67,7 @@ constructor(
      */
     private fun getMaxAmplitude() = try {
         recorder.maxAmplitude
-    } catch (ignore: IllegalStateException) {
+    } catch (_: IllegalStateException) {
         0
     }
 
