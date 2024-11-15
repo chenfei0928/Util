@@ -23,38 +23,31 @@ abstract class BaseWebSocketClient(
 ) {
     protected val handler = Handler(Looper.getMainLooper())
 
-    // 内部的webSocket，可能会存在正在连接中或或未准备好的情况
-    private var _socket: WebSocket? = null
-
     // 如果已经成功建立连接后才能发送消息
     private var isReady = false
 
     // 链接被用户关闭而非因异常中断时，为true
     private var isClosed = false
 
+    // 内部的webSocket，可能会存在正在连接中或或未准备好的情况
     // 如果连接可用并已准备好，返回可用的webSocket
-    protected val socket: WebSocket?
-        get() {
-            return if (isReady) {
-                _socket
-            } else {
-                null
-            }
-        }
+    protected var socket: WebSocket? = null
+        private set
+        get() = if (isReady) field else null
 
     fun connect(autoRetry: Boolean = true) {
         handler.removeCallbacksAndMessages(TOKEN_CLOSE)
         Log.i(TAG, "connect ")
         // 正在连接中或已建立连接，不处理
-        if (_socket != null) {
+        if (socket != null) {
             return
         }
-        _socket = okHttpClient.newWebSocket(
+        socket = okHttpClient.newWebSocket(
             Request.Builder().url(address).build(),
             object : WebSocketListener() {
                 override fun onOpen(webSocket: WebSocket, response: Response) {
                     super.onOpen(webSocket, response)
-                    _socket = webSocket
+                    socket = webSocket
                     Log.i(TAG, "onOpen $response")
                     // 链接聊天室
                     this@BaseWebSocketClient.onOpen(webSocket)
@@ -67,7 +60,7 @@ abstract class BaseWebSocketClient(
                 override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                     super.onFailure(webSocket, t, response)
                     Log.i(TAG, "onFailure ", t)
-                    _socket = null
+                    socket = null
                     isReady = false
                     handler.removeCallbacksAndMessages(TOKEN_CONNECT)
                     handler.removeCallbacksAndMessages(TOKEN_CLOSE)
@@ -94,7 +87,7 @@ abstract class BaseWebSocketClient(
                 override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
                     super.onClosed(webSocket, code, reason)
                     Log.i(TAG, "onClosed $code $reason")
-                    _socket = null
+                    socket = null
                     isReady = false
                     handler.removeCallbacksAndMessages(TOKEN_CONNECT)
                     handler.removeCallbacksAndMessages(TOKEN_CLOSE)
@@ -130,7 +123,7 @@ abstract class BaseWebSocketClient(
         // 关闭链接
         Log.i(TAG, "close ")
         socket?.close(CODE_NORMAL_CLOSURE, null)
-        _socket = null
+        socket = null
         isReady = false
         isClosed = true
     }
