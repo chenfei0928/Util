@@ -1,6 +1,6 @@
 package io.github.chenfei0928.util
 
-import io.github.chenfei0928.collection.SystemIdentityWeakHashMap
+import io.github.chenfei0928.collection.SystemIdentityMutableMap
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -12,7 +12,7 @@ import kotlin.reflect.KProperty
  * @date 2019-09-06 10:01
  */
 abstract class BeanExtValDelegate<Bean, R>(
-    private val map: MutableMap<Bean, R> = SystemIdentityWeakHashMap()
+    private val map: MutableMap<Bean, R> = SystemIdentityMutableMap(HashMap())
 ) : ReadOnlyProperty<Bean, R> {
 
     override fun getValue(thisRef: Bean, property: KProperty<*>): R {

@@ -12,14 +12,15 @@ import kotlinx.coroutines.async
 fun <T> lazyByAutoLoad(
     scope: CoroutineScope = IoScope,
     start: CoroutineStart = CoroutineStart.DEFAULT,
+    lock: Any? = null,
     initializer: suspend () -> T
-): Lazy<T> = CoroutineAutoLoadLazy(scope, start, initializer)
+): Lazy<T> = CoroutineAutoLoadLazy(scope, start, lock, initializer)
 
 private class CoroutineAutoLoadLazy<T>(
     scope: CoroutineScope,
     start: CoroutineStart = CoroutineStart.DEFAULT,
-    initializer: suspend () -> T,
-    lock: Any? = null
+    lock: Any? = null,
+    initializer: suspend () -> T
 ) : Lazy<T> {
     // final field is required to enable safe publication of constructed instance
     private val lock: Any = lock ?: this

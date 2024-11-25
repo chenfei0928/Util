@@ -10,7 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
-import io.github.chenfei0928.collection.arrayOfNotNull
+import io.github.chenfei0928.collection.filterNotNull
 import io.github.chenfei0928.os.PowerSaveUtil
 import io.github.chenfei0928.util.R
 
@@ -22,7 +22,7 @@ fun Activity.startActivityWithSceneTransition(intent: Intent, vararg sharedEleme
     startActivityWithTransition(this,
         { i, bundle -> ActivityCompat.startActivity(this, i, bundle) },
         intent,
-        arrayOfNotNull(*sharedElements),
+        arrayOf(*sharedElements).filterNotNull(),
         { ActivityOptionsCompat.makeSceneTransitionAnimation(this, *it) })
 }
 
@@ -30,7 +30,7 @@ fun Fragment.startActivityWithSceneTransition(intent: Intent, vararg sharedEleme
     startActivityWithTransition(requireActivity(),
         { i, bundle -> startActivity(i, bundle) },
         intent,
-        arrayOfNotNull(*sharedElements),
+        arrayOf(*sharedElements).filterNotNull(),
         { ActivityOptionsCompat.makeSceneTransitionAnimation(requireActivity(), *it) })
 }
 

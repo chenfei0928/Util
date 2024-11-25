@@ -9,6 +9,7 @@ import android.graphics.Typeface
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.res.use
 import io.github.chenfei0928.util.MapCache
 import io.github.chenfei0928.util.MapWeakCache
 import io.github.chenfei0928.util.R

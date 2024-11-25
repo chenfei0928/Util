@@ -10,20 +10,20 @@ inline fun <T> Array<T?>.getOrPut(index: Int, defaultValue: (Int) -> T): T {
     return newValue
 }
 
-inline fun <reified T> arrayOfNotNull(vararg vars: T?): Array<T> {
-    if (vars.isEmpty()) {
+inline fun <reified T> Array<T?>.filterNotNull(): Array<T> {
+    if (isEmpty()) {
         return arrayOf()
     }
-    val count = vars.count { it != null }
-    if (count == vars.size) {
-        return vars as Array<T>
+    val count = count { it != null }
+    if (count == size) {
+        return this as Array<T>
     }
     if (count == 0) {
         return arrayOf()
     }
     val array = arrayOfNulls<T>(count)
     var i = 0
-    vars.forEach {
+    forEach {
         if (it != null) {
             array[i] = it
             i++

@@ -1,9 +1,9 @@
 package io.github.chenfei0928.widget.recyclerview.binding
 
 import android.view.View
-import androidx.collection.SystemIdentityArrayMap
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.holder
+import io.github.chenfei0928.collection.SystemIdentityMutableMap
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.widget.recyclerview.adapter.RecyclerViewHolderModelProvider
 import io.github.chenfei0928.widget.recyclerview.binding.AbsLayoutParamRecyclerViewBinding.LayoutParams
@@ -31,7 +31,7 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
      * 添加操作使用本类提供的[addSingleItem]、[addListItems]进行添加操作
      */
     protected val layoutParamsRecord: Map<Any, LP>
-        private field: MutableMap<Any, LP> = SystemIdentityArrayMap<Any, LP>()
+        private field: MutableMap<Any, LP> = SystemIdentityMutableMap<Any, LP>()
 
     /**
      * 使用在[RecyclerView]中的子视图获取指定显示内容的布局参数

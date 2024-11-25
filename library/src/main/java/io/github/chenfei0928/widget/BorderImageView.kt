@@ -8,6 +8,7 @@ import android.graphics.ColorFilter
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import androidx.core.content.res.use
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.view.OutlineType
 

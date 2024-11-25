@@ -7,7 +7,7 @@ import kotlin.reflect.KProperty
  * @author chenfei()
  * @date 2022-06-20 13:33
  */
-class WriteableLazy<in T, V>(
+private class WriteableLazy<in T, V>(
     lazy: Lazy<V>, lock: Any? = null
 ) : ReadWriteProperty<T, V>, Lazy<V> {
     private var lazy: Lazy<V>? = lazy
@@ -50,5 +50,6 @@ class WriteableLazy<in T, V>(
         _value !is UNINITIALIZED_VALUE || lazy.let { it == null || it.isInitialized() }
 }
 
-fun <T, V> Lazy<V>.toWriteable(): ReadWriteProperty<T, V> =
-    WriteableLazy(this)
+fun <T, V> Lazy<V>.toWriteable(
+    lock: Any? = null
+): ReadWriteProperty<T, V> = WriteableLazy(this, lock)

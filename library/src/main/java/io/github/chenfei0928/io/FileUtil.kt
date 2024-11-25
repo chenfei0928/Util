@@ -13,8 +13,6 @@ import okio.sink
 import okio.source
 import okio.use
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.IOException
 
 /**
@@ -112,8 +110,8 @@ object FileUtil {
             }
         }
         try {
-            FileInputStream(source).use { fis ->
-                FileOutputStream(dest).use { fos ->
+            source.inputStream().use { fis ->
+                dest.outputStream().use { fos ->
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         FileUtils.copy(fis.fd, fos.fd)
                     } else {
@@ -145,7 +143,7 @@ object FileUtil {
         }
         try {
             context.contentResolver.openFileDescriptor(source, "r")?.use { fis ->
-                FileOutputStream(dest).use { fos ->
+                dest.outputStream().use { fos ->
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         FileUtils.copy(fis.fileDescriptor, fos.fd)
                         fos.flush()
@@ -165,7 +163,7 @@ object FileUtil {
         }
         try {
             context.contentResolver.openInputStream(source)?.use { fis ->
-                FileOutputStream(dest).use { fos ->
+                dest.outputStream().use { fos ->
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         FileUtils.copy(fis, fos)
                     } else {

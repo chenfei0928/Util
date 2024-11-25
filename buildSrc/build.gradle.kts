@@ -29,7 +29,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.26.0")
     // Kotlin Symbol Processing 符号处理器编译器插件，需伴随Kotlin版本一同升级
     // https://github.com/google/ksp
-    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.25")
+    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.28")
     implementation(gradleApi())
 
     implementation(localGroovy())

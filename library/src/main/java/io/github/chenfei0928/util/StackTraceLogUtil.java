@@ -35,7 +35,7 @@ public class StackTraceLogUtil {
     public static String generateTags(int level) {
         StackTraceElement caller = Thread.currentThread().getStackTrace()[4 + level];
         String callerClazzName = caller.getClassName();
-        callerClazzName = callerClazzName.substring(callerClazzName.lastIndexOf(".") + 1);
+        callerClazzName = callerClazzName.substring(callerClazzName.lastIndexOf('.') + 1);
 
         return String.format(Locale.getDefault(), "%s.%s(%s:%d)",
                 callerClazzName, caller.getMethodName(),

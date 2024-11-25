@@ -20,13 +20,13 @@ object PowerSaveUtil {
         ContextProvider.context.getSystemService<PowerManager>()
     private val sReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            isInPowerSaveMode.value = powerManager != null && powerManager.isPowerSaveMode
+            isInPowerSaveMode.value = powerManager?.isPowerSaveMode
         }
     }
 
     val isInPowerSaveMode: LiveData<Boolean>
         private field: MutableLiveData<Boolean> = MutableLiveData<Boolean>(
-            powerManager != null && powerManager.isPowerSaveMode
+            powerManager?.isPowerSaveMode
         )
 
     init {

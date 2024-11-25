@@ -3,6 +3,7 @@ package io.github.chenfei0928.widget
 import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.res.use
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.view.OutlineType
 import kotlin.math.max

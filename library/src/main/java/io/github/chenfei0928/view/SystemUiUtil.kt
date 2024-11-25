@@ -7,6 +7,7 @@ import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.annotation.Px
 import androidx.core.content.getSystemService
+import androidx.core.content.res.use
 
 /**
  * 系统ui工具类，用于获取系统ui尺寸（状态栏、导航栏）
