@@ -1,7 +1,6 @@
 package io.github.chenfei0928.content.sp.saver
 
 import android.content.SharedPreferences
-import io.github.chenfei0928.content.sp.saver.AbsSpSaver.Companion.edit
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 

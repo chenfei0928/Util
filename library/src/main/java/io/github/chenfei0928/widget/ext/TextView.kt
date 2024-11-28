@@ -13,7 +13,6 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.PrecomputedTextCompat
 import androidx.core.view.doOnLayout
 import androidx.core.widget.TextViewCompat
-import androidx.recyclerview.widget.RecyclerView
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.lang.contains
 import kotlin.properties.ReadWriteProperty

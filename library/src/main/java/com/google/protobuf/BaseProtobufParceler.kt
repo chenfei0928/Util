@@ -1,7 +1,6 @@
 package com.google.protobuf
 
 import android.os.Parcel
-import android.os.Parcelable
 import kotlinx.parcelize.Parceler
 
 /**

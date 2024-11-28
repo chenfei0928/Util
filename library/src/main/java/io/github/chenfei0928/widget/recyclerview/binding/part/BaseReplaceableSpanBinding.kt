@@ -1,6 +1,5 @@
 package io.github.chenfei0928.widget.recyclerview.binding.part
 
-import androidx.recyclerview.widget.RecyclerView
 import io.github.chenfei0928.collection.removeRange
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.widget.recyclerview.binding.AbsRecyclerViewBinding
