@@ -103,8 +103,8 @@ class GitUpdateKt {
 
     companion object {
         fun File.runCommand(
-            vararg command: String
-        ): Process = ProcessBuilder(*command)
+            vararg commands: String
+        ): Process = ProcessBuilder(*commands)
             .directory(this)
             .redirectError(ProcessBuilder.Redirect.INHERIT)
             .redirectOutput(ProcessBuilder.Redirect.INHERIT)

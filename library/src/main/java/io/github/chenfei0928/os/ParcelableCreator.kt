@@ -20,7 +20,7 @@ val <T : Parcelable> Class<T>.PARCELABLE_CREATOR: Parcelable.Creator<T>
     get() = parcelableCache[this] as Parcelable.Creator<T>
 
 private val parcelableCache = MapCache<Class<out Parcelable>, Parcelable.Creator<out Parcelable>> {
-    getParcelableCreator(it)
+    readParcelableCreator(it)
 }
 
 private val parcelReadParcelableCreator: Method by lazy(LazyThreadSafetyMode.NONE) {
@@ -31,7 +31,7 @@ private val parcelReadParcelableCreator: Method by lazy(LazyThreadSafetyMode.NON
     }
 }
 
-private fun <T : Parcelable> getParcelableCreator(clazz: Class<T>): Parcelable.Creator<T> {
+private fun <T : Parcelable> readParcelableCreator(clazz: Class<T>): Parcelable.Creator<T> {
     val creator: Parcelable.Creator<T>? = ParcelUtil.use {
         writeString(clazz.name)
         setDataPosition(0)

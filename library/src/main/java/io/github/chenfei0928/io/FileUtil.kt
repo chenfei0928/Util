@@ -23,8 +23,8 @@ object FileUtil {
     private const val TAG = "KW_FileUtil"
 
     @JvmStatic
-    fun joinPath(vararg path: String): String {
-        return path.joinToString(File.separator)
+    fun joinPath(vararg paths: String): String {
+        return paths.joinToString(File.separator)
     }
 
     /**

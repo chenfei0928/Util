@@ -7,11 +7,11 @@ import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 
 fun Any.toString0(
-    vararg field: KProperty0<*>,
+    vararg fields: KProperty0<*>,
 ) = buildString {
     append(this@toString0.javaClass.simpleName)
     append('(')
-    field.forEachIndexed { index, kProperty0 ->
+    fields.forEachIndexed { index, kProperty0 ->
         if (index != 0) {
             append(", ")
         }
@@ -23,11 +23,11 @@ fun Any.toString0(
 }
 
 fun <T : Any> T.toString1(
-    vararg field: KProperty1<T, *>,
+    vararg fields: KProperty1<T, *>,
 ) = buildString {
     append(this@toString1.javaClass.simpleName)
     append('(')
-    field.forEachIndexed { index, kProperty1 ->
+    fields.forEachIndexed { index, kProperty1 ->
         if (index != 0) {
             append(", ")
         }
@@ -39,11 +39,11 @@ fun <T : Any> T.toString1(
 }
 
 fun <T> Any.toStringT(
-    field: Array<T>,
+    fields: Array<T>,
 ): String where T : KCallable<*>, T : () -> Any = buildString {
     append(this@toStringT.javaClass.simpleName)
     append('(')
-    field.forEachIndexed { index, kProperty0 ->
+    fields.forEachIndexed { index, kProperty0 ->
         if (index != 0) {
             append(", ")
         }
@@ -54,10 +54,10 @@ fun <T> Any.toStringT(
     append(')')
 }
 
-fun Any.toStringKV(vararg field: Pair<String, Any?>) = buildString {
+fun Any.toStringKV(vararg fields: Pair<String, Any?>) = buildString {
     append(this@toStringKV.javaClass.simpleName)
     append('(')
-    field.forEachIndexed { index, (key, value) ->
+    fields.forEachIndexed { index, (key, value) ->
         if (index != 0) {
             append(", ")
         }

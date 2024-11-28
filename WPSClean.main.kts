@@ -1,3 +1,5 @@
+#!/usr/bin/env kotlin
+
 import java.io.File
 import java.lang.module.ModuleDescriptor
 

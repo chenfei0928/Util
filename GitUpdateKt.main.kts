@@ -1,3 +1,5 @@
+#!/usr/bin/env kotlin
+
 // 以 .main.kts 后缀才可以使用远端依赖
 @file:Repository("https://maven.pkg.jetbrains.space/public/p/kotlinx-coroutines/maven")
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0-RC3-Beta")
@@ -101,8 +103,8 @@ private fun syncGitCurrentBranch(gitDir: GitDir) {
 }
 
 fun File.runCommand(
-    vararg command: String
-): Process = ProcessBuilder(*command)
+    vararg commands: String
+): Process = ProcessBuilder(*commands)
     .directory(this)
     .redirectError(ProcessBuilder.Redirect.INHERIT)
     .redirectOutput(ProcessBuilder.Redirect.INHERIT)
