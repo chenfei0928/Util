@@ -17,6 +17,14 @@ import java.lang.reflect.WildcardType
  * Child : Parent<R-Impl>
  * ```
  *
+ * 在使用当前类时确认引入了Gson依赖，当前类有使用 `com.google.gson.internal.$Gson$Types` 类
+ *
+ * 已知问题：
+ * 1. 在获取Kotlin的类泛型定义时，List、Map的泛型子类继承后泛型约束会丢失，MutableList、MutableMap则没问题。
+ *      详见 [io.github.chenfei0928.reflect.ParameterizedTypeReflectKtTest.testParamKt] 的测试用例。
+ *
+ * 获取[Type]使用，同时由于`已知问题1`也不推荐继续使用。如果需要获取[Class]使用[ParameterizedTypeReflect2]获取
+ *
  * @param Parent 父类类型
  * @param parentClass               父类类实例
  * @param finalChildClass           最终子类类实例
@@ -24,6 +32,7 @@ import java.lang.reflect.WildcardType
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-07 11:06
  */
+@Deprecated("使用 ParameterizedTypeReflect2 获取 class")
 class ParameterizedTypeReflect1<Parent>(
     private val parentClass: Class<Parent>,
     private val finalChildClass: Class<out Parent>,

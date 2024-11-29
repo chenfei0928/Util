@@ -10,6 +10,7 @@ import androidx.collection.LruCache
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.github.chenfei0928.reflect.safeInvoke
+import io.github.chenfei0928.util.DependencyChecker
 import java.lang.reflect.Method
 
 //<editor-fold desc="Activity的setContentViewBinding">
@@ -40,7 +41,7 @@ fun <T : ViewBinding> Dialog.setContentViewBinding(
     @LayoutRes layoutId: Int, bindBlock: (View) -> T
 ): T {
     this.setContentView(layoutId)
-    val contentView: ViewGroup = if (this is BottomSheetDialog) {
+    val contentView: ViewGroup = if (DependencyChecker.material && this is BottomSheetDialog) {
         findViewById(com.google.android.material.R.id.design_bottom_sheet)!!
     } else {
         val decorView: View = window!!.decorView

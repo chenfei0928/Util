@@ -13,6 +13,8 @@ import androidx.core.view.NestedScrollingChildHelper;
 import androidx.core.view.ViewCompat;
 
 /**
+ * 父类使用了 [JsBridge](https://github.com/uknownothingsnow/JsBridge) 在使用前确认引入了依赖
+ *
  * @see <a href="https://github.com/takahirom/webview-in-coordinatorlayout">Github仓库</a>
  * @see <a href="http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2017/0412/7810.html">原博客</a>
  */

@@ -12,6 +12,8 @@ import androidx.viewpager.widget.ViewPager
 import io.github.chenfei0928.util.Log
 
 /**
+ * 父类使用了 [JsBridge](https://github.com/uknownothingsnow/JsBridge) 在使用前确认引入了依赖
+ *
  * [博文](https://droidyue.com/blog/2019/01/27/webview-javascript-scrolling-issue/)
  * [Github来源](https://github.com/androidyue/WebViewViewPagerScrollingIssue/blob/master/app/src/main/java/com/example/secoo/webviewandviewpagerscrollsample/MyWebView.kt)
  */

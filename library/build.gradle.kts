@@ -53,7 +53,7 @@ dependencies {
     implementation(DepsAndroidx.annotation)
     implementation(DepsAndroidx.lifecycle.runtime)
     implementation(DepsAndroidx.lifecycle.runtimeKtx)
-    implementation(DepsAndroidx.lifecycle.viewModel)
+    compileOnly(DepsAndroidx.lifecycle.viewModel)
     compileOnly(DepsAndroidx.material)
     compileOnly(DepsAndroidx.recyclerview.core)
     compileOnly(DepsAndroidx.gridlayout)
@@ -68,7 +68,8 @@ dependencies {
     compileOnly(Deps.glide.core)
     compileOnly(Deps.glide.transformations)
     // https://github.com/google/gson
-    implementation(Deps.lib.gson)
+    compileOnly(Deps.lib.gson)
+    testImplementation(Deps.lib.gson)
     compileOnly(Deps.lib.zxing.core)
     compileOnly(Deps.network.okhttp)
     compileOnly(Deps.network.retrofit.core)
@@ -79,5 +80,5 @@ dependencies {
 
     compileOnly(Deps.widget.recyclerView.multiType)
     compileOnly(Deps.widget.flexbox)
-    implementation(Deps.widget.jsBridge)
+    compileOnly(Deps.widget.jsBridge)
 }

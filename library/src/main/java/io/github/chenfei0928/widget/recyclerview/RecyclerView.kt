@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.flexbox.FlexboxLayoutManager
+import io.github.chenfei0928.util.DependencyChecker
 import kotlin.math.max
 import kotlin.math.min
 
@@ -55,10 +56,9 @@ fun RecyclerView.findVisibleRange(): IntRange = when (val lm = layoutManager) {
         // 列表显示范围
         firstVisibleItem..lastVisibleItem
     }
-    is FlexboxLayoutManager -> {
+    else -> if (DependencyChecker.flexbox && lm is FlexboxLayoutManager) {
         lm.findFirstVisibleItemPosition()..lm.findLastVisibleItemPosition()
-    }
-    else -> try {
+    } else try {
         lm.javaClass.run {
             val firstVisibleItem = getMethod("findFirstVisibleItemPosition").invoke(lm) as Int
             val lastVisibleItem = getMethod("findLastVisibleItemPosition").invoke(lm) as Int

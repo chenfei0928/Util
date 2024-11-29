@@ -18,6 +18,8 @@ import java.io.IOException
  * 二维码工具类
  * [原博客](http://blog.csdn.net/books1958/article/details/46346531)
  *
+ * 在使用当前类时确认引入了 [Zxing](https://github.com/zxing/zxing) 依赖，当前类有使用 `com.google.zxing` 包下多个类
+ *
  * Created by MrFeng on 2016/11/8.
  */
 object QRCodeUtil {

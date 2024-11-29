@@ -37,3 +37,11 @@
     public int findFirstVisibleItemPosition();
     public int findLastVisibleItemPosition();
 }
+
+## 反射获取 androidx 的 concurrentFuturesKtx 依赖是否引入
+## io.github.chenfei0928.util.DependencyChecker.hasAndroidXListenableFutureDep
+-keepnames class androidx.concurrent.futures.ListenableFutureKt
+
+## 反射获取 FlexboxLayoutManager 依赖是否引入
+## io.github.chenfei0928.util.DependencyChecker.hasFlexboxDep
+-keepnames class com.google.android.flexbox.FlexboxLayoutManager
