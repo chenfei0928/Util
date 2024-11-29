@@ -10,8 +10,9 @@ import io.github.chenfei0928.widget.recyclerview.adapter.IMultiTypeAdapterString
  */
 abstract class RecyclerViewSortedBinding<E : Any>(
     contentView: RecyclerView,
+    eClass: Class<E>? = null,
     adapter: MultiTypeAdapter = IMultiTypeAdapterStringer.IMultiTypeAdapter()
-) : BaseSortedBinding<E>(adapter) {
+) : BaseSortedBinding<E>(eClass, adapter) {
 
     init {
         contentView.adapter = adapter

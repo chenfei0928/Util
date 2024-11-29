@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.drakeet.multitype.MultiTypeAdapter
+import io.github.chenfei0928.collection.RecyclerViewAdapterDataObserverMultiList
 import io.github.chenfei0928.collection.RecyclerViewAdapterDataSource
 import io.github.chenfei0928.widget.recyclerview.adapter.DelegateAdapterDataObserver
 import io.github.chenfei0928.widget.recyclerview.adapter.IMultiTypeAdapterStringer
@@ -30,6 +31,11 @@ import io.github.chenfei0928.widget.recyclerview.binding.grid.BaseGridSpanRecycl
  * - 需要每个item有额外属性配置、一bean类型对多binder --> [AbsRecyclerViewBinderRecorderBinding]；
  * - 需要每个item有额外属性配置、一bean类型对一binder --> [AbsLayoutParamRecyclerViewBinding]；
  * - 无以上需求的基础扩展 --> [AbsRecyclerViewBinding]。
+ *
+ * @param list 内容列表，考虑内容列表插入顺序等于最终顺序，所以不使用自刷新集合类
+ * [RecyclerViewAdapterDataObserverMultiList]，但需要子类调用处在数据插入完成后
+ * 自行调用[adapter]的对应方法更新列表。但如果传入的[list]是[RecyclerViewAdapterDataSource]的子类，
+ * 将会对其更新[RecyclerViewAdapterDataSource.adapterDataObserver]。
  */
 abstract class AbsRecyclerViewBinding(
     contentView: RecyclerView, list: MutableList<Any> = arrayListOf()

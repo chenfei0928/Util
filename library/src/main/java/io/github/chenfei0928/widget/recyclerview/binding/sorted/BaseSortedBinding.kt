@@ -12,23 +12,28 @@ import io.github.chenfei0928.widget.recyclerview.adapter.IMultiTypeAdapterString
  * @date 2022-09-19 10:54
  */
 abstract class BaseSortedBinding<E : Any>(
+    eClass: Class<E>? = null,
     protected val adapter: MultiTypeAdapter = IMultiTypeAdapterStringer.IMultiTypeAdapter()
 ) {
-    private val klass: Class<E> = getParentParameterizedTypeClassDefinedImplInChild(0)
-    private val callback: SortedList.Callback<E> = object : SortedListAdapterCallback<E>(adapter) {
-        override fun compare(o1: E, o2: E): Int {
-            return this@BaseSortedBinding.compare(o1, o2)
-        }
+    /**
+     * 自排序列表，其会在内容更新后自动更新[adapter]
+     */
+    protected val list: SortedList<E> = SortedList(
+        eClass ?: getParentParameterizedTypeClassDefinedImplInChild(0),
+        object : SortedListAdapterCallback<E>(adapter) {
+            override fun compare(o1: E, o2: E): Int {
+                return this@BaseSortedBinding.compare(o1, o2)
+            }
 
-        override fun areContentsTheSame(oldItem: E, newItem: E): Boolean {
-            return this@BaseSortedBinding.areContentsTheSame(oldItem, newItem)
-        }
+            override fun areContentsTheSame(oldItem: E, newItem: E): Boolean {
+                return this@BaseSortedBinding.areContentsTheSame(oldItem, newItem)
+            }
 
-        override fun areItemsTheSame(item1: E, item2: E): Boolean {
-            return this@BaseSortedBinding.areItemsTheSame(item1, item2)
+            override fun areItemsTheSame(item1: E, item2: E): Boolean {
+                return this@BaseSortedBinding.areItemsTheSame(item1, item2)
+            }
         }
-    }
-    protected val list: SortedList<E> = SortedList(klass, callback)
+    )
 
     init {
         adapter.items = SortedListList(list)
