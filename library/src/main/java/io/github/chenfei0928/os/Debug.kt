@@ -2,9 +2,9 @@ package io.github.chenfei0928.os
 
 import android.os.Debug
 import androidx.annotation.Size
+import io.github.chenfei0928.text.appendFormat
 import io.github.chenfei0928.util.Log
 import java.text.DecimalFormat
-import java.text.FieldPosition
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -12,7 +12,6 @@ import java.text.FieldPosition
  */
 object Debug {
     const val msInNs = 1_000_000
-    private val fieldPosition = FieldPosition(0)
 
     inline fun <T> traceTime(
         tag: String,
@@ -53,8 +52,7 @@ object Debug {
             Log.v(tag, StringBuffer().apply {
                 append(msg)
                 append(", countTime: ")
-                DecimalFormat(",###")
-                    .format(timeUsed, this, fieldPosition)
+                appendFormat(DecimalFormat(",###"), timeUsed)
                 append(" ns.")
             }.toString())
         } else {
@@ -62,8 +60,7 @@ object Debug {
             Log.v(tag, StringBuffer().apply {
                 append(msg)
                 append(", countTime: ")
-                DecimalFormat(",###.###")
-                    .format(timeUsed / msInNs.toFloat(), this, fieldPosition)
+                appendFormat(DecimalFormat(",###.###"), timeUsed / msInNs.toFloat())
                 append(" ms.")
             }.toString())
         }
