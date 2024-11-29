@@ -25,8 +25,8 @@ suspend fun <T> Future<T>.await(
     waitOn: CoroutineContext = Dispatchers.IO
 ): T = if (isDone) {
     get()
-} else if (DependencyChecker.guava && this is ListenableFuture) {
-    if (DependencyChecker.androidXListenableFuture) {
+} else if (DependencyChecker.GUAVA() && this is ListenableFuture) {
+    if (DependencyChecker.ANDROID_X_LISTENABLE_FUTURE()) {
         this.await()
     } else suspendCancellableCoroutine { continuation ->
         addListener({

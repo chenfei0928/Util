@@ -123,13 +123,13 @@ object QRCodeUtil {
 
         return try {
             // logo大小为二维码整体大小的1/5
-            val scaleFactor = srcWidth * 1.0f / 5f / logoWidth.toFloat()
+            val scaleFactor = srcWidth / 5f / logoWidth.toFloat()
             val bitmap: Bitmap = Bitmap.createBitmap(srcWidth, srcHeight, Bitmap.Config.ARGB_8888)
 
             val canvas = Canvas(bitmap)
             canvas.drawBitmap(src, 0f, 0f, null)
             canvas.withScale(
-                scaleFactor, scaleFactor, (srcWidth / 2).toFloat(), (srcHeight / 2).toFloat()
+                scaleFactor, scaleFactor, srcWidth / 2f, srcHeight / 2f
             ) {
                 drawBitmap(logo, (srcWidth - logoWidth) / 2f, (srcHeight - logoHeight) / 2f, null)
             }
