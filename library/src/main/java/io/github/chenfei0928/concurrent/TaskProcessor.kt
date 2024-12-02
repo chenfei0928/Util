@@ -232,12 +232,16 @@ private abstract class LifecycleListenerRunnable(
 }
 
 @Suppress("kotlin:S6517")
-interface ExecutorAndCallback {
+interface ExecutorAndCallback : Executor {
     fun <R> execute(commend: () -> R, callback: (R) -> Unit)
 
     companion object DirectExecutor : ExecutorAndCallback {
         override fun <R> execute(commend: () -> R, callback: (R) -> Unit) {
             callback(commend())
+        }
+
+        override fun execute(command: Runnable) {
+            command.run()
         }
     }
 }

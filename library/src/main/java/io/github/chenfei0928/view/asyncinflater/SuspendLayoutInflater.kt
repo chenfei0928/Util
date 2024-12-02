@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.annotation.UiThread
 import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.concurrent.ExecutorAndCallback
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.util.Log
 import kotlinx.coroutines.CancellationException
@@ -26,11 +25,6 @@ class SuspendLayoutInflater(
     private val lifecycle: LifecycleOwner,
     override val inflater: LayoutInflater = BasicInflater(context),
 ) : IAsyncLayoutInflater {
-    override val executor: ExecutorAndCallback = object : ExecutorAndCallback {
-        override fun <R> execute(commend: () -> R, callback: (R) -> Unit) {
-            inflate(commend, callback)
-        }
-    }
     override val executorOrScope: CoroutineScope
         get() = lifecycle.coroutineScope
 
@@ -66,9 +60,13 @@ class SuspendLayoutInflater(
 
     private inline fun <V> inflate(
         crossinline inflate: () -> V,
-        crossinline callback: (V) -> Unit
+        noinline callback: ((V) -> Unit)?,
     ) {
-        lifecycle.coroutineScope.launch(Dispatchers.Main) {
+        if (callback == null) {
+            executorOrScope.launch(Dispatchers.Default) {
+                inflate()
+            }
+        } else executorOrScope.launch(Dispatchers.Main) {
             val view = withContext(Dispatchers.Default) {
                 try {
                     inflate()

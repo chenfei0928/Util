@@ -37,7 +37,7 @@ suspend fun <T> Future<T>.await(
             } catch (e: ExecutionException) {
                 continuation.resumeWithException(e.cause!!)
             }
-        }, Runnable::run)
+        }, ExecutorAndCallback.DirectExecutor)
         continuation.invokeOnCancellation {
             cancel(false)
         }

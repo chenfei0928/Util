@@ -18,11 +18,9 @@ import io.github.chenfei0928.util.Log
  */
 class AsyncLayoutInflater(
     context: Context,
-    override val executor: ExecutorAndCallback = ExecutorUtil,
+    override val executorOrScope: ExecutorAndCallback = ExecutorUtil,
     override val inflater: LayoutInflater = BasicInflater(context),
 ) : IAsyncLayoutInflater {
-    override val executorOrScope: ExecutorAndCallback
-        get() = executor
 
     /**
      * 通过自定义的布局创建者在子线程创建子布局
@@ -57,7 +55,7 @@ class AsyncLayoutInflater(
     private inline fun <V> inflate(
         crossinline inflate: () -> V,
         crossinline callback: (V) -> Unit
-    ) = executor.execute({
+    ) = executorOrScope.execute({
         try {
             return@execute inflate()
         } catch (ex: RuntimeException) {

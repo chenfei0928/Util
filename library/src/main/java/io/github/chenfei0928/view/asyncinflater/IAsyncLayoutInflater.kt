@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.annotation.UiThread
-import io.github.chenfei0928.concurrent.ExecutorAndCallback
 
 /**
  * @author chenf()
@@ -13,9 +12,7 @@ import io.github.chenfei0928.concurrent.ExecutorAndCallback
  */
 interface IAsyncLayoutInflater {
     val inflater: LayoutInflater
-    val executor: ExecutorAndCallback
     val executorOrScope: Any
-        get() = executor
 
     @UiThread
     fun <VG : ViewGroup, R> inflate(
