@@ -29,3 +29,12 @@ fun <T : GeneratedMessageV3> Class<T>.getProtobufV3ParserForType(): Parser<T> {
     @Suppress("UNCHECKED_CAST")
     return getProtobufV3DefaultInstance().parserForType as Parser<T>
 }
+
+fun GeneratedMessageV3.toShortString() = buildString {
+    append(this@toShortString.javaClass.simpleName)
+    append('@')
+    append(Integer.toHexString(hashCode()))
+    append("(")
+    append(TextFormat.shortDebugString(this@toShortString))
+    append(')')
+}

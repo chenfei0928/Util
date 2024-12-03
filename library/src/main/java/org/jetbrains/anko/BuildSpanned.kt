@@ -1,6 +1,6 @@
 package org.jetbrains.anko
 
-import android.text.SpannableStringBuilder
+import android.text.Editable
 import android.text.Spanned
 
 /**
@@ -8,13 +8,13 @@ import android.text.Spanned
  * @date 2021-05-16 16:26
  */
 
-fun SpannableStringBuilder.append(text: CharSequence, span: Any) {
+fun Editable.append(text: CharSequence, span: Any) {
     val textLength = text.length
     append(text)
     setSpan(span, this.length - textLength, length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
 }
 
-fun SpannableStringBuilder.append(text: CharSequence, vararg spans: Any) {
+fun Editable.append(text: CharSequence, vararg spans: Any) {
     val textLength = text.length
     append(text)
     spans.forEach { span ->

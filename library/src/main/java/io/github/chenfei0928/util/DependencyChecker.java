@@ -97,6 +97,34 @@ public enum DependencyChecker {
                 return false;
             }
         }
+    }, PROTOBUF {
+        @Override
+        protected boolean initValue() {
+            try {
+                // protobuf库大概率不存在，使用方案2加载
+                Class.forName("com.google.protobuf.GeneratedMessageV3");
+                return true;
+            } catch (ClassNotFoundException ignore) {
+                return false;
+            }
+        }
+    },
+    PROTOBUF_LITE {
+        @Override
+        protected boolean initValue() {
+            if (PROTOBUF.invoke()) {
+                // 如果完整库有被引入，lite就一定包含在内
+                return true;
+            }
+            try {
+                // protobufLite库大概率不存在，使用方案2加载
+                // lite库会keep这个类 https://github.com/protocolbuffers/protobuf/blob/main/java/lite/proguard.pgcfg
+                Class.forName("com.google.protobuf.GeneratedMessageLite");
+                return true;
+            } catch (ClassNotFoundException ignore) {
+                return false;
+            }
+        }
     };
 
     private Boolean value = null;

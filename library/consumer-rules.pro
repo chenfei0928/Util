@@ -22,6 +22,7 @@
 ## 获取Protobuf默认实例方法
 ## 在 com.google.protobuf.ProtobufAccessHelperKt.protobufDefaultInstanceCache 字段中使用
 ## com.google.protobuf.ProtobufAccessHelperKt.getProtobufDefaultInstance
+## io.github.chenfei0928.util.DependencyChecker.PROTOBUF
 -keepnames class * extends com.google.protobuf.GeneratedMessageV3 {
     public static * getDefaultInstance();
 }
@@ -39,9 +40,10 @@
 }
 
 ## 反射获取 androidx 的 concurrentFuturesKtx 依赖是否引入
-## io.github.chenfei0928.util.DependencyChecker.hasAndroidXListenableFutureDep
+## io.github.chenfei0928.util.DependencyChecker.ANDROID_X_LISTENABLE_FUTURE
 -keepnames class androidx.concurrent.futures.ListenableFutureKt
 
 ## 反射获取 FlexboxLayoutManager 依赖是否引入
-## io.github.chenfei0928.util.DependencyChecker.hasFlexboxDep
+## io.github.chenfei0928.util.DependencyChecker.FLEXBOX
 -keepnames class com.google.android.flexbox.FlexboxLayoutManager
+
