@@ -4,7 +4,6 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
-import io.github.chenfei0928.reflect.asType
 import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
 import kotlin.reflect.typeOf
 
@@ -130,7 +129,7 @@ abstract class BaseViewHolderParentLayoutBinder<T, VH : ViewHolder<T>> :
             if (it.childBinder is BaseViewHolderBinder) {
                 val childHolder = it.childHolderField(holder)
                 it.childBinder.onViewHolderCreated(
-                    childHolder, childHolder.itemView.parent.asType() ?: parent
+                    childHolder, childHolder.itemView.parent as? ViewGroup ?: parent
                 )
             }
         }

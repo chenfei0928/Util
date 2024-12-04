@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import io.github.chenfei0928.content.IntentFilterBroadcastReceiver
 import io.github.chenfei0928.os.getParcelableExtraCompat
-import io.github.chenfei0928.reflect.asType
 
 /**
  * @author chenfei()
@@ -41,8 +40,7 @@ object ActivityInfoReceiver : IntentFilterBroadcastReceiver(
 
     override fun register(context: Context) {
         super.register(context)
-        context.applicationContext
-            .asType<Application>()
+        (context.applicationContext as? Application)
             ?.registerActivityLifecycleCallbacks(ProcessActivityLifecycleCallbackSender())
     }
 }

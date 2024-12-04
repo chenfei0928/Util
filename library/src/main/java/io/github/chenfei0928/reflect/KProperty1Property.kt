@@ -10,12 +10,15 @@ inline fun <T, reified V> KProperty1<T, V>.toReadOnlyProperty(): Property<T, V> 
 }
 
 inline fun <T, reified V> KMutableProperty1<T, V>.toProperty(
-    crossinline afterSetBlock: (T) -> Unit = {}
+    crossinline afterSetBlock: (T) -> Unit
 ): Property<T, V> = object : KProperty1Property<T, V>(this, false, V::class.java) {
     override fun afterSetBlock(value: T) {
         afterSetBlock(value)
     }
 }
+
+inline fun <T, reified V> KMutableProperty1<T, V>.toProperty(): Property<T, V> =
+    KProperty1Property<T, V>(this, false, V::class.java)
 
 open class KProperty1Property<T, V>(
     private val property: KProperty1<T, V>,

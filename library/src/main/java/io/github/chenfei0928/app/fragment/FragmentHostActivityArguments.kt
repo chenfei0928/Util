@@ -1,94 +1,115 @@
-package io.github.chenfei0928.app.fragment
-
-import android.os.Parcelable
-import androidx.core.content.IntentCompat
-import androidx.fragment.app.Fragment
-import io.github.chenfei0928.app.activity.BaseArgumentDelegate
-import kotlin.reflect.KProperty
-import kotlin.reflect.jvm.javaType
-
 /**
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-07-23 15:46
  */
-class FragmentHostActivityParcelableDelegate<T : Parcelable>(
-    name: String? = null
-) : BaseArgumentDelegate<Fragment, T>(name) {
-    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): T {
+package io.github.chenfei0928.app.fragment
+
+import android.content.Intent
+import android.os.Parcelable
+import androidx.core.content.IntentCompat
+import kotlin.reflect.KProperty
+
+class HostParcelableDelegate<T : Parcelable>(
+    private val clazz: Class<T>, name: String? = null
+) : HostIntentDelegate<T>(name) {
+    override fun Intent.getValueImpl(property: KProperty<*>): T {
         return IntentCompat.getParcelableExtra(
-            thisRef.requireActivity().intent,
-            name ?: property.name,
-            property.returnType.javaType as Class<T>
+            this, name ?: property.name, clazz
         ) ?: throw IllegalArgumentException("缺少应有的字段: ${name ?: property.name}")
+    }
+
+    companion object {
+        inline fun <reified T : Parcelable> HostParcelableDelegate(
+            name: String? = null
+        ) = HostParcelableDelegate(T::class.java, name)
     }
 }
 
-class FragmentHostActivityParcelableNullableDelegate<T : Parcelable>(
-    name: String? = null
-) : BaseArgumentDelegate<Fragment, T?>(name) {
-    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): T? {
+class HostParcelableNullableDelegate<T : Parcelable>(
+    private val clazz: Class<T>, name: String? = null
+) : HostIntentDelegate<T?>(name) {
+    override fun Intent.getValueImpl(property: KProperty<*>): T? {
         return IntentCompat.getParcelableExtra(
-            thisRef.requireActivity().intent,
-            name ?: property.name,
-            property.returnType.javaType as Class<T>
+            this, name ?: property.name, clazz
         )
     }
+
+    companion object {
+        inline fun <reified T : Parcelable> HostParcelableNullableDelegate(
+            name: String? = null
+        ) = HostParcelableNullableDelegate(T::class.java, name)
+    }
 }
 
-class FragmentHostActivityParcelableListDelegate<T : Parcelable>(
-    name: String? = null
-) : BaseArgumentDelegate<Fragment, List<T>>(name) {
-    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): List<T> {
+class HostParcelableListDelegate<T : Parcelable>(
+    private val clazz: Class<T>, name: String? = null
+) : HostIntentDelegate<List<T>>(name) {
+    override fun Intent.getValueImpl(property: KProperty<*>): List<T> {
         return IntentCompat.getParcelableArrayListExtra(
-            thisRef.requireActivity().intent,
-            name ?: property.name,
-            property.returnType.arguments[0].type?.javaType as Class<T>
+            this, name ?: property.name, clazz
         ) ?: throw IllegalArgumentException("缺少应有的字段: ${name ?: property.name}")
     }
-}
 
-class FragmentHostActivityStringDelegate(
-    name: String? = null
-) : BaseArgumentDelegate<Fragment, String>(name) {
-    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): String {
-        return thisRef.requireActivity().intent
-            .getStringExtra(name ?: property.name)
-            ?: ""
+    companion object {
+        inline fun <reified T : Parcelable> HostParcelableListDelegate(
+            name: String? = null
+        ) = HostParcelableListDelegate(T::class.java, name)
     }
 }
 
-class FragmentHostActivityStringNullableDelegate(
+class HostStringDelegate(
     name: String? = null
-) : BaseArgumentDelegate<Fragment, String?>(name) {
-    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): String? {
-        return thisRef.requireActivity().intent
-            .getStringExtra(name ?: property.name)
+) : HostIntentDelegate<String>(name) {
+    override fun Intent.getValueImpl(property: KProperty<*>): String {
+        return getStringExtra(name ?: property.name) ?: ""
     }
 }
 
-class FragmentHostActivityIntDelegate(
+class HostStringNullableDelegate(
     name: String? = null
-) : BaseArgumentDelegate<Fragment, Int>(name) {
-    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): Int {
-        return thisRef.requireActivity().intent
-            .getIntExtra(name ?: property.name, 0)
+) : HostIntentDelegate<String?>(name) {
+    override fun Intent.getValueImpl(property: KProperty<*>): String? {
+        return getStringExtra(name ?: property.name)
     }
 }
 
-class FragmentHostActivityFloatDelegate(
-    name: String? = null
-) : BaseArgumentDelegate<Fragment, Float>(name) {
-    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): Float {
-        return thisRef.requireActivity().intent
-            .getFloatExtra(name ?: property.name, 0f)
+class HostIntDelegate(
+    name: String? = null, private val defaultValue: Int = 0
+) : HostIntentDelegate<Int>(name) {
+    override fun Intent.getValueImpl(property: KProperty<*>): Int {
+        return getIntExtra(name ?: property.name, defaultValue)
     }
 }
 
-class FragmentHostActivityBooleanDelegate(
+class HostFloatDelegate(
+    name: String? = null, private val defaultValue: Float = 0f
+) : HostIntentDelegate<Float>(name) {
+    override fun Intent.getValueImpl(property: KProperty<*>): Float {
+        return getFloatExtra(name ?: property.name, defaultValue)
+    }
+}
+
+class HostBooleanDelegate(
     name: String? = null
-) : BaseArgumentDelegate<Fragment, Boolean>(name) {
-    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): Boolean {
-        return thisRef.requireActivity().intent
-            .getBooleanExtra(name ?: property.name, false)
+) : HostIntentDelegate<Boolean>(name) {
+    override fun Intent.getValueImpl(property: KProperty<*>): Boolean {
+        return getBooleanExtra(name ?: property.name, false)
+    }
+}
+
+class HostEnumDelegate<E : Enum<E>>(
+    private val values: Array<E>,
+    private val defaultValue: E = values.first(),
+    name: String? = null
+) : HostIntentDelegate<E>(name) {
+    override fun Intent.getValueImpl(property: KProperty<*>): E {
+        val name = getStringExtra(name ?: property.name)
+        return values.find { it.name == name } ?: defaultValue
+    }
+
+    companion object {
+        inline fun <reified E : Enum<E>> HostEnumDelegate(
+            defaultValue: E? = null, name: String? = null
+        ) = EnumDelegate(enumValues<E>(), defaultValue ?: enumValues<E>().first(), name)
     }
 }

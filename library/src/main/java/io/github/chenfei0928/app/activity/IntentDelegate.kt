@@ -3,6 +3,8 @@ package io.github.chenfei0928.app.activity
 import android.app.Activity
 import android.content.Intent
 import io.github.chenfei0928.os.BaseBundleDelegate
+import io.github.chenfei0928.reflect.ReadCacheDelegate
+import io.github.chenfei0928.reflect.ReadCacheDelegate.Companion.getCacheOrValue
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -27,11 +29,11 @@ open class IntentDelegate<T>(
     companion object {
         val accessors = IntentDelegate<Any>()
 
-        inline operator fun <reified T> Activity.getValue(
+        operator fun <T> Activity.getValue(
             thisRef: Activity, property: KProperty<*>
-        ): T = intentArg<T>().getValue(thisRef, property)
+        ): T = (accessors as ReadOnlyProperty<Activity, T>).getCacheOrValue(thisRef, property)
 
-        inline fun <reified T> Activity.intentArg(): ReadOnlyProperty<Activity, T> =
-            accessors as ReadOnlyProperty<Activity, T>
+        fun <T> Activity.intentArg(): ReadOnlyProperty<Activity, T> =
+            ReadCacheDelegate(accessors as ReadOnlyProperty<Activity, T>)
     }
 }

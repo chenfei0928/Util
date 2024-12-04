@@ -7,6 +7,9 @@ package io.github.chenfei0928.app.fragment
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import io.github.chenfei0928.os.BaseWriteableBundleDelegate
+import io.github.chenfei0928.reflect.ReadCacheDelegate
+import io.github.chenfei0928.reflect.ReadCacheDelegate.Companion.getCacheOrValue
+import io.github.chenfei0928.reflect.ReadCacheDelegate.Companion.setValueAndCache
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -38,14 +41,14 @@ open class ArgumentDelegate<T>(
     companion object {
         val accessors = ArgumentDelegate<Any>()
 
-        inline operator fun <T> Fragment.getValue(thisRef: Fragment, property: KProperty<*>): T =
-            argumentArg<T>().getValue(thisRef, property)
+        operator fun <T> Fragment.getValue(thisRef: Fragment, property: KProperty<*>): T =
+            (accessors as ReadWriteProperty<Fragment, T>).getCacheOrValue(thisRef, property)
 
-        inline operator fun <T> Fragment.setValue(
+        operator fun <T> Fragment.setValue(
             thisRef: Fragment, property: KProperty<*>, value: T
-        ) = argumentArg<T>().setValue(thisRef, property, value)
+        ) = (accessors as ReadWriteProperty<Fragment, T>).setValueAndCache(thisRef, property, value)
 
-        inline fun <T> Fragment.argumentArg(): ReadWriteProperty<Fragment, T> =
-            accessors as ReadWriteProperty<Fragment, T>
+        fun <T> Fragment.argumentArg(): ReadWriteProperty<Fragment, T> =
+            ReadCacheDelegate.Writable(accessors as ReadWriteProperty<Fragment, T>)
     }
 }

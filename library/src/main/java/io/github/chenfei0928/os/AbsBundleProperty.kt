@@ -18,6 +18,7 @@ import kotlin.jvm.java
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
+import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 
 /**
@@ -30,7 +31,6 @@ abstract class AbsBundleProperty<Host, T>(
 ) : ReadOnlyProperty<Host, T> {
 
     @Suppress("UNCHECKED_CAST")
-    @SuppressWarnings("kotlin:S6530")
     protected fun Intent.getTExtra(property: KProperty<*>): T {
         val name = name ?: property.name
         val value = when (val classifier = property.returnType.classifier) {
@@ -55,22 +55,17 @@ abstract class AbsBundleProperty<Host, T>(
             is KClass<*> -> when {
                 classifier.isSubclassOf(Parcelable::class) ->
                     IntentCompat.getParcelableExtra(this, name, classifier.java)
-                classifier.isSubclassOf(Serializable::class) ->
-                    IntentCompat.getSerializableExtra(
-                        this, name, classifier.java as Class<out Serializable>
-                    )
                 classifier.isSubclassOf(CharSequence::class) ->
                     getCharSequenceExtra(name)
                 classifier.isSubclassOf(List::class) -> {
-                    val kClass = property.returnType.arguments[0].type?.classifier as KClass<*>
+                    val kClass = property.returnType.argument0TypeClass
                     when {
-                        kClass.isSubclassOf(Parcelable::class) -> IntentCompat.getParcelableArrayListExtra(
-                            this, name, kClass.java
-                        )
+                        kClass.isSubclassOf(Parcelable::class) ->
+                            IntentCompat.getParcelableArrayListExtra(this, name, kClass.java)
                         kClass.isSubclassOf(CharSequence::class) ->
                             getCharSequenceArrayListExtra(name)
                         kClass == Integer::class -> getIntegerArrayListExtra(name)
-                        else -> throw IllegalArgumentException("Not support return type: $property")
+                        else -> property.throwNotSupportType()
                     }
                 }
                 classifier.isSubclassOf(Enum::class) -> {
@@ -85,14 +80,17 @@ abstract class AbsBundleProperty<Host, T>(
                             IntentCompat.getParcelableArrayExtra(
                                 this, name, componentType as Class<out Parcelable>
                             )
+                        String::class.java == componentType ->
+                            getStringArrayExtra(name)
                         CharSequence::class.java.isAssignableFrom(componentType) ->
                             getCharSequenceArrayExtra(name)
-                        else -> throw IllegalArgumentException("Not support return type: $property")
+                        else -> property.throwNotSupportType()
                     }
                 }
-                else -> if (DependencyChecker.PROTOBUF_LITE() &&
-                    classifier.isSubclassOf(GeneratedMessageLite::class)
-                ) {
+                classifier.isSubclassOf(Serializable::class) -> IntentCompat.getSerializableExtra(
+                    this, name, classifier.java as Class<out Serializable>
+                )
+                DependencyChecker.PROTOBUF_LITE() && classifier.isSubclassOf(GeneratedMessageLite::class) -> {
                     val data = getByteArrayExtra(name)
                     if (data == null) {
                         null
@@ -100,16 +98,16 @@ abstract class AbsBundleProperty<Host, T>(
                         val clazz =
                             classifier.java as Class<out GeneratedMessageLite<*, *>>
                         if (clazz.isAssignableFrom(GeneratedMessageV3::class.java)) {
-                            (clazz as Class<out GeneratedMessageV3>)
-                                .getProtobufV3DefaultInstance()
+                            (clazz as Class<out GeneratedMessageV3>).getProtobufV3DefaultInstance()
                         } else {
                             clazz.getProtobufLiteDefaultInstance()
                         }.parserForType.parseFrom(data)
                     }
-                } else throw IllegalArgumentException("Not support return type: $property")
+                }
+                else -> property.throwNotSupportType()
             }
-            else -> throw IllegalArgumentException("Not support return type: $property")
-        }
+            else -> property.throwNotSupportType()
+        } ?: defaultValue
         return value as T
     }
 
@@ -138,32 +136,24 @@ abstract class AbsBundleProperty<Host, T>(
             is KClass<*> -> when {
                 classifier.isSubclassOf(Parcelable::class) ->
                     BundleCompat.getParcelable(this, name, classifier.java)
-                classifier.isSubclassOf(Serializable::class) ->
-                    BundleCompat.getSerializable(
-                        this, name, classifier.java as Class<out Serializable>
-                    )
-                classifier.isSubclassOf(CharSequence::class) ->
-                    getCharSequence(name)
+                classifier.isSubclassOf(CharSequence::class) -> getCharSequence(name)
                 classifier.isSubclassOf(List::class) -> {
-                    val kClass = property.returnType.arguments[0].type?.classifier as KClass<*>
+                    val kClass = property.returnType.argument0TypeClass
                     when {
-                        kClass.isSubclassOf(Parcelable::class) -> BundleCompat.getParcelableArrayList(
-                            this, name, kClass.java
-                        )
+                        kClass.isSubclassOf(Parcelable::class) ->
+                            BundleCompat.getParcelableArrayList(this, name, kClass.java)
                         kClass.isSubclassOf(CharSequence::class) ->
                             getCharSequenceArrayList(name)
                         kClass == Integer::class -> getIntegerArrayList(name)
                         kClass == String::class -> getStringArrayList(name)
-                        else -> throw IllegalArgumentException("Not support return type: $property")
+                        else -> property.throwNotSupportType()
                     }
                 }
                 classifier.isSubclassOf(SparseArray::class) -> {
-                    val kClass = property.returnType.arguments[0].type?.classifier as KClass<*>
+                    val kClass = property.returnType.argument0TypeClass
                     BundleCompat.getSparseParcelableArray(this, name, kClass.java)
                 }
-                classifier.isSubclassOf(IBinder::class) -> {
-                    getBinder(name)
-                }
+                classifier.isSubclassOf(IBinder::class) -> getBinder(name)
                 classifier.isSubclassOf(Enum::class) -> {
                     val clazz = classifier.java as Class<out Enum<*>>
                     val name = getString(property.name)
@@ -176,14 +166,17 @@ abstract class AbsBundleProperty<Host, T>(
                             BundleCompat.getParcelableArray(
                                 this, name, componentType as Class<out Parcelable>
                             )
+                        String::class.java == componentType ->
+                            getStringArray(name)
                         CharSequence::class.java.isAssignableFrom(componentType) ->
                             getCharSequenceArray(name)
-                        else -> throw IllegalArgumentException("Not support return type: $property")
+                        else -> property.throwNotSupportType()
                     }
                 }
-                else -> if (DependencyChecker.PROTOBUF_LITE() &&
-                    classifier.isSubclassOf(GeneratedMessageLite::class)
-                ) {
+                classifier.isSubclassOf(Serializable::class) -> BundleCompat.getSerializable(
+                    this, name, classifier.java as Class<out Serializable>
+                )
+                DependencyChecker.PROTOBUF_LITE() && classifier.isSubclassOf(GeneratedMessageLite::class) -> {
                     val data = getByteArray(name)
                     if (data == null) {
                         null
@@ -191,21 +184,20 @@ abstract class AbsBundleProperty<Host, T>(
                         val clazz =
                             classifier.java as Class<out GeneratedMessageLite<*, *>>
                         if (clazz.isAssignableFrom(GeneratedMessageV3::class.java)) {
-                            (clazz as Class<out GeneratedMessageV3>)
-                                .getProtobufV3DefaultInstance()
+                            (clazz as Class<out GeneratedMessageV3>).getProtobufV3DefaultInstance()
                         } else {
                             clazz.getProtobufLiteDefaultInstance()
                         }.parserForType.parseFrom(data)
                     }
-                } else throw IllegalArgumentException("Not support return type: $property")
+                }
+                else -> property.throwNotSupportType()
             }
-            else -> throw IllegalArgumentException("Not support return type: $property")
-        }
+            else -> property.throwNotSupportType()
+        } ?: defaultValue
         return value as T
     }
 
     @Suppress("UNCHECKED_CAST")
-    @SuppressWarnings("kotlin:S6530")
     protected fun <T> Bundle.putT(property: KProperty<*>, value: T) {
         val name = name ?: property.name
         when (val classifier = property.returnType.classifier) {
@@ -228,14 +220,14 @@ abstract class AbsBundleProperty<Host, T>(
             String::class -> putString(name, value as String)
             Bundle::class -> putBundle(name, value as Bundle)
             is KClass<*> -> when {
-                classifier.isSubclassOf(Parcelable::class) ->
-                    putParcelable(name, value as Parcelable)
-                classifier.isSubclassOf(Serializable::class) ->
-                    putSerializable(name, value as Serializable)
-                classifier.isSubclassOf(CharSequence::class) ->
-                    putCharSequence(name, value as CharSequence)
+                classifier.isSubclassOf(Parcelable::class) -> putParcelable(
+                    name, value as Parcelable
+                )
+                classifier.isSubclassOf(CharSequence::class) -> putCharSequence(
+                    name, value as CharSequence
+                )
                 classifier.isSubclassOf(List::class) -> {
-                    val kClass = property.returnType.arguments[0].type?.classifier as KClass<*>
+                    val kClass = property.returnType.argument0TypeClass
                     when {
                         kClass.isSubclassOf(Parcelable::class) ->
                             putParcelableArrayList(name, (value as List<Parcelable>).asArrayList())
@@ -248,34 +240,42 @@ abstract class AbsBundleProperty<Host, T>(
                         kClass == String::class -> putStringArrayList(
                             name, (value as List<String>).asArrayList()
                         )
-                        else -> throw IllegalArgumentException("Not support return type: $property")
+                        else -> property.throwNotSupportType()
                     }
                 }
-                classifier.isSubclassOf(SparseArray::class) -> {
-                    putSparseParcelableArray(name, value as SparseArray<Parcelable>)
-                }
-                classifier.isSubclassOf(IBinder::class) -> {
-                    putBinder(name, value as IBinder)
-                }
-                classifier.isSubclassOf(Enum::class) -> {
-                    putString(name, (value as Enum<*>).name)
-                }
+                classifier.isSubclassOf(SparseArray::class) -> putSparseParcelableArray(
+                    name, value as SparseArray<out Parcelable>
+                )
+                classifier.isSubclassOf(IBinder::class) -> putBinder(name, value as IBinder)
+                classifier.isSubclassOf(Enum::class) -> putString(name, (value as Enum<*>).name)
+                classifier.isSubclassOf(Serializable::class) -> putSerializable(
+                    name, value as Serializable
+                )
                 classifier.java.isArray -> {
                     val componentType = classifier.java.componentType!!
                     when {
                         Parcelable::class.java.isAssignableFrom(componentType) ->
-                            putParcelableArray(name, value as Array<Parcelable>)
+                            putParcelableArray(name, value as Array<out Parcelable>)
+                        String::class.java == componentType ->
+                            putStringArray(name, value as Array<String>)
                         CharSequence::class.java.isAssignableFrom(componentType) ->
-                            putCharSequenceArray(name, value as Array<CharSequence>)
-                        else -> throw IllegalArgumentException("Not support return type: $property")
+                            putCharSequenceArray(name, value as Array<out CharSequence>)
+                        else -> property.throwNotSupportType()
                     }
                 }
                 DependencyChecker.PROTOBUF_LITE() && classifier.isSubclassOf(GeneratedMessageLite::class) -> {
                     putByteArray(name, (value as? GeneratedMessageLite<*, *>)?.toByteArray())
                 }
-                else -> throw IllegalArgumentException("Not support return type: $property")
+                else -> property.throwNotSupportType()
             }
-            else -> throw IllegalArgumentException("Not support return type: $property")
+            else -> property.throwNotSupportType()
         }
     }
+
+    private fun KProperty<*>.throwNotSupportType() {
+        throw IllegalArgumentException("Not support return type: $this")
+    }
+
+    private val KType.argument0TypeClass: KClass<*>
+        get() = arguments[0].type?.classifier as KClass<*>
 }

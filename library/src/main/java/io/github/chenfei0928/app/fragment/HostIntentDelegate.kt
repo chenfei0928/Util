@@ -3,6 +3,7 @@ package io.github.chenfei0928.app.fragment
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import io.github.chenfei0928.os.BaseBundleDelegate
+import io.github.chenfei0928.reflect.ReadCacheDelegate
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -27,7 +28,7 @@ open class HostIntentDelegate<T>(
     companion object {
         val accessors = HostIntentDelegate<Any>()
 
-        inline fun <T> Fragment.hostIntentArg(): ReadOnlyProperty<Fragment, T> =
-            accessors as ReadOnlyProperty<Fragment, T>
+        fun <T> Fragment.hostIntentArg(): ReadOnlyProperty<Fragment, T> =
+            ReadCacheDelegate(accessors as ReadOnlyProperty<Fragment, T>)
     }
 }
