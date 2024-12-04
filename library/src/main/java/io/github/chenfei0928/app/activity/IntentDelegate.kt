@@ -2,6 +2,7 @@ package io.github.chenfei0928.app.activity
 
 import android.app.Activity
 import android.content.Intent
+import io.github.chenfei0928.os.AbsBundleProperty
 import io.github.chenfei0928.os.BaseBundleDelegate
 import io.github.chenfei0928.reflect.ReadCacheDelegate
 import io.github.chenfei0928.reflect.ReadCacheDelegate.Companion.getCacheOrValue
@@ -27,7 +28,15 @@ open class IntentDelegate<T>(
     }
 
     companion object {
-        val accessors = IntentDelegate<Any>()
+        // no cache
+        private val accessors = object : AbsBundleProperty<Activity, Any>() {
+            override fun getValue(
+                thisRef: Activity, property: KProperty<*>
+            ): Any = thisRef.intent.run {
+                setExtrasClassLoader(thisRef.classLoader)
+                getTExtra(property)
+            }
+        }
 
         operator fun <T> Activity.getValue(
             thisRef: Activity, property: KProperty<*>

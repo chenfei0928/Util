@@ -2,6 +2,7 @@ package io.github.chenfei0928.app.fragment
 
 import android.content.Intent
 import androidx.fragment.app.Fragment
+import io.github.chenfei0928.os.AbsBundleProperty
 import io.github.chenfei0928.os.BaseBundleDelegate
 import io.github.chenfei0928.reflect.ReadCacheDelegate
 import kotlin.properties.ReadOnlyProperty
@@ -26,7 +27,15 @@ open class HostIntentDelegate<T>(
     }
 
     companion object {
-        val accessors = HostIntentDelegate<Any>()
+        // no cache
+        private val accessors = object : AbsBundleProperty<Fragment, Any>() {
+            override fun getValue(
+                thisRef: Fragment, property: KProperty<*>
+            ): Any = thisRef.requireActivity().intent.run {
+                setExtrasClassLoader(thisRef.requireActivity().classLoader)
+                getTExtra(property)
+            }
+        }
 
         fun <T> Fragment.hostIntentArg(): ReadOnlyProperty<Fragment, T> =
             ReadCacheDelegate(accessors as ReadOnlyProperty<Fragment, T>)

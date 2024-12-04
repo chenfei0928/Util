@@ -6,6 +6,7 @@ package io.github.chenfei0928.app.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import io.github.chenfei0928.os.AbsBundleProperty
 import io.github.chenfei0928.os.BaseWriteableBundleDelegate
 import io.github.chenfei0928.reflect.ReadCacheDelegate
 import io.github.chenfei0928.reflect.ReadCacheDelegate.Companion.getCacheOrValue
@@ -39,7 +40,24 @@ open class ArgumentDelegate<T>(
     }
 
     companion object {
-        val accessors = ArgumentDelegate<Any>()
+        // no cache
+        private val accessors = object : AbsBundleProperty<Fragment, Any>(),
+            ReadWriteProperty<Fragment, Any> {
+            override fun getValue(
+                thisRef: Fragment, property: KProperty<*>
+            ): Any = thisRef.requireArguments().run {
+                classLoader = thisRef.javaClass.classLoader
+                getT(property)
+            }
+
+            override fun setValue(
+                thisRef: Fragment, property: KProperty<*>, value: Any
+            ) {
+                thisRef.applyArgumentBundle {
+                    putT(property, value)
+                }
+            }
+        }
 
         operator fun <T> Fragment.getValue(thisRef: Fragment, property: KProperty<*>): T =
             (accessors as ReadWriteProperty<Fragment, T>).getCacheOrValue(thisRef, property)

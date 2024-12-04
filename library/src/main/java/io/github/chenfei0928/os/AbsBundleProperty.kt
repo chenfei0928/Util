@@ -75,7 +75,7 @@ abstract class AbsBundleProperty<Host, T>(
                         kClass.isSubclassOf(CharSequence::class) ->
                             getCharSequenceArrayListExtra(name)
                         kClass == Integer::class -> getIntegerArrayListExtra(name)
-                        else -> property.throwNotSupportType()
+                        else -> throw property.newNoSupportException()
                     }
                 }
                 // Intent 不支持SparseArray与IBinder
@@ -95,7 +95,7 @@ abstract class AbsBundleProperty<Host, T>(
                             getStringArrayExtra(name)
                         CharSequence::class.java.isAssignableFrom(componentType) ->
                             getCharSequenceArrayExtra(name)
-                        else -> property.throwNotSupportType()
+                        else -> throw property.newNoSupportException()
                     }
                 }
                 classifier.isSubclassOf(Serializable::class) -> IntentCompat.getSerializableExtra(
@@ -115,9 +115,9 @@ abstract class AbsBundleProperty<Host, T>(
                         }.parserForType.parseFrom(data)
                     }
                 }
-                else -> property.throwNotSupportType()
+                else -> throw property.newNoSupportException()
             }
-            else -> property.throwNotSupportType()
+            else -> throw property.newNoSupportException()
         } ?: defaultValue
         return value as T
     }
@@ -159,7 +159,7 @@ abstract class AbsBundleProperty<Host, T>(
                         kClass.isSubclassOf(CharSequence::class) ->
                             getCharSequenceArrayList(name)
                         kClass == Integer::class -> getIntegerArrayList(name)
-                        else -> property.throwNotSupportType()
+                        else -> throw property.newNoSupportException()
                     }
                 }
                 classifier.isSubclassOf(SparseArray::class) -> {
@@ -182,7 +182,7 @@ abstract class AbsBundleProperty<Host, T>(
                         String::class.java == componentType -> getStringArray(name)
                         CharSequence::class.java.isAssignableFrom(componentType) ->
                             getCharSequenceArray(name)
-                        else -> property.throwNotSupportType()
+                        else -> throw property.newNoSupportException()
                     }
                 }
                 classifier.isSubclassOf(Serializable::class) -> BundleCompat.getSerializable(
@@ -202,9 +202,9 @@ abstract class AbsBundleProperty<Host, T>(
                         }.parserForType.parseFrom(data)
                     }
                 }
-                else -> property.throwNotSupportType()
+                else -> throw property.newNoSupportException()
             }
-            else -> property.throwNotSupportType()
+            else -> throw property.newNoSupportException()
         } ?: defaultValue
         return value as T
     }
@@ -253,7 +253,7 @@ abstract class AbsBundleProperty<Host, T>(
                         kClass == Integer::class -> putIntegerArrayList(
                             name, (value as List<Int>).asArrayList()
                         )
-                        else -> property.throwNotSupportType()
+                        else -> throw property.newNoSupportException()
                     }
                 }
                 classifier.isSubclassOf(SparseArray::class) -> putSparseParcelableArray(
@@ -270,7 +270,7 @@ abstract class AbsBundleProperty<Host, T>(
                             putStringArray(name, value as Array<String>)
                         CharSequence::class.java.isAssignableFrom(componentType) ->
                             putCharSequenceArray(name, value as Array<out CharSequence>)
-                        else -> property.throwNotSupportType()
+                        else -> throw property.newNoSupportException()
                     }
                 }
                 classifier.isSubclassOf(Serializable::class) -> putSerializable(
@@ -279,16 +279,19 @@ abstract class AbsBundleProperty<Host, T>(
                 DependencyChecker.PROTOBUF_LITE() && classifier.isSubclassOf(GeneratedMessageLite::class) -> {
                     putByteArray(name, (value as? GeneratedMessageLite<*, *>)?.toByteArray())
                 }
-                else -> property.throwNotSupportType()
+                else -> throw property.newNoSupportException()
             }
-            else -> property.throwNotSupportType()
+            else -> throw property.newNoSupportException()
         }
     }
 
-    private fun KProperty<*>.throwNotSupportType() {
-        throw IllegalArgumentException("Not support return type: $this")
-    }
+    private fun KProperty<*>.newNoSupportException() =
+        IllegalArgumentException("Not support return type: $this")
 
     private val KType.argument0TypeClass: KClass<*>
         get() = arguments[0].type?.classifier as KClass<*>
+
+    companion object {
+        private const val TAG = "AbsBundleProperty"
+    }
 }

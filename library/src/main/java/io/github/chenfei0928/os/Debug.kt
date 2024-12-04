@@ -14,7 +14,7 @@ import java.text.DecimalFormat
 object Debug {
     const val msInNs = 1_000_000
 
-    inline fun <T> traceTime(
+    inline fun <T> traceAndTime(
         tag: String,
         tracePath: String,
         msg: String = tracePath,
