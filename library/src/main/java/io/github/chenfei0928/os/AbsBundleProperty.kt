@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.IBinder
 import android.os.Parcelable
+import android.util.Size
+import android.util.SizeF
 import android.util.SparseArray
 import androidx.core.content.IntentCompat
 import androidx.core.os.BundleCompat
@@ -25,12 +27,18 @@ import kotlin.reflect.full.isSubclassOf
  * @author chenf()
  * @date 2024-12-03 14:19
  */
+@Suppress(
+    "UNCHECKED_CAST",
+    "CyclomaticComplexMethod",
+    "LongMethod",
+    "NestedBlockDepth",
+    "kotlin:S3776",
+)
 abstract class AbsBundleProperty<Host, T>(
     protected val name: String? = null,
     private val defaultValue: T? = null,
 ) : ReadOnlyProperty<Host, T> {
 
-    @Suppress("UNCHECKED_CAST")
     protected fun Intent.getTExtra(property: KProperty<*>): T {
         val name = name ?: property.name
         val value = when (val classifier = property.returnType.classifier) {
@@ -52,6 +60,7 @@ abstract class AbsBundleProperty<Host, T>(
             CharArray::class -> getCharArrayExtra(name)
             String::class -> getStringExtra(name)
             Bundle::class -> getBundleExtra(name)
+            // Intent 不支持Size与SizeF
             is KClass<*> -> when {
                 classifier.isSubclassOf(Parcelable::class) ->
                     IntentCompat.getParcelableExtra(this, name, classifier.java)
@@ -62,12 +71,14 @@ abstract class AbsBundleProperty<Host, T>(
                     when {
                         kClass.isSubclassOf(Parcelable::class) ->
                             IntentCompat.getParcelableArrayListExtra(this, name, kClass.java)
+                        kClass == String::class -> getStringArrayListExtra(name)
                         kClass.isSubclassOf(CharSequence::class) ->
                             getCharSequenceArrayListExtra(name)
                         kClass == Integer::class -> getIntegerArrayListExtra(name)
                         else -> property.throwNotSupportType()
                     }
                 }
+                // Intent 不支持SparseArray与IBinder
                 classifier.isSubclassOf(Enum::class) -> {
                     val clazz = classifier.java as Class<out Enum<*>>
                     val name = getStringExtra(property.name)
@@ -111,7 +122,6 @@ abstract class AbsBundleProperty<Host, T>(
         return value as T
     }
 
-    @Suppress("UNCHECKED_CAST")
     protected fun Bundle.getT(property: KProperty<*>): T {
         val name = name ?: property.name
         val value = when (val classifier = property.returnType.classifier) {
@@ -133,19 +143,22 @@ abstract class AbsBundleProperty<Host, T>(
             CharArray::class -> getCharArray(name)
             String::class -> getString(name)
             Bundle::class -> getBundle(name)
+            Size::class -> getSize(name)
+            SizeF::class -> getSizeF(name)
             is KClass<*> -> when {
                 classifier.isSubclassOf(Parcelable::class) ->
                     BundleCompat.getParcelable(this, name, classifier.java)
-                classifier.isSubclassOf(CharSequence::class) -> getCharSequence(name)
+                classifier.isSubclassOf(CharSequence::class) ->
+                    getCharSequence(name)
                 classifier.isSubclassOf(List::class) -> {
                     val kClass = property.returnType.argument0TypeClass
                     when {
                         kClass.isSubclassOf(Parcelable::class) ->
                             BundleCompat.getParcelableArrayList(this, name, kClass.java)
+                        kClass == String::class -> getStringArrayList(name)
                         kClass.isSubclassOf(CharSequence::class) ->
                             getCharSequenceArrayList(name)
                         kClass == Integer::class -> getIntegerArrayList(name)
-                        kClass == String::class -> getStringArrayList(name)
                         else -> property.throwNotSupportType()
                     }
                 }
@@ -166,8 +179,7 @@ abstract class AbsBundleProperty<Host, T>(
                             BundleCompat.getParcelableArray(
                                 this, name, componentType as Class<out Parcelable>
                             )
-                        String::class.java == componentType ->
-                            getStringArray(name)
+                        String::class.java == componentType -> getStringArray(name)
                         CharSequence::class.java.isAssignableFrom(componentType) ->
                             getCharSequenceArray(name)
                         else -> property.throwNotSupportType()
@@ -197,7 +209,6 @@ abstract class AbsBundleProperty<Host, T>(
         return value as T
     }
 
-    @Suppress("UNCHECKED_CAST")
     protected fun <T> Bundle.putT(property: KProperty<*>, value: T) {
         val name = name ?: property.name
         when (val classifier = property.returnType.classifier) {
@@ -219,6 +230,8 @@ abstract class AbsBundleProperty<Host, T>(
             CharArray::class -> putCharArray(name, value as CharArray)
             String::class -> putString(name, value as String)
             Bundle::class -> putBundle(name, value as Bundle)
+            Size::class -> putSize(name, value as Size)
+            SizeF::class -> putSizeF(name, value as SizeF)
             is KClass<*> -> when {
                 classifier.isSubclassOf(Parcelable::class) -> putParcelable(
                     name, value as Parcelable
@@ -231,14 +244,14 @@ abstract class AbsBundleProperty<Host, T>(
                     when {
                         kClass.isSubclassOf(Parcelable::class) ->
                             putParcelableArrayList(name, (value as List<Parcelable>).asArrayList())
+                        kClass == String::class -> putStringArrayList(
+                            name, (value as List<String>).asArrayList()
+                        )
                         kClass.isSubclassOf(CharSequence::class) -> putCharSequenceArrayList(
                             name, (value as List<CharSequence>).asArrayList()
                         )
                         kClass == Integer::class -> putIntegerArrayList(
                             name, (value as List<Int>).asArrayList()
-                        )
-                        kClass == String::class -> putStringArrayList(
-                            name, (value as List<String>).asArrayList()
                         )
                         else -> property.throwNotSupportType()
                     }
@@ -248,9 +261,6 @@ abstract class AbsBundleProperty<Host, T>(
                 )
                 classifier.isSubclassOf(IBinder::class) -> putBinder(name, value as IBinder)
                 classifier.isSubclassOf(Enum::class) -> putString(name, (value as Enum<*>).name)
-                classifier.isSubclassOf(Serializable::class) -> putSerializable(
-                    name, value as Serializable
-                )
                 classifier.java.isArray -> {
                     val componentType = classifier.java.componentType!!
                     when {
@@ -263,6 +273,9 @@ abstract class AbsBundleProperty<Host, T>(
                         else -> property.throwNotSupportType()
                     }
                 }
+                classifier.isSubclassOf(Serializable::class) -> putSerializable(
+                    name, value as Serializable
+                )
                 DependencyChecker.PROTOBUF_LITE() && classifier.isSubclassOf(GeneratedMessageLite::class) -> {
                     putByteArray(name, (value as? GeneratedMessageLite<*, *>)?.toByteArray())
                 }
