@@ -1,15 +1,14 @@
 package io.github.chenfei0928.os
 
 import io.github.chenfei0928.concurrent.lazy.UNINITIALIZED_VALUE
+import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 /**
  * @author chenf()
  * @date 2024-11-11 17:39
  */
-abstract class BaseBundleDelegate<Host : Any, T>(
-    name: String? = null, defaultValue: T? = null,
-) : AbsBundleProperty<Host, T>(name, defaultValue) {
+abstract class ReadOnlyCacheDelegate<Host : Any, T> : ReadOnlyProperty<Host, T> {
     protected var value: Any? = UNINITIALIZED_VALUE
 
     final override fun getValue(thisRef: Host, property: KProperty<*>): T {

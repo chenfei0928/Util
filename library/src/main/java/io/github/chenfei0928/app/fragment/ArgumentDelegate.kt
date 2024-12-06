@@ -1,72 +1,55 @@
-/**
- * @author ChenFei(chenfei0928@gmail.com)
- * @date 2020-07-23 15:46
- */
 package io.github.chenfei0928.app.fragment
 
-import android.os.Bundle
+import android.os.Parcelable
 import androidx.fragment.app.Fragment
-import io.github.chenfei0928.os.AbsBundleProperty
-import io.github.chenfei0928.os.BaseWriteableBundleDelegate
-import io.github.chenfei0928.reflect.ReadCacheDelegate
-import io.github.chenfei0928.reflect.ReadCacheDelegate.Companion.getCacheOrValue
-import io.github.chenfei0928.reflect.ReadCacheDelegate.Companion.setValueAndCache
+import io.github.chenfei0928.os.BundleSupportType
+import io.github.chenfei0928.os.ReadOnlyCacheDelegate
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-open class ArgumentDelegate<T>(
-    name: String? = null, defaultValue: T? = null
-) : BaseWriteableBundleDelegate<Fragment, T>(name, defaultValue) {
-    final override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): T {
+/**
+ * [Fragment] 使用 argument 存储数据时的读写委托
+ *
+ * @param T 字段数据类型
+ * @property supportType 该类型的读写方式
+ * @property name 字段在存储时对应的key的，传null时使用字段名
+ * @property defaultValue 如果字段类型是非空，且数据源中没有对应数据时返回的默认值
+ * @author ChenFei(chenfei0928@gmail.com)
+ * @date 2020-07-23 15:46
+ */
+class ArgumentDelegate<T>(
+    private val supportType: BundleSupportType<T> = BundleSupportType.AutoFind as BundleSupportType<T>,
+    private val name: String? = null,
+    private val defaultValue: T? = null,
+) : ReadOnlyCacheDelegate<Fragment, T>(), ReadWriteProperty<Fragment, T> {
+    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): T {
         return thisRef.requireArguments().run {
             classLoader = thisRef.javaClass.classLoader
-            getValueImpl(property)
+            supportType.getValue(this, property, name ?: property.name, defaultValue)
         }
     }
 
-    protected open fun Bundle.getValueImpl(property: KProperty<*>): T {
-        return getT(property)
-    }
-
-    final override fun setValue(thisRef: Fragment, property: KProperty<*>, value: T) {
-        super.setValue(thisRef, property, value)
+    override fun setValue(thisRef: Fragment, property: KProperty<*>, value: T) {
+        this.value = value
         thisRef.applyArgumentBundle {
-            setValueImpl(property, value)
+            supportType.putNullable(this, property, name ?: property.name, value)
         }
-    }
-
-    protected open fun Bundle.setValueImpl(property: KProperty<*>, value: T) {
-        putT(property, value)
     }
 
     companion object {
-        // no cache
-        private val accessors = object : AbsBundleProperty<Fragment, Any>(),
-            ReadWriteProperty<Fragment, Any> {
-            override fun getValue(
-                thisRef: Fragment, property: KProperty<*>
-            ): Any = thisRef.requireArguments().run {
-                classLoader = thisRef.javaClass.classLoader
-                getT(property)
-            }
+        fun Fragment.argInt(): ReadWriteProperty<Fragment, Int> =
+            ArgumentDelegate(BundleSupportType.IntType(false))
 
-            override fun setValue(
-                thisRef: Fragment, property: KProperty<*>, value: Any
-            ) {
-                thisRef.applyArgumentBundle {
-                    putT(property, value)
-                }
-            }
-        }
+        fun Fragment.argBoolean(): ReadWriteProperty<Fragment, Boolean> =
+            ArgumentDelegate(BundleSupportType.BooleanType(false))
 
-        operator fun <T> Fragment.getValue(thisRef: Fragment, property: KProperty<*>): T =
-            (accessors as ReadWriteProperty<Fragment, T>).getCacheOrValue(thisRef, property)
+        fun Fragment.argString(): ReadWriteProperty<Fragment, String> =
+            ArgumentDelegate(BundleSupportType.StringType(false))
 
-        operator fun <T> Fragment.setValue(
-            thisRef: Fragment, property: KProperty<*>, value: T
-        ) = (accessors as ReadWriteProperty<Fragment, T>).setValueAndCache(thisRef, property, value)
+        inline fun <reified T : Parcelable> Fragment.argParcelable(): ReadWriteProperty<Fragment, T> =
+            ArgumentDelegate(BundleSupportType.ParcelableType(T::class.java, false))
 
-        fun <T> Fragment.argumentArg(): ReadWriteProperty<Fragment, T> =
-            ReadCacheDelegate.Writable(accessors as ReadWriteProperty<Fragment, T>)
+        inline fun <reified T : Parcelable> Fragment.argParcelableList(): ReadWriteProperty<Fragment, List<T>> =
+            ArgumentDelegate(BundleSupportType.ListParcelableType(T::class.java, false))
     }
 }

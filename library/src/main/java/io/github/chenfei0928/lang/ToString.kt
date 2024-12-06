@@ -17,7 +17,7 @@ fun Any.toString0(
         }
         append(kProperty0.name)
         append('=')
-        append(kProperty0.get())
+        append(kProperty0.get().toString())
     }
     append(')')
 }
@@ -33,14 +33,14 @@ fun <T : Any> T.toString1(
         }
         append(kProperty1.name)
         append('=')
-        append(kProperty1.get(this@toString1))
+        append(kProperty1.get(this@toString1).toString())
     }
     append(')')
 }
 
 fun <T> Any.toStringT(
     fields: Array<T>,
-): String where T : KCallable<*>, T : () -> Any = buildString {
+): String where T : KCallable<*>, T : () -> Any? = buildString {
     append(this@toStringT.javaClass.simpleName)
     append('(')
     fields.forEachIndexed { index, kProperty0 ->
@@ -49,7 +49,7 @@ fun <T> Any.toStringT(
         }
         append(kProperty0.name)
         append('=')
-        append(kProperty0())
+        append(kProperty0().toString())
     }
     append(')')
 }
@@ -63,7 +63,7 @@ fun Any.toStringKV(vararg fields: Pair<String, Any?>) = buildString {
         }
         append(key)
         append('=')
-        append(value)
+        append(value.toStr())
     }
     append(')')
 }
@@ -80,12 +80,12 @@ fun Any.toStringRef(fields: Array<Any>) = buildString {
                 val (key, value) = field
                 append(key)
                 append('=')
-                append(getValue(this@toStringRef, value))
+                append(getValue(this@toStringRef, value).toString())
             }
             is KCallable<*> -> {
                 append(field.name)
                 append('=')
-                append(getValue(this@toStringRef, field))
+                append(getValue(this@toStringRef, field).toString())
             }
             else -> {
                 append(field.toString())
@@ -113,4 +113,19 @@ private fun getValue(
         else -> field
     }
     else -> field
+}
+
+private fun Any?.toStr(): String {
+    return when (this) {
+        is Array<*> -> contentToString()
+        is ByteArray -> contentToString()
+        is ShortArray -> contentToString()
+        is IntArray -> contentToString()
+        is LongArray -> contentToString()
+        is CharArray -> contentToString()
+        is FloatArray -> contentToString()
+        is DoubleArray -> contentToString()
+        is BooleanArray -> contentToString()
+        else -> toString()
+    }
 }
