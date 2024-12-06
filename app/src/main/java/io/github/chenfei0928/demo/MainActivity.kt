@@ -8,16 +8,14 @@ import androidx.lifecycle.Lifecycle
 import io.github.chenfei0928.app.fragment.ArgumentDelegate
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argBoolean
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argInt
-import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelableNull
-import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argStringNull
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelable
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelableList
+import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelableNull
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argString
+import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argStringNull
 import io.github.chenfei0928.demo.databinding.ActivityMainBinding
 import io.github.chenfei0928.lang.toString0
 import io.github.chenfei0928.os.BundleSupportType
-import io.github.chenfei0928.os.BundleSupportType.ArrayParcelableType.Companion.ArrayParcelableType
-import io.github.chenfei0928.os.BundleSupportType.EnumType.Companion.EnumType
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.viewbinding.setContentViewBinding
 
@@ -58,9 +56,9 @@ class MainActivity : ComponentActivity() {
         var b: String by argString()
         var c: List<String> by ArgumentDelegate(BundleSupportType.ListStringType(false))
         var d: Array<String> by ArgumentDelegate(BundleSupportType.ArrayStringType(false))
-        var e: Lifecycle.State by ArgumentDelegate(EnumType())
+        var e: Lifecycle.State by ArgumentDelegate(BundleSupportType.EnumType())
         var f: Boolean by argBoolean()
-        var g: Array<Bean> by ArgumentDelegate(ArrayParcelableType())
+        var g: Array<Bean> by ArgumentDelegate(BundleSupportType.ArrayParcelableType())
         var h: Bean by argParcelable()
         var i: List<Bean> by argParcelableList()
         var j: String? by argStringNull()

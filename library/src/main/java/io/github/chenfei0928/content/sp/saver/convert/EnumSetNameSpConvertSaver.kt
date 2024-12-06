@@ -25,7 +25,7 @@ class EnumSetNameSpConvertSaver<E : Enum<E>>(
     }
 
     companion object {
-        inline fun <reified E : Enum<E>> EnumSetNameSpConvertSaver(
+        inline operator fun <reified E : Enum<E>> invoke(
             key: String? = null
         ) = EnumSetNameSpConvertSaver(enumValues<E>(), key)
     }

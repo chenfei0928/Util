@@ -37,3 +37,12 @@ fun Long.toByteArray(): ByteArray {
         this.toByte()
     )
 }
+
+fun Int.toByteArray(): ByteArray {
+    return byteArrayOf(
+        (this shr 24).toByte(),
+        (this shr 16).toByte(),
+        (this shr 8).toByte(),
+        this.toByte()
+    )
+}

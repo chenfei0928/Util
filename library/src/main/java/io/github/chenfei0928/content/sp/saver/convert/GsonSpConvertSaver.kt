@@ -37,7 +37,7 @@ class GsonSpConvertSaver<T>(
     }
 
     companion object {
-        inline fun <reified T> GsonSpConvertSaver(
+        inline operator fun <reified T> invoke(
             key: String? = null
         ) = GsonSpConvertSaver<T>(StringDelegate(key), type = typeOf<T>())
     }

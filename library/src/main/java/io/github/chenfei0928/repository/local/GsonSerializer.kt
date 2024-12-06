@@ -51,8 +51,9 @@ class GsonSerializer<T>(
         /**
          * 快速创建序列化工具实例，避免重复键入类型
          */
-        inline fun <reified T> create() = GsonSerializer(typeToken = object : TypeToken<T>() {})
+        inline operator fun <reified T> invoke() =
+            GsonSerializer(typeToken = object : TypeToken<T>() {})
 
-        inline fun <reified T> createGzipped() = create<T>().gzip()
+        inline fun <reified T> createGzipped() = invoke<T>().gzip()
     }
 }
