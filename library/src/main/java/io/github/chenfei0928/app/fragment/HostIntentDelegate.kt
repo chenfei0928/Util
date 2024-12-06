@@ -31,19 +31,34 @@ class HostIntentDelegate<T>(
     }
 
     companion object {
-        fun Fragment.intentInt(): ReadOnlyProperty<Fragment, Int> =
-            HostIntentDelegate(BundleSupportType.IntType(false))
+        fun Fragment.intentInt(name: String? = null): ReadOnlyProperty<Fragment, Int> =
+            HostIntentDelegate(BundleSupportType.IntType(false), name)
 
-        fun Fragment.intentBoolean(): ReadOnlyProperty<Fragment, Boolean> =
-            HostIntentDelegate(BundleSupportType.BooleanType(false))
+        fun Fragment.intentBoolean(name: String? = null): ReadOnlyProperty<Fragment, Boolean> =
+            HostIntentDelegate(BundleSupportType.BooleanType(false), name)
 
-        fun Fragment.intentString(): ReadOnlyProperty<Fragment, String> =
-            HostIntentDelegate(BundleSupportType.StringType(false))
+        fun Fragment.intentString(name: String? = null): ReadOnlyProperty<Fragment, String> =
+            HostIntentDelegate(BundleSupportType.StringType(false), name)
 
-        inline fun <reified T : Parcelable> Fragment.intentParcelable(): ReadOnlyProperty<Fragment, T> =
-            HostIntentDelegate(BundleSupportType.ParcelableType(T::class.java))
+        fun Fragment.intentStringNull(name: String? = null): ReadOnlyProperty<Fragment, String?> =
+            HostIntentDelegate(BundleSupportType.StringType(true), name)
 
-        inline fun <reified T : Parcelable> Fragment.intentParcelableList(): ReadOnlyProperty<Fragment, List<T>> =
-            HostIntentDelegate(BundleSupportType.ListParcelableType(T::class.java))
+        inline fun <reified T : Parcelable> Fragment.intentParcelable(
+            name: String? = null
+        ): ReadOnlyProperty<Fragment, T> = HostIntentDelegate(
+            BundleSupportType.ParcelableType(T::class.java, false), name
+        )
+
+        inline fun <reified T : Parcelable> Fragment.intentParcelableNull(
+            name: String? = null
+        ): ReadOnlyProperty<Fragment, T?> = HostIntentDelegate(
+            BundleSupportType.ParcelableType(T::class.java, true), name
+        )
+
+        inline fun <reified T : Parcelable> Fragment.intentParcelableList(
+            name: String? = null
+        ): ReadOnlyProperty<Fragment, List<T>> = HostIntentDelegate(
+            BundleSupportType.ListParcelableType(T::class.java, false), name
+        )
     }
 }

@@ -31,19 +31,34 @@ class IntentDelegate<T>(
     }
 
     companion object {
-        fun Activity.intentInt(): ReadOnlyProperty<Activity, Int> =
-            IntentDelegate(BundleSupportType.IntType(false))
+        fun Activity.intentInt(name: String? = null): ReadOnlyProperty<Activity, Int> =
+            IntentDelegate(BundleSupportType.IntType(false), name)
 
-        fun Activity.intentBoolean(): ReadOnlyProperty<Activity, Boolean> =
-            IntentDelegate(BundleSupportType.BooleanType(false))
+        fun Activity.intentBoolean(name: String? = null): ReadOnlyProperty<Activity, Boolean> =
+            IntentDelegate(BundleSupportType.BooleanType(false), name)
 
-        fun Activity.intentString(): ReadOnlyProperty<Activity, String> =
-            IntentDelegate(BundleSupportType.StringType(false))
+        fun Activity.intentString(name: String? = null): ReadOnlyProperty<Activity, String> =
+            IntentDelegate(BundleSupportType.StringType(false), name)
 
-        inline fun <reified T : Parcelable> Activity.intentParcelable(): ReadOnlyProperty<Activity, T> =
-            IntentDelegate(BundleSupportType.ParcelableType(T::class.java))
+        fun Activity.intentStringNull(name: String? = null): ReadOnlyProperty<Activity, String?> =
+            IntentDelegate(BundleSupportType.StringType(true), name)
 
-        inline fun <reified T : Parcelable> Activity.intentParcelableList(): ReadOnlyProperty<Activity, List<T>> =
-            IntentDelegate(BundleSupportType.ListParcelableType(T::class.java))
+        inline fun <reified T : Parcelable> Activity.intentParcelable(
+            name: String? = null
+        ): ReadOnlyProperty<Activity, T> = IntentDelegate(
+            BundleSupportType.ParcelableType(T::class.java, false), name
+        )
+
+        inline fun <reified T : Parcelable> Activity.intentParcelableNull(
+            name: String? = null
+        ): ReadOnlyProperty<Activity, T?> = IntentDelegate(
+            BundleSupportType.ParcelableType(T::class.java, true), name
+        )
+
+        inline fun <reified T : Parcelable> Activity.intentParcelableList(
+            name: String? = null
+        ): ReadOnlyProperty<Activity, List<T>> = IntentDelegate(
+            BundleSupportType.ListParcelableType(T::class.java, false), name
+        )
     }
 }

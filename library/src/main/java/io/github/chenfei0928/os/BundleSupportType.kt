@@ -74,13 +74,13 @@ abstract class BundleSupportType<T>(
     /**
      * 获取[Intent]的扩展数据，并返回可空数据。如果数据中没有存储该数据，则返回null
      */
-    protected open fun getNullable(bundle: Bundle, property: KProperty<*>, name: String): T? =
+    open fun getNullable(bundle: Bundle, property: KProperty<*>, name: String): T? =
         if (!bundle.containsKey(name)) null else getNonnull(bundle, property, name, null)
 
     /**
      * 获取[Intent]的扩展数据，并返回非空数据。如果数据中没有存储该数据，则返回默认数据
      */
-    protected open fun getNonnull(
+    open fun getNonnull(
         bundle: Bundle, property: KProperty<*>, name: String, defaultValue: T?
     ): T = if (!bundle.containsKey(name)) defaultValue ?: nonnullValue(property) else
         getNullable(bundle, property, name) ?: defaultValue ?: nonnullValue(property)
@@ -105,13 +105,13 @@ abstract class BundleSupportType<T>(
     /**
      * 获取[Intent]的扩展数据，并返回可空数据。如果数据中没有存储该数据，则返回null
      */
-    protected open fun getExtraNullable(intent: Intent, property: KProperty<*>, name: String): T? =
+    open fun getExtraNullable(intent: Intent, property: KProperty<*>, name: String): T? =
         if (!intent.hasExtra(name)) null else getExtraNonnull(intent, property, name, null)
 
     /**
      * 获取[Intent]的扩展数据，并返回非空数据。如果数据中没有存储该数据，则返回默认数据
      */
-    protected open fun getExtraNonnull(
+    open fun getExtraNonnull(
         intent: Intent, property: KProperty<*>, name: String, defaultValue: T?
     ): T = if (!intent.hasExtra(name)) defaultValue ?: nonnullValue(property) else
         getExtraNullable(intent, property, name) ?: defaultValue ?: nonnullValue(property)

@@ -11,9 +11,9 @@ import io.github.chenfei0928.widget.recyclerview.binding.sorted.BaseSortedBindin
  */
 abstract class ViewPager2SortedBinding<E : Any>(
     contentView: ViewPager2,
+    adapter: MultiTypeAdapter = IMultiTypeAdapterStringer.IMultiTypeAdapter(),
     eClass: Class<E>? = null,
-    adapter: MultiTypeAdapter = IMultiTypeAdapterStringer.IMultiTypeAdapter()
-) : BaseSortedBinding<E>(eClass, adapter) {
+) : BaseSortedBinding<E>(adapter, eClass) {
 
     init {
         contentView.adapter = adapter

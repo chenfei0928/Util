@@ -12,8 +12,8 @@ import io.github.chenfei0928.widget.recyclerview.adapter.IMultiTypeAdapterString
  * @date 2022-09-19 10:54
  */
 abstract class BaseSortedBinding<E : Any>(
+    protected val adapter: MultiTypeAdapter = IMultiTypeAdapterStringer.IMultiTypeAdapter(),
     eClass: Class<E>? = null,
-    protected val adapter: MultiTypeAdapter = IMultiTypeAdapterStringer.IMultiTypeAdapter()
 ) {
     /**
      * 自排序列表，其会在内容更新后自动更新[adapter]

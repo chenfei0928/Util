@@ -8,6 +8,8 @@ import androidx.lifecycle.Lifecycle
 import io.github.chenfei0928.app.fragment.ArgumentDelegate
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argBoolean
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argInt
+import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelableNull
+import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argStringNull
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelable
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelableList
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argString
@@ -43,6 +45,8 @@ class MainActivity : ComponentActivity() {
                     g = arrayOf(Bean(Test.getDefaultInstance()))
                     h = Bean(Test.getDefaultInstance())
                     i = listOf(Bean(Test.getDefaultInstance()))
+                    j = null
+                    k = null
                 }
             }
             Log.i(TAG, "onCreate: $f")
@@ -59,9 +63,11 @@ class MainActivity : ComponentActivity() {
         var g: Array<Bean> by ArgumentDelegate(ArrayParcelableType())
         var h: Bean by argParcelable()
         var i: List<Bean> by argParcelableList()
+        var j: String? by argStringNull()
+        var k: Bean? by argParcelableNull()
 
         override fun toString(): String {
-            return toString0(::a, ::b, ::c, ::d, ::e, ::f, ::g, ::h, ::i)
+            return toString0(::a, ::b, ::c, ::d, ::e, ::f, ::g, ::h, ::i, ::j, ::k)
         }
     }
 

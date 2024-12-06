@@ -38,19 +38,34 @@ class ArgumentDelegate<T>(
     }
 
     companion object {
-        fun Fragment.argInt(): ReadWriteProperty<Fragment, Int> =
-            ArgumentDelegate(BundleSupportType.IntType(false))
+        fun Fragment.argInt(name: String? = null): ReadWriteProperty<Fragment, Int> =
+            ArgumentDelegate(BundleSupportType.IntType(false), name)
 
-        fun Fragment.argBoolean(): ReadWriteProperty<Fragment, Boolean> =
-            ArgumentDelegate(BundleSupportType.BooleanType(false))
+        fun Fragment.argBoolean(name: String? = null): ReadWriteProperty<Fragment, Boolean> =
+            ArgumentDelegate(BundleSupportType.BooleanType(false), name)
 
-        fun Fragment.argString(): ReadWriteProperty<Fragment, String> =
-            ArgumentDelegate(BundleSupportType.StringType(false))
+        fun Fragment.argString(name: String? = null): ReadWriteProperty<Fragment, String> =
+            ArgumentDelegate(BundleSupportType.StringType(false), name)
 
-        inline fun <reified T : Parcelable> Fragment.argParcelable(): ReadWriteProperty<Fragment, T> =
-            ArgumentDelegate(BundleSupportType.ParcelableType(T::class.java, false))
+        fun Fragment.argStringNull(name: String? = null): ReadWriteProperty<Fragment, String?> =
+            ArgumentDelegate(BundleSupportType.StringType(true) as BundleSupportType<String?>, name)
 
-        inline fun <reified T : Parcelable> Fragment.argParcelableList(): ReadWriteProperty<Fragment, List<T>> =
-            ArgumentDelegate(BundleSupportType.ListParcelableType(T::class.java, false))
+        inline fun <reified T : Parcelable> Fragment.argParcelable(
+            name: String? = null
+        ): ReadWriteProperty<Fragment, T> = ArgumentDelegate(
+            BundleSupportType.ParcelableType(T::class.java, false), name
+        )
+
+        inline fun <reified T : Parcelable> Fragment.argParcelableNull(
+            name: String? = null
+        ): ReadWriteProperty<Fragment, T?> = ArgumentDelegate<T?>(
+            BundleSupportType.ParcelableType(T::class.java, true) as BundleSupportType<T?>, name
+        )
+
+        inline fun <reified T : Parcelable> Fragment.argParcelableList(
+            name: String? = null
+        ): ReadWriteProperty<Fragment, List<T>> = ArgumentDelegate(
+            BundleSupportType.ListParcelableType(T::class.java, false), name
+        )
     }
 }

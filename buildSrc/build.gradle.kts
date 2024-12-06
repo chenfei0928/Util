@@ -26,7 +26,7 @@ dependencies {
     // https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.compose
     implementation("org.jetbrains.kotlin:compose-compiler-gradle-plugin:$kotlinVersion")
     // https://github.com/Kotlin/kotlinx-atomicfu
-    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.26.0")
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.26.1")
     // Kotlin Symbol Processing 符号处理器编译器插件，需伴随Kotlin版本一同升级
     // https://github.com/google/ksp
     implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.28")
