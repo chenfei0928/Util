@@ -22,6 +22,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.typeOf
 
 /**
  * 子类实现要求重写[nonnullValue]提供默认值，重写[putNonnull]来对[Bundle]进行写入数据，
@@ -978,13 +979,24 @@ abstract class BundleSupportType<T>(
 
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
+        ): Any? = throw IllegalArgumentException("Not support return type: $property")
+
+        override fun getNonnull(
+            bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Any?
         ): Any = throw IllegalArgumentException("Not support return type: $property")
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
+        ): Any? = throw IllegalArgumentException("Not support return type: $property")
+
+        override fun getExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, defaultValue: Any?
         ): Any = throw IllegalArgumentException("Not support return type: $property")
     }
 
+    /**
+     * 通过反射字段类型来获取其访问器
+     */
     object AutoFind : BundleSupportType<Any>(null) {
         override fun nonnullValue(property: KProperty<*>): Any {
             throw IllegalAccessException()
@@ -998,13 +1010,24 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String
         ): Any? = findType(property).getNullable(bundle, property, name)
 
+        override fun getNonnull(
+            bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Any?
+        ): Any = findType(property).getNonnull(bundle, property, name, defaultValue)
+
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): Any? = findType(property).getExtraNullable(intent, property, name)
 
+        override fun getExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, defaultValue: Any?
+        ): Any = findType(property).getExtraNonnull(intent, property, name, defaultValue)
+
         private fun findType(property: KProperty<*>): BundleSupportType<Any> {
             return findByType(property.returnType)
         }
+
+        inline fun <reified T> findByType(): BundleSupportType<T> =
+            findByType(typeOf<T>())
 
         fun <T> findByType(kType: KType): BundleSupportType<T> {
             val type: BundleSupportType<*> = when (val classifier = kType.classifier) {
