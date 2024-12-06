@@ -17,7 +17,7 @@ applyJetpackCompose()
 applyProtobuf()
 
 android {
-    namespace = "io.github.chenfei0928.util"
+    namespace = "io.github.chenfei0928.demo"
 
     defaultConfig {
         applicationId = "io.github.chenfei0928.util"
@@ -45,6 +45,7 @@ dependencies {
     implementation(DepsAndroidx.constraintlayout.layout)
     implementation(DepsAndroidx.multidex.core)
     implementation(DepsAndroidx.preference)
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.21")
 
     implementation(Deps.widget.recyclerView.multiType)
 

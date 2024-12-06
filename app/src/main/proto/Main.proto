@@ -2,8 +2,14 @@ syntax = "proto3";
 
 package f150;
 option java_multiple_files = true;
-option java_package = "io.github.chenfei0928.util";
+option java_package = "io.github.chenfei0928.demo";
 
 message Test {
   bool test = 1;
+}
+
+enum TestEnum {
+  TEST_ENUM = 0;
+  TEST_ENUM2 = 1;
+  TEST_ENUM3 = 2;
 }

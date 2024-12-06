@@ -1,7 +1,7 @@
 package io.github.chenfei0928.android
 
-import io.github.chenfei0928.Deps
 import io.github.chenfei0928.DepsAndroidx
+import io.github.chenfei0928.compiler.kotlinPluginVersion
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debugImplementation
 import org.gradle.api.Project
@@ -44,10 +44,11 @@ fun Project.applyTest() {
         // Testing Fragments in Isolation
         debugImplementation(DepsAndroidx.fragmentTest)
         testImplementation(DepsAndroidx.arch.testing)
-        testImplementation(Deps.kotlin.test)
+        testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
         testImplementation("com.github.andrzejchm.RESTMock:android:0.3.1")
         //AssertJ
         testImplementation("org.assertj:assertj-core:3.13.2")
+        testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinPluginVersion")
 
         // AndroidJUnitRunner and JUnit Rules
         val espressoVersion = "3.6.0-alpha01"

@@ -112,8 +112,6 @@ fun Project.applyKotlin(
         }
     }
 
-    val kotlinPluginVersion = getKotlinPluginVersion(Env.logger)
-
     dependencies {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinPluginVersion")
         implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinPluginVersion")
@@ -137,6 +135,8 @@ fun Project.applyKotlin(
 //        debugImplementation("dev.reformator.stacktracedecoroutinator:stacktrace-decoroutinator-android:2.3.9")
     }
 }
+
+val kotlinPluginVersion = getKotlinPluginVersion(Env.logger)
 
 //<editor-fold desc="Kotlin编译器插件扩展" defaultstate="collapsed">
 internal val Project.hasKotlin: Boolean
