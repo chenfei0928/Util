@@ -19,15 +19,16 @@ import com.google.protobuf.getProtobufV3DefaultInstance
 import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.lang.toByteArray
+import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.util.DependencyChecker
 import java.io.ByteArrayInputStream
 import java.io.DataInputStream
 import java.io.Serializable
 import java.lang.reflect.Modifier
+import kotlin.Enum
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.KType
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.typeOf
 
 /**
@@ -141,8 +142,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Byte?
         ): Byte = intent.getByteExtra(name, 0)
 
-        companion object {
-            val default = ByteType(null)
+        companion object : AutoFind.Creator<Byte> {
+            override val default = ByteType(null)
+            override fun byType(kType: KType): BundleSupportType<Byte> =
+                ByteType(kType.isMarkedNullable)
         }
     }
 
@@ -162,8 +165,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): ByteArray? = intent.getByteArrayExtra(name)
 
-        companion object {
-            val default = ByteArrayType(null)
+        companion object : AutoFind.Creator<ByteArray> {
+            override val default = ByteArrayType(null)
+            override fun byType(kType: KType): BundleSupportType<ByteArray> =
+                ByteArrayType(kType.isMarkedNullable)
         }
     }
 
@@ -183,8 +188,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Short?
         ): Short = intent.getShortExtra(name, defaultValue ?: 0)
 
-        companion object {
-            val default = ShortType(null)
+        companion object : AutoFind.Creator<Short> {
+            override val default = ShortType(null)
+            override fun byType(kType: KType): BundleSupportType<Short> =
+                ShortType(kType.isMarkedNullable)
         }
     }
 
@@ -204,8 +211,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): ShortArray? = intent.getShortArrayExtra(name)
 
-        companion object {
-            val default = ShortArrayType(null)
+        companion object : AutoFind.Creator<ShortArray> {
+            override val default = ShortArrayType(null)
+            override fun byType(kType: KType): BundleSupportType<ShortArray> =
+                ShortArrayType(kType.isMarkedNullable)
         }
     }
 
@@ -225,8 +234,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Int?
         ): Int = intent.getIntExtra(name, defaultValue ?: 0)
 
-        companion object {
-            val default = IntType(null)
+        companion object : AutoFind.Creator<Int> {
+            override val default = IntType(null)
+            override fun byType(kType: KType): BundleSupportType<Int> =
+                IntType(kType.isMarkedNullable)
         }
     }
 
@@ -246,8 +257,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): IntArray? = intent.getIntArrayExtra(name)
 
-        companion object {
-            val default = IntArrayType(null)
+        companion object : AutoFind.Creator<IntArray> {
+            override val default = IntArrayType(null)
+            override fun byType(kType: KType): BundleSupportType<IntArray> =
+                IntArrayType(kType.isMarkedNullable)
         }
     }
 
@@ -267,8 +280,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Long?
         ): Long = intent.getLongExtra(name, 0)
 
-        companion object {
-            val default = LongType(null)
+        companion object : AutoFind.Creator<Long> {
+            override val default = LongType(null)
+            override fun byType(kType: KType): BundleSupportType<Long> =
+                LongType(kType.isMarkedNullable)
         }
     }
 
@@ -288,8 +303,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): LongArray? = intent.getLongArrayExtra(name)
 
-        companion object {
-            val default = LongArrayType(null)
+        companion object : AutoFind.Creator<LongArray> {
+            override val default = LongArrayType(null)
+            override fun byType(kType: KType): BundleSupportType<LongArray> =
+                LongArrayType(kType.isMarkedNullable)
         }
     }
 
@@ -309,8 +326,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Float?
         ): Float = intent.getFloatExtra(name, defaultValue ?: 0f)
 
-        companion object {
-            val default = FloatType(null)
+        companion object : AutoFind.Creator<Float> {
+            override val default = FloatType(null)
+            override fun byType(kType: KType): BundleSupportType<Float> =
+                FloatType(kType.isMarkedNullable)
         }
     }
 
@@ -330,8 +349,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): FloatArray? = intent.getFloatArrayExtra(name)
 
-        companion object {
-            val default = FloatArrayType(null)
+        companion object : AutoFind.Creator<FloatArray> {
+            override val default = FloatArrayType(null)
+            override fun byType(kType: KType): BundleSupportType<FloatArray> =
+                FloatArrayType(kType.isMarkedNullable)
         }
     }
 
@@ -351,8 +372,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Double?
         ): Double = intent.getDoubleExtra(name, defaultValue ?: 0.0)
 
-        companion object {
-            val default = DoubleType(null)
+        companion object : AutoFind.Creator<Double> {
+            override val default = DoubleType(null)
+            override fun byType(kType: KType): BundleSupportType<Double> =
+                DoubleType(kType.isMarkedNullable)
         }
     }
 
@@ -372,8 +395,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): DoubleArray? = intent.getDoubleArrayExtra(name)
 
-        companion object {
-            val default = DoubleArrayType(null)
+        companion object : AutoFind.Creator<DoubleArray> {
+            override val default = DoubleArrayType(null)
+            override fun byType(kType: KType): BundleSupportType<DoubleArray> =
+                DoubleArrayType(kType.isMarkedNullable)
         }
     }
 
@@ -393,8 +418,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Boolean?
         ): Boolean = intent.getBooleanExtra(name, defaultValue == true)
 
-        companion object {
-            val default = BooleanType(null)
+        companion object : AutoFind.Creator<Boolean> {
+            override val default = BooleanType(null)
+            override fun byType(kType: KType): BundleSupportType<Boolean> =
+                BooleanType(kType.isMarkedNullable)
         }
     }
 
@@ -414,8 +441,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): BooleanArray? = intent.getBooleanArrayExtra(name)
 
-        companion object {
-            val default = BooleanArrayType(null)
+        companion object : AutoFind.Creator<BooleanArray> {
+            override val default = BooleanArrayType(null)
+            override fun byType(kType: KType): BundleSupportType<BooleanArray> =
+                BooleanArrayType(kType.isMarkedNullable)
         }
     }
 
@@ -435,8 +464,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Char?
         ): Char = intent.getCharExtra(name, defaultValue ?: ' ')
 
-        companion object {
-            val default = BooleanArrayType(null)
+        companion object : AutoFind.Creator<Char> {
+            override val default = CharType(null)
+            override fun byType(kType: KType): BundleSupportType<Char> =
+                CharType(kType.isMarkedNullable)
         }
     }
 
@@ -456,8 +487,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): CharArray? = intent.getCharArrayExtra(name)
 
-        companion object {
-            val default = CharArrayType(null)
+        companion object : AutoFind.Creator<CharArray> {
+            override val default = CharArrayType(null)
+            override fun byType(kType: KType): BundleSupportType<CharArray> =
+                CharArrayType(kType.isMarkedNullable)
         }
     }
     //</editor-fold>
@@ -479,8 +512,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): String? = intent.getStringExtra(name)
 
-        companion object {
-            val default = StringType(null)
+        companion object : AutoFind.Creator<String> {
+            override val default = StringType(null)
+            override fun byType(kType: KType): BundleSupportType<String> =
+                StringType(kType.isMarkedNullable)
         }
     }
 
@@ -500,8 +535,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): Bundle? = intent.getBundleExtra(name)
 
-        companion object {
-            val default = BundleType(null)
+        companion object : AutoFind.Creator<Bundle> {
+            override val default = BundleType(null)
+            override fun byType(kType: KType): BundleSupportType<Bundle> =
+                BundleType(kType.isMarkedNullable)
         }
     }
 
@@ -524,8 +561,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): Size? = throw IllegalArgumentException("Not support return type: $property")
 
-        companion object {
-            val default = SizeType(null)
+        companion object : AutoFind.Creator<Size> {
+            override val default = SizeType(null)
+            override fun byType(kType: KType): BundleSupportType<Size> =
+                SizeType(kType.isMarkedNullable)
         }
     }
 
@@ -548,8 +587,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): SizeF? = throw IllegalArgumentException("Not support return type: $property")
 
-        companion object {
-            val default = SizeFType(null)
+        companion object : AutoFind.Creator<SizeF> {
+            override val default = SizeFType(null)
+            override fun byType(kType: KType): BundleSupportType<SizeF> =
+                SizeFType(kType.isMarkedNullable)
         }
     }
     //</editor-fold>
@@ -579,11 +620,20 @@ abstract class BundleSupportType<T>(
             intent, name, clazz ?: (property.returnType.classifier as KClass<T>).java
         )
 
-        companion object {
-            val default = ParcelableType<Parcelable>(null, null)
+        companion object : AutoFind.Creator<Parcelable> {
+            override val default = ParcelableType<Parcelable>(null)
+            override fun byType(kType: KType): BundleSupportType<Parcelable> =
+                ParcelableType(
+                    (kType.classifier as KClass<Parcelable>).java,
+                    kType.isMarkedNullable
+                )
 
-            inline operator fun <reified T : Parcelable> invoke() =
-                ParcelableType(T::class.java, false)
+            /**
+             * 通过 reified inline 获取 [T] 的类对象
+             */
+            inline operator fun <reified T : Parcelable> invoke(
+                isMarkedNullable: Boolean = false
+            ) = ParcelableType(T::class.java, isMarkedNullable)
         }
     }
 
@@ -603,8 +653,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): CharSequence? = intent.getCharSequenceExtra(name)
 
-        companion object {
-            val default = CharSequenceType(null)
+        companion object : AutoFind.Creator<CharSequence> {
+            override val default = CharSequenceType(null)
+            override fun byType(kType: KType): BundleSupportType<CharSequence> =
+                CharSequenceType(kType.isMarkedNullable)
         }
     }
 
@@ -628,11 +680,20 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): SparseArray<T>? = throw IllegalArgumentException("Not support return type: $property")
 
-        companion object {
-            val default = SparseArrayType<Parcelable>(null, null)
+        companion object : AutoFind.Creator<SparseArray<Parcelable>> {
+            override val default = SparseArrayType<Parcelable>(null, null)
+            override fun byType(kType: KType): BundleSupportType<SparseArray<Parcelable>> =
+                SparseArrayType(
+                    kType.argument0TypeClass.java as Class<Parcelable>,
+                    kType.isMarkedNullable
+                )
 
-            inline operator fun <reified T : Parcelable> invoke() =
-                SparseArrayType(T::class.java, false)
+            /**
+             * 通过 reified inline 获取 [T] 的类对象
+             */
+            inline operator fun <reified T : Parcelable> invoke(
+                isMarkedNullable: Boolean = false
+            ) = SparseArrayType(T::class.java, isMarkedNullable)
         }
     }
 
@@ -655,8 +716,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): IBinder? = throw IllegalArgumentException("Not support return type: $property")
 
-        companion object {
-            val default = IBinderType(null)
+        companion object : AutoFind.Creator<IBinder> {
+            override val default = IBinderType(null)
+            override fun byType(kType: KType): BundleSupportType<IBinder> =
+                IBinderType(kType.isMarkedNullable)
         }
     }
 
@@ -684,11 +747,20 @@ abstract class BundleSupportType<T>(
             intent, name, clazz ?: (property.returnType.classifier as KClass<T>).java
         )
 
-        companion object {
-            val default = SerializableType<Serializable>(null, null)
+        companion object : AutoFind.Creator<Serializable> {
+            override val default = SerializableType<Serializable>(null, null)
+            override fun byType(kType: KType): BundleSupportType<Serializable> =
+                SerializableType(
+                    (kType.classifier as KClass<Serializable>).java,
+                    kType.isMarkedNullable
+                )
 
-            inline operator fun <reified T : Serializable> invoke() =
-                SerializableType(T::class.java, false)
+            /**
+             * 通过 reified inline 获取 [T] 的类对象
+             */
+            inline operator fun <reified T : Serializable> invoke(
+                isMarkedNullable: Boolean = false
+            ) = SerializableType(T::class.java, isMarkedNullable)
         }
     }
     //</editor-fold>
@@ -716,11 +788,20 @@ abstract class BundleSupportType<T>(
             intent, name, clazz ?: property.returnType.argument0TypeClass.java as Class<T>
         )
 
-        companion object {
-            val default = ListParcelableType<Parcelable>(null, null)
+        companion object : AutoFind.Creator<List<Parcelable>> {
+            override val default = ListParcelableType<Parcelable>(null, null)
+            override fun byType(kType: KType): BundleSupportType<List<Parcelable>> =
+                ListParcelableType(
+                    kType.argument0TypeClass.java as Class<Parcelable>,
+                    kType.isMarkedNullable
+                )
 
-            inline operator fun <reified T : Parcelable> invoke() =
-                ListParcelableType(T::class.java, false)
+            /**
+             * 通过 reified inline 获取 [T] 的类对象
+             */
+            inline operator fun <reified T : Parcelable> invoke(
+                isMarkedNullable: Boolean = false
+            ) = ListParcelableType(T::class.java, isMarkedNullable)
         }
     }
 
@@ -740,8 +821,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): List<String>? = intent.getStringArrayListExtra(name)
 
-        companion object {
-            val default = ListStringType(null)
+        companion object : AutoFind.Creator<List<String>> {
+            override val default = ListStringType(null)
+            override fun byType(kType: KType): BundleSupportType<List<String>> =
+                ListStringType(kType.isMarkedNullable)
         }
     }
 
@@ -762,8 +845,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): List<out CharSequence>? = intent.getCharSequenceArrayListExtra(name)
 
-        companion object {
-            val default = ListCharSequenceType(null)
+        companion object : AutoFind.Creator<List<out CharSequence>> {
+            override val default = ListCharSequenceType(null)
+            override fun byType(kType: KType): BundleSupportType<List<out CharSequence>> =
+                ListCharSequenceType(kType.isMarkedNullable)
         }
     }
 
@@ -783,8 +868,10 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): List<Int>? = intent.getIntegerArrayListExtra(name)
 
-        companion object {
-            val default = ListIntegerType(null)
+        companion object : AutoFind.Creator<List<Int>> {
+            override val default = ListIntegerType(null)
+            override fun byType(kType: KType): BundleSupportType<List<Int>> =
+                ListIntegerType(kType.isMarkedNullable)
         }
     }
     //</editor-fold>
@@ -825,13 +912,22 @@ abstract class BundleSupportType<T>(
             return out
         }
 
-        companion object {
-            val default = ArrayParcelableType<Parcelable>(null, null)
+        companion object : AutoFind.Creator<Array<Parcelable>> {
+            override val default = ArrayParcelableType<Parcelable>(null, null)
+            override fun byType(kType: KType): BundleSupportType<Array<Parcelable>> =
+                ArrayParcelableType(
+                    kType.argument0TypeClass.java as Class<Parcelable>,
+                    kType.isMarkedNullable
+                )
 
             //            inline fun <reified L : Array<T>, reified T : Parcelable> ArrayParcelableType() =
 //                ArrayParcelableType(T::class.java, typeOf<L>().isMarkedNullable)
-            inline operator fun <reified T : Parcelable> invoke() =
-                ArrayParcelableType(T::class.java, false)
+            /**
+             * 通过 reified inline 获取 [T] 的类对象
+             */
+            inline operator fun <reified T : Parcelable> invoke(
+                isMarkedNullable: Boolean = false
+            ) = ArrayParcelableType(T::class.java, isMarkedNullable)
         }
     }
 
@@ -851,29 +947,33 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): Array<String>? = intent.getStringArrayExtra(name)
 
-        companion object {
-            val default = ArrayStringType(null)
+        companion object : AutoFind.Creator<Array<String>> {
+            override val default = ArrayStringType(null)
+            override fun byType(kType: KType): BundleSupportType<Array<String>> =
+                ArrayStringType(kType.isMarkedNullable)
         }
     }
 
     class ArrayCharSequenceType(
         isMarkedNullable: Boolean? = null
-    ) : BundleSupportType<Array<out CharSequence>>(isMarkedNullable) {
-        override fun nonnullValue(property: KProperty<*>): Array<out CharSequence> = arrayOf()
+    ) : BundleSupportType<Array<CharSequence>>(isMarkedNullable) {
+        override fun nonnullValue(property: KProperty<*>): Array<CharSequence> = arrayOf()
         override fun putNonnull(
-            bundle: Bundle, property: KProperty<*>, name: String, value: Array<out CharSequence>
+            bundle: Bundle, property: KProperty<*>, name: String, value: Array<CharSequence>
         ) = bundle.putCharSequenceArray(name, value)
 
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
-        ): Array<out CharSequence>? = bundle.getCharSequenceArray(name)
+        ): Array<CharSequence>? = bundle.getCharSequenceArray(name)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): Array<out CharSequence>? = intent.getCharSequenceArrayExtra(name)
+        ): Array<CharSequence>? = intent.getCharSequenceArrayExtra(name)
 
-        companion object {
-            val default = ArrayCharSequenceType(null)
+        companion object : AutoFind.Creator<Array<CharSequence>> {
+            override val default = ArrayCharSequenceType(null)
+            override fun byType(kType: KType): BundleSupportType<Array<CharSequence>> =
+                ArrayCharSequenceType(kType.isMarkedNullable)
         }
     }
     //</editor-fold>
@@ -912,10 +1012,20 @@ abstract class BundleSupportType<T>(
             (property.returnType.classifier as KClass<T>).java, name
         )
 
-        companion object {
-            val default = EnumType(null, null)
+        companion object : AutoFind.Creator<Enum<*>> {
+            override val default = EnumType(null, null) as BundleSupportType<Enum<*>>
+            override fun byType(kType: KType): BundleSupportType<Enum<*>> =
+                EnumType(
+                    (kType.classifier as KClass<out Enum<*>>).java.enumConstants,
+                    kType.isMarkedNullable
+                ) as BundleSupportType<Enum<*>>
 
-            inline operator fun <reified E : Enum<E>> invoke() = EnumType<E>(enumValues<E>(), false)
+            /**
+             * 通过 reified inline 获取 [T] 的类对象
+             */
+            inline operator fun <reified E : Enum<E>> invoke(
+                isMarkedNullable: Boolean = false
+            ) = EnumType<E>(enumValues<E>(), isMarkedNullable)
         }
     }
 
@@ -994,11 +1104,13 @@ abstract class BundleSupportType<T>(
             bytes
         }
 
-        companion object {
-            val default = ProtoBufType<MessageLite>(null, true, null)
-
-            inline operator fun <reified T : MessageLite> invoke() =
-                ProtoBufType(T::class.java, false)
+        companion object : AutoFind.Creator<MessageLite> {
+            override val default = ProtoBufType<MessageLite>(null, true, null)
+            override fun byType(kType: KType): BundleSupportType<MessageLite> =
+                ProtoBufType(
+                    (kType.classifier as KClass<*>).java as Class<MessageLite>,
+                    kType.isMarkedNullable
+                )
 
             @Suppress("kotlin:S6531", "kotlin:S6530", "UNCHECKED_CAST")
             private fun <T : MessageLite> findParser(clazz: Class<T>): Parser<T>? {
@@ -1019,7 +1131,7 @@ abstract class BundleSupportType<T>(
     //</editor-fold>
 
     //<editor-fold desc="对外暴露自动寻找类型接口" defaultstatus="collapsed>
-    object NotSupportType : BundleSupportType<Any>(false) {
+    class NotSupportType : BundleSupportType<Any>(false) {
         override fun nonnullValue(property: KProperty<*>): Any {
             throw IllegalAccessException()
         }
@@ -1043,6 +1155,12 @@ abstract class BundleSupportType<T>(
         override fun getExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Any?
         ): Any = throw IllegalArgumentException("Not support return type: $property")
+
+        companion object : AutoFind.Creator<Any> {
+            override val default = NotSupportType()
+            override fun byType(kType: KType): BundleSupportType<Any> =
+                default
+        }
     }
 
     /**
@@ -1074,82 +1192,88 @@ abstract class BundleSupportType<T>(
         ): Any = findType(property).getExtraNonnull(intent, property, name, defaultValue)
 
         private fun findType(property: KProperty<*>): BundleSupportType<Any> {
-            return findByType(property.returnType)
+            return findByType(property.returnType, false)
         }
 
         inline fun <reified T> findByType(): BundleSupportType<T> =
-            findByType(typeOf<T>())
+            findByType(typeOf<T>(), true)
 
         @Suppress("CyclomaticComplexMethod")
-        fun <T> findByType(kType: KType): BundleSupportType<T> {
-            val type: BundleSupportType<*> = when (val classifier = kType.classifier) {
-                // 基础数据类型与其数组
-                Byte::class -> ByteType.default
-                ByteArray::class -> ByteArrayType.default
-                Short::class -> ShortType.default
-                ShortArray::class -> ShortArrayType.default
-                Int::class -> IntType.default
-                IntArray::class -> IntArrayType.default
-                Long::class -> LongType.default
-                LongArray::class -> LongArrayType.default
-                Float::class -> FloatType.default
-                FloatArray::class -> FloatArrayType.default
-                Double::class -> DoubleType.default
-                DoubleArray::class -> DoubleArrayType.default
-                Boolean::class -> BooleanType.default
-                BooleanArray::class -> BooleanArrayType.default
-                Char::class -> CharType.default
-                CharArray::class -> CharArrayType.default
-                // 原生的final类型
-                String::class -> StringType.default
-                Bundle::class -> BundleType.default
-                Size::class -> SizeType.default
-                SizeF::class -> SizeFType.default
-                is KClass<*> -> when {
+        fun <T> findByType(
+            kType: KType, checkNullable: Boolean
+        ): BundleSupportType<T> = Debug.countTime(TAG, "findByType") {
+            val classifier = kType.classifier
+            val type: Creator<*> = if (classifier !is KClass<*>) {
+                NotSupportType
+            } else {
+                val clazz = classifier.java
+                when {
+                    // 基础数据类型与其数组
+                    clazz == java.lang.Byte::class.java || clazz == java.lang.Byte.TYPE -> ByteType
+                    clazz == ByteArray::class.java -> ByteArrayType
+                    clazz == java.lang.Short::class.java || clazz == java.lang.Short.TYPE -> ShortType
+                    clazz == ShortArray::class.java -> ShortArrayType
+                    clazz == java.lang.Integer::class.java || clazz == java.lang.Integer.TYPE -> IntType
+                    clazz == IntArray::class.java -> IntArrayType
+                    clazz == java.lang.Long::class.java || clazz == java.lang.Long.TYPE -> LongType
+                    clazz == LongArray::class.java -> LongArrayType
+                    clazz == java.lang.Float::class.java || clazz == java.lang.Float.TYPE -> FloatType
+                    clazz == FloatArray::class.java -> FloatArrayType
+                    clazz == java.lang.Double::class.java || clazz == java.lang.Double.TYPE -> DoubleType
+                    clazz == DoubleArray::class.java -> DoubleArrayType
+                    clazz == java.lang.Boolean::class.java || clazz == java.lang.Boolean.TYPE -> BooleanType
+                    clazz == BooleanArray::class.java -> BooleanArrayType
+                    clazz == java.lang.Character::class.java || clazz == java.lang.Character.TYPE -> CharType
+                    clazz == CharArray::class.java -> CharArrayType
+                    // 原生的final类型
+                    clazz == String::class.java -> StringType
+                    clazz == Bundle::class.java -> BundleType
+                    clazz == Size::class.java -> SizeType
+                    clazz == SizeF::class.java -> SizeFType
                     // 原生的非final类型
-                    classifier.isSubclassOf(Parcelable::class) -> ParcelableType.default
-                    classifier.isSubclassOf(CharSequence::class) -> CharSequenceType.default
-                    classifier.isSubclassOf(SparseArray::class) -> SparseArrayType.default
-                    classifier.isSubclassOf(IBinder::class) -> IBinderType.default
+                    clazz.isSubclassOf(Parcelable::class.java) -> ParcelableType
+                    clazz.isSubclassOf(CharSequence::class.java) -> CharSequenceType
+                    clazz.isSubclassOf(SparseArray::class.java) -> SparseArrayType
+                    clazz.isSubclassOf(IBinder::class.java) -> IBinderType
                     // List类型
-                    classifier.isSubclassOf(List::class) -> {
-                        val kClass = kType.argument0TypeClass
+                    clazz.isSubclassOf(List::class.java) -> {
+                        val arg0Class = kType.argument0TypeClass.java
                         when {
-                            kClass.isSubclassOf(Parcelable::class) -> ListParcelableType.default
-                            kClass == String::class -> ListStringType.default
-                            kClass.isSubclassOf(CharSequence::class) -> ListCharSequenceType.default
-                            kClass == Integer::class -> ListIntegerType.default
+                            arg0Class.isSubclassOf(Parcelable::class.java) -> ListParcelableType
+                            arg0Class == String::class.java -> ListStringType
+                            arg0Class.isSubclassOf(CharSequence::class.java) -> ListCharSequenceType
+                            arg0Class == Integer::class.java -> ListIntegerType
                             else -> NotSupportType
                         }
                     }
                     // 数组类型
-                    classifier.java.isArray -> {
-                        val componentType = classifier.java.componentType!!
-                        when {
-                            Parcelable::class.java.isAssignableFrom(componentType) ->
-                                ArrayParcelableType.default
-                            String::class.java == componentType -> ArrayStringType.default
-                            CharSequence::class.java.isAssignableFrom(componentType) ->
-                                ArrayCharSequenceType.default
-                            else -> NotSupportType
-                        }
-                    }
+                    clazz.isSubclassOf(Array<Parcelable>::class.java) -> ArrayParcelableType
+                    clazz == Array<String>::class.java -> ArrayStringType
+                    clazz.isSubclassOf(Array<CharSequence>::class.java) -> ArrayCharSequenceType
                     // 扩展支持
-                    classifier.isSubclassOf(Enum::class) -> EnumType.default
-                    DependencyChecker.PROTOBUF_LITE() && classifier.isSubclassOf(MessageLite::class) ->
-                        ProtoBufType.default
+                    clazz.isSubclassOf(Enum::class.java) -> EnumType
+                    DependencyChecker.PROTOBUF_LITE() && clazz.isSubclassOf(MessageLite::class.java) ->
+                        ProtoBufType
                     // 原生的非final类型（protobuf 标准版的实体类都实现了 Serializable 接口，避免使用其为protobuf序列化）
-                    classifier.isSubclassOf(Serializable::class) -> SerializableType.default
+                    clazz.isSubclassOf(Serializable::class.java) -> SerializableType
                     else -> NotSupportType
                 }
-                else -> NotSupportType
             }
             @Suppress("UNCHECKED_CAST")
-            return type as BundleSupportType<T>
+            return if (checkNullable) type.byType(kType) as BundleSupportType<T>
+            else type.default as BundleSupportType<T>
+        }
+
+        interface Creator<T> {
+            val default: BundleSupportType<T>
+            fun byType(kType: KType): BundleSupportType<T>
         }
     }
     //</editor-fold>
 
-    protected val KType.argument0TypeClass: KClass<*>
-        get() = arguments[0].type?.classifier as KClass<*>
+    companion object {
+        private const val TAG = "BundleSupportType"
+        val KType.argument0TypeClass: KClass<*>
+            get() = arguments[0].type?.classifier as KClass<*>
+    }
 }

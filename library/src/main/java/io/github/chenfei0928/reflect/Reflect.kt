@@ -7,6 +7,9 @@ import java.lang.reflect.Method
 fun <T> Class<T>.arrayClass(): Class<Array<T>> =
     java.lang.reflect.Array.newInstance(this, 0).javaClass as Class<Array<T>>
 
+fun Class<*>.isSubclassOf(base: Class<*>) =
+    base.isAssignableFrom(this)
+
 @Throws(
     IllegalAccessException::class, IllegalArgumentException::class, InvocationTargetException::class
 )

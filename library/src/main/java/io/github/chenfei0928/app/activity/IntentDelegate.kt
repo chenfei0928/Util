@@ -19,7 +19,7 @@ import kotlin.reflect.KProperty
  * @date 2020-07-23 15:46
  */
 class IntentDelegate<T>(
-    private val supportType: BundleSupportType<T> = BundleSupportType.AutoFind as BundleSupportType<T>,
+    private val supportType: BundleSupportType<T>,
     private val name: String? = null,
     private val defaultValue: T? = null,
 ) : ReadOnlyCacheDelegate<Activity, T>() {
@@ -31,6 +31,9 @@ class IntentDelegate<T>(
     }
 
     companion object {
+        inline operator fun <reified T> invoke(name: String? = null, defaultValue: T? = null) =
+            IntentDelegate(BundleSupportType.AutoFind.findByType(), name, defaultValue)
+
         fun Activity.intentInt(name: String? = null): ReadOnlyProperty<Activity, Int> =
             IntentDelegate(BundleSupportType.IntType(false), name)
 

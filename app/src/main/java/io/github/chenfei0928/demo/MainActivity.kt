@@ -45,6 +45,7 @@ class MainActivity : ComponentActivity() {
                     i = listOf(Bean(Test.getDefaultInstance()))
                     j = null
                     k = null
+                    l = Bean(Test.getDefaultInstance())
                 }
             }
             Log.i(TAG, "onCreate: $f")
@@ -63,9 +64,10 @@ class MainActivity : ComponentActivity() {
         var i: List<Bean> by argParcelableList()
         var j: String? by argStringNull()
         var k: Bean? by argParcelableNull()
+        var l: Bean? by ArgumentDelegate()
 
         override fun toString(): String {
-            return toString0(::a, ::b, ::c, ::d, ::e, ::f, ::g, ::h, ::i, ::j, ::k)
+            return toString0(::a, ::b, ::c, ::d, ::e, ::f, ::g, ::h, ::i, ::j, ::k, ::l)
         }
     }
 
