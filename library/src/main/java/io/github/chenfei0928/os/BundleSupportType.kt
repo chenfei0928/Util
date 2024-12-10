@@ -152,7 +152,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Byte> {
             override val default = ByteType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Byte> = ByteType(isMarkedNullable)
         }
     }
@@ -176,7 +176,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<ByteArray> {
             override val default = ByteArrayType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<ByteArray> = ByteArrayType(isMarkedNullable)
         }
     }
@@ -200,7 +200,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Short> {
             override val default = ShortType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Short> = ShortType(isMarkedNullable)
         }
     }
@@ -224,7 +224,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<ShortArray> {
             override val default = ShortArrayType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<ShortArray> = ShortArrayType(isMarkedNullable)
         }
     }
@@ -248,7 +248,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Int> {
             override val default = IntType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Int> = IntType(isMarkedNullable)
         }
     }
@@ -272,7 +272,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<IntArray> {
             override val default = IntArrayType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<IntArray> = IntArrayType(isMarkedNullable)
         }
     }
@@ -296,7 +296,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Long> {
             override val default = LongType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Long> = LongType(isMarkedNullable)
         }
     }
@@ -320,7 +320,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<LongArray> {
             override val default = LongArrayType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<LongArray> = LongArrayType(isMarkedNullable)
         }
     }
@@ -344,7 +344,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Float> {
             override val default = FloatType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Float> = FloatType(isMarkedNullable)
         }
     }
@@ -368,7 +368,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<FloatArray> {
             override val default = FloatArrayType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<FloatArray> = FloatArrayType(isMarkedNullable)
         }
     }
@@ -392,7 +392,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Double> {
             override val default = DoubleType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Double> = DoubleType(isMarkedNullable)
         }
     }
@@ -416,7 +416,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<DoubleArray> {
             override val default = DoubleArrayType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<DoubleArray> = DoubleArrayType(isMarkedNullable)
         }
     }
@@ -440,7 +440,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Boolean> {
             override val default = BooleanType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Boolean> = BooleanType(isMarkedNullable)
         }
     }
@@ -464,7 +464,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<BooleanArray> {
             override val default = BooleanArrayType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<BooleanArray> = BooleanArrayType(isMarkedNullable)
         }
     }
@@ -488,7 +488,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Char> {
             override val default = CharType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Char> = CharType(isMarkedNullable)
         }
     }
@@ -512,7 +512,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<CharArray> {
             override val default = CharArrayType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<CharArray> = CharArrayType(isMarkedNullable)
         }
     }
@@ -538,7 +538,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<String> {
             override val default = StringType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<String> = StringType(isMarkedNullable)
         }
     }
@@ -562,7 +562,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Bundle> {
             override val default = BundleType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Bundle> = BundleType(isMarkedNullable)
         }
     }
@@ -589,7 +589,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Size> {
             override val default = SizeType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Size> = SizeType(isMarkedNullable)
         }
     }
@@ -616,7 +616,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<SizeF> {
             override val default = SizeFType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<SizeF> = SizeFType(isMarkedNullable)
         }
     }
@@ -651,7 +651,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Parcelable> {
             override val default = ParcelableType<Parcelable>(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Parcelable> = ParcelableType(
                 type.tClass(), isMarkedNullable
             )
@@ -684,7 +684,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<CharSequence> {
             override val default = CharSequenceType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<CharSequence> = CharSequenceType(isMarkedNullable)
         }
     }
@@ -712,7 +712,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<SparseArray<Parcelable>> {
             override val default = SparseArrayType<Parcelable>(null, null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<SparseArray<Parcelable>> = SparseArrayType(
                 type.argument0TypeClass(), isMarkedNullable
             )
@@ -747,7 +747,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<IBinder> {
             override val default = IBinderType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<IBinder> = IBinderType(isMarkedNullable)
         }
     }
@@ -780,7 +780,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Serializable> {
             override val default = SerializableType<Serializable>(null, null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Serializable> = SerializableType(
                 type.tClass(), isMarkedNullable
             )
@@ -821,7 +821,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<List<Parcelable>> {
             override val default = ListParcelableType<Parcelable>(null, null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<List<Parcelable>> = ListParcelableType(
                 type.argument0TypeClass(), isMarkedNullable
             )
@@ -854,7 +854,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<List<String>> {
             override val default = ListStringType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<List<String>> = ListStringType(isMarkedNullable)
         }
     }
@@ -879,7 +879,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<List<out CharSequence>> {
             override val default = ListCharSequenceType<CharSequence>(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<List<out CharSequence>> = ListCharSequenceType(isMarkedNullable)
         }
     }
@@ -903,7 +903,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<List<Int>> {
             override val default = ListIntegerType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<List<Int>> = ListIntegerType(isMarkedNullable)
         }
     }
@@ -948,7 +948,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Array<Parcelable>> {
             override val default = ArrayParcelableType<Parcelable>(null, null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Array<Parcelable>> = ArrayParcelableType(
                 type.argument0TypeClass(), isMarkedNullable
             )
@@ -981,7 +981,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Array<String>> {
             override val default = ArrayStringType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Array<String>> = ArrayStringType(isMarkedNullable)
         }
     }
@@ -1005,7 +1005,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Array<CharSequence>> {
             override val default = ArrayCharSequenceType(null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Array<CharSequence>> = ArrayCharSequenceType(isMarkedNullable)
         }
     }
@@ -1048,7 +1048,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Enum<*>> {
             override val default = EnumType(null, null) as BundleSupportType<Enum<*>>
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Enum<*>> = EnumType(
                 type.tClass<Any>() as Class<out Enum<*>>, isMarkedNullable
             ) as BundleSupportType<Enum<*>>
@@ -1140,7 +1140,7 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<MessageLite> {
             override val default = ProtoBufType<MessageLite>(null, true, null)
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<MessageLite> = ProtoBufType(
                 type.tClass(), isMarkedNullable
             )
@@ -1192,13 +1192,16 @@ abstract class BundleSupportType<T>(
         companion object : AutoFind.Creator<Any> {
             override val default = NotSupportType()
             override fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Any> = default
         }
     }
 
     /**
      * 通过反射字段类型来获取其访问器
+     *
+     * 每次调用都会使用[KProperty.returnType]，首次使用类和字段的耗时会比较大，一般不要直接使用这个单例，
+     * 而是使用[AutoFind.findByType]来通过 inline 方法根据类型直接获取其存取器
      */
     object AutoFind : BundleSupportType<Any>(null) {
         override fun nonnullValue(property: KProperty<*>): Any {
@@ -1227,23 +1230,21 @@ abstract class BundleSupportType<T>(
 
         @Suppress("kotlin:S6530")
         private fun findType(property: KProperty<*>): BundleSupportType<Any> = findByType(
-            { property.returnType } to null,
-            (property.returnType.classifier as? KClass<*>)?.java as Class<Any>,
-            NullableCheck.DEFAULT_INSTANCE
+            TypeInfo(null, { property.returnType }, null), NullableCheck.DEFAULT_INSTANCE
         )
 
         inline fun <reified T> findByType(
             isMarkedNullable: Boolean?
         ): BundleSupportType<T> = findByType(
-            { typeOf<T>() } to { jTypeOf<T>() },
-            T::class.java,
+            TypeInfo(T::class.java, { typeOf<T>() }, { jTypeOf<T>() }),
             NullableCheck.formBoolean(isMarkedNullable)
         )
 
         @Suppress("CyclomaticComplexMethod", "kotlin:S1479")
         fun <T> findByType(
-            type: Pair<() -> KType, (() -> Type)?>, clazz: Class<T>?, checkNullable: NullableCheck
+            type: TypeInfo, checkNullable: NullableCheck
         ): BundleSupportType<T> {
+            val clazz = type.jClass
             val creator: Creator<*> = when {
                 clazz == null -> NotSupportType
                 // 基础数据类型与其数组
@@ -1300,7 +1301,7 @@ abstract class BundleSupportType<T>(
             return when (checkNullable) {
                 NullableCheck.NONNULL -> creator.byType(type, false)
                 NullableCheck.NULLABLE -> creator.byType(type, true)
-                NullableCheck.CHECK_NOW -> creator.byType(type, type.first().isMarkedNullable)
+                NullableCheck.CHECK_NOW -> creator.byType(type, type.kType.isMarkedNullable)
                 NullableCheck.DEFAULT_INSTANCE -> creator.default
             } as BundleSupportType<T>
         }
@@ -1322,29 +1323,45 @@ abstract class BundleSupportType<T>(
         interface Creator<T> {
             val default: BundleSupportType<T>
             fun byType(
-                type: Pair<() -> KType, (() -> Type)?>, isMarkedNullable: Boolean
+                type: TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<T>
+        }
+
+        class TypeInfo(
+            val jClass: Class<*>?,
+            kTypeInitializer: () -> KType,
+            jTypeInitializer: (() -> Type)?,
+        ) {
+            val kType: KType by lazy(LazyThreadSafetyMode.NONE, kTypeInitializer)
+            val jType: Type? by lazy(LazyThreadSafetyMode.NONE, jTypeInitializer ?: { null })
         }
     }
     //</editor-fold>
 
+    //<editor-fold desc="当前类所使用的辅助方法" defaultstatus="collapsed">
     @Suppress("kotlin:S6530", "kotlin:S6531", "UNCHECKED_CAST")
     companion object {
-        private fun <T> Pair<() -> KType, (() -> Type)?>.tClass(): Class<T> = if (second == null) {
-            (first().classifier as KClass<*>).java as Class<T>
-        } else {
-            val type = second!!.invoke()
-            val tClass = (type as? Class<*>) ?: (type as ParameterizedType).ownerType
-            tClass as Class<T>
-        }
+        const val TAG = "BundleSupportType"
+        private fun <T> AutoFind.TypeInfo.tClass(): Class<T> =
+            if (jClass != null) {
+                jClass as Class<T>
+            } else if (jType == null) {
+                (kType.classifier as KClass<*>).java as Class<T>
+            } else {
+                val type = jType
+                val tClass = (type as? Class<*>) ?: (type as ParameterizedType).ownerType
+                tClass as Class<T>
+            }
 
-        private fun <T> Pair<() -> KType, (() -> Type)?>.argument0TypeClass(): Class<T> =
-            if (second == null) {
-                first().argument0TypeClass.java as Class<T>
-            } else when (val tType = second!!()) {
+        private fun <T> AutoFind.TypeInfo.argument0TypeClass(): Class<T> =
+            if (jClass?.isArray == true) {
+                jClass.componentType as Class<T>
+            } else if (jType == null) {
+                kType.argument0TypeClass.java as Class<T>
+            } else when (val tType = jType) {
                 is ParameterizedType -> {
                     // List<Xxx>
-                    val arg0Type = (second!!.invoke() as ParameterizedType).actualTypeArguments[0]
+                    val arg0Type = tType.actualTypeArguments[0]
                     val arg0Class = (arg0Type as? Class<*>)
                         ?: ((arg0Type as? WildcardType)?.upperBounds?.get(0) as Class<*>)
                     arg0Class as Class<T>
@@ -1358,4 +1375,5 @@ abstract class BundleSupportType<T>(
                 }
             }
     }
+    //</editor-fold>
 }

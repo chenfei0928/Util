@@ -5,6 +5,7 @@ import androidx.annotation.NoSideEffects
 import androidx.annotation.Size
 import io.github.chenfei0928.text.appendFormat
 import io.github.chenfei0928.util.Log
+import io.github.chenfei0928.util.NonnullPools
 import java.text.DecimalFormat
 
 /**
@@ -13,6 +14,10 @@ import java.text.DecimalFormat
  */
 object Debug {
     const val msInNs = 1_000_000
+    private val logCountTimeFormat =
+        NonnullPools.SimplePool<Pair<DecimalFormat, DecimalFormat>>(1) {
+            DecimalFormat(",###") to DecimalFormat(",###.###")
+        }
 
     inline fun <T> traceAndTime(
         tag: String,
@@ -49,12 +54,13 @@ object Debug {
     @NoSideEffects
     fun logCountTime(tag: String, msg: String, nanoTime: Long) {
         val timeUsed = System.nanoTime() - nanoTime
+        val format = logCountTimeFormat.acquire()
         if (timeUsed < msInNs) {
             // 在一毫秒以内，展示为纳秒
             Log.v(tag, StringBuffer().apply {
                 append(msg)
                 append(", countTime: ")
-                appendFormat(DecimalFormat(",###"), timeUsed)
+                appendFormat(format.first, timeUsed)
                 append(" ns.")
             }.toString())
         } else {
@@ -62,9 +68,10 @@ object Debug {
             Log.v(tag, StringBuffer().apply {
                 append(msg)
                 append(", countTime: ")
-                appendFormat(DecimalFormat(",###.###"), timeUsed / msInNs.toFloat())
+                appendFormat(format.second, timeUsed / msInNs.toFloat())
                 append(" ms.")
             }.toString())
         }
+        logCountTimeFormat.release(format)
     }
 }
