@@ -31,8 +31,11 @@ class IntentDelegate<T>(
     }
 
     companion object {
-        inline operator fun <reified T> invoke(name: String? = null, defaultValue: T? = null) =
-            IntentDelegate(BundleSupportType.AutoFind.findByType(), name, defaultValue)
+        inline operator fun <reified T> invoke(
+            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: T? = null
+        ) = IntentDelegate(
+            BundleSupportType.AutoFind.findByType(isMarkedNullable), name, defaultValue
+        )
 
         fun Activity.intentInt(name: String? = null): ReadOnlyProperty<Activity, Int> =
             IntentDelegate(BundleSupportType.IntType(false), name)

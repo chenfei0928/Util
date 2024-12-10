@@ -3,7 +3,7 @@ package io.github.chenfei0928.content.sp.saver.convert
 import com.google.gson.Gson
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
-import io.github.chenfei0928.reflect.typeOf
+import io.github.chenfei0928.reflect.jTypeOf
 import java.lang.reflect.Type
 
 class GsonSpConvertSaver<T>(
@@ -39,6 +39,6 @@ class GsonSpConvertSaver<T>(
     companion object {
         inline operator fun <reified T> invoke(
             key: String? = null
-        ) = GsonSpConvertSaver<T>(StringDelegate(key), type = typeOf<T>())
+        ) = GsonSpConvertSaver<T>(StringDelegate(key), type = jTypeOf<T>())
     }
 }

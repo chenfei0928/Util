@@ -31,8 +31,11 @@ class HostIntentDelegate<T>(
     }
 
     companion object {
-        inline operator fun <reified T> invoke(name: String? = null, defaultValue: T? = null) =
-            HostIntentDelegate(BundleSupportType.AutoFind.findByType(), name, defaultValue)
+        inline operator fun <reified T> invoke(
+            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: T? = null
+        ) = HostIntentDelegate(
+            BundleSupportType.AutoFind.findByType(isMarkedNullable), name, defaultValue
+        )
 
         fun Fragment.intentInt(name: String? = null): ReadOnlyProperty<Fragment, Int> =
             HostIntentDelegate(BundleSupportType.IntType(false), name)

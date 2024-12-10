@@ -38,8 +38,11 @@ class ArgumentDelegate<T>(
     }
 
     companion object {
-        inline operator fun <reified T> invoke(name: String? = null, defaultValue: T? = null) =
-            ArgumentDelegate(BundleSupportType.AutoFind.findByType(), name, defaultValue)
+        inline operator fun <reified T> invoke(
+            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: T? = null
+        ) = ArgumentDelegate(
+            BundleSupportType.AutoFind.findByType(isMarkedNullable), name, defaultValue
+        )
 
         fun Fragment.argInt(name: String? = null): ReadWriteProperty<Fragment, Int> =
             ArgumentDelegate(BundleSupportType.IntType(false), name)

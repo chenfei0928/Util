@@ -8,4 +8,4 @@ import java.lang.reflect.Type
  *
  * 使用前确认引入了[Gson](https://github.com/google/gson)依赖
  */
-inline fun <reified T> typeOf(): Type = object : TypeToken<T>() {}.type
+inline fun <reified T> jTypeOf(): Type = object : TypeToken<T>() {}.type

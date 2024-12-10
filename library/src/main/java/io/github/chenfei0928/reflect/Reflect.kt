@@ -2,6 +2,8 @@ package io.github.chenfei0928.reflect
 
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
 @Suppress("UNCHECKED_CAST")
 fun <T> Class<T>.arrayClass(): Class<Array<T>> =
@@ -9,6 +11,9 @@ fun <T> Class<T>.arrayClass(): Class<Array<T>> =
 
 fun Class<*>.isSubclassOf(base: Class<*>) =
     base.isAssignableFrom(this)
+
+val KType.argument0TypeClass: KClass<*>
+    get() = arguments[0].type?.classifier as KClass<*>
 
 @Throws(
     IllegalAccessException::class, IllegalArgumentException::class, InvocationTargetException::class

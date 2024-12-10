@@ -10,28 +10,28 @@ import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonSerializer
 import com.google.gson.TypeAdapter
-import io.github.chenfei0928.reflect.typeOf
+import io.github.chenfei0928.reflect.jTypeOf
 import java.io.Reader
 import java.util.BitSet
 
-inline fun <reified T> Gson.fromJson(json: Reader): T? = fromJson(json, typeOf<T>())
+inline fun <reified T> Gson.fromJson(json: Reader): T? = fromJson(json, jTypeOf<T>())
 
-inline fun <reified T> Gson.fromJson(json: String): T? = fromJson(json, typeOf<T>())
+inline fun <reified T> Gson.fromJson(json: String): T? = fromJson(json, jTypeOf<T>())
 
 inline fun <reified T> GsonBuilder.registerTypeAdapter(typeAdapter: JsonSerializer<T>): GsonBuilder =
-    registerTypeAdapter(typeOf<T>(), typeAdapter)
+    registerTypeAdapter(jTypeOf<T>(), typeAdapter)
 
 inline fun <reified T> GsonBuilder.registerTypeAdapter(typeAdapter: JsonDeserializer<T>): GsonBuilder =
-    registerTypeAdapter(typeOf<T>(), typeAdapter)
+    registerTypeAdapter(jTypeOf<T>(), typeAdapter)
 
 inline fun <reified T> GsonBuilder.registerTypeAdapter(typeAdapter: InstanceCreator<T>): GsonBuilder =
-    registerTypeAdapter(typeOf<T>(), typeAdapter)
+    registerTypeAdapter(jTypeOf<T>(), typeAdapter)
 
 inline fun <reified T> GsonBuilder.registerTypeAdapter(typeAdapter: TypeAdapter<T>): GsonBuilder =
-    registerTypeAdapter(typeOf<T>(), typeAdapter)
+    registerTypeAdapter(jTypeOf<T>(), typeAdapter)
 
 inline fun <reified R> JsonDeserializationContext.deserialize(json: JsonElement): R =
-    deserialize(json, typeOf<R>())
+    deserialize(json, jTypeOf<R>())
 
 internal val gson: Gson = GsonBuilder()
     .registerTypeAdapter(BitSet::class.java, BitSetTypeAdapter)
