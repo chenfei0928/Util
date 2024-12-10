@@ -43,9 +43,10 @@ class MainActivity : ComponentActivity() {
                     g = arrayOf(Bean(Test.getDefaultInstance()))
                     h = Bean(Test.getDefaultInstance())
                     i = listOf(Bean(Test.getDefaultInstance()))
-                    j = null
-                    k = null
+                    j = "123"
+                    k = Bean(Test.getDefaultInstance())
                     l = Bean(Test.getDefaultInstance())
+                    m = Bean(Test.getDefaultInstance())
                 }
             }
             Log.i(TAG, "onCreate: $f")
@@ -55,8 +56,8 @@ class MainActivity : ComponentActivity() {
     class Frag : Fragment() {
         var a: Int by argInt()
         var b: String by argString()
-        var c: List<String> by ArgumentDelegate(BundleSupportType.ListStringType(false))
-        var d: Array<String> by ArgumentDelegate(BundleSupportType.ArrayStringType(false))
+        var c: List<String> by ArgumentDelegate(BundleSupportType.ListStringType())
+        var d: Array<String> by ArgumentDelegate(BundleSupportType.ArrayStringType())
         var e: Lifecycle.State by ArgumentDelegate(BundleSupportType.EnumType())
         var f: Boolean by argBoolean()
         var g: Array<Bean> by ArgumentDelegate(BundleSupportType.ArrayParcelableType())
@@ -64,10 +65,11 @@ class MainActivity : ComponentActivity() {
         var i: List<Bean> by argParcelableList()
         var j: String? by argStringNull()
         var k: Bean? by argParcelableNull()
-        var l: Bean? by ArgumentDelegate()
+        var l: Bean? by ArgumentDelegate(true)
+        var m: Bean by ArgumentDelegate()
 
         override fun toString(): String {
-            return toString0(::a, ::b, ::c, ::d, ::e, ::f, ::g, ::h, ::i, ::j, ::k, ::l)
+            return toString0(::a, ::b, ::c, ::d, ::e, ::f, ::g, ::h, ::i, ::j, ::k, ::l, ::m)
         }
     }
 

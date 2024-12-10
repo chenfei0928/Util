@@ -63,7 +63,7 @@ fun Any.toStringKV(vararg fields: Pair<String, Any?>) = buildString {
         }
         append(key)
         append('=')
-        append(value.toStr())
+        append(value.toString())
     }
     append(')')
 }
@@ -113,19 +113,4 @@ private fun getValue(
         else -> field
     }
     else -> field
-}
-
-private fun Any?.toStr(): String {
-    return when (this) {
-        is Array<*> -> contentToString()
-        is ByteArray -> contentToString()
-        is ShortArray -> contentToString()
-        is IntArray -> contentToString()
-        is LongArray -> contentToString()
-        is CharArray -> contentToString()
-        is FloatArray -> contentToString()
-        is DoubleArray -> contentToString()
-        is BooleanArray -> contentToString()
-        else -> toString()
-    }
 }
