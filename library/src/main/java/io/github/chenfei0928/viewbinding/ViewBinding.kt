@@ -20,13 +20,15 @@ inline fun <reified T : ViewBinding> Activity.setContentViewBinding(
     return setContentViewBinding(layoutId, T::class.java.bindFunc())
 }
 
-fun <T : ViewBinding> Activity.setContentViewBinding(
+inline fun <T : ViewBinding> Activity.setContentViewBinding(
     @LayoutRes layoutId: Int, bindBlock: (View) -> T
-): T {
+): T = setContentViewAndGetView(layoutId).let(bindBlock)
+
+fun Activity.setContentViewAndGetView(@LayoutRes layoutId: Int): View {
     this.setContentView(layoutId)
     val decorView: View = window.decorView
     val contentView = decorView.findViewById<View>(android.R.id.content) as ViewGroup
-    return bindToAddedViews(contentView, 0, bindBlock)
+    return findSetContentViewChildView(contentView, 0)
 }
 //</editor-fold>
 
@@ -37,9 +39,11 @@ inline fun <reified T : ViewBinding> Dialog.setContentViewBinding(
     return setContentViewBinding(layoutId, T::class.java.bindFunc())
 }
 
-fun <T : ViewBinding> Dialog.setContentViewBinding(
+inline fun <T : ViewBinding> Dialog.setContentViewBinding(
     @LayoutRes layoutId: Int, bindBlock: (View) -> T
-): T {
+): T = setContentViewAndGetView(layoutId).let(bindBlock)
+
+fun Dialog.setContentViewAndGetView(@LayoutRes layoutId: Int): View {
     this.setContentView(layoutId)
     val contentView: ViewGroup = if (DependencyChecker.MATERIAL() && this is BottomSheetDialog) {
         findViewById(com.google.android.material.R.id.design_bottom_sheet)!!
@@ -47,7 +51,7 @@ fun <T : ViewBinding> Dialog.setContentViewBinding(
         val decorView: View = window!!.decorView
         decorView.findViewById(android.R.id.content)
     }
-    return bindToAddedViews(contentView, 0, bindBlock)
+    return findSetContentViewChildView(contentView, 0)
 }
 //</editor-fold>
 
@@ -83,20 +87,19 @@ fun <T : ViewBinding> Class<T>.inflateFunc(): (LayoutInflater, ViewGroup?, Boole
 //</editor-fold>
 
 @Suppress("SameParameterValue", "kotlin:S125")
-private fun <T : ViewBinding> bindToAddedViews(
-    parent: ViewGroup, startChildren: Int, bindBlock: (View) -> T
-): T {
+private fun findSetContentViewChildView(
+    parent: ViewGroup, startChildren: Int,
+): View {
     val endChildren = parent.childCount
     val childrenAdded = endChildren - startChildren
     return if (childrenAdded == 1) {
-        val childView = parent.getChildAt(endChildren - 1)
-        bindBlock(childView)
+        return parent.getChildAt(endChildren - 1)
     } else {
         val children = arrayOfNulls<View>(childrenAdded)
         for (i in 0 until childrenAdded) {
             children[i] = parent.getChildAt(i + startChildren)
         }
-        // 只有marge标签会再一次inflate中加载多个直接子view
+        // 只有marge标签会在一次inflate中加载多个直接子view
         throw IllegalArgumentException("ViewBinding不支持marge标签")
         // DataBindingUtil.bind(component, children, layoutId)
     }

@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val binding = setContentViewBinding<ActivityMainBinding>(
-            R.layout.activity_main
+            R.layout.activity_main, ActivityMainBinding::bind
         )
         binding.btnTest.setOnClickListener {
             val f = Debug.traceAndTime(TAG, "f_${System.currentTimeMillis()}") {
