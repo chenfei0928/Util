@@ -1165,9 +1165,8 @@ abstract class BundleSupportType<T>(
 
     //<editor-fold desc="对外暴露自动寻找类型接口" defaultstatus="collapsed>
     class NotSupportType : BundleSupportType<Any>(false) {
-        override fun nonnullValue(property: KProperty<*>): Any {
-            throw IllegalAccessException()
-        }
+        override fun nonnullValue(property: KProperty<*>): Any =
+            throw IllegalArgumentException("Not support return type: $property")
 
         override fun putNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, value: Any
@@ -1204,9 +1203,8 @@ abstract class BundleSupportType<T>(
      * 而是使用[AutoFind.findByType]来通过 inline 方法根据类型直接获取其存取器
      */
     object AutoFind : BundleSupportType<Any>(null) {
-        override fun nonnullValue(property: KProperty<*>): Any {
-            throw IllegalAccessException()
-        }
+        override fun nonnullValue(property: KProperty<*>): Any =
+            findType(property).nonnullValue(property)
 
         override fun putNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, value: Any
@@ -1252,7 +1250,7 @@ abstract class BundleSupportType<T>(
                 clazz == ByteArray::class.java -> ByteArrayType
                 clazz == java.lang.Short::class.java || clazz == java.lang.Short.TYPE -> ShortType
                 clazz == ShortArray::class.java -> ShortArrayType
-                clazz == java.lang.Integer::class.java || clazz == java.lang.Integer.TYPE -> IntType
+                clazz == Integer::class.java || clazz == Integer.TYPE -> IntType
                 clazz == IntArray::class.java -> IntArrayType
                 clazz == java.lang.Long::class.java || clazz == java.lang.Long.TYPE -> LongType
                 clazz == LongArray::class.java -> LongArrayType
@@ -1262,7 +1260,7 @@ abstract class BundleSupportType<T>(
                 clazz == DoubleArray::class.java -> DoubleArrayType
                 clazz == java.lang.Boolean::class.java || clazz == java.lang.Boolean.TYPE -> BooleanType
                 clazz == BooleanArray::class.java -> BooleanArrayType
-                clazz == java.lang.Character::class.java || clazz == java.lang.Character.TYPE -> CharType
+                clazz == Character::class.java || clazz == Character.TYPE -> CharType
                 clazz == CharArray::class.java -> CharArrayType
                 // 原生的final类型
                 clazz == String::class.java -> StringType

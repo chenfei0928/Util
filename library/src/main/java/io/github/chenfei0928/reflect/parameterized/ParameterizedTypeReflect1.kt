@@ -32,7 +32,6 @@ import java.lang.reflect.WildcardType
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-07 11:06
  */
-@Deprecated("使用 ParameterizedTypeReflect2 获取 class")
 class ParameterizedTypeReflect1<Parent>(
     private val parentClass: Class<Parent>,
     private val finalChildClass: Class<out Parent>,

@@ -15,10 +15,16 @@ inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeBoundsCont
 )
 
 inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeClassDefinedImplInChild(
-    @IntRange(from = 0) positionInParentParameter: Int
-): Class<R> = ParameterizedTypeReflect2(
-    Parent::class, this::class
-).getParentParameterizedTypeDefinedImplInChild(positionInParentParameter)
+    @IntRange(from = 0) positionInParentParameter: Int, useKtReflect: Boolean = false
+): Class<R> = if (useKtReflect) {
+    ParameterizedTypeReflect1(
+        Parent::class.java, this::class.java
+    ).getParentParameterizedTypeDefinedImplInChild(positionInParentParameter)
+} else {
+    ParameterizedTypeReflect2(
+        Parent::class, this::class
+    ).getParentParameterizedTypeDefinedImplInChild(positionInParentParameter)
+}
 
 @Deprecated("使用 getParentParameterizedTypeClassDefinedImplInChild 获取 class 而非 Type")
 inline fun <reified Parent : Any> Parent.getParentParameterizedTypeDefinedImplInChild(

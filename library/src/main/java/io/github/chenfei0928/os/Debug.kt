@@ -6,6 +6,7 @@ import androidx.annotation.Size
 import io.github.chenfei0928.text.appendFormat
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.util.NonnullPools
+import io.github.chenfei0928.util.use
 import java.text.DecimalFormat
 
 /**
@@ -33,7 +34,7 @@ object Debug {
         } finally {
             val timeUsed = System.nanoTime() - l
             Debug.stopMethodTracing()
-            logCountTime(tag, msg, l, timeUsed)
+            logCountTime(tag, msg, timeUsed)
         }
     }
 
@@ -56,7 +57,7 @@ object Debug {
         return try {
             block()
         } finally {
-            logCountTime(tag, msg, l)
+            logCountTime(tag, msg, System.nanoTime() - l)
         }
     }
 
@@ -64,10 +65,8 @@ object Debug {
     fun logCountTime(
         tag: String,
         msg: String,
-        nanoTime: Long,
-        timeUsed: Long = System.nanoTime() - nanoTime
-    ) {
-        val format = logCountTimeFormat.acquire()
+        timeUsed: Long
+    ): Unit = logCountTimeFormat.use { format ->
         if (timeUsed < msInNs) {
             // 在一毫秒以内，展示为纳秒
             Log.v(tag, StringBuffer().apply {
@@ -85,6 +84,5 @@ object Debug {
                 append(" ms.")
             }.toString())
         }
-        logCountTimeFormat.release(format)
     }
 }
