@@ -24,8 +24,17 @@ object Debug {
         tracePath: String,
         msg: String = tracePath,
         block: () -> T
-    ) = trace(tracePath) {
-        countTime(tag, msg, block)
+    ): T {
+        Log.v(tag, "$msg, currentTimeMillis: ${System.currentTimeMillis()}")
+        Debug.startMethodTracing(tracePath)
+        val l = System.nanoTime()
+        return try {
+            block()
+        } finally {
+            val timeUsed = System.nanoTime() - l
+            Debug.stopMethodTracing()
+            logCountTime(tag, msg, l, timeUsed)
+        }
     }
 
     inline fun <T> trace(tracePath: String, block: () -> T): T {
@@ -52,8 +61,12 @@ object Debug {
     }
 
     @NoSideEffects
-    fun logCountTime(tag: String, msg: String, nanoTime: Long) {
-        val timeUsed = System.nanoTime() - nanoTime
+    fun logCountTime(
+        tag: String,
+        msg: String,
+        nanoTime: Long,
+        timeUsed: Long = System.nanoTime() - nanoTime
+    ) {
         val format = logCountTimeFormat.acquire()
         if (timeUsed < msInNs) {
             // 在一毫秒以内，展示为纳秒
