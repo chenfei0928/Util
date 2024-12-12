@@ -1,36 +1,53 @@
 package com.google.protobuf
 
 import android.os.Parcel
+import android.os.Parcelable.Creator
+import androidx.collection.LruCache
 import kotlinx.parcelize.Parceler
-import kotlinx.parcelize.TypeParceler
 
 /**
- * 使Protobuf对象支持Parcelable的序列化支持，需创建子类并传递解析器
+ * 使Protobuf对象支持Parcelable的序列化支持
+ * 通过写入并读取实例类名，并进一步通过[parserCache]获取[Parser]解析器
  * ```
- *   @TypeParceler<InitReply.SandboxVersion?, SandboxVersionParceler>()
+ *   @TypeParceler<InitReply.SandboxVersion?, ProtobufParceler.Instance>()
  *   val remoteSandboxVersion: InitReply.SandboxVersion?,
- *
- *   object SandboxVersionParceler : ProtobufParceler<SandboxVersion>(SandboxVersion.parser())
  * ```
+ *
  * [Docs](https://developer.android.com/kotlin/parcelize?hl=zh-cn)
  *
- * 此类必须abstract，以让使用处创建子类才能被添加到[TypeParceler]注解中使用
+ * 使用反射获取类并进一步获取解析器[Parser]，提供默认实例[ProtobufParceler.Instance]可以直接使用
  *
- * [Parceler.newArray]不需要重写，由编译器直接在[Parcelable.Creator.createFromParcel]中生成
+ * [Parceler.newArray]不需要重写，由编译器直接在[Creator.createFromParcel]中生成
  *
  * @param MessageType
- * @property parser
- * @constructor Create empty Protobuf parceler
+ * @constructor Create empty Base protobuf parceler
  */
-abstract class ProtobufParceler<MessageType : MessageLite>(
-    private val parser: Parser<MessageType>,
+class ProtobufParceler<MessageType : MessageLite>(
+    cacheSize: Int = 10
 ) : Parceler<MessageType?> {
-
-    final override fun create(parcel: Parcel): MessageType? {
-        return parcel.createByteArray()?.let(parser::parseFrom)
+    private val parserCache = object : LruCache<String, Parser<MessageType>>(cacheSize) {
+        @Suppress("UNCHECKED_CAST")
+        override fun create(key: String): Parser<MessageType> {
+            val messageType = Class.forName(key) as Class<MessageType>
+            return findProtobufParser(messageType)!!
+        }
     }
 
-    final override fun MessageType?.write(parcel: Parcel, flags: Int) {
-        parcel.writeByteArray(this?.toByteArray())
+    override fun create(parcel: Parcel): MessageType? {
+        val className = parcel.readString()
+            ?: return null
+        val parser = parserCache[className]!!
+        return parcel.createByteArray().let(parser::parseFrom)
     }
+
+    override fun MessageType?.write(parcel: Parcel, flags: Int) {
+        if (this == null) {
+            parcel.writeString(null)
+        } else {
+            parcel.writeString(this.javaClass.name)
+            parcel.writeByteArray(this.toByteArray())
+        }
+    }
+
+    companion object Instance : Parceler<MessageLite?> by ProtobufParceler()
 }

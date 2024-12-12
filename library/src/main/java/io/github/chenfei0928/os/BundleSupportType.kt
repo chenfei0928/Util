@@ -10,19 +10,20 @@ import android.util.SizeF
 import android.util.SparseArray
 import androidx.core.content.IntentCompat
 import androidx.core.os.BundleCompat
-import com.google.protobuf.GeneratedMessageLite
-import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.MessageLite
 import com.google.protobuf.Parser
-import com.google.protobuf.getProtobufLiteDefaultInstance
-import com.google.protobuf.getProtobufV3DefaultInstance
+import com.google.protobuf.ProtobufListParceler
+import com.google.protobuf.ProtobufListParserParser
+import com.google.protobuf.findProtobufParser
 import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.lang.toByteArray
+import io.github.chenfei0928.os.BundleSupportType.ProtoBufType
 import io.github.chenfei0928.reflect.argument0TypeClass
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.jTypeOf
 import io.github.chenfei0928.util.DependencyChecker
+import kotlinx.parcelize.Parceler
 import java.io.ByteArrayInputStream
 import java.io.DataInputStream
 import java.io.Serializable
@@ -1076,7 +1077,7 @@ abstract class BundleSupportType<T>(
         // Protobuf生成的类都是final的，如果是最终生成的实体类则不需要存储类名
         constructor(
             clazz: Class<T>, isMarkedNullable: Boolean?
-        ) : this(findParser(clazz), Modifier.FINAL !in clazz.modifiers, isMarkedNullable)
+        ) : this(findProtobufParser(clazz), Modifier.FINAL !in clazz.modifiers, isMarkedNullable)
 
         override fun nonnullValue(property: KProperty<*>): T =
             parseData(property, byteArrayOf())!!
@@ -1107,17 +1108,16 @@ abstract class BundleSupportType<T>(
         ): T? = if (data == null) {
             null
         } else if (!writeClassName) {
-            val parser = parser ?: run {
-                val clazz = (property.returnType.classifier as KClass<T>).java
-                findParser(clazz)
-            } ?: throw IllegalArgumentException(
-                "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
-            )
+            val parser = parser
+                ?: findProtobufParser((property.returnType.classifier as KClass<T>).java)
+                ?: throw IllegalArgumentException(
+                    "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
+                )
             parser.parseFrom(data)
         } else DataInputStream(ByteArrayInputStream(data)).use { input ->
             val size = input.readInt()
             val className = String(input.readNBytesCompat(size))
-            findParser(Class.forName(className) as Class<T>)!!.parseFrom(input)
+            findProtobufParser(Class.forName(className) as Class<T>)!!.parseFrom(input)
         }
 
         private fun DataInputStream.readNBytesCompat(
@@ -1144,21 +1144,67 @@ abstract class BundleSupportType<T>(
             ): BundleSupportType<MessageLite> = ProtoBufType(
                 type.tClass(), isMarkedNullable
             )
+        }
+    }
 
-            @Suppress("kotlin:S6531", "kotlin:S6530", "UNCHECKED_CAST")
-            private fun <T : MessageLite> findParser(clazz: Class<T>): Parser<T>? {
-                return if (Modifier.FINAL !in clazz.modifiers) {
-                    null
-                } else if (clazz.isAssignableFrom(GeneratedMessageV3::class.java)) {
-                    (clazz as Class<out GeneratedMessageV3>)
-                        .getProtobufV3DefaultInstance()
-                        .parserForType as Parser<T>
-                } else {
-                    (clazz as Class<out GeneratedMessageLite<*, *>>)
-                        .getProtobufLiteDefaultInstance()
-                        .parserForType as Parser<T>
-                }
-            }
+    /**
+     * List<Protobuf> 类型，存储的是它的[MessageLite.toByteArray]
+     *
+     * @param writeClassName 如果 [parser] 为空，是否需要在序列化时同时序列化类名；
+     * 如果[parser] 不为null，则无效
+     */
+    class ListProtoBufType<T : MessageLite>(
+        private val parser: Parser<T>?,
+        private val writeClassName: Boolean,
+        isMarkedNullable: Boolean? = false
+    ) : BundleSupportType<List<T?>>(isMarkedNullable) {
+        // Protobuf生成的类都是final的，如果是最终生成的实体类则不需要存储类名
+        constructor(
+            clazz: Class<T>, isMarkedNullable: Boolean?
+        ) : this(findProtobufParser(clazz), Modifier.FINAL !in clazz.modifiers, isMarkedNullable)
+
+        private val parceler: Parceler<List<T?>?>? = if (parser != null) {
+            ProtobufListParserParser(parser)
+        } else null
+
+        private fun getParceler(property: KProperty<*>) = parceler ?: if (writeClassName) {
+            ProtobufListParceler as Parceler<List<T?>?>
+        } else {
+            ProtobufListParserParser((property.returnType.classifier as KClass<T>).java)
+        }
+
+        private fun parseData(
+            property: KProperty<*>, data: ByteArray?
+        ): List<T?>? = if (data == null) {
+            null
+        } else ParcelUtil.unmarshall(data) {
+            getParceler(property).create(it)
+        }
+
+        override fun nonnullValue(property: KProperty<*>): List<T?> = emptyList()
+
+        override fun putNonnull(
+            bundle: Bundle, property: KProperty<*>, name: String, value: List<T?>
+        ) = bundle.putByteArray(name, ParcelUtil.use {
+            getParceler(property).run { value.write(it, 0) }
+            it.marshall()
+        })
+
+        override fun getExtraNullable(
+            intent: Intent, property: KProperty<*>, name: String
+        ): List<T?>? = parseData(property, intent.getByteArrayExtra(name))
+
+        override fun getNullable(
+            bundle: Bundle, property: KProperty<*>, name: String
+        ): List<T?>? = parseData(property, bundle.getByteArray(name))
+
+        companion object : AutoFind.Creator<List<MessageLite?>> {
+            override val default = ListProtoBufType<MessageLite>(null, true, null)
+            override fun byType(
+                type: AutoFind.TypeInfo, isMarkedNullable: Boolean
+            ): BundleSupportType<List<MessageLite?>> = ListProtoBufType(
+                type.argument0TypeClass(), isMarkedNullable
+            )
         }
     }
     //</editor-fold>
@@ -1280,6 +1326,8 @@ abstract class BundleSupportType<T>(
                         arg0Class == String::class.java -> ListStringType
                         arg0Class.isSubclassOf(CharSequence::class.java) -> ListCharSequenceType
                         arg0Class == Integer::class.java -> ListIntegerType
+                        DependencyChecker.PROTOBUF_LITE() && arg0Class.isSubclassOf(MessageLite::class.java) ->
+                            ListProtoBufType
                         else -> NotSupportType
                     }
                 }

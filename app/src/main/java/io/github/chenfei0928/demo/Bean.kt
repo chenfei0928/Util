@@ -1,7 +1,7 @@
 package io.github.chenfei0928.demo
 
 import android.os.Parcelable
-import com.google.protobuf.ProtobufLiteParceler
+import com.google.protobuf.ProtobufParceler
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
 
@@ -11,6 +11,9 @@ import kotlinx.parcelize.TypeParceler
  */
 @Parcelize
 data class Bean(
-    @TypeParceler<Test, ProtobufLiteParceler.Instance>
-    val t: Test
+    @Transient
+    @TypeParceler<Test, ProtobufParceler.Instance>
+    val t: Test = Test.getDefaultInstance(),
+    @TypeParceler<Test, ProtobufParceler.Instance>
+    val te: Test = Test.getDefaultInstance(),
 ) : Parcelable
