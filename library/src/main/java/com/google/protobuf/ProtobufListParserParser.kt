@@ -25,7 +25,7 @@ import kotlinx.parcelize.TypeParceler
 open class ProtobufListParserParser<MessageType : MessageLite>(
     private val parser: Parser<MessageType>,
 ) : Parceler<List<MessageType?>?> {
-    constructor(clazz: Class<MessageType>) : this(findProtobufParser(clazz)!!)
+    constructor(clazz: Class<MessageType>) : this(getProtobufParser(clazz)!!)
 
     final override fun create(parcel: Parcel): List<MessageType?>? {
         val size = parcel.readInt()

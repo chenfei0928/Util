@@ -29,7 +29,7 @@ class ProtobufParceler<MessageType : MessageLite>(
         @Suppress("UNCHECKED_CAST")
         override fun create(key: String): Parser<MessageType> {
             val messageType = Class.forName(key) as Class<MessageType>
-            return findProtobufParser(messageType)!!
+            return getProtobufParser(messageType)!!
         }
     }
 

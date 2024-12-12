@@ -14,7 +14,7 @@ import com.google.protobuf.MessageLite
 import com.google.protobuf.Parser
 import com.google.protobuf.ProtobufListParceler
 import com.google.protobuf.ProtobufListParserParser
-import com.google.protobuf.findProtobufParser
+import com.google.protobuf.getProtobufParser
 import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.lang.toByteArray
@@ -1077,7 +1077,7 @@ abstract class BundleSupportType<T>(
         // Protobuf生成的类都是final的，如果是最终生成的实体类则不需要存储类名
         constructor(
             clazz: Class<T>, isMarkedNullable: Boolean?
-        ) : this(findProtobufParser(clazz), Modifier.FINAL !in clazz.modifiers, isMarkedNullable)
+        ) : this(getProtobufParser(clazz), Modifier.FINAL !in clazz.modifiers, isMarkedNullable)
 
         override fun nonnullValue(property: KProperty<*>): T =
             parseData(property, byteArrayOf())!!
@@ -1109,7 +1109,7 @@ abstract class BundleSupportType<T>(
             null
         } else if (!writeClassName) {
             val parser = parser
-                ?: findProtobufParser((property.returnType.classifier as KClass<T>).java)
+                ?: getProtobufParser((property.returnType.classifier as KClass<T>).java)
                 ?: throw IllegalArgumentException(
                     "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
                 )
@@ -1117,7 +1117,7 @@ abstract class BundleSupportType<T>(
         } else DataInputStream(ByteArrayInputStream(data)).use { input ->
             val size = input.readInt()
             val className = String(input.readNBytesCompat(size))
-            findProtobufParser(Class.forName(className) as Class<T>)!!.parseFrom(input)
+            getProtobufParser(Class.forName(className) as Class<T>)!!.parseFrom(input)
         }
 
         private fun DataInputStream.readNBytesCompat(
@@ -1161,7 +1161,7 @@ abstract class BundleSupportType<T>(
         // Protobuf生成的类都是final的，如果是最终生成的实体类则不需要存储类名
         constructor(
             clazz: Class<T>, isMarkedNullable: Boolean?
-        ) : this(findProtobufParser(clazz), Modifier.FINAL !in clazz.modifiers, isMarkedNullable)
+        ) : this(getProtobufParser(clazz), Modifier.FINAL !in clazz.modifiers, isMarkedNullable)
 
         private val parceler: Parceler<List<T?>?>? = if (parser != null) {
             ProtobufListParserParser(parser)

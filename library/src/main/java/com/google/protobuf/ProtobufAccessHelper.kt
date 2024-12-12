@@ -43,7 +43,7 @@ fun GeneratedMessageV3.toShortString() = buildString {
 }
 
 @Suppress("kotlin:S6531", "kotlin:S6530", "UNCHECKED_CAST")
-fun <T : MessageLite> findProtobufParser(clazz: Class<T>): Parser<T>? {
+fun <T : MessageLite> getProtobufParser(clazz: Class<T>): Parser<T>? {
     return if (Modifier.FINAL !in clazz.modifiers) {
         null
     } else if (DependencyChecker.PROTOBUF() && clazz.isAssignableFrom(GeneratedMessageV3::class.java)) {
