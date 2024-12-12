@@ -11,7 +11,7 @@ val RecyclerView.LayoutParams.holder: RecyclerView.ViewHolder
  * 启用或禁用RecyclerView的[RecyclerView.Adapter.notifyItemChanged]动画
  */
 var RecyclerView.supportsChangeAnimations: Boolean
-    get() = (itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations ?: false
+    get() = (itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations == true
     set(value) {
         (itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = value
     }

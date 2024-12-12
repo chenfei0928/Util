@@ -59,7 +59,7 @@ class BorderImageView
     }
 
     override fun setColorFilter(cf: ColorFilter?) {
-        super.setColorFilter(cf)
+        super.colorFilter = cf
         borderPaint.colorFilter = cf
     }
 

@@ -33,12 +33,12 @@ private val parcelReadParcelableCreator: Method by lazy(LazyThreadSafetyMode.NON
 
 private fun <T : Parcelable> readParcelableCreator(clazz: Class<T>): Parcelable.Creator<T> {
     val creator: Parcelable.Creator<T>? = ParcelUtil.use {
-        writeString(clazz.name)
-        setDataPosition(0)
+        it.writeString(clazz.name)
+        it.setDataPosition(0)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            ParcelCompat.readParcelableCreator(this, clazz.classLoader, clazz)
+            ParcelCompat.readParcelableCreator(it, clazz.classLoader, clazz)
         } else try {
-            val creator = parcelReadParcelableCreator.invoke(this, clazz.classLoader)
+            val creator = parcelReadParcelableCreator.invoke(it, clazz.classLoader)
             @Suppress("UNCHECKED_CAST")
             creator as Parcelable.Creator<T>?
         } catch (_: ReflectiveOperationException) {

@@ -9,6 +9,7 @@ import android.graphics.Typeface
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
+import androidx.collection.ArrayMap
 import androidx.core.content.res.use
 import io.github.chenfei0928.util.MapCache
 import io.github.chenfei0928.util.MapWeakCache
@@ -93,7 +94,8 @@ class IconFontView
 
     companion object {
         private val typefaceCache = MapCache<Context, MapWeakCache<String, Typeface>> { context ->
-            MapWeakCache { key -> Typeface.createFromAsset(context.assets, key) }
+            // 其key内存占用可以忽略，主要是value需要weakRef
+            MapWeakCache(ArrayMap()) { key -> Typeface.createFromAsset(context.assets, key) }
         }
     }
 }

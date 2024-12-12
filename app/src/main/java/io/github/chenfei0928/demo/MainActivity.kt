@@ -17,6 +17,7 @@ import io.github.chenfei0928.demo.databinding.ActivityMainBinding
 import io.github.chenfei0928.lang.toString0
 import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.Debug
+import io.github.chenfei0928.view.listener.setNoDoubleOnClickListener
 import io.github.chenfei0928.viewbinding.setContentViewBinding
 
 /**
@@ -31,7 +32,7 @@ class MainActivity : ComponentActivity() {
         val binding = setContentViewBinding<ActivityMainBinding>(
             R.layout.activity_main, ActivityMainBinding::bind
         )
-        binding.btnTest.setOnClickListener {
+        binding.btnTest.setNoDoubleOnClickListener {
             val f = Debug.traceAndTime(TAG, "f_${System.currentTimeMillis()}") {
                 Frag().apply {
                     a = 1

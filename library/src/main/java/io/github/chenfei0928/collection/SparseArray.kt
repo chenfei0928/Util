@@ -19,12 +19,8 @@ inline fun <T> SparseArray<T>.getOrPut(key: Int, defaultValue: (key: Int) -> T):
     return newValue
 }
 
-fun <T> SparseArray<T>.keys(): IntArray {
-    val array = IntArray(size())
-    for (i in array.indices) {
-        array[i] = keyAt(i)
-    }
-    return array
+fun <T> SparseArray<T>.keys(): IntArray = IntArray(size()) {
+    keyAt(it)
 }
 
 inline fun SparseIntArray.getOrPut(key: Int, defaultValue: (key: Int) -> Int): Int {

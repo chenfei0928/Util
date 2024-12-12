@@ -15,7 +15,7 @@ internal class AwaitCall<T>(
     private val service: Any, private val method: Method, private val args: Array<Any?>?
 ) : Call<T> {
     private var canceled = false
-    private val realCall = lazyByAutoLoad {
+    private val realCall: Lazy<Call<T>> = lazyByAutoLoad {
         method.safeInvoke(service, args) as Call<T>
     }
 

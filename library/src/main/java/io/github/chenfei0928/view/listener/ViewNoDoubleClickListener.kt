@@ -19,7 +19,7 @@ private object ViewNoDoubleClickListener : View.OnClickListener {
             ?: return
         val currentTimeMillis = System.currentTimeMillis()
         // 如果两次点击间隔时间小于指定间隔之间，不处理
-        if (currentTimeMillis - viewOnClickInfo.lastClickTime < viewOnClickInfo.interval) {
+        if (currentTimeMillis - viewOnClickInfo.lastClickTime < viewOnClickInfo.doubleTapTimeout) {
             return
         }
         // 记录点击时间
@@ -34,22 +34,17 @@ private object ViewNoDoubleClickListener : View.OnClickListener {
 }
 
 private data class ViewOnClickInfo(
+    val doubleTapTimeout: Int,
     val onClickLis: View.OnClickListener,
-    val interval: Int = ViewConfiguration.getDoubleTapTimeout(),
     var lastClickTime: Long = 0
 )
 
-inline fun View.setNoDoubleOnClickListener(crossinline l: (View) -> Unit) {
-    setNoDoubleOnClickListener(l = View.OnClickListener {
-        l(it)
-    })
-}
-
 fun View.setNoDoubleOnClickListener(
-    interval: Int = 300, l: View.OnClickListener
+    doubleTapTimeout: Int = ViewConfiguration.getDoubleTapTimeout(),
+    l: View.OnClickListener
 ) {
     // 存储view与监听器的映射关系
-    ViewNoDoubleClickListener.map[this] = ViewOnClickInfo(l, interval)
+    ViewNoDoubleClickListener.map[this] = ViewOnClickInfo(doubleTapTimeout, l)
     // 将防双击监听器设置到view
     setOnClickListener(ViewNoDoubleClickListener)
     // 当view从布局中移除时自动清理过时条目

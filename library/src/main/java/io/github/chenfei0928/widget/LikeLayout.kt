@@ -10,8 +10,6 @@ import android.graphics.PointF
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
@@ -31,7 +29,7 @@ class LikeLayout
 ) : FrameLayout(context, attrs, defStyleAttr) {
     private val random = Random()
     private var params: LayoutParams = LayoutParams(
-        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
     ).apply {
         gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
     }
@@ -70,10 +68,10 @@ class LikeLayout
      */
     private fun getAnimatorSet(iv: ImageView): AnimatorSet {
         // 1.alpha动画
-        val alpha = ObjectAnimator.ofFloat(iv, View.ALPHA, 0.3f, 1f)
+        val alpha = ObjectAnimator.ofFloat(iv, ALPHA, 0.3f, 1f)
         // 2.缩放动画
-        val scaleX = ObjectAnimator.ofFloat(iv, View.SCALE_X, 0.2f, 1f)
-        val scaleY = ObjectAnimator.ofFloat(iv, View.SCALE_Y, 0.2f, 1f)
+        val scaleX = ObjectAnimator.ofFloat(iv, SCALE_X, 0.2f, 1f)
+        val scaleY = ObjectAnimator.ofFloat(iv, SCALE_Y, 0.2f, 1f)
         // 动画集合
         val set = AnimatorSet()
         set.playTogether(alpha, scaleX, scaleY)
