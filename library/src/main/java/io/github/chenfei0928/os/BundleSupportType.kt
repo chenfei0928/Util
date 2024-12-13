@@ -1195,10 +1195,8 @@ abstract class BundleSupportType<T>(
              * 通过 reified inline 获取 [T] 的类对象
              */
             inline operator fun <reified T : MessageLite> invoke(
-                writeClassName: Boolean = false, isMarkedNullable: Boolean = false
-            ) = ProtoBufType<T>(
-                T::class.java.protobufParserForType, writeClassName, isMarkedNullable
-            )
+                isMarkedNullable: Boolean = false
+            ) = ProtoBufType<T>(T::class.java, isMarkedNullable = isMarkedNullable)
         }
     }
 
@@ -1259,10 +1257,8 @@ abstract class BundleSupportType<T>(
              * 通过 reified inline 获取 [T] 的类对象
              */
             inline operator fun <reified T : MessageLite> invoke(
-                writeClassName: Boolean = false, isMarkedNullable: Boolean = false
-            ) = ListProtoBufType<T>(
-                T::class.java.protobufParserForType, writeClassName, isMarkedNullable
-            )
+                isMarkedNullable: Boolean = false
+            ) = ListProtoBufType<T>(T::class.java, isMarkedNullable = isMarkedNullable)
         }
     }
     //</editor-fold>

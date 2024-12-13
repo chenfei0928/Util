@@ -59,7 +59,7 @@ class ArgumentDelegate<T>(
         inline operator fun <reified T : MessageLite> invoke(
             isMarkedNullable: Boolean = false, name: String? = null,
         ) = ArgumentDelegate(
-            BundleSupportType.ProtoBufType(T::class.java, isMarkedNullable),
+            BundleSupportType.ProtoBufType<T>(isMarkedNullable),
             name,
             if (isMarkedNullable) null else T::class.java.protobufDefaultInstance
         )
