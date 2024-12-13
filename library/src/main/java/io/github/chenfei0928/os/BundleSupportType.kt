@@ -14,12 +14,11 @@ import com.google.protobuf.MessageLite
 import com.google.protobuf.Parser
 import com.google.protobuf.ProtobufListParceler
 import com.google.protobuf.ProtobufListParserParser
-import com.google.protobuf.getProtobufParser
+import com.google.protobuf.protobufParserForType
 import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.lang.toByteArray
 import io.github.chenfei0928.os.BundleSupportType.ProtoBufType
-import io.github.chenfei0928.reflect.argument0TypeClass
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.jTypeOf
 import io.github.chenfei0928.util.DependencyChecker
@@ -134,6 +133,7 @@ abstract class BundleSupportType<T>(
     //</editor-fold>
 
     //<editor-fold desc="基础数据类型与其数组" defaultstatus="collapsed">
+    //<editor-fold desc="整型与其数组" defaultstatus="collapsed">
     class ByteType(
         isMarkedNullable: Boolean? = false
     ) : BundleSupportType<Byte>(isMarkedNullable) {
@@ -325,7 +325,9 @@ abstract class BundleSupportType<T>(
             ): BundleSupportType<LongArray> = LongArrayType(isMarkedNullable)
         }
     }
+    //</editor-fold>
 
+    //<editor-fold desc="浮点型" defaultstatus="collapsed">
     class FloatType(
         isMarkedNullable: Boolean? = false
     ) : BundleSupportType<Float>(isMarkedNullable) {
@@ -421,6 +423,7 @@ abstract class BundleSupportType<T>(
             ): BundleSupportType<DoubleArray> = DoubleArrayType(isMarkedNullable)
         }
     }
+    //</editor-fold>
 
     class BooleanType(
         isMarkedNullable: Boolean? = false
@@ -624,13 +627,12 @@ abstract class BundleSupportType<T>(
     //</editor-fold>
 
     //<editor-fold desc="原生的非final类型" defaultstatus="collapsed">
-    @Suppress("kotlin:S6530", "UNCHECKED_CAST")
     class ParcelableType<T : Parcelable>(
         private val clazz: Class<T>?,
         isMarkedNullable: Boolean? = false
     ) : BundleSupportType<T>(isMarkedNullable) {
         override fun nonnullValue(property: KProperty<*>): T =
-            (clazz ?: (property.returnType.classifier as KClass<T>).java)
+            (clazz ?: property.getReturnTypeJClass())
                 .getDeclaredConstructor().newInstance()
 
         override fun putNonnull(
@@ -640,13 +642,13 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): T? = BundleCompat.getParcelable(
-            bundle, name, clazz ?: (property.returnType.classifier as KClass<T>).java
+            bundle, name, clazz ?: property.getReturnTypeJClass()
         )
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): T? = IntentCompat.getParcelableExtra(
-            intent, name, clazz ?: (property.returnType.classifier as KClass<T>).java
+            intent, name, clazz ?: property.getReturnTypeJClass()
         )
 
         companion object : AutoFind.Creator<Parcelable> {
@@ -690,7 +692,6 @@ abstract class BundleSupportType<T>(
         }
     }
 
-    @Suppress("kotlin:S6530", "UNCHECKED_CAST")
     class SparseArrayType<T : Parcelable>(
         private val clazz: Class<T>?,
         isMarkedNullable: Boolean? = false
@@ -703,7 +704,7 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): SparseArray<T>? = BundleCompat.getSparseParcelableArray(
-            bundle, name, clazz ?: property.returnType.argument0TypeClass.java as Class<T>
+            bundle, name, clazz ?: property.returnType.argument0TypeJClass<T>()
         )
 
         override fun getExtraNullable(
@@ -753,13 +754,12 @@ abstract class BundleSupportType<T>(
         }
     }
 
-    @Suppress("kotlin:S6530", "UNCHECKED_CAST")
     class SerializableType<T : Serializable>(
         private val clazz: Class<T>?,
         isMarkedNullable: Boolean? = false
     ) : BundleSupportType<T>(isMarkedNullable) {
         override fun nonnullValue(property: KProperty<*>): T =
-            (clazz ?: (property.returnType.classifier as KClass<T>).java)
+            (clazz ?: property.getReturnTypeJClass())
                 .getDeclaredConstructor().newInstance()
 
         override fun putNonnull(
@@ -769,13 +769,13 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): T? = BundleCompat.getSerializable(
-            bundle, name, clazz ?: (property.returnType.classifier as KClass<T>).java
+            bundle, name, clazz ?: property.getReturnTypeJClass()
         )
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): T? = IntentCompat.getSerializableExtra(
-            intent, name, clazz ?: (property.returnType.classifier as KClass<T>).java
+            intent, name, clazz ?: property.getReturnTypeJClass()
         )
 
         companion object : AutoFind.Creator<Serializable> {
@@ -797,7 +797,6 @@ abstract class BundleSupportType<T>(
     //</editor-fold>
 
     //<editor-fold desc="List的类型" defaultstatus="collapsed">
-    @Suppress("kotlin:S6530", "UNCHECKED_CAST")
     class ListParcelableType<T : Parcelable>(
         private val clazz: Class<T>?,
         isMarkedNullable: Boolean? = false
@@ -810,13 +809,13 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): List<T>? = BundleCompat.getParcelableArrayList(
-            bundle, name, clazz ?: property.returnType.argument0TypeClass.java as Class<T>
+            bundle, name, clazz ?: property.returnType.argument0TypeJClass<T>()
         )
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): List<T>? = IntentCompat.getParcelableArrayListExtra(
-            intent, name, clazz ?: property.returnType.argument0TypeClass.java as Class<T>
+            intent, name, clazz ?: property.returnType.argument0TypeJClass<T>()
         )
 
         companion object : AutoFind.Creator<List<Parcelable>> {
@@ -860,7 +859,7 @@ abstract class BundleSupportType<T>(
         }
     }
 
-    @Suppress("REDUNDANT_PROJECTION", "kotlin:S6530", "UNCHECKED_CAST")
+    @Suppress("REDUNDANT_PROJECTION", "UNCHECKED_CAST")
     class ListCharSequenceType<T : CharSequence>(
         isMarkedNullable: Boolean? = false
     ) : BundleSupportType<List<T>>(isMarkedNullable) {
@@ -911,13 +910,12 @@ abstract class BundleSupportType<T>(
     //</editor-fold>
 
     //<editor-fold desc="类类型的数组" defaultstatus="collapsed">
-    @Suppress("kotlin:S6530", "UNCHECKED_CAST")
     class ArrayParcelableType<T : Parcelable>(
         private val clazz: Class<T>?,
         isMarkedNullable: Boolean? = false
     ) : BundleSupportType<Array<T>>(isMarkedNullable) {
         override fun nonnullValue(property: KProperty<*>): Array<T> =
-            (clazz ?: property.returnType.argument0TypeClass.java as Class<T>)
+            (clazz ?: property.returnType.argument0TypeJClass<T>())
                 .PARCELABLE_CREATOR.newArray(0)
 
         override fun putNonnull(
@@ -927,7 +925,7 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): Array<T>? {
-            val clazz = clazz ?: property.returnType.argument0TypeClass.java as Class<T>
+            val clazz = clazz ?: property.returnType.argument0TypeJClass<T>()
             val array = BundleCompat.getParcelableArray(bundle, name, clazz)
                 ?: return null
             val out = clazz.PARCELABLE_CREATOR.newArray(array.size)
@@ -938,7 +936,7 @@ abstract class BundleSupportType<T>(
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): Array<T>? {
-            val clazz = clazz ?: property.returnType.argument0TypeClass.java as Class<T>
+            val clazz = clazz ?: property.returnType.argument0TypeJClass<T>()
             val array = IntentCompat.getParcelableArrayExtra(intent, name, clazz)
                 ?: return null
             val out = clazz.PARCELABLE_CREATOR.newArray(array.size)
@@ -1016,7 +1014,6 @@ abstract class BundleSupportType<T>(
     /**
      * 枚举类型，存储时存放的是它的[Enum.name]
      */
-    @Suppress("kotlin:S6530", "UNCHECKED_CAST")
     class EnumType<T : Enum<T>>(
         private val values: Array<T>?,
         isMarkedNullable: Boolean? = false
@@ -1026,7 +1023,7 @@ abstract class BundleSupportType<T>(
         ) : this(clazz.enumConstants, isMarkedNullable)
 
         override fun nonnullValue(property: KProperty<*>): T =
-            (values ?: (property.returnType.classifier as KClass<T>).java.enumConstants).first()
+            (values ?: property.getReturnTypeJClass<T>().enumConstants).first()
 
         override fun putNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, value: T
@@ -1042,10 +1039,10 @@ abstract class BundleSupportType<T>(
 
         private fun forName(
             property: KProperty<*>, name: String
-        ): T? = values?.find { it.name == name } ?: java.lang.Enum.valueOf(
-            (property.returnType.classifier as KClass<T>).java, name
-        )
+        ): T? = values?.find { it.name == name }
+            ?: java.lang.Enum.valueOf(property.getReturnTypeJClass(), name)
 
+        @Suppress("UNCHECKED_CAST")
         companion object : AutoFind.Creator<Enum<*>> {
             override val default = EnumType(null, null) as BundleSupportType<Enum<*>>
             override fun byType(
@@ -1064,6 +1061,55 @@ abstract class BundleSupportType<T>(
     }
 
     /**
+     * 使用[Parceler]来序列化的支持，[getParceler]
+     */
+    abstract class ParcelerType<T>(
+        isMarkedNullable: Boolean?
+    ) : BundleSupportType<T>(isMarkedNullable) {
+        protected abstract fun getParceler(property: KProperty<*>): Parceler<T?>
+
+        private fun parseData(property: KProperty<*>, data: ByteArray?): T? =
+            if (data == null) null else ParcelUtil.unmarshall(data) {
+                getParceler(property).create(it)
+            }
+
+        override fun nonnullValue(property: KProperty<*>): T & Any =
+            property.getReturnTypeJClass<T & Any>().getDeclaredConstructor().newInstance()
+
+        final override fun putNonnull(
+            bundle: Bundle, property: KProperty<*>, name: String, value: T & Any
+        ) = bundle.putByteArray(name, ParcelUtil.use {
+            getParceler(property).run { value.write(it, 0) }
+            it.marshall()
+        })
+
+        final override fun getExtraNullable(
+            intent: Intent, property: KProperty<*>, name: String
+        ): T? = parseData(property, intent.getByteArrayExtra(name))
+
+        final override fun getExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, defaultValue: T?
+        ): T = super.getExtraNonnull(intent, property, name, defaultValue)
+
+        final override fun getNullable(
+            bundle: Bundle, property: KProperty<*>, name: String
+        ): T? = parseData(property, bundle.getByteArray(name))
+
+        final override fun getNonnull(
+            bundle: Bundle, property: KProperty<*>, name: String, defaultValue: T?
+        ): T = super.getNonnull(bundle, property, name, defaultValue)
+
+        companion object {
+            operator fun <T> invoke(
+                parceler: Parceler<T?>, isMarkedNullable: Boolean = false
+            ) = object : ParcelerType<T>(isMarkedNullable) {
+                override fun getParceler(property: KProperty<*>): Parceler<T?> = parceler
+            }
+        }
+    }
+
+    //<editor-fold desc="Protobuf类型的序列化器" defaultstatus="collapsed>
+    /**
      * Protobuf 类型，存储的是它的[MessageLite.toByteArray]
      *
      * @param writeClassName 如果 [parser] 为空，是否需要在序列化时同时序列化类名；
@@ -1075,9 +1121,9 @@ abstract class BundleSupportType<T>(
         isMarkedNullable: Boolean? = false
     ) : BundleSupportType<T>(isMarkedNullable) {
         // Protobuf生成的类都是final的，如果是最终生成的实体类则不需要存储类名
-        constructor(
-            clazz: Class<T>, isMarkedNullable: Boolean?
-        ) : this(getProtobufParser(clazz), Modifier.FINAL !in clazz.modifiers, isMarkedNullable)
+        constructor(clazz: Class<T>, isMarkedNullable: Boolean?) : this(
+            clazz.protobufParserForType, Modifier.FINAL !in clazz.modifiers, isMarkedNullable
+        )
 
         override fun nonnullValue(property: KProperty<*>): T =
             parseData(property, byteArrayOf())!!
@@ -1102,22 +1148,22 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): T? = parseData(property, intent.getByteArrayExtra(name))
 
-        @Suppress("kotlin:S6530", "UNCHECKED_CAST")
         private fun parseData(
             property: KProperty<*>, data: ByteArray?
         ): T? = if (data == null) {
             null
         } else if (!writeClassName) {
-            val parser = parser
-                ?: getProtobufParser((property.returnType.classifier as KClass<T>).java)
-                ?: throw IllegalArgumentException(
-                    "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
-                )
+            val parser: Parser<T>? = parser
+                ?: property.getReturnTypeJClass<T>().protobufParserForType
+            parser ?: throw IllegalArgumentException(
+                "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
+            )
             parser.parseFrom(data)
         } else DataInputStream(ByteArrayInputStream(data)).use { input ->
             val size = input.readInt()
             val className = String(input.readNBytesCompat(size))
-            getProtobufParser(Class.forName(className) as Class<T>)!!.parseFrom(input)
+            @Suppress("UNCHECKED_CAST")
+            (Class.forName(className) as Class<T>).protobufParserForType!!.parseFrom(input)
         }
 
         private fun DataInputStream.readNBytesCompat(
@@ -1144,6 +1190,15 @@ abstract class BundleSupportType<T>(
             ): BundleSupportType<MessageLite> = ProtoBufType(
                 type.tClass(), isMarkedNullable
             )
+
+            /**
+             * 通过 reified inline 获取 [T] 的类对象
+             */
+            inline operator fun <reified T : MessageLite> invoke(
+                writeClassName: Boolean = false, isMarkedNullable: Boolean = false
+            ) = ProtoBufType<T>(
+                T::class.java.protobufParserForType, writeClassName, isMarkedNullable
+            )
         }
     }
 
@@ -1157,21 +1212,30 @@ abstract class BundleSupportType<T>(
         private val parser: Parser<T>?,
         private val writeClassName: Boolean,
         isMarkedNullable: Boolean? = false
-    ) : BundleSupportType<List<T?>>(isMarkedNullable) {
+    ) : ParcelerType<List<T?>>(isMarkedNullable) {
         // Protobuf生成的类都是final的，如果是最终生成的实体类则不需要存储类名
         constructor(
             clazz: Class<T>, isMarkedNullable: Boolean?
-        ) : this(getProtobufParser(clazz), Modifier.FINAL !in clazz.modifiers, isMarkedNullable)
+        ) : this(
+            clazz.protobufParserForType, Modifier.FINAL !in clazz.modifiers, isMarkedNullable
+        )
 
         private val parceler: Parceler<List<T?>?>? = if (parser != null) {
             ProtobufListParserParser(parser)
         } else null
 
-        private fun getParceler(property: KProperty<*>) = parceler ?: if (writeClassName) {
-            ProtobufListParceler as Parceler<List<T?>?>
-        } else {
-            ProtobufListParserParser((property.returnType.classifier as KClass<T>).java)
-        }
+        override fun getParceler(property: KProperty<*>): Parceler<List<T?>?> =
+            parceler ?: if (writeClassName) {
+                @Suppress("UNCHECKED_CAST")
+                ProtobufListParceler as Parceler<List<T?>?>
+            } else {
+                val parser: Parser<T> = property.returnType.argument0TypeJClass<T>()
+                    .protobufParserForType
+                    ?: throw IllegalArgumentException(
+                        "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
+                    )
+                ProtobufListParserParser(parser)
+            }
 
         private fun parseData(
             property: KProperty<*>, data: ByteArray?
@@ -1183,21 +1247,6 @@ abstract class BundleSupportType<T>(
 
         override fun nonnullValue(property: KProperty<*>): List<T?> = emptyList()
 
-        override fun putNonnull(
-            bundle: Bundle, property: KProperty<*>, name: String, value: List<T?>
-        ) = bundle.putByteArray(name, ParcelUtil.use {
-            getParceler(property).run { value.write(it, 0) }
-            it.marshall()
-        })
-
-        override fun getExtraNullable(
-            intent: Intent, property: KProperty<*>, name: String
-        ): List<T?>? = parseData(property, intent.getByteArrayExtra(name))
-
-        override fun getNullable(
-            bundle: Bundle, property: KProperty<*>, name: String
-        ): List<T?>? = parseData(property, bundle.getByteArray(name))
-
         companion object : AutoFind.Creator<List<MessageLite?>> {
             override val default = ListProtoBufType<MessageLite>(null, true, null)
             override fun byType(
@@ -1205,8 +1254,18 @@ abstract class BundleSupportType<T>(
             ): BundleSupportType<List<MessageLite?>> = ListProtoBufType(
                 type.argument0TypeClass(), isMarkedNullable
             )
+
+            /**
+             * 通过 reified inline 获取 [T] 的类对象
+             */
+            inline operator fun <reified T : MessageLite> invoke(
+                writeClassName: Boolean = false, isMarkedNullable: Boolean = false
+            ) = ListProtoBufType<T>(
+                T::class.java.protobufParserForType, writeClassName, isMarkedNullable
+            )
         }
     }
+    //</editor-fold>
     //</editor-fold>
 
     //<editor-fold desc="对外暴露自动寻找类型接口" defaultstatus="collapsed>
@@ -1380,16 +1439,9 @@ abstract class BundleSupportType<T>(
         ) {
             val kType: KType by lazy(LazyThreadSafetyMode.NONE, kTypeInitializer)
             val jType: Type? by lazy(LazyThreadSafetyMode.NONE, jTypeInitializer ?: { null })
-        }
-    }
-    //</editor-fold>
 
-    //<editor-fold desc="当前类所使用的辅助方法" defaultstatus="collapsed">
-    @Suppress("kotlin:S6530", "kotlin:S6531", "UNCHECKED_CAST")
-    companion object {
-        const val TAG = "BundleSupportType"
-        private fun <T> AutoFind.TypeInfo.tClass(): Class<T> =
-            if (jClass != null) {
+            @Suppress("UNCHECKED_CAST")
+            fun <T> tClass(): Class<T> = if (jClass != null) {
                 jClass as Class<T>
             } else if (jType == null) {
                 (kType.classifier as KClass<*>).java as Class<T>
@@ -1399,11 +1451,11 @@ abstract class BundleSupportType<T>(
                 tClass as Class<T>
             }
 
-        private fun <T> AutoFind.TypeInfo.argument0TypeClass(): Class<T> =
-            if (jClass?.isArray == true) {
+            @Suppress("UNCHECKED_CAST")
+            fun <T : Any> argument0TypeClass(): Class<T> = if (jClass?.isArray == true) {
                 jClass.componentType as Class<T>
             } else if (jType == null) {
-                kType.argument0TypeClass.java as Class<T>
+                kType.argument0TypeJClass<T>()
             } else when (val tType = jType) {
                 is ParameterizedType -> {
                     // List<Xxx>
@@ -1416,10 +1468,26 @@ abstract class BundleSupportType<T>(
                     // Array<Xxx>
                     tType.genericComponentType as Class<T>
                 }
+                is Class<*> -> {
+                    tType.componentType as Class<T>
+                }
                 else -> {
                     throw IllegalArgumentException("Not support type: $tType")
                 }
             }
+        }
     }
     //</editor-fold>
+
+    companion object {
+        private const val TAG = "BundleSupportType"
+
+        @Suppress("UNCHECKED_CAST")
+        private fun <T : Any> KProperty<*>.getReturnTypeJClass(): Class<T> =
+            (returnType.classifier as KClass<T>).java
+
+        @Suppress("UNCHECKED_CAST")
+        private fun <T : Any> KType.argument0TypeJClass(): Class<T> =
+            (arguments[0].type?.classifier as KClass<T>).java
+    }
 }

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import com.google.protobuf.ProtobufParceler
 import io.github.chenfei0928.app.fragment.ArgumentDelegate
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argBoolean
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argInt
@@ -33,6 +34,17 @@ class MainActivity : ComponentActivity() {
             R.layout.activity_main, ActivityMainBinding::bind
         )
         binding.btnTest.setNoDoubleOnClickListener {
+            Fragment()
+            // 加载Protobuf runtime，其会消耗较长时间
+            Debug.traceAndTime(TAG, "Test_toByteArray_${System.currentTimeMillis()}") {
+                Test.getDefaultInstance().toByteArray()
+                Test.getDefaultInstance().parserForType
+            }
+            // ProtoBufType 支持类，不知为何会有很多的loadClass
+            Debug.traceAndTime(TAG, "ProtoBufType_${System.currentTimeMillis()}") {
+                BundleSupportType.ProtoBufType(Test::class.java, false)
+            }
+            // Frag 类加载时会初始化其委托属性的 KProperty 信息实例，会消耗一些时间
             val f = Debug.traceAndTime(TAG, "f_${System.currentTimeMillis()}") {
                 Frag().apply {
                     a = 1
@@ -48,6 +60,8 @@ class MainActivity : ComponentActivity() {
                     k = Bean(Test.getDefaultInstance())
                     l = Bean(Test.getDefaultInstance())
                     m = Bean(Test.getDefaultInstance())
+                    n = Test.getDefaultInstance()
+                    o = Test.getDefaultInstance()
                 }
             }
             Log.i(TAG, "onCreate: $f")
@@ -66,12 +80,14 @@ class MainActivity : ComponentActivity() {
         var i: List<Bean> by argParcelableList()
         var j: String? by argStringNull()
         var k: Bean? by argParcelableNull()
-        var l: Bean? by ArgumentDelegate(true)
-        var m: Bean by ArgumentDelegate()
+        var l: Bean? by ArgumentDelegate<Bean?>(true)
+        var m: Bean by ArgumentDelegate<Bean>()
+        var n: Test by ArgumentDelegate(ProtobufParceler())
+        var o: Test by ArgumentDelegate()
 
-        override fun toString(): String {
-            return toString0(::a, ::b, ::c, ::d, ::e, ::f, ::g, ::h, ::i, ::j, ::k, ::l, ::m)
-        }
+        override fun toString(): String = toString0(
+            ::a, ::b, ::c, ::d, ::e, ::f, ::g, ::h, ::i, ::j, ::k, ::l, ::m, ::n, ::o
+        )
     }
 
     companion object {

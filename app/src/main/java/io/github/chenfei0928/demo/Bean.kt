@@ -1,6 +1,7 @@
 package io.github.chenfei0928.demo
 
 import android.os.Parcelable
+import androidx.lifecycle.Lifecycle
 import com.google.protobuf.ProtobufParceler
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
@@ -16,4 +17,5 @@ data class Bean(
     val t: Test = Test.getDefaultInstance(),
     @TypeParceler<Test, ProtobufParceler.Instance>
     val te: Test = Test.getDefaultInstance(),
+    val state: Lifecycle.State = Lifecycle.State.INITIALIZED,
 ) : Parcelable

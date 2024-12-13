@@ -2,8 +2,11 @@ package io.github.chenfei0928.app.activity
 
 import android.app.Activity
 import android.os.Parcelable
+import com.google.protobuf.MessageLite
+import com.google.protobuf.protobufDefaultInstance
 import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.ReadOnlyCacheDelegate
+import kotlinx.parcelize.Parceler
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -35,6 +38,23 @@ class IntentDelegate<T>(
             isMarkedNullable: Boolean = false, name: String? = null, defaultValue: T? = null
         ) = IntentDelegate(
             BundleSupportType.AutoFind.findByType(isMarkedNullable), name, defaultValue
+        )
+
+        operator fun <T> invoke(
+            parceler: Parceler<T?>,
+            isMarkedNullable: Boolean = false,
+            name: String? = null,
+            defaultValue: T? = null
+        ) = IntentDelegate(
+            BundleSupportType.ParcelerType(parceler, isMarkedNullable), name, defaultValue
+        )
+
+        inline operator fun <reified T : MessageLite> invoke(
+            isMarkedNullable: Boolean = false, name: String? = null,
+        ) = IntentDelegate(
+            BundleSupportType.ProtoBufType(T::class.java, isMarkedNullable),
+            name,
+            if (isMarkedNullable) null else T::class.java.protobufDefaultInstance
         )
 
         fun Activity.intentInt(name: String? = null): ReadOnlyProperty<Activity, Int> =

@@ -2,7 +2,6 @@ package io.github.chenfei0928.view.listener
 
 import android.view.View
 import android.view.ViewConfiguration
-import androidx.core.view.doOnDetach
 import java.util.WeakHashMap
 
 /**
@@ -39,6 +38,14 @@ private data class ViewOnClickInfo(
     var lastClickTime: Long = 0
 )
 
+private val onDetach = object : View.OnAttachStateChangeListener {
+    override fun onViewAttachedToWindow(v: View) {}
+
+    override fun onViewDetachedFromWindow(v: View) {
+        ViewNoDoubleClickListener.expungeStaleEntries()
+    }
+}
+
 fun View.setNoDoubleOnClickListener(
     doubleTapTimeout: Int = ViewConfiguration.getDoubleTapTimeout(),
     l: View.OnClickListener
@@ -48,7 +55,5 @@ fun View.setNoDoubleOnClickListener(
     // 将防双击监听器设置到view
     setOnClickListener(ViewNoDoubleClickListener)
     // 当view从布局中移除时自动清理过时条目
-    doOnDetach {
-        ViewNoDoubleClickListener.expungeStaleEntries()
-    }
+    addOnAttachStateChangeListener(onDetach)
 }

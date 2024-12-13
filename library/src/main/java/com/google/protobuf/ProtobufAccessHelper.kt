@@ -5,6 +5,7 @@
 package com.google.protobuf
 
 import io.github.chenfei0928.lang.contains
+import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.util.DependencyChecker
 import io.github.chenfei0928.util.MapCache
 import java.lang.reflect.Modifier
@@ -42,15 +43,18 @@ fun GeneratedMessageV3.toShortString() = buildString {
     append(')')
 }
 
-@Suppress("kotlin:S6531", "kotlin:S6530", "UNCHECKED_CAST")
-fun <T : MessageLite> getProtobufParser(clazz: Class<T>): Parser<T>? {
-    return if (Modifier.FINAL !in clazz.modifiers) {
+@Suppress("UNCHECKED_CAST")
+val <T : MessageLite> Class<T>.protobufDefaultInstance: T?
+    get() = if (Modifier.FINAL !in modifiers) {
         null
-    } else if (DependencyChecker.PROTOBUF() && clazz.isAssignableFrom(GeneratedMessageV3::class.java)) {
-        (clazz as Class<out GeneratedMessageV3>)
-            .getProtobufV3ParserForType() as Parser<T>
+    } else if (DependencyChecker.PROTOBUF() && isSubclassOf(GeneratedMessageV3::class.java)) {
+        (this as Class<out GeneratedMessageV3>)
+            .getProtobufV3DefaultInstance() as T
     } else {
-        (clazz as Class<out GeneratedMessageLite<*, *>>)
-            .getProtobufLiteParserForType() as Parser<T>
+        (this as Class<out GeneratedMessageLite<*, *>>)
+            .getProtobufLiteDefaultInstance() as T
     }
-}
+
+@Suppress("UNCHECKED_CAST")
+val <T : MessageLite> Class<T>.protobufParserForType: Parser<T>?
+    get() = protobufDefaultInstance?.parserForType as Parser<T>?

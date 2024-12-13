@@ -1,12 +1,13 @@
-package com.google.protobuf
+package io.github.chenfei0928.os
 
 import android.os.Parcel
 import android.os.Parcelable.Creator
+import androidx.core.os.ParcelCompat
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.TypeParceler
 
 /**
- * 使Protobuf对象支持Parcelable的序列化支持，需创建子类并传递解析器
+ * 使List对象支持Parcelable的序列化支持，需创建子类并传递解析器
  * ```
  *   @TypeParceler<InitReply.SandboxVersion?, SandboxVersionParceler>()
  *   val remoteSandboxVersion: InitReply.SandboxVersion?,
@@ -22,27 +23,30 @@ import kotlinx.parcelize.TypeParceler
  * @author chenf()
  * @date 2024-12-12 18:22
  */
-open class ProtobufListParserParser<MessageType : MessageLite>(
-    private val parser: Parser<MessageType>,
-) : Parceler<List<MessageType?>?> {
+open class ListParser<T>(
+    private val parceler: Parceler<T>,
+) : Parceler<List<T?>?> {
 
-    final override fun create(parcel: Parcel): List<MessageType?>? {
+    override fun create(parcel: Parcel): List<T?>? {
         val size = parcel.readInt()
         return if (size < 0) {
             null
         } else (0 until size).map {
-            parser.parseFrom(parcel.createByteArray())
+            if (ParcelCompat.readBoolean(parcel)) {
+                parceler.create(parcel)
+            } else null
         }
     }
 
-    final override fun List<MessageType?>?.write(
-        parcel: Parcel, flags: Int
-    ) = if (this == null) {
+    override fun List<T?>?.write(parcel: Parcel, flags: Int) = if (this == null) {
         parcel.writeInt(-1)
     } else {
         parcel.writeInt(size)
         forEach {
-            parcel.writeByteArray(it?.toByteArray())
+            ParcelCompat.writeBoolean(parcel, it != null)
+            parceler.run {
+                it?.write(parcel, flags)
+            }
         }
     }
 }

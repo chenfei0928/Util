@@ -26,7 +26,6 @@ import kotlinx.parcelize.TypeParceler
 open class ProtobufParserParceler<MessageType : MessageLite>(
     private val parser: Parser<MessageType>,
 ) : Parceler<MessageType?> {
-    constructor(clazz: Class<MessageType>) : this(getProtobufParser(clazz)!!)
 
     final override fun create(parcel: Parcel): MessageType? {
         return parcel.createByteArray()?.let(parser::parseFrom)
