@@ -1,5 +1,7 @@
 package io.github.chenfei0928.reflect;
 
+import org.junit.Before;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +16,11 @@ import static org.junit.Assert.assertEquals;
  * @author ChenFei(chenfei0928 @ gmail.com)
  * @date 2021-03-18 11:31
  */
-public class ParameterizedTypeReflectKtTest {
+public class ParameterizedTypeReflect2Test {
+    @Before
+    public void before() {
+        System.setProperty("gson.allowCapturingTypeVariables", "true");
+    }
 
     @org.junit.Test
     public void testParam() {
@@ -57,7 +63,9 @@ public class ParameterizedTypeReflectKtTest {
             IInterface finalChildClassInstance
     ) {
         KClass<IInterface> kClass = JvmClassMappingKt.getKotlinClass((Class<IInterface>) finalChildClassInstance.getClass());
-        System.out.print(kClass.getSimpleName() + ": ");
+        String className = kClass.getQualifiedName();
+        String name = className.substring(className.indexOf('I'));
+        System.out.print(name + ": ");
 
         // 判断获取泛型被擦除后的Class
         KClass<I> ikClass = JvmClassMappingKt.getKotlinClass(I.class);
@@ -71,6 +79,7 @@ public class ParameterizedTypeReflectKtTest {
     @org.junit.Test
     public void testParamKt() {
         // Kotlin 1.9.10 测试时，List、Map的泛型子类继承后泛型约束会丢失，MutableList、MutableMap则没问题
+        // Kotlin 2.0.21 测试时，已无问题
         testKt(new KI());
         // 之类直接实现/数组实现
         testKt(new KI.IIntArray());
@@ -110,7 +119,9 @@ public class ParameterizedTypeReflectKtTest {
             IInterface finalChildClassInstance
     ) {
         KClass<IInterface> kClass = JvmClassMappingKt.getKotlinClass((Class<IInterface>) finalChildClassInstance.getClass());
-        System.out.print(kClass.getSimpleName() + ": ");
+        String className = kClass.getQualifiedName();
+        String name = className.substring(className.indexOf('K'));
+        System.out.print(name + ": ");
 
         // 判断获取泛型被擦除后的Class
         KClass<KI> ikClass = JvmClassMappingKt.getKotlinClass(KI.class);

@@ -151,11 +151,16 @@ open class KI<E> {
         }
     }
 
-    open class I1<E, T : MutableList<E>> : KI<T>() {
+    open class I1<E, T : List<E>> : KI<T>() {
         override val gsonTypeToken: TypeToken<T> = object : TypeToken<T>() {}
-        override val eClass: Class<T> = MutableList::class.java as Class<T>
+        override val eClass: Class<T> = List::class.java as Class<T>
 
-        class IArrayList : I1<Any, ArrayList<Any>>() {
+        open class IM<E, T : MutableList<E>> : I1<E, T>() {
+            override val gsonTypeToken: TypeToken<T> = object : TypeToken<T>() {}
+            override val eClass: Class<T> = MutableList::class.java as Class<T>
+        }
+
+        class IArrayList : IM<Any, ArrayList<Any>>() {
             override val gsonTypeToken: TypeToken<ArrayList<Any>> =
                 object : TypeToken<ArrayList<Any>>() {}
             override val eClass: Class<ArrayList<Any>> =

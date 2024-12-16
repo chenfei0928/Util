@@ -91,6 +91,7 @@ internal class ParentParameterizedKtTypeNode(
                             continue
                         }
                         parentKClass == superClass -> {
+                            childClass.takeParentNode(supertype, superClass)
                             return childClass to finalChildNode
                         }
                         superClass.isSubclassOf(parentKClass) -> {

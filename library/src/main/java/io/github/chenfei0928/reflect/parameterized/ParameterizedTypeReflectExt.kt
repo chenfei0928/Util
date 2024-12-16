@@ -1,13 +1,20 @@
+/**
+ * 提供获取子类中的泛型定义的类对象信息
+ *
+ * 涉及反射，会消耗较多时间，耗时排名从低到高：
+ * 1. [getParentParameterizedTypeClassDefinedImplInChild] useKtReflect=true 有缓存（甚至会达到0.4ms）
+ * 2. [getParentParameterizedTypeClassDefinedImplInChild] useKtReflect=false （约2-5ms）
+ * 3. [getParentParameterizedTypeBoundsContractDefinedImplInChild] （约4-6ms）
+ * 4. [getParentParameterizedTypeClassDefinedImplInChild] useKtReflect=false 无缓存（可能会消耗1000ms）
+ *
+ * @author ChenFei(chenfei0928@gmail.com)
+ * @date 2021-02-20 18:01
+ */
 package io.github.chenfei0928.reflect.parameterized
 
 import androidx.annotation.IntRange
 import java.lang.reflect.Type
 
-/**
- * @author ChenFei(chenfei0928@gmail.com)
- * @date 2021-02-20 18:01
- */
-@Deprecated("使用 getParentParameterizedTypeClassDefinedImplInChild 获取 class 而非 Type")
 inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeBoundsContractDefinedImplInChild(
     @IntRange(from = 0) positionInParentParameter: Int
 ): TypeBoundsContract<R> = ParameterizedTypeReflect0.getParentParameterizedTypeDefinedImplInChild(
@@ -17,16 +24,15 @@ inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeBoundsCont
 inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeClassDefinedImplInChild(
     @IntRange(from = 0) positionInParentParameter: Int, useKtReflect: Boolean = false
 ): Class<R> = if (useKtReflect) {
-    ParameterizedTypeReflect1(
-        Parent::class.java, this::class.java
-    ).getParentParameterizedTypeDefinedImplInChild(positionInParentParameter)
-} else {
     ParameterizedTypeReflect2(
         Parent::class, this::class
     ).getParentParameterizedTypeDefinedImplInChild(positionInParentParameter)
+} else {
+    ParameterizedTypeReflect1(
+        Parent::class.java, this::class.java
+    ).getParentParameterizedTypeDefinedImplInChild(positionInParentParameter)
 }
 
-@Deprecated("使用 getParentParameterizedTypeClassDefinedImplInChild 获取 class 而非 Type")
 inline fun <reified Parent : Any> Parent.getParentParameterizedTypeDefinedImplInChild(
     @IntRange(from = 0) positionInParentParameter: Int
 ): Type = ParameterizedTypeReflect1(

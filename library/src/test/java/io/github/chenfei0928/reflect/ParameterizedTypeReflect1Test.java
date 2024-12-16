@@ -2,6 +2,8 @@ package io.github.chenfei0928.reflect;
 
 import com.google.gson.Gson;
 
+import org.junit.Before;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,13 @@ import static org.junit.Assert.assertEquals;
  * @author ChenFei(chenfei0928 @ gmail.com)
  * @date 2021-03-18 11:31
  */
-public class ParameterizedTypeReflectTest {
+public class ParameterizedTypeReflect1Test {
     private static final Gson gson = new Gson();
+
+    @Before
+    public void before() {
+        System.setProperty("gson.allowCapturingTypeVariables", "true");
+    }
 
     @org.junit.Test
     public void testParam() {
@@ -58,7 +65,9 @@ public class ParameterizedTypeReflectTest {
             IInterface finalChildClassInstance
     ) {
         Class<IInterface> finalChildClass = (Class<IInterface>) finalChildClassInstance.getClass();
-        System.out.print(finalChildClass.getSimpleName() + ": ");
+        String className = finalChildClass.getName();
+        String name = className.substring(className.lastIndexOf('.') + 1);
+        System.out.print(name + ": ");
 
         // 判断获取泛型被擦除后的Class
         ParameterizedTypeReflect1<I<R>> reflect = new ParameterizedTypeReflect1(I.class, finalChildClass);
@@ -68,7 +77,7 @@ public class ParameterizedTypeReflectTest {
         assertEquals(refClass, overrideClass);
 
         // 获取泛型的Type
-        Type refType = new ParameterizedTypeReflect1<>(I.class, finalChildClass).getType(0);
+        Type refType = reflect.getType(0);
         Type gsonType = finalChildClassInstance.getGsonTypeToken().getType();
         // 此处对Xxx[]类型时二者获取到的数据不一致，不做测试断言处理，仅打印
         // int[] 时，refType为 class [I 的虚拟机Class类
@@ -91,6 +100,7 @@ public class ParameterizedTypeReflectTest {
     @org.junit.Test
     public void testParamKt() {
         // Kotlin 1.9.10 测试时，List、Map的泛型子类继承后泛型约束会丢失，MutableList、MutableMap则没问题
+        // Kotlin 2.0.21 测试时，已无问题
         testKt(new KI());
         // 之类直接实现/数组实现
         testKt(new KI.IIntArray());
@@ -113,6 +123,7 @@ public class ParameterizedTypeReflectTest {
 //        testKt(new KI.II.Any());
         // 中间接口测试
         testKt(new KI.I1());
+        testKt(new KI.I1.IM());
         testKt(new KI.I1.IArrayList());
         Class<Object> arrayListClass = new ParameterizedTypeReflect1(KI.I1.class, KI.I1.IArrayList.class)
                 .getParentParameterizedTypeDefinedImplInChild(1);
@@ -130,7 +141,9 @@ public class ParameterizedTypeReflectTest {
             IInterface finalChildClassInstance
     ) {
         Class<IInterface> finalChildClass = (Class<IInterface>) finalChildClassInstance.getClass();
-        System.out.print(finalChildClass.getSimpleName() + ": ");
+        String className = finalChildClass.getName();
+        String name = className.substring(className.lastIndexOf('.') + 1);
+        System.out.print(name + ": ");
 
         // 判断获取泛型被擦除后的Class
         ParameterizedTypeReflect1<I<R>> reflect = new ParameterizedTypeReflect1(KI.class, finalChildClass);
@@ -140,7 +153,7 @@ public class ParameterizedTypeReflectTest {
         assertEquals(refClass, overrideClass);
 
         // 获取泛型的Type
-        Type refType = new ParameterizedTypeReflect1<>(KI.class, finalChildClass).getType(0);
+        Type refType = reflect.getType(0);
         Type gsonType = finalChildClassInstance.getGsonTypeToken().getType();
         // 此处对Xxx[]类型时二者获取到的数据不一致，不做测试断言处理，仅打印
         // int[] 时，refType为 class [I 的虚拟机Class类

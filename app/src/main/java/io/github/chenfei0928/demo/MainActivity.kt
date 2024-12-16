@@ -18,6 +18,8 @@ import io.github.chenfei0928.demo.databinding.ActivityMainBinding
 import io.github.chenfei0928.lang.toString0
 import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.Debug
+import io.github.chenfei0928.reflect.parameterized.getParentParameterizedTypeBoundsContractDefinedImplInChild
+import io.github.chenfei0928.reflect.parameterized.getParentParameterizedTypeClassDefinedImplInChild
 import io.github.chenfei0928.view.listener.setNoDoubleOnClickListener
 import io.github.chenfei0928.viewbinding.setContentViewBinding
 
@@ -34,6 +36,30 @@ class MainActivity : ComponentActivity() {
             R.layout.activity_main, ActivityMainBinding::bind
         )
         binding.btnTest.setNoDoubleOnClickListener {
+            val typeUseOld =
+                Debug.countTime(TAG, "getParentParameterizedTypeBoundsContractDefinedImplInChild") {
+                    I.I1.IArrayList()
+                        .getParentParameterizedTypeBoundsContractDefinedImplInChild<I<*>, ArrayList<Any>>(
+                            0
+                        )
+                }
+            Log.i(TAG, "onCreate: $typeUseOld")
+            val typeUseKt =
+                Debug.countTime(TAG, "getParentParameterizedTypeClassDefinedImplInChild true") {
+                    I.I1.IArrayList()
+                        .getParentParameterizedTypeClassDefinedImplInChild<I<*>, ArrayList<Any>>(
+                            0, true
+                        )
+                }
+            Log.i(TAG, "onCreate: $typeUseKt")
+            val type =
+                Debug.countTime(TAG, "getParentParameterizedTypeClassDefinedImplInChild false") {
+                    I.I1.IArrayList()
+                        .getParentParameterizedTypeClassDefinedImplInChild<I<*>, ArrayList<Any>>(
+                            0, false
+                        )
+                }
+            Log.i(TAG, "onCreate: $type")
             Fragment()
             // 加载Protobuf runtime，其会消耗较长时间
             Debug.traceAndTime(TAG, "Test_toByteArray_${System.currentTimeMillis()}") {
