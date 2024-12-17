@@ -1,4 +1,4 @@
-package io.github.chenfei0928.preference
+package io.github.chenfei0928.preference.datastore
 
 import androidx.collection.ArrayMap
 import io.github.chenfei0928.util.MapCache
@@ -13,7 +13,7 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 
 /**
- * 字段访问器存储与获取
+ * Kotlin data class字段访问器存储与获取
  *
  * @author chenf()
  * @date 2024-10-12 18:40
@@ -135,7 +135,7 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
     ): FieldAccessor.Field<T, V>
     //</editor-fold>
 
-    class Impl<T : Any> : FieldAccessor.Impl<T>(), FieldAccessorHelper<T> {
+    open class Impl<T : Any> : FieldAccessor.Impl<T>(), FieldAccessorHelper<T> {
         //<editor-fold desc="data class copy方法" defaultstatus="collapsed">
         private val dataClassCopyFuncCache =
             MapCache<KClass<*>, KFunction<*>>(ArrayMap()) { kClass ->
@@ -144,7 +144,7 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
                 kClass.functions.find {
                     !it.isSuspend
                             && it.name == "copy"
-                            && it.returnType.classifier == this
+                            && it.returnType.classifier == kClass
                             && !it.returnType.isMarkedNullable
                             && it.valueParameters == parameters
                 }!!

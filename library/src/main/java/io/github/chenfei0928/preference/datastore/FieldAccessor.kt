@@ -1,9 +1,9 @@
-package io.github.chenfei0928.preference
+package io.github.chenfei0928.preference.datastore
 
 import androidx.collection.ArrayMap
 
 /**
- * 字段访问器存储与获取
+ * 用于 [DataStoreDataStore] 的字段访问器存储与获取
  *
  * @author chenf()
  * @date 2024-10-12 17:54

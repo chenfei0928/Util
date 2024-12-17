@@ -3,9 +3,9 @@
  *
  * 涉及反射，会消耗较多时间，耗时排名从低到高：
  * 1. [getParentParameterizedTypeClassDefinedImplInChild] useKtReflect=true 有缓存（甚至会达到0.4ms）
- * 2. [getParentParameterizedTypeClassDefinedImplInChild] useKtReflect=false （约2-5ms）
- * 3. [getParentParameterizedTypeBoundsContractDefinedImplInChild] （约4-6ms）
- * 4. [getParentParameterizedTypeClassDefinedImplInChild] useKtReflect=false 无缓存（可能会消耗1000ms）
+ * 2. [getParentParameterizedTypeClassDefinedImplInChild] useKtReflect=false，
+ *  [getParentParameterizedTypeBoundsContractDefinedImplInChild] （无缓存约30ms，有缓存约2-5ms）
+ * 3. [getParentParameterizedTypeClassDefinedImplInChild] useKtReflect=false 无缓存（可能会消耗1000ms）
  *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-02-20 18:01

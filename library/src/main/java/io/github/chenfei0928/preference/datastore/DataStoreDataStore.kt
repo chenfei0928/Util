@@ -1,4 +1,4 @@
-package io.github.chenfei0928.preference
+package io.github.chenfei0928.preference.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.preference.PreferenceDataStore

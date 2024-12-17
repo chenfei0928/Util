@@ -18,7 +18,7 @@ public class ParameterizedTypeReflect0 {
     }
 
     /**
-     * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
+     * 使用Java反射获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
      * <pre>{@code
      * Parent<R>
      * Child extends Parent<SomeType>
