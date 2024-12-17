@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.ReturnThis
 import androidx.collection.ArrayMap
-import com.google.protobuf.GeneratedMessageLite
-import com.google.protobuf.getProtobufLiteParserForType
+import com.google.protobuf.MessageLite
+import com.google.protobuf.protobufParserForType
 import io.github.chenfei0928.base.ContextProvider
 import io.github.chenfei0928.lang.deepEquals
 import io.github.chenfei0928.os.ParcelUtil
@@ -14,18 +14,18 @@ import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
-fun Intent.putExtra(name: String, value: GeneratedMessageLite<*, *>) {
+fun Intent.putExtra(name: String, value: MessageLite) {
     putExtra(name, value.toByteArray())
 }
 
-inline fun <T : GeneratedMessageLite<*, *>> Intent.getProtobufExtra(
+inline fun <T : MessageLite> Intent.getProtobufExtra(
     name: String, parse: (ByteArray) -> T
 ): T? {
     return getByteArrayExtra(name)?.let(parse)
 }
 
-inline fun <reified T : GeneratedMessageLite<T, *>> Intent.getProtobufExtra(name: String): T? {
-    return getByteArrayExtra(name)?.let(T::class.java.getProtobufLiteParserForType()::parseFrom)
+inline fun <reified T : MessageLite> Intent.getProtobufExtra(name: String): T? {
+    return getByteArrayExtra(name)?.let(T::class.java.protobufParserForType!!::parseFrom)
 }
 
 fun Intent.getAllExtras(): Map<String, Any> = extras?.getAll() ?: emptyMap()
