@@ -1,5 +1,6 @@
 package io.github.chenfei0928.content.sp.saver.convert
 
+import androidx.collection.ArraySet
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.delegate.StringSetDelegate
 
@@ -13,7 +14,7 @@ class EnumSetNameSpConvertSaver<E : Enum<E>>(
     ) : this(enumValues, StringSetDelegate(key))
 
     override fun onRead(value: Set<String>?): Set<E>? {
-        return value?.mapNotNullTo(HashSet()) { item ->
+        return value?.mapNotNullTo(ArraySet(value.size)) { item ->
             enumValues.find { enum ->
                 item == enum.name
             }
@@ -21,7 +22,7 @@ class EnumSetNameSpConvertSaver<E : Enum<E>>(
     }
 
     override fun onSave(value: Set<E>?): Set<String>? {
-        return value?.mapTo(HashSet()) { it.name }
+        return value?.mapTo(ArraySet(value.size)) { it.name }
     }
 
     companion object {

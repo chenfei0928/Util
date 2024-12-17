@@ -5,7 +5,6 @@ import io.github.chenfei0928.reflect.arrayClass
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeParameter
-import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.jvmErasure
 
 /**
@@ -38,13 +37,10 @@ class ParameterizedTypeReflect2<Parent : Any>(
     fun <R> getParentParameterizedTypeDefinedImplInChild(
         @IntRange(from = 0) positionInParentParameter: Int
     ): Class<R> = if (parentKClass == finalChildKClass) {
-        val clazz = ParentParameterizedKtTypeNode(finalChildKClass)
+        ParentParameterizedKtTypeNode(finalChildKClass)
             .nodeKClass
             .typeParameters[positionInParentParameter]
-            .upperBounds
-            .first()
-            .javaType
-        clazz as Class<R>
+            .jvmErasureJavaClass()
     } else {
         val childClassNode = ParentParameterizedKtTypeNode.getParentTypeDefinedImplInChild(
             parentKClass, finalChildKClass
@@ -102,7 +98,7 @@ class ParameterizedTypeReflect2<Parent : Any>(
             val childNode = currentNode.childNode
             /* return */ if (childNode == null) {
                 // 没有子节点，直接获取当前节点的泛型约束范围
-                typeParameters[index].upperBounds.first().jvmErasure.java as Class<R>
+                typeParameters[index].jvmErasureJavaClass()
             } else {
                 // 有子节点，进一步获取子节点的泛型约束
                 val erasedTypeKClass = getErasedTypeClass<Any>(
@@ -120,5 +116,11 @@ class ParameterizedTypeReflect2<Parent : Any>(
                         "\n当前子类实现的父类中的范型定义：" + kType.javaClass + kType
             )
         }
+    }
+
+    private fun <R> KTypeParameter.jvmErasureJavaClass(): Class<R> = upperBounds.run {
+        firstNotNullOf { it.jvmErasure.java } as? Class<R>
+            ?: firstOrNull()?.jvmErasure?.java as? Class<R>
+            ?: Any::class.java as Class<R>
     }
 }

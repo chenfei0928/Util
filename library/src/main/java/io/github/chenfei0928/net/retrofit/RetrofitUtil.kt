@@ -27,8 +27,7 @@ object RetrofitUtil {
     val utf8Charset: Charset = Charsets.UTF_8
 
     @JvmStatic
-    fun wrap(content: String?): RequestBody? =
-        if (content.isNullOrEmpty()) null else content.toRequestBody(null)
+    fun wrap(content: String?): RequestBody? = content?.toRequestBody(null)
 
     fun wrap(key: String, file: File): MultipartBody.Part {
         return MultipartBody.Part.createFormData(
@@ -50,13 +49,9 @@ object RetrofitUtil {
 
     @JvmStatic
     fun <T> joinToString(values: List<T>?, getId: IdGetter<T>): String? {
-        return if (values.isNullOrEmpty()) {
-            null
-        } else {
-            values.joinToString(separator = ",", transform = {
-                getId.getId(it).toString()
-            })
-        }
+        return values?.joinToString(separator = ",", transform = {
+            getId.getId(it).toString()
+        })
     }
 
     fun interface IdGetter<T> {

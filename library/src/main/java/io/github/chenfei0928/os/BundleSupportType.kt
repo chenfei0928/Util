@@ -35,6 +35,8 @@ import java.lang.reflect.WildcardType
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.KType
+import kotlin.reflect.full.createInstance
+import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.typeOf
 
 /**
@@ -631,9 +633,10 @@ abstract class BundleSupportType<T>(
         private val clazz: Class<T>?,
         isMarkedNullable: Boolean? = false
     ) : BundleSupportType<T>(isMarkedNullable) {
+        @Suppress("UNCHECKED_CAST")
         override fun nonnullValue(property: KProperty<*>): T =
-            (clazz ?: property.getReturnTypeJClass())
-                .getDeclaredConstructor().newInstance()
+            clazz?.getDeclaredConstructor()?.newInstance()
+                ?: property.returnType.jvmErasure.createInstance() as T
 
         override fun putNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, value: T
@@ -758,9 +761,10 @@ abstract class BundleSupportType<T>(
         private val clazz: Class<T>?,
         isMarkedNullable: Boolean? = false
     ) : BundleSupportType<T>(isMarkedNullable) {
+        @Suppress("UNCHECKED_CAST")
         override fun nonnullValue(property: KProperty<*>): T =
-            (clazz ?: property.getReturnTypeJClass())
-                .getDeclaredConstructor().newInstance()
+            clazz?.getDeclaredConstructor()?.newInstance()
+                ?: property.returnType.jvmErasure.createInstance() as T
 
         override fun putNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, value: T
@@ -1480,10 +1484,10 @@ abstract class BundleSupportType<T>(
 
         @Suppress("UNCHECKED_CAST")
         private fun <T : Any> KProperty<*>.getReturnTypeJClass(): Class<T> =
-            (returnType.classifier as KClass<T>).java
+            returnType.jvmErasure.java as Class<T>
 
         @Suppress("UNCHECKED_CAST")
         private fun <T : Any> KType.argument0TypeJClass(): Class<T> =
-            (arguments[0].type?.classifier as KClass<T>).java
+            arguments[0].type?.jvmErasure?.java as Class<T>
     }
 }

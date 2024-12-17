@@ -10,14 +10,20 @@ import java.lang.reflect.TypeVariable
 import java.lang.reflect.WildcardType
 
 /**
- * 获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
+ * 使用Java反射获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
  *
  * ```
  * Parent<R>
  * Child : Parent<R-Impl>
  * ```
  *
- * 在使用当前类时确认引入了Gson依赖，当前类有使用 `com.google.gson.internal.$Gson$Types` 类
+ * 在使用当前类时确认引入了[Gson](https://github.com/google/gson)依赖，
+ * 当前类有使用 `com.google.gson.internal.$Gson$Types` 类
+ *
+ * 已知问题：
+ * 1. 在获取Kotlin的类泛型定义时，List、Map的泛型子类继承后泛型约束会丢失，MutableList、MutableMap则没问题。
+ *      详见 [io.github.chenfei0928.reflect.ParameterizedTypeReflect1Test.testParamKt] 的测试用例。
+ *      Update: Kotlin 2.0 后实测已修复，
  *
  * @param Parent 父类类型
  * @param parentClass               父类类实例
