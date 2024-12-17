@@ -13,6 +13,10 @@ object Deps {
 
         // https://github.com/fengzhizi715/Lifecycle-Coroutines-Extension
         val coroutinesExt = "com.safframework.lifecycle:lifecycle-coroutine-ext:1.2.1"
+
+        // Json序列化支持
+        // https://github.com/Kotlin/kotlinx.serialization
+        val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
     }
     //</editor-fold>
 

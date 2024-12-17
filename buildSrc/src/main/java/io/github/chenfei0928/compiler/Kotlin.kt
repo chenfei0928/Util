@@ -3,6 +3,7 @@ package io.github.chenfei0928.compiler
 import com.google.devtools.ksp.gradle.KspExtension
 import com.google.devtools.ksp.gradle.KspGradleSubplugin
 import io.github.chenfei0928.Contract
+import io.github.chenfei0928.Deps
 import io.github.chenfei0928.Env
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debugImplementation
@@ -120,7 +121,7 @@ fun Project.applyKotlin(
         // Json序列化支持
         // https://github.com/Kotlin/kotlinx.serialization
         if (json) {
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+            implementation(Deps.kotlin.json)
         }
         // 协程库
         // https://github.com/Kotlin/kotlinx.coroutines
