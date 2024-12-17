@@ -14,6 +14,7 @@ import androidx.preference.PreferenceScreen
 import androidx.preference.SeekBarPreference
 import androidx.preference.SwitchPreference
 import io.github.chenfei0928.preference.AbsPreferenceGroupBuilder
+import io.github.chenfei0928.preference.FieldAccessor
 import io.github.chenfei0928.preference.VisibleNamed
 
 /**
@@ -109,12 +110,8 @@ class DataStorePreferenceGroupBuilder<SpSaver : Any>(
         inline fun <T : Any> PreferenceFragmentCompat.buildPreferenceScreen(
             dataStore: DataStoreDataStore<T>,
             builder: DataStorePreferenceGroupBuilder<T>.() -> Unit
-        ): PreferenceScreen {
-            return preferenceManager.createPreferenceScreen(requireContext()).apply {
-                DataStorePreferenceGroupBuilder(
-                    requireContext(), this, dataStore
-                ).builder()
-            }
+        ): PreferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).also {
+            DataStorePreferenceGroupBuilder(requireContext(), it, dataStore).builder()
         }
     }
 }

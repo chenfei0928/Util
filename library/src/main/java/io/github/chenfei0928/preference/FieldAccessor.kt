@@ -1,6 +1,7 @@
-package io.github.chenfei0928.preference.datastore
+package io.github.chenfei0928.preference
 
 import androidx.collection.ArrayMap
+import com.google.protobuf.MessageLite
 
 /**
  * 用于 [DataStoreDataStore] 的字段访问器存储与获取
@@ -51,9 +52,7 @@ interface FieldAccessor<T> {
          * @param V 值类型
          * @param field 字段说明
          */
-        override fun <V> property(
-            field: Field<T, V>
-        ): Field<T, V> = field.also {
+        override fun <V> property(field: Field<T, V>): Field<T, V> = field.also {
             val name = field.name
             require(name !in properties) {
                 "field name:$name is contain properties:${properties.keys}"
@@ -61,9 +60,7 @@ interface FieldAccessor<T> {
             properties[name] = field
         }
 
-        override fun <V> findByName(
-            name: String
-        ): Field<T, V> {
+        override fun <V> findByName(name: String): Field<T, V> {
             @Suppress("UNCHECKED_CAST")
             return properties[name] as Field<T, V>
         }
@@ -81,7 +78,22 @@ interface FieldAccessor<T> {
          * @param getter 访问器
          * @param setter 修改器
          */
-        inline fun <T, V> FieldAccessor<T>.field(
+        inline fun <T, V> FieldAccessor<T>.property(
+            name: String,
+            crossinline getter: (data: T) -> V,
+            crossinline setter: (data: T, value: V) -> T,
+        ): Field<T, V> = field(name, getter, setter).let(::property)
+
+        /**
+         * 通过自定义[getter]、[setter]来访问字段
+         *
+         * @param T 宿主类类型
+         * @param V 字段类型
+         * @param name 字段名称
+         * @param getter 访问器
+         * @param setter 修改器
+         */
+        inline fun <T, V> FieldAccessor<*>.field(
             name: String,
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: T, value: V) -> T,
@@ -95,7 +107,27 @@ interface FieldAccessor<T> {
             override fun set(data: T, value: V): T {
                 return setter(data, value)
             }
-        }.let(::property)
+        }
+
+        /**
+         * 用于 Protobuf 的字段创建
+         */
+        inline fun <T : MessageLite, Builder : MessageLite.Builder, V> FieldAccessor<*>.protobufField(
+            name: String,
+            crossinline getter: (data: T) -> V,
+            crossinline setter: (data: Builder, value: V) -> Builder,
+        ): Field<T, V> = object : Field<T, V> {
+            override val name: String = name
+
+            override fun get(data: T): V {
+                return getter(data)
+            }
+
+            override fun set(data: T, value: V): T {
+                @Suppress("UNCHECKED_CAST")
+                return setter(data.toBuilder() as Builder, value).build() as T
+            }
+        }
         //</editor-fold>
     }
 }

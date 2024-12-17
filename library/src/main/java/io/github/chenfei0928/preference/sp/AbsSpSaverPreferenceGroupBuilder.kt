@@ -49,15 +49,8 @@ class AbsSpSaverPreferenceGroupBuilder<SpSaver : AbsSpSaver>(
         inline fun <SpSaver : AbsSpSaver> PreferenceFragmentCompat.buildPreferenceScreen(
             spSaver: SpSaver,
             builder: AbsSpSaverPreferenceGroupBuilder<SpSaver>.() -> Unit
-        ): PreferenceScreen {
-            return preferenceManager.createPreferenceScreen(requireContext())
-                .apply {
-                    AbsSpSaverPreferenceGroupBuilder(
-                        requireContext(),
-                        spSaver,
-                        this
-                    ).builder()
-                }
+        ): PreferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).also {
+            AbsSpSaverPreferenceGroupBuilder(requireContext(), spSaver, it).builder()
         }
     }
 }

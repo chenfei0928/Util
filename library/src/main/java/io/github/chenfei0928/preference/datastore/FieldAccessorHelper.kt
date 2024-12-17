@@ -1,6 +1,7 @@
 package io.github.chenfei0928.preference.datastore
 
 import androidx.collection.ArrayMap
+import io.github.chenfei0928.preference.FieldAccessor
 import io.github.chenfei0928.util.MapCache
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -133,6 +134,12 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
         outerField: FieldAccessor.Field<T, T1>,
         innerField: FieldAccessor.Field<T1, V>,
     ): FieldAccessor.Field<T, V>
+
+    fun <T1, T2, V> properties(
+        property0: FieldAccessor.Field<T, T1>,
+        property1: FieldAccessor.Field<T1, T2>,
+        property2: FieldAccessor.Field<T2, V>,
+    ): FieldAccessor.Field<T, V>
     //</editor-fold>
 
     open class Impl<T : Any> : FieldAccessor.Impl<T>(), FieldAccessorHelper<T> {
@@ -199,11 +206,10 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
             tProperty: KProperty1<T, T1>,
             t1CopyFunc: KFunction<T1>,
             t1Property: KProperty1<T1, V>,
-        ): FieldAccessor.Field<T, V> = KPropertyDataCopyWrapper(
-            KPropertyDataCopyField(
-                tCopyFunc, tProperty
-            ), t1CopyFunc, t1Property
-        ).let(::property)
+        ): FieldAccessor.Field<T, V> = properties(
+            KPropertyDataCopyField(tCopyFunc, tProperty),
+            KPropertyDataCopyField(t1CopyFunc, t1Property),
+        )
 
         /**
          * 注册一个data class的字段的子字段，先获取[T]的某个结构体字段[T1]，再从[T1]中获取[T2]，再从[T2]中获取[V]
@@ -215,7 +221,6 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
          * @param tProperty [T]的某个字段
          * @return 该字段描述说明
          */
-        @Suppress("LongParameterList")
         override fun <T1 : Any, T2 : Any, V> properties(
             tCopyFunc: KFunction<T>,
             tProperty: KProperty1<T, T1>,
@@ -223,13 +228,11 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
             t1Property: KProperty1<T1, T2>,
             t2CopyFunc: KFunction<T2>,
             t2Property: KProperty1<T2, V>,
-        ): FieldAccessor.Field<T, V> = KPropertyDataCopyWrapper(
-            KPropertyDataCopyWrapper(
-                KPropertyDataCopyField(
-                    tCopyFunc, tProperty
-                ), t1CopyFunc, t1Property
-            ), t2CopyFunc, t2Property
-        ).let(::property)
+        ): FieldAccessor.Field<T, V> = properties(
+            KPropertyDataCopyField(tCopyFunc, tProperty),
+            KPropertyDataCopyField(t1CopyFunc, t1Property),
+            KPropertyDataCopyField(t2CopyFunc, t2Property),
+        )
 
         /**
          * 使用只读属性与该data class类的 copy 方法来进行读写的字段
@@ -262,42 +265,6 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
                 )
             }
         }
-
-        /**
-         * 使用只读属性与该data class类的 copy 方法来进行读写的字段
-         *
-         * @param T 宿主类类型
-         * @param T1 中间宿主类类型
-         * @param V 字段类型
-         * @property outerField 外部字段到中间宿主类型字段的访问方法
-         * @property innerCopyFunc [T1] 类的copy函数
-         * @property innerProperty [T1]的某个字段
-         */
-        class KPropertyDataCopyWrapper<T : Any, T1 : Any, V>(
-            private val outerField: FieldAccessor.Field<T, T1>,
-            private val innerCopyFunc: KFunction<T1>,
-            private val innerProperty: KProperty1<T1, V>
-        ) : FieldAccessor.Field<T, V> {
-            override val name: String = outerField.name + "_" + innerProperty.name
-            private val instanceParameter: KParameter = innerCopyFunc.instanceParameter!!
-            private val kParameter: KParameter = innerCopyFunc.parameters.find {
-                it.name == innerProperty.name
-            }!!
-
-            override fun get(data: T): V {
-                return innerProperty.get(outerField.get(data))
-            }
-
-            override fun set(data: T, value: V): T {
-                val copied = innerCopyFunc.callBy(
-                    mapOf(
-                        instanceParameter to outerField.get(data),
-                        kParameter to value
-                    )
-                )
-                return outerField.set(data, copied)
-            }
-        }
         //</editor-fold>
 
         //<editor-fold desc="KMutableProperty的访问方法" defaultstatus="collapsed">
@@ -326,11 +293,10 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
         override fun <T1, V> properties(
             property0: KMutableProperty1<T, T1>,
             property1: KMutableProperty1<T1, V>,
-        ): FieldAccessor.Field<T, V> = KMutablePropertyWrapper(
-            KMutablePropertyField(
-                property0
-            ), property1
-        ).let(::property)
+        ): FieldAccessor.Field<T, V> = properties(
+            KMutablePropertyField(property0),
+            KMutablePropertyField(property1),
+        )
 
 
         /**
@@ -346,13 +312,11 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
             property0: KMutableProperty1<T, T1>,
             property1: KMutableProperty1<T1, T2>,
             property2: KMutableProperty1<T2, V>,
-        ): FieldAccessor.Field<T, V> = KMutablePropertyWrapper(
-            KMutablePropertyWrapper(
-                KMutablePropertyField(
-                    property0
-                ), property1
-            ), property2
-        ).let(::property)
+        ): FieldAccessor.Field<T, V> = properties(
+            KMutablePropertyField(property0),
+            KMutablePropertyField(property1),
+            KMutablePropertyField(property2),
+        )
 
         /**
          * 使用可写属性来进行读写的字段
@@ -375,33 +339,6 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
                 return data
             }
         }
-
-        /**
-         * 使用可写属性来进行读写的字段
-         *
-         * @param T 宿主类类型
-         * @param T1 中间宿主类类型
-         * @param V 字段类型
-         * @property outerField 外部字段到中间宿主类型字段的访问方法
-         * @property innerProperty [T1]的某个字段
-         */
-        private class KMutablePropertyWrapper<T, T1, V>(
-            private val outerField: FieldAccessor.Field<T, T1>,
-            private val innerProperty: KMutableProperty1<T1, V>,
-        ) : FieldAccessor.Field<T, V> {
-            override val name: String = outerField.name + "_" + innerProperty.name
-
-            override fun get(data: T): V {
-                return innerProperty.get(outerField.get(data))
-            }
-
-            override fun set(data: T, value: V): T {
-                val t1 = outerField.get(data)
-                innerProperty.set(t1, value)
-                // 内部实例自身属性变更，没有产生新实例，不需要重新set外部实例
-                return data
-            }
-        }
         //</editor-fold>
 
         //<editor-fold desc="对其他的访问" defaultstatus="collapsed">
@@ -409,6 +346,14 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
             outerField: FieldAccessor.Field<T, T1>,
             innerField: FieldAccessor.Field<T1, V>,
         ): FieldAccessor.Field<T, V> = FieldWrapper(outerField, innerField).let(::property)
+
+        override fun <T1, T2, V> properties(
+            property0: FieldAccessor.Field<T, T1>,
+            property1: FieldAccessor.Field<T1, T2>,
+            property2: FieldAccessor.Field<T2, V>
+        ): FieldAccessor.Field<T, V> = FieldWrapper(
+            FieldWrapper(property0, property1), property2
+        ).let(::property)
 
         /**
          * 使用只读属性与该data class类的 copy 方法来进行读写的字段
