@@ -2,6 +2,7 @@ package io.github.chenfei0928.preference.sp
 
 import androidx.preference.PreferenceManager
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
+import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete
 import io.github.chenfei0928.content.sp.saver.convert.SpConvertSaver
 import io.github.chenfei0928.content.sp.saver.getPropertySpKeyName
@@ -74,6 +75,8 @@ class SpSaverPreferenceDataStore<SpSaver : AbsSpSaver>(
             private val property0: KMutableProperty0<*>,
             private val defaultValue: V?,
         ) : FieldAccessor.Field<SpSaver, V?> {
+            override val vType: PreferenceType = localDelegate.spValueType
+
             override fun get(data: SpSaver): V? {
                 return localDelegate.getValue(data, property0) ?: defaultValue
             }

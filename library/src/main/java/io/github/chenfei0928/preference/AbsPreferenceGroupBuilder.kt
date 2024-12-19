@@ -73,13 +73,13 @@ abstract class AbsPreferenceGroupBuilder<Builder>(
         }, block)
     }
 
-    inline fun <reified E> dropDownPreference(
+    inline fun <reified E : Enum<E>> dropDownPreference(
         key: String,
-        block: DropDownPreference.() -> Unit
-    ): Builder where E : Enum<E>, E : VisibleNamed = applyBuilder {
+        block: DropDownPreference.() -> Unit,
+    ): Builder = applyBuilder {
         preference(DropDownPreference(context).apply {
             this.key = key
-            bindEnum(enumValues<E>())
+//            bindEnum(enumValues<E>())
         }, block)
     }
 
@@ -92,23 +92,23 @@ abstract class AbsPreferenceGroupBuilder<Builder>(
         }, block)
     }
 
-    inline fun <reified E> listPreference(
+    inline fun <reified E : Enum<E>> listPreference(
         key: String,
         block: ListPreference.() -> Unit
-    ): Builder where E : Enum<E>, E : VisibleNamed = applyBuilder {
+    ): Builder = applyBuilder {
         preference(ListPreference(context).apply {
             this.key = key
-            bindEnum(enumValues<E>())
+//            bindEnum(enumValues<E>())
         }, block)
     }
 
-    inline fun <reified E> multiSelectListPreference(
+    inline fun <reified E : Enum<E>> multiSelectListPreference(
         key: String,
         block: MultiSelectListPreference.() -> Unit
-    ): Builder where E : Enum<E>, E : VisibleNamed = applyBuilder {
+    ): Builder = applyBuilder {
         preference(MultiSelectListPreference(context).apply {
             this.key = key
-            bindEnum(enumValues<E>())
+//            bindEnum(enumValues<E>())
         }, block)
     }
 

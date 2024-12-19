@@ -1,8 +1,15 @@
 package io.github.chenfei0928.demo
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
+import androidx.datastore.core.DataStore
+import androidx.datastore.dataStore
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.google.protobuf.ProtobufParceler
@@ -14,14 +21,20 @@ import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelab
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelableNull
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argString
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argStringNull
+import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.databinding.ActivityMainBinding
 import io.github.chenfei0928.lang.toString0
 import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.reflect.parameterized.getParentParameterizedTypeBoundsContractDefinedImplInChild
 import io.github.chenfei0928.reflect.parameterized.getParentParameterizedTypeClassDefinedImplInChild
+import io.github.chenfei0928.repository.datastore.ProtobufSerializer
+import io.github.chenfei0928.repository.datastore.toDatastore
+import io.github.chenfei0928.repository.local.KtxsSerializer
 import io.github.chenfei0928.view.listener.setNoDoubleOnClickListener
 import io.github.chenfei0928.viewbinding.setContentViewBinding
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 /**
  * @author chenf()
@@ -30,11 +43,15 @@ import io.github.chenfei0928.viewbinding.setContentViewBinding
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         val binding = setContentViewBinding<ActivityMainBinding>(
             R.layout.activity_main, ActivityMainBinding::bind
         )
+        binding.btnTestPreference.setNoDoubleOnClickListener {
+            startActivity(Intent(this, PreferenceActivity::class.java))
+        }
         binding.btnTest.setNoDoubleOnClickListener {
             val typeUseOld =
                 Debug.countTime(TAG, "getParentParameterizedTypeBoundsContractDefinedImplInChild") {
@@ -94,6 +111,22 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onMenuItemSelected(featureId: Int, item: MenuItem): Boolean {
+        super.onMenuItemSelected(featureId, item)
+        when (item.itemId) {
+            R.id.menu_test_preference -> {
+
+            }
+        }
+        return true
+    }
+
     class Frag : Fragment() {
         var a: Int by argInt()
         var b: String by argString()
@@ -118,5 +151,12 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
+
+        val Context.testDataStore: DataStore<Test> by dataStore<Test>(
+            "test.pb", ProtobufSerializer<Test>()
+        )
+        val Context.jsonDataStore: DataStore<JsonBean> by dataStore<JsonBean>(
+            "jsonBean.json", KtxsSerializer<JsonBean>(JsonBean()).toDatastore()
+        )
     }
 }

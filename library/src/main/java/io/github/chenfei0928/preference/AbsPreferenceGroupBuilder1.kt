@@ -47,10 +47,10 @@ abstract class AbsPreferenceGroupBuilder1<SpSaver, Builder>(
         checkBoxPreference(spSaver.getPropertySpKeyName(property), block)
     }
 
-    inline fun <reified E> dropDownPreference(
+    inline fun <reified E : Enum<E>> dropDownPreference(
         property: KProperty1<SpSaver, E>,
         block: DropDownPreference.() -> Unit
-    ): Builder where E : Enum<E>, E : VisibleNamed = applyBuilder {
+    ): Builder = applyBuilder {
         dropDownPreference<E>(spSaver.getPropertySpKeyName(property), block)
     }
 
@@ -61,17 +61,17 @@ abstract class AbsPreferenceGroupBuilder1<SpSaver, Builder>(
         editTextPreference(spSaver.getPropertySpKeyName(property), block)
     }
 
-    inline fun <reified E> listPreference(
+    inline fun <reified E : Enum<E>> listPreference(
         property: KProperty1<SpSaver, E>,
         block: ListPreference.() -> Unit
-    ): Builder where E : Enum<E>, E : VisibleNamed = applyBuilder {
+    ): Builder = applyBuilder {
         listPreference<E>(spSaver.getPropertySpKeyName(property), block)
     }
 
-    inline fun <reified E> multiSelectListPreference(
+    inline fun <reified E : Enum<E>> multiSelectListPreference(
         property: KProperty1<SpSaver, Set<E>>,
         block: MultiSelectListPreference.() -> Unit
-    ): Builder where E : Enum<E>, E : VisibleNamed = applyBuilder {
+    ): Builder = applyBuilder {
         multiSelectListPreference<E>(spSaver.getPropertySpKeyName(property), block)
     }
 

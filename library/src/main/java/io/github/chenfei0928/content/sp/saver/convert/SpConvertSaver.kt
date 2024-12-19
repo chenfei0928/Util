@@ -12,7 +12,7 @@ import kotlin.reflect.KProperty
  */
 abstract class SpConvertSaver<SpValueType, FieldType>(
     internal val saver: AbsSpSaver.AbsSpDelegate<SpValueType>
-) : AbsSpSaver.AbsSpDelegate<FieldType>() {
+) : AbsSpSaver.AbsSpDelegate<FieldType>(saver.spValueType) {
 
     override fun obtainDefaultKey(property: KProperty<*>): String {
         return saver.obtainDefaultKey(property)

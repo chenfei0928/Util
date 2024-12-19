@@ -102,7 +102,7 @@ public enum DependencyChecker {
         protected boolean initValue() {
             try {
                 // protobuf库大概率不存在，使用方案2加载
-                Class.forName("com.google.protobuf.GeneratedMessageV3");
+                Class.forName("com.google.protobuf.Message");
                 return true;
             } catch (ClassNotFoundException ignore) {
                 return false;

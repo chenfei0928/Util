@@ -19,7 +19,7 @@ class KtxsSerializer<T>(
 ) : LocalSerializer<T> {
 
     override fun write(outputStream: OutputStream, obj: T & Any) {
-        json.encodeToStream(obj, outputStream)
+        json.encodeToStream(serializer, obj, outputStream)
     }
 
     override fun read(inputStream: InputStream): T {

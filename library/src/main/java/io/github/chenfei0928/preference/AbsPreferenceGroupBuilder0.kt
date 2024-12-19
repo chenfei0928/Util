@@ -43,10 +43,10 @@ abstract class AbsPreferenceGroupBuilder0<Builder>(
         checkBoxPreference(getPropertySpKeyName(property), block)
     }
 
-    inline fun <reified E> dropDownPreference(
+    inline fun <reified E : Enum<E>> dropDownPreference(
         property: KProperty0<E>,
         block: DropDownPreference.() -> Unit
-    ): Builder where E : Enum<E>, E : VisibleNamed = applyBuilder {
+    ): Builder = applyBuilder {
         dropDownPreference<E>(getPropertySpKeyName(property), block)
     }
 
@@ -57,17 +57,17 @@ abstract class AbsPreferenceGroupBuilder0<Builder>(
         editTextPreference(getPropertySpKeyName(property), block)
     }
 
-    inline fun <reified E> listPreference(
+    inline fun <reified E : Enum<E>> listPreference(
         property: KProperty0<E>,
         block: ListPreference.() -> Unit
-    ): Builder where E : Enum<E>, E : VisibleNamed = applyBuilder {
+    ): Builder = applyBuilder {
         listPreference<E>(getPropertySpKeyName(property), block)
     }
 
-    inline fun <reified E> multiSelectListPreference(
+    inline fun <reified E : Enum<E>> multiSelectListPreference(
         property: KProperty0<Set<E>>,
         block: MultiSelectListPreference.() -> Unit
-    ): Builder where E : Enum<E>, E : VisibleNamed = applyBuilder {
+    ): Builder = applyBuilder {
         multiSelectListPreference<E>(getPropertySpKeyName(property), block)
     }
 

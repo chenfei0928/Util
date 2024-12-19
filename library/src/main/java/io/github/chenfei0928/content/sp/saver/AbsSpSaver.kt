@@ -16,7 +16,10 @@ abstract class AbsSpSaver : SpCommit {
     protected abstract val editor: SharedPreferences.Editor
 
     //<editor-fold desc="字段委托" defaultstatus="collapsed">
-    abstract class AbsSpDelegate<T> : ReadWriteProperty<AbsSpSaver, T> {
+    abstract class AbsSpDelegate<T>(
+        // 被序列化后的数据的类型
+        val spValueType: PreferenceType,
+    ) : ReadWriteProperty<AbsSpSaver, T> {
 
         abstract fun obtainDefaultKey(property: KProperty<*>): String
 
@@ -40,8 +43,9 @@ abstract class AbsSpSaver : SpCommit {
      * 本类用来对实现类提供[sp]、[editor]字段
      */
     abstract class AbsSpDelegate0<T>(
-        internal val key: String?
-    ) : AbsSpDelegate<T>() {
+        internal val key: String?,
+        spValueType: PreferenceType,
+    ) : AbsSpDelegate<T>(spValueType) {
 
         override fun obtainDefaultKey(property: KProperty<*>): String {
             return key ?: property.name

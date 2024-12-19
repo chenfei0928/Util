@@ -1,7 +1,16 @@
 package io.github.chenfei0928.preference
 
 import androidx.collection.ArrayMap
+import com.google.protobuf.Descriptors
+import com.google.protobuf.GeneratedMessage
+import com.google.protobuf.Message
 import com.google.protobuf.MessageLite
+import com.google.protobuf.ProtocolMessageEnum
+import com.google.protobuf.getProtobufV3DefaultInstance
+import io.github.chenfei0928.content.sp.saver.PreferenceType
+import io.github.chenfei0928.preference.FieldAccessor.ProtobufMessageField
+import io.github.chenfei0928.reflect.jTypeOf
+import java.lang.reflect.Type
 
 /**
  * 用于 [DataStoreDataStore] 的字段访问器存储与获取
@@ -32,6 +41,7 @@ interface FieldAccessor<T> {
 
     interface Field<T, V> {
         val name: String
+        val vType: PreferenceType
         fun get(data: T): V
         fun set(data: T, value: V): T
     }
@@ -55,7 +65,7 @@ interface FieldAccessor<T> {
         override fun <V> property(field: Field<T, V>): Field<T, V> = field.also {
             val name = field.name
             require(name !in properties) {
-                "field name:$name is contain properties:${properties.keys}"
+                "field name:$name is contain properties:${properties.keys.joinToString()}"
             }
             properties[name] = field
         }
@@ -65,6 +75,60 @@ interface FieldAccessor<T> {
             return properties[name] as Field<T, V>
         }
         //</editor-fold>
+    }
+
+    class ProtobufMessageField<T : Message, V>(
+        private val field: Descriptors.FieldDescriptor,
+        vType: Type,
+    ) : Field<T, V> {
+        constructor(
+            defaultInstance: T, fieldNumber: Int, vType: Type,
+        ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1], vType)
+
+        override val name: String = field.name
+        override val vType: PreferenceType by lazy {
+            PreferenceType.forType(field, vType)
+        }
+
+        override fun get(data: T): V = if (field.type != Descriptors.FieldDescriptor.Type.ENUM) {
+            data.getField(field) as V
+        } else if (!field.isRepeated) {
+            val enum = data.getField(field) as Descriptors.EnumValueDescriptor
+            val vType = vType as PreferenceType.EnumNameString<*>
+            vType.forName(enum.name) as V
+        } else {
+            val enum = data.getField(field) as List<Descriptors.EnumValueDescriptor>
+            val vType = vType as PreferenceType.EnumNameStringSet<*>
+            vType.forName(enum.map { it.name }) as V
+        }
+
+        override fun set(
+            data: T, value: V
+        ): T = if (field.type != Descriptors.FieldDescriptor.Type.ENUM) {
+            data.toBuilder().setField(field, value).build() as T
+        } else if (field.isRepeated) {
+            value as Collection<out ProtocolMessageEnum>
+            data.toBuilder().setField(field, value.map { it.valueDescriptor }).build() as T
+        } else {
+            value as ProtocolMessageEnum
+            data.toBuilder().setField(field, value.valueDescriptor).build() as T
+        }
+
+        companion object {
+            inline operator fun <reified T : Message, reified V> invoke(
+                fieldNumber: Int
+            ) = ProtobufMessageField<T, V>(
+                T::class.java.getProtobufV3DefaultInstance(), fieldNumber, jTypeOf<V>()
+            )
+
+            inline fun <reified T : GeneratedMessage, reified V> FieldAccessor<T>.field(
+                fieldNumber: Int
+            ): Field<T, V> = invoke<T, V>(fieldNumber)
+
+            inline fun <reified T : GeneratedMessage, reified V> FieldAccessor<T>.property(
+                fieldNumber: Int
+            ): Field<T, V> = field<T, V>(fieldNumber).let(::property)
+        }
     }
 
     companion object {
@@ -78,7 +142,7 @@ interface FieldAccessor<T> {
          * @param getter 访问器
          * @param setter 修改器
          */
-        inline fun <T, V> FieldAccessor<T>.property(
+        inline fun <T, reified V> FieldAccessor<T>.property(
             name: String,
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: T, value: V) -> T,
@@ -93,12 +157,13 @@ interface FieldAccessor<T> {
          * @param getter 访问器
          * @param setter 修改器
          */
-        inline fun <T, V> FieldAccessor<*>.field(
+        inline fun <T, reified V> FieldAccessor<*>.field(
             name: String,
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: T, value: V) -> T,
         ): Field<T, V> = object : Field<T, V> {
             override val name: String = name
+            override val vType = PreferenceType.forType<V>()
 
             override fun get(data: T): V {
                 return getter(data)
@@ -112,21 +177,19 @@ interface FieldAccessor<T> {
         /**
          * 用于 Protobuf 的字段创建
          */
-        inline fun <T : MessageLite, Builder : MessageLite.Builder, V> FieldAccessor<*>.protobufField(
+        inline fun <T : MessageLite, Builder : MessageLite.Builder, reified V> FieldAccessor<*>.protobufField(
             name: String,
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: Builder, value: V) -> Builder,
         ): Field<T, V> = object : Field<T, V> {
             override val name: String = name
+            override val vType = PreferenceType.forType<V>()
 
-            override fun get(data: T): V {
-                return getter(data)
-            }
+            override fun get(data: T): V = getter(data)
 
-            override fun set(data: T, value: V): T {
-                @Suppress("UNCHECKED_CAST")
-                return setter(data.toBuilder() as Builder, value).build() as T
-            }
+            @Suppress("UNCHECKED_CAST")
+            override fun set(data: T, value: V): T =
+                setter(data.toBuilder() as Builder, value).build() as T
         }
         //</editor-fold>
     }

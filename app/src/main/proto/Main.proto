@@ -5,11 +5,26 @@ option java_multiple_files = true;
 option java_package = "io.github.chenfei0928.demo";
 
 message Test {
-  bool test = 1;
+  bool boolean = 1;
+  int32 int = 2;
+  int64 long = 3;
+  float float = 4;
+  double double = 5;
+  string string = 6;
+  TestEnum enum = 7;
+  bytes bytes = 8;
+  Test test = 9;
+  Test2 test2 = 10;
+  repeated TestEnum enumList = 11;
+}
+
+message Test2 {
+  bool boolean = 1;
 }
 
 enum TestEnum {
-  TEST_ENUM = 0;
-  TEST_ENUM2 = 1;
-  TEST_ENUM3 = 2;
+  DEFAULT = 0;
+  TEST_ENUM = 1;
+  TEST_ENUM2 = 2;
+  TEST_ENUM3 = 3;
 }

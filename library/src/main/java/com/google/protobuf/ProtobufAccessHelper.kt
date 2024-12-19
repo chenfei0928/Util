@@ -19,22 +19,22 @@ fun <T : GeneratedMessageLite<T, *>> Class<T>.getProtobufLiteParserForType(): Pa
 }
 
 private val protobufDefaultInstanceCache =
-    MapCache<Class<out GeneratedMessageV3>, GeneratedMessageV3> {
+    MapCache<Class<out Message>, Message> {
         @Suppress("kotlin:S6531")
-        it.getMethod("getDefaultInstance").invoke(null) as GeneratedMessageV3
+        it.getMethod("getDefaultInstance").invoke(null) as Message
     }
 
-fun <T : GeneratedMessageV3> Class<T>.getProtobufV3DefaultInstance(): T {
+fun <T : Message> Class<T>.getProtobufV3DefaultInstance(): T {
     @Suppress("UNCHECKED_CAST", "kotlin:S6531")
     return protobufDefaultInstanceCache[this] as T
 }
 
-fun <T : GeneratedMessageV3> Class<T>.getProtobufV3ParserForType(): Parser<T> {
+fun <T : Message> Class<T>.getProtobufV3ParserForType(): Parser<T> {
     @Suppress("UNCHECKED_CAST")
     return getProtobufV3DefaultInstance().parserForType as Parser<T>
 }
 
-fun GeneratedMessageV3.toShortString() = buildString {
+fun Message.toShortString() = buildString {
     append(this@toShortString.javaClass.simpleName)
     append('@')
     append(Integer.toHexString(hashCode()))
@@ -47,9 +47,8 @@ fun GeneratedMessageV3.toShortString() = buildString {
 val <T : MessageLite> Class<T>.protobufDefaultInstance: T?
     get() = if (Modifier.FINAL !in modifiers) {
         null
-    } else if (DependencyChecker.PROTOBUF() && isSubclassOf(GeneratedMessageV3::class.java)) {
-        (this as Class<out GeneratedMessageV3>)
-            .getProtobufV3DefaultInstance() as T
+    } else if (DependencyChecker.PROTOBUF() && isSubclassOf(Message::class.java)) {
+        (this as Class<out Message>).getProtobufV3DefaultInstance() as T
     } else {
         (this as Class<out GeneratedMessageLite<*, *>>)
             .getProtobufLiteDefaultInstance() as T
