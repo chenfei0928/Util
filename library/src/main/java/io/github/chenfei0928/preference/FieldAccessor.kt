@@ -191,6 +191,15 @@ interface FieldAccessor<T> {
             override fun set(data: T, value: V): T =
                 setter(data.toBuilder() as Builder, value).build() as T
         }
+
+        /**
+         * 用于 Protobuf 的字段创建
+         */
+        inline fun <T : MessageLite, Builder : MessageLite.Builder, reified V> FieldAccessor<T>.protobufProperty(
+            name: String,
+            crossinline getter: (data: T) -> V,
+            crossinline setter: (data: Builder, value: V) -> Builder,
+        ): Field<T, V> = protobufField<T, Builder, V>(name, getter, setter).let(::property)
         //</editor-fold>
     }
 }

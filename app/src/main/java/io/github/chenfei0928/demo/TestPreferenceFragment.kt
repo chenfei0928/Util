@@ -6,8 +6,7 @@ import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.MainActivity.Companion.testDataStore
 import io.github.chenfei0928.preference.FieldAccessor
-import io.github.chenfei0928.preference.FieldAccessor.Companion.protobufField
-import io.github.chenfei0928.preference.FieldAccessor.ProtobufMessageField.Companion.property
+import io.github.chenfei0928.preference.FieldAccessor.Companion.protobufProperty
 import io.github.chenfei0928.preference.bindEnum
 import io.github.chenfei0928.preference.datastore.DataStoreDataStore
 import io.github.chenfei0928.preference.datastore.DataStorePreferenceGroupBuilder.Companion.buildPreferenceScreen
@@ -30,8 +29,8 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
         preferenceManager.preferenceDataStore = dataStore
         preferenceScreen = buildPreferenceScreen(dataStore) {
             checkBoxPreference(
-                dataStore.protobufField("boolean", Test::getBoolean, Test.Builder::setBoolean)
-                    .let { dataStore.property(it) }) {
+                dataStore.protobufProperty("boolean", Test::getBoolean, Test.Builder::setBoolean)
+            ) {
                 title = "boolean"
             }
             checkBoxPreference(
