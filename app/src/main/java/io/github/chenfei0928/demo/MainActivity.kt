@@ -8,6 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import androidx.fragment.app.Fragment
@@ -49,8 +51,38 @@ class MainActivity : ComponentActivity() {
         val binding = setContentViewBinding<ActivityMainBinding>(
             R.layout.activity_main, ActivityMainBinding::bind
         )
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         binding.btnTestPreference.setNoDoubleOnClickListener {
-            startActivity(Intent(this, PreferenceActivity::class.java))
+            gotoPreferenceActivity<TestPreferenceFragment>()
+        }
+        binding.btnJsonPreference.setNoDoubleOnClickListener {
+            gotoPreferenceActivity<JsonPreferenceFragment>()
+        }
+        binding.btnSpSaverPreference.setNoDoubleOnClickListener {
+            gotoPreferenceActivity<SpSaverPreferenceFragment>()
+        }
+        binding.btnPreload.setNoDoubleOnClickListener {
+            Debug.countTime(TAG, "preload jsonDataStore") {
+                jsonDataStore
+            }
+            Debug.countTime(TAG, "preload testDataStore") {
+                testDataStore
+            }
+            Debug.countTime(TAG, "preload TestSpSaver") {
+                TestSpSaver(this)
+            }
+            coroutineScope.launch {
+                Debug.traceAndTime(TAG, "jsonDataStore first") {
+                    jsonDataStore.data.first()
+                }
+                Debug.traceAndTime(TAG, "testDataStore first") {
+                    testDataStore.data.first()
+                }
+            }
         }
         binding.btnTest.setNoDoubleOnClickListener {
             val typeUseOld =
@@ -109,6 +141,12 @@ class MainActivity : ComponentActivity() {
             }
             Log.i(TAG, "onCreate: $f")
         }
+    }
+
+    private inline fun <reified F : Fragment> gotoPreferenceActivity() {
+        startActivity(Intent(this, PreferenceActivity::class.java).apply {
+            putExtra("fragmentName", F::class.java.name)
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

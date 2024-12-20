@@ -14,6 +14,7 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.javaType
+import kotlin.reflect.jvm.jvmErasure
 
 /**
  * Kotlin data class字段访问器存储与获取
@@ -107,7 +108,9 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
     ): FieldAccessor.Field<T, V>
     //</editor-fold>
 
-    open class Impl<T : Any> : FieldAccessor.Impl<T>(), FieldAccessorHelper<T> {
+    open class Impl<T : Any>(
+        readCache: Boolean
+    ) : FieldAccessor.Impl<T>(readCache), FieldAccessorHelper<T> {
         //<editor-fold desc="data class copy方法" defaultstatus="collapsed">
         private val dataClassCopyFuncCache =
             MapCache<KClass<*>, KFunction<*>>(ArrayMap()) { kClass ->
@@ -217,7 +220,9 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
         ) : FieldAccessor.Field<T, V> {
             override val name: String = property.name
             override val vType: PreferenceType by lazy {
-                vType ?: PreferenceType.forType(property.returnType.javaType)
+                vType ?: PreferenceType.forType(property.returnType.jvmErasure.java) {
+                    property.returnType.javaType
+                }
             }
             private val instanceParameter: KParameter = copyFunc.instanceParameter!!
             private val kParameter: KParameter = copyFunc.parameters

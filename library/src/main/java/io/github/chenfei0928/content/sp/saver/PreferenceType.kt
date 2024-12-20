@@ -7,7 +7,7 @@ import androidx.preference.PreferenceDataStore
 import com.google.protobuf.Descriptors
 import io.github.chenfei0928.content.sp.saver.PreferenceType.EnumNameString
 import io.github.chenfei0928.preference.FieldAccessor.Field
-import io.github.chenfei0928.preference.datastore.DataStoreDataStore
+import io.github.chenfei0928.preference.datastore.DataStorePreferenceDataStore
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.jTypeOf
 import java.lang.reflect.ParameterizedType
@@ -40,16 +40,17 @@ sealed interface PreferenceType {
         BOOLEAN(Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType);
 
         companion object {
-            fun forType(type: Type): Native {
-                return entries.find { it.type == type || it.primitiveType == type }
+            fun forType(vClass: Class<*>, type: () -> Type): Native {
+                return entries.find { it.type == vClass || it.primitiveType == vClass }
+                    ?: STRING_SET.takeIf { it.type == type() }
                     ?: throw IllegalArgumentException("Not support type: $type")
             }
         }
     }
 
     /**
-     * 用于 [DataStoreDataStore] 的 [Field] 的数据类型，
-     * 在[DataStoreDataStore]中对该类型进行判断
+     * 用于 [DataStorePreferenceDataStore] 的 [Field] 的数据类型，
+     * 在[DataStorePreferenceDataStore]中对该类型进行判断
      */
     class EnumNameString<E : Enum<E>>(
         private val values: Array<E>
@@ -60,8 +61,8 @@ sealed interface PreferenceType {
     }
 
     /**
-     * 用于 [DataStoreDataStore] 的 [Field] 的数据类型，
-     * 在[DataStoreDataStore]中对该类型进行判断
+     * 用于 [DataStorePreferenceDataStore] 的 [Field] 的数据类型，
+     * 在[DataStorePreferenceDataStore]中对该类型进行判断
      */
     class EnumNameStringSet<E : Enum<E>>(
         private val values: Array<E>,
@@ -115,20 +116,19 @@ sealed interface PreferenceType {
     }
 
     companion object {
-        fun forType(type: Type): PreferenceType {
-            return if (type is Class<*> && type.isSubclassOf(Enum::class.java)) {
-                EnumNameString(type as Class<out Enum<*>>)
-            } else if (type !is ParameterizedType) {
-                Native.forType(type)
-            } else if (type.rawType.let { it is Class<*> && it.isSubclassOf(Collection::class.java) }) {
-                EnumNameStringSet.forType(type)
+        fun forType(vClass: Class<*>, type: () -> Type): PreferenceType {
+            return if (vClass.isSubclassOf(Enum::class.java)) {
+                EnumNameString(vClass as Class<out Enum<*>>)
+            } else if (!vClass.isSubclassOf(Collection::class.java)) {
+                Native.forType(vClass, type)
             } else {
-                throw IllegalArgumentException("Not support type: $type")
+                val type = type() as ParameterizedType
+                EnumNameStringSet.forType(type)
             }
         }
 
         inline fun <reified T> forType(): PreferenceType =
-            forType(jTypeOf<T>())
+            forType(T::class.java) { jTypeOf<T>() }
 
         fun forType(
             field: Descriptors.FieldDescriptor, tType: Type

@@ -1,6 +1,8 @@
 package io.github.chenfei0928.preference
 
+import androidx.collection.ArraySet
 import androidx.preference.PreferenceDataStore
+import io.github.chenfei0928.content.sp.saver.PreferenceType
 import kotlin.collections.toMutableSet
 
 /**
@@ -9,11 +11,32 @@ import kotlin.collections.toMutableSet
  */
 @Suppress("TooManyFunctions")
 abstract class BasePreferenceDataStore<T : Any>(
-    private val fieldAccessor: FieldAccessor<T> = FieldAccessor.Impl(),
+    private val fieldAccessor: FieldAccessor<T> = FieldAccessor.Impl(false),
 ) : PreferenceDataStore(), FieldAccessor<T> by fieldAccessor {
 
     protected abstract fun <V> FieldAccessor.Field<T, V>.set(value: V)
     protected abstract fun <V> FieldAccessor.Field<T, V>.get(): V
+
+    protected fun <V> FieldAccessor.Field<T, V>.setValue(it: T, value: V): T {
+        val vType = vType
+        return if (vType is PreferenceType.EnumNameString<*>) {
+            set(it, vType.forName(value as String) as V)
+        } else if (vType is PreferenceType.EnumNameStringSet<*>) {
+            set(it, vType.forName(value as Collection<String>) as V)
+        } else {
+            set(it, value)
+        }
+    }
+
+    protected fun <V> FieldAccessor.Field<T, V>.getValue(data: T): V {
+        return if (vType is PreferenceType.EnumNameString<*>) {
+            (get(data) as Enum<*>).name as V
+        } else if (vType is PreferenceType.EnumNameStringSet<*>) {
+            (get(data) as Collection<Enum<*>>).mapTo(ArraySet()) { it.name } as V
+        } else {
+            get(data)
+        }
+    }
 
     //<editor-fold desc="put\get" defaultstatus="collapsed">
     override fun putString(key: String, value: String?) {

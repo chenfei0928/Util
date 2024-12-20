@@ -1,16 +1,15 @@
 package io.github.chenfei0928.demo
 
 import android.os.Bundle
-import android.util.Log
 import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.MainActivity.Companion.testDataStore
 import io.github.chenfei0928.preference.FieldAccessor
 import io.github.chenfei0928.preference.FieldAccessor.Companion.protobufProperty
+import io.github.chenfei0928.preference.FieldAccessor.ProtobufMessageField.Companion.property
 import io.github.chenfei0928.preference.bindEnum
-import io.github.chenfei0928.preference.datastore.DataStoreDataStore
+import io.github.chenfei0928.preference.datastore.DataStorePreferenceDataStore
 import io.github.chenfei0928.preference.datastore.DataStorePreferenceGroupBuilder.Companion.buildPreferenceScreen
-import kotlinx.coroutines.launch
 
 /**
  * @author chenf()
@@ -19,13 +18,8 @@ import kotlinx.coroutines.launch
 class TestPreferenceFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         val testDataStore = requireContext().testDataStore
-        coroutineScope.launch {
-            testDataStore.data.collect { test ->
-                Log.i(TAG, "onCreatePreferences: $test")
-            }
-        }
-        val dataStore: DataStoreDataStore<Test> =
-            DataStoreDataStore(coroutineScope, testDataStore)
+        val dataStore: DataStorePreferenceDataStore<Test> =
+            DataStorePreferenceDataStore(coroutineScope, testDataStore)
         preferenceManager.preferenceDataStore = dataStore
         preferenceScreen = buildPreferenceScreen(dataStore) {
             checkBoxPreference(
@@ -33,6 +27,11 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
             ) {
                 title = "boolean"
             }
+//            checkBoxPreference(
+//                dataStore.protobuf("boolean", Test::getBoolean, Test.Builder::setBoolean)
+//            ) {
+//                title = "boolean"
+//            }
             checkBoxPreference(
                 dataStore.property(
                     FieldAccessor.ProtobufMessageField<Test, Test>(Test.TEST_FIELD_NUMBER),

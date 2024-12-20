@@ -25,7 +25,7 @@ import io.github.chenfei0928.preference.FieldAccessor
 class DataStorePreferenceGroupBuilder<T : Any>(
     context: Context,
     preferenceGroup: PreferenceGroup,
-    val dataStore: DataStoreDataStore<T>,
+    val dataStore: DataStorePreferenceDataStore<T>,
 ) : AbsPreferenceGroupBuilder<DataStorePreferenceGroupBuilder<T>>(context, preferenceGroup) {
 
     @RestrictTo(RestrictTo.Scope.SUBCLASSES)
@@ -107,7 +107,7 @@ class DataStorePreferenceGroupBuilder<T : Any>(
 
     companion object {
         inline fun <T : Any> PreferenceFragmentCompat.buildPreferenceScreen(
-            dataStore: DataStoreDataStore<T>,
+            dataStore: DataStorePreferenceDataStore<T>,
             builder: DataStorePreferenceGroupBuilder<T>.() -> Unit
         ): PreferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).also {
             DataStorePreferenceGroupBuilder(requireContext(), it, dataStore).builder()

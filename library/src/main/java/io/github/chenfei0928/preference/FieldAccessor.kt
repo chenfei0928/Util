@@ -11,6 +11,7 @@ import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.preference.FieldAccessor.ProtobufMessageField
 import io.github.chenfei0928.reflect.jTypeOf
 import java.lang.reflect.Type
+import kotlin.reflect.KFunction
 
 /**
  * 用于 [DataStoreDataStore] 的字段访问器存储与获取
@@ -21,6 +22,8 @@ import java.lang.reflect.Type
 interface FieldAccessor<T> {
 
     //<editor-fold desc="快速访问字段扩展" defaultstatus="collapsed">
+    val properties: Map<String, Field<T, *>>
+
     /**
      * 判断一个字段是否已经注册
      */
@@ -46,9 +49,11 @@ interface FieldAccessor<T> {
         fun set(data: T, value: V): T
     }
 
-    open class Impl<T : Any> : FieldAccessor<T> {
+    open class Impl<T : Any>(
+        private val readCache: Boolean
+    ) : FieldAccessor<T> {
         //<editor-fold desc="快速访问字段扩展" defaultstatus="collapsed">
-        private val properties: MutableMap<String, Field<T, *>> = ArrayMap()
+        override val properties: MutableMap<String, Field<T, *>> = ArrayMap()
 
         /**
          * 判断一个字段是否已经注册
@@ -67,16 +72,34 @@ interface FieldAccessor<T> {
             require(name !in properties) {
                 "field name:$name is contain properties:${properties.keys.joinToString()}"
             }
-            properties[name] = field
+            properties[name] = if (readCache) ReadCacheField(field) else field
         }
 
         override fun <V> findByName(name: String): Field<T, V> {
             @Suppress("UNCHECKED_CAST")
-            return properties[name] as Field<T, V>
+            return properties[name] as? Field<T, V>
+                ?: throw IllegalArgumentException("name $name not registered in ${properties.keys.joinToString()}")
         }
         //</editor-fold>
+
+        internal class ReadCacheField<T : Any, V>(
+            val field: Field<T, V>
+        ) : Field<T, V> by field {
+            private var cachePair: Pair<T, V>? = null
+            override fun get(data: T): V {
+                val cachePair = cachePair
+                return if (cachePair?.first === data) {
+                    cachePair.second
+                } else {
+                    val v = field.get(data)
+                    this.cachePair = data to v
+                    v
+                }
+            }
+        }
     }
 
+    //<editor-fold desc="Protobuf 标准版字段访问的Field" defaultstate="collapsed">
     class ProtobufMessageField<T : Message, V>(
         private val field: Descriptors.FieldDescriptor,
         vType: Type,
@@ -130,6 +153,7 @@ interface FieldAccessor<T> {
             ): Field<T, V> = field<T, V>(fieldNumber).let(::property)
         }
     }
+    //</editor-fold>
 
     companion object {
         //<editor-fold desc="对其他的访问" defaultstatus="collapsed">
@@ -200,6 +224,34 @@ interface FieldAccessor<T> {
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: Builder, value: V) -> Builder,
         ): Field<T, V> = protobufField<T, Builder, V>(name, getter, setter).let(::property)
+
+        /**
+         * 用于 Protobuf 的字段创建
+         */
+        inline fun <T, Builder, reified V, Getter, Setter> FieldAccessor<*>.protobuf(
+            name: String,
+            getter: Getter,
+            setter: Setter,
+        ): Field<T, V> where
+                T : MessageLite,
+                Builder : MessageLite.Builder,
+                Getter : KFunction<V>,
+                Getter : Function1<T, V>,
+                Setter : KFunction<Builder>,
+                Setter : Function2<Builder, V, Builder> {
+            return object : Field<T, V> {
+                override val name: String = name
+                override val vType = PreferenceType.forType<V>()
+
+                override fun get(data: T): V {
+                    return getter(data)
+                }
+
+                override fun set(data: T, value: V): T {
+                    return setter(data.toBuilder() as Builder, value).build() as T
+                }
+            }
+        }
         //</editor-fold>
     }
 }

@@ -5,9 +5,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import io.github.chenfei0928.app.activity.IntentDelegate.Companion.intentString
 
 class PreferenceActivity : AppCompatActivity() {
+    private val fragmentName: String by intentString()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -19,7 +23,7 @@ class PreferenceActivity : AppCompatActivity() {
         }
 
         supportFragmentManager.commit {
-            add(R.id.main, JsonPreferenceFragment())
+            add(R.id.main, Class.forName(fragmentName) as Class<out Fragment>, Bundle.EMPTY)
         }
     }
 }

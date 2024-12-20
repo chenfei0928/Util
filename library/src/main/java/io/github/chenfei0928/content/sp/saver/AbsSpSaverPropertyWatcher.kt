@@ -39,7 +39,12 @@ inline fun <SpSaver : AbsSpSaver, V> SpSaver.internalInlineRegisterOnSharedPrefe
  * 通过类的属性引用获取该sp字段的key
  */
 @Suppress("UNCHECKED_CAST")
-fun <SpSaver : AbsSpSaver> SpSaver.getPropertySpKeyName(property: KProperty<*>): String {
+fun <SpSaver : AbsSpSaver> SpSaver.getPropertySpKeyName(
+    property: KProperty<*>,
+    accessDelegateName: Boolean,
+): String = if (!accessDelegateName) {
+    property.name
+} else {
     // 获取该字段的委托
     property.isAccessible = true
     val delegate = when (property) {
@@ -52,7 +57,7 @@ fun <SpSaver : AbsSpSaver> SpSaver.getPropertySpKeyName(property: KProperty<*>):
         "Property($property) must is delegate subclass as AbsSpSaver.AbsSpDelegate0: $delegate"
     }
     // 如果该字段是sp委托，获取其sp存储的key
-    return delegate.obtainDefaultKey(property)
+    delegate.obtainDefaultKey(property)
 }
 
 @Suppress("UNCHECKED_CAST")
@@ -70,15 +75,21 @@ fun <SpSaver : AbsSpSaver, V> KProperty<V>.get(owner: SpSaver): V {
  * 监听sp字段的变化并通知回调进行更新，可以方便的传入字段以保证类型安全和一个监听器只监听一个值的变化
  */
 inline fun <SpSaver : AbsSpSaver, V> SpSaver.internalInlineRegisterOnSharedPreferenceChangeListener(
-    owner: LifecycleOwner, property: KProperty<V>, crossinline listener: (V) -> Unit,
+    owner: LifecycleOwner,
+    property: KProperty<V>,
+    accessDelegateName: Boolean = false,
+    crossinline listener: (V) -> Unit,
 ) = internalInlineRegisterOnSharedPreferenceChangeListener(
-    owner, getPropertySpKeyName(property), { property.get(this) }, listener
+    owner, getPropertySpKeyName(property, accessDelegateName), { property.get(this) }, listener
 )
 
 fun <SpSaver : AbsSpSaver, V> SpSaver.registerOnSharedPreferenceChangeListener(
-    owner: LifecycleOwner, property: KProperty<V>, listener: (V) -> Unit,
+    owner: LifecycleOwner,
+    property: KProperty<V>,
+    accessDelegateName: Boolean = false,
+    listener: (V) -> Unit,
 ) = internalInlineRegisterOnSharedPreferenceChangeListener(
-    owner, getPropertySpKeyName(property), { property.get(this) }, listener
+    owner, getPropertySpKeyName(property, accessDelegateName), { property.get(this) }, listener
 )
 
 /**
@@ -88,10 +99,13 @@ fun <SpSaver : AbsSpSaver, V> SpSaver.registerOnSharedPreferenceChangeListener(
  * @param property 需要监听的属性字段
  */
 inline fun <SpSaver : AbsSpSaver, V, R> SpSaver.internalInlineLiveDataPropertyChange(
-    owner: LifecycleOwner, property: KProperty<V>, crossinline mapCast: (V) -> R,
+    owner: LifecycleOwner,
+    property: KProperty<V>,
+    accessDelegateName: Boolean = false,
+    crossinline mapCast: (V) -> R,
 ): LiveData<R> = MutableLiveData<R>().apply {
     // 监听sp属性变化
-    internalInlineRegisterOnSharedPreferenceChangeListener(owner, property) {
+    internalInlineRegisterOnSharedPreferenceChangeListener(owner, property, accessDelegateName) {
         // liveData只允许主线程更新值，将值的更新发送到主线程执行
         if (Looper.myLooper() == Looper.getMainLooper()) {
             value = mapCast(it)
@@ -104,10 +118,13 @@ inline fun <SpSaver : AbsSpSaver, V, R> SpSaver.internalInlineLiveDataPropertyCh
 }
 
 fun <SpSaver : AbsSpSaver, V> SpSaver.toLiveData(
-    owner: LifecycleOwner, property: KProperty<V>,
-): LiveData<V> = internalInlineLiveDataPropertyChange(owner, property) { it }
+    owner: LifecycleOwner, property: KProperty<V>, accessDelegateName: Boolean = false,
+): LiveData<V> = internalInlineLiveDataPropertyChange(owner, property, accessDelegateName) { it }
 
 fun <SpSaver : AbsSpSaver, V, R> SpSaver.toLiveData(
-    owner: LifecycleOwner, property: KProperty<V>, mapCast: (V) -> R,
-): LiveData<R> = internalInlineLiveDataPropertyChange(owner, property, mapCast)
+    owner: LifecycleOwner,
+    property: KProperty<V>,
+    accessDelegateName: Boolean = false,
+    mapCast: (V) -> R,
+): LiveData<R> = internalInlineLiveDataPropertyChange(owner, property, accessDelegateName, mapCast)
 //</editor-fold>
