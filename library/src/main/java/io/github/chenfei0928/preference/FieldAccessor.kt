@@ -102,15 +102,15 @@ interface FieldAccessor<T> {
     //<editor-fold desc="Protobuf 标准版字段访问的Field" defaultstate="collapsed">
     class ProtobufMessageField<T : Message, V>(
         private val field: Descriptors.FieldDescriptor,
-        vType: Type,
+        vTypeProvider: () -> Type,
     ) : Field<T, V> {
         constructor(
-            defaultInstance: T, fieldNumber: Int, vType: Type,
-        ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1], vType)
+            defaultInstance: T, fieldNumber: Int, vTypeProvider: () -> Type,
+        ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1], vTypeProvider)
 
         override val name: String = field.name
         override val vType: PreferenceType by lazy {
-            PreferenceType.forType(field, vType)
+            PreferenceType.forType(field, vTypeProvider)
         }
 
         override fun get(data: T): V = if (field.type != Descriptors.FieldDescriptor.Type.ENUM) {
@@ -141,8 +141,8 @@ interface FieldAccessor<T> {
             inline operator fun <reified T : Message, reified V> invoke(
                 fieldNumber: Int
             ) = ProtobufMessageField<T, V>(
-                T::class.java.getProtobufV3DefaultInstance(), fieldNumber, jTypeOf<V>()
-            )
+                T::class.java.getProtobufV3DefaultInstance(), fieldNumber
+            ) { jTypeOf<V>() }
 
             inline fun <reified T : GeneratedMessage, reified V> FieldAccessor<T>.field(
                 fieldNumber: Int

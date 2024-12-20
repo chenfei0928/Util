@@ -40,10 +40,12 @@ sealed interface PreferenceType {
         BOOLEAN(Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType);
 
         companion object {
-            fun forType(vClass: Class<*>, type: () -> Type): Native {
-                return entries.find { it.type == vClass || it.primitiveType == vClass }
-                    ?: STRING_SET.takeIf { it.type == type() }
-                    ?: throw IllegalArgumentException("Not support type: $type")
+            fun forType(tClass: Class<*>, tTypeProvider: () -> Type): Native {
+                return entries.find { it.type == tClass || it.primitiveType == tClass }
+                    ?: tTypeProvider().let { tType ->
+                        STRING_SET.takeIf { it.type == tType }
+                            ?: throw IllegalArgumentException("Not support type: $tType")
+                    }
             }
         }
     }
@@ -116,13 +118,13 @@ sealed interface PreferenceType {
     }
 
     companion object {
-        fun forType(vClass: Class<*>, type: () -> Type): PreferenceType {
-            return if (vClass.isSubclassOf(Enum::class.java)) {
-                EnumNameString(vClass as Class<out Enum<*>>)
-            } else if (!vClass.isSubclassOf(Collection::class.java)) {
-                Native.forType(vClass, type)
+        fun forType(tClass: Class<*>, tTypeProvider: () -> Type): PreferenceType {
+            return if (tClass.isSubclassOf(Enum::class.java)) {
+                EnumNameString(tClass as Class<out Enum<*>>)
+            } else if (!tClass.isSubclassOf(Collection::class.java)) {
+                Native.forType(tClass, tTypeProvider)
             } else {
-                val type = type() as ParameterizedType
+                val type = tTypeProvider() as ParameterizedType
                 EnumNameStringSet.forType(type)
             }
         }
@@ -131,8 +133,9 @@ sealed interface PreferenceType {
             forType(T::class.java) { jTypeOf<T>() }
 
         fun forType(
-            field: Descriptors.FieldDescriptor, tType: Type
+            field: Descriptors.FieldDescriptor, tTypeProvider: () -> Type
         ): PreferenceType = if (field.isRepeated) {
+            val tType = tTypeProvider()
             if (field.type != Descriptors.FieldDescriptor.Type.ENUM || tType !is ParameterizedType) {
                 throw IllegalArgumentException("Not support type: $tType $field")
             } else {
@@ -143,15 +146,15 @@ sealed interface PreferenceType {
             Descriptors.FieldDescriptor.JavaType.LONG -> Native.LONG
             Descriptors.FieldDescriptor.JavaType.FLOAT -> Native.FLOAT
             Descriptors.FieldDescriptor.JavaType.DOUBLE ->
-                throw IllegalArgumentException("Not support type: $tType $field")
+                throw IllegalArgumentException("Not support type: $field")
             Descriptors.FieldDescriptor.JavaType.BOOLEAN -> Native.BOOLEAN
             Descriptors.FieldDescriptor.JavaType.STRING -> Native.STRING
             Descriptors.FieldDescriptor.JavaType.BYTE_STRING ->
-                throw IllegalArgumentException("Not support type: $tType $field")
+                throw IllegalArgumentException("Not support type:ype $field")
             Descriptors.FieldDescriptor.JavaType.ENUM ->
-                EnumNameString(tType as Class<out Enum<*>>)
+                EnumNameString(tTypeProvider() as Class<out Enum<*>>)
             Descriptors.FieldDescriptor.JavaType.MESSAGE ->
-                throw IllegalArgumentException("Not support type: $tType $field")
+                throw IllegalArgumentException("Not support type: $field")
         }
     }
 }
