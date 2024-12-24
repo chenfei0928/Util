@@ -11,9 +11,9 @@ import java.util.concurrent.atomic.AtomicReference
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-07-14 16:58
  */
-open class BaseSpSaver(
+open class BaseSpSaver<SpSaver : BaseSpSaver<SpSaver>>(
     override val sp: SharedPreferences
-) : AbsSpSaver() {
+) : AbsSpSaver<SpSaver>() {
     private var spAutoApply: SpSaverAutoApply? = null
 
     constructor(

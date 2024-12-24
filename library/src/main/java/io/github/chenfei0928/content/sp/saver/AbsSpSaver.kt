@@ -1,6 +1,7 @@
 package io.github.chenfei0928.content.sp.saver
 
 import android.content.SharedPreferences
+import io.github.chenfei0928.preference.sp.SpSaverPreferenceDataStore
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -11,7 +12,7 @@ import kotlin.reflect.KProperty
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-07-15 15:34
  */
-abstract class AbsSpSaver : SpCommit {
+abstract class AbsSpSaver<SpSaver : AbsSpSaver<SpSaver>> : SpCommit {
     protected abstract val sp: SharedPreferences
     protected abstract val editor: SharedPreferences.Editor
 
@@ -19,18 +20,18 @@ abstract class AbsSpSaver : SpCommit {
     abstract class AbsSpDelegate<T>(
         // 被序列化后的数据的类型
         val spValueType: PreferenceType,
-    ) : ReadWriteProperty<AbsSpSaver, T> {
+    ) : ReadWriteProperty<AbsSpSaver<*>, T> {
 
         abstract fun obtainDefaultKey(property: KProperty<*>): String
 
-        override fun getValue(thisRef: AbsSpSaver, property: KProperty<*>): T {
+        override fun getValue(thisRef: AbsSpSaver<*>, property: KProperty<*>): T {
             val key = obtainDefaultKey(property)
             return getValue(thisRef.sp, key)
         }
 
         internal abstract fun getValue(sp: SharedPreferences, key: String): T
 
-        override fun setValue(thisRef: AbsSpSaver, property: KProperty<*>, value: T) {
+        override fun setValue(thisRef: AbsSpSaver<*>, property: KProperty<*>, value: T) {
             val key = obtainDefaultKey(property)
             putValue(thisRef.editor, key, value)
         }
@@ -53,9 +54,14 @@ abstract class AbsSpSaver : SpCommit {
     }
     //</editor-fold>
 
+    val dataStore: SpSaverPreferenceDataStore<SpSaver> by lazy {
+        @Suppress("UNCHECKED_CAST")
+        SpSaverPreferenceDataStore<SpSaver>(this as SpSaver)
+    }
+
     companion object {
         @JvmStatic
-        protected inline fun AbsSpSaver.edit(
+        protected inline fun AbsSpSaver<*>.edit(
             commit: Boolean = false, action: SharedPreferences.Editor.() -> Unit
         ) {
             val editor = editor
@@ -67,6 +73,6 @@ abstract class AbsSpSaver : SpCommit {
             }
         }
 
-        fun getSp(spSaver: AbsSpSaver): SharedPreferences = spSaver.sp
+        fun getSp(spSaver: AbsSpSaver<*>): SharedPreferences = spSaver.sp
     }
 }

@@ -15,7 +15,7 @@ import kotlin.reflect.KProperty
  * @date 2022-04-24 10:42
  */
 @Suppress("TooManyFunctions")
-class SpSaverPreferenceDataStore<SpSaver : AbsSpSaver>(
+class SpSaverPreferenceDataStore<SpSaver : AbsSpSaver<SpSaver>>(
     internal val saver: SpSaver,
     fieldAccessor: SpSaverFieldAccessor<SpSaver>,
 ) : BasePreferenceDataStore<SpSaver>(fieldAccessor),
@@ -26,24 +26,34 @@ class SpSaverPreferenceDataStore<SpSaver : AbsSpSaver>(
         accessDelegateName: Boolean = false
     ) : this(saver, SpSaverFieldAccessor.Impl(saver, accessDelegateName))
 
-    internal fun findFieldNameByProperty(property: KProperty<*>): String {
-        val field = properties.values.find {
-            val property0 = if (it is SpSaverFieldAccessor.Impl.SpSaverField) {
-                it.property0
-            } else if (it is FieldAccessor.Impl.ReadCacheField
-                && it.field is SpSaverFieldAccessor.Impl.SpSaverField
-            ) {
-                it.field.property0
-            } else {
-                return@find false
-            }
-            property0.name == property.name
+    private fun findFieldByProperty(
+        property: KProperty<*>
+    ): FieldAccessor.Field<SpSaver, *>? = properties.values.find {
+        val property0 = if (it is SpSaverFieldAccessor.Impl.SpSaverField) {
+            it.property0
+        } else if (it is FieldAccessor.Impl.ReadCacheField
+            && it.field is SpSaverFieldAccessor.Impl.SpSaverField
+        ) {
+            it.field.property0
+        } else {
+            return@find false
         }
+        property0.name == property.name
+    }
+
+    internal fun findDelegateByProperty(property: KProperty<*>): AbsSpSaver.AbsSpDelegate<*>? {
+        val field =
+            findFieldByProperty(property) as? SpSaverFieldAccessor.Impl.SpSaverField<SpSaver, Any>
+        return field?.outDelegate
+    }
+
+    internal fun findFieldNameByProperty(property: KProperty<*>): String {
+        val field = findFieldByProperty(property)
         if (field != null) {
             return field.name
         }
         Log.w(TAG, "findFieldNameByProperty: $property in ${properties.keys.joinToString()}")
-        return saver.getPropertySpKeyName(property, true)
+        return saver.getPropertySpKeyName(property, accessDelegateName = true)
     }
 
     override fun <V> FieldAccessor.Field<SpSaver, V>.set(value: V) {

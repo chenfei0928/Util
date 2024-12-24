@@ -22,14 +22,14 @@ private const val TAG = "KW_AbsSpSaverWatcher"
 private object AbsSpSaverKProperty1Cache {
     //<editor-fold desc="创建并缓存字段" defaultstatus="collapsed">
     private val spSaverKProperty1Cache =
-        mutableMapOf<Class<out AbsSpSaver>, Map<String, KProperty1<out AbsSpSaver, *>?>>()
+        mutableMapOf<Class<out AbsSpSaver<*>>, Map<String, KProperty1<out AbsSpSaver<*>, *>?>>()
 
     /**
      * 获取kotlin类的字段缓存表。
      * 如果缓存中已经建立了该类的缓存，直接从缓存中获取，否则建立该类字段的缓存
      */
     @Suppress("UNCHECKED_CAST")
-    suspend fun <SpSaver : AbsSpSaver> getKotlinClassFieldsCache(
+    suspend fun <SpSaver : AbsSpSaver<SpSaver>> getKotlinClassFieldsCache(
         spSaver: SpSaver
     ): Map<String, KProperty1<SpSaver, *>?> {
         val clazz = spSaver.javaClass
@@ -55,7 +55,7 @@ private object AbsSpSaverKProperty1Cache {
      * @param spSaver sp委托保存实例，用于获取字段是否是委托字段，以及的委托属性在sp中保存的key值
      */
     @WorkerThread
-    private fun <SpSaver : AbsSpSaver> obtainPropertyMapCache(
+    private fun <SpSaver : AbsSpSaver<SpSaver>> obtainPropertyMapCache(
         spSaver: SpSaver
     ): Map<String, KProperty1<SpSaver, *>?> {
         // 创建map缓存并预解析所有字段
@@ -78,7 +78,7 @@ private object AbsSpSaverKProperty1Cache {
     /**
      * 预先准备保存实例类的字段缓存
      */
-    fun <SpSaver : AbsSpSaver> prepare(
+    fun <SpSaver : AbsSpSaver<SpSaver>> prepare(
         owner: LifecycleOwner, spSaver: SpSaver,
     ) = owner.coroutineScope.launch {
         getKotlinClassFieldsCache(spSaver)
@@ -87,7 +87,7 @@ private object AbsSpSaverKProperty1Cache {
     /**
      * 根据sp保存实例和其在sp文件中所保存的字段名获取其属性字段
      */
-    suspend fun <SpSaver : AbsSpSaver> findSpKProperty1BySpKey(
+    suspend fun <SpSaver : AbsSpSaver<SpSaver>> findSpKProperty1BySpKey(
         spSaver: SpSaver, key: String,
     ): KProperty1<SpSaver, *>? = getKotlinClassFieldsCache(spSaver)[key]
 }
@@ -98,7 +98,7 @@ private object AbsSpSaverKProperty1Cache {
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-08-05 16:12
  */
-fun <SpSaver : AbsSpSaver> SpSaver.registerOnSharedPreferenceChangeListener(
+fun <SpSaver : AbsSpSaver<SpSaver>> SpSaver.registerOnSharedPreferenceChangeListener(
     owner: LifecycleOwner,
     @MainThread callback: (key: KProperty1<SpSaver, *>) -> Unit,
 ) {

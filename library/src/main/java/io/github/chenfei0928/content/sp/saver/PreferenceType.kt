@@ -95,6 +95,7 @@ sealed interface PreferenceType {
         }
 
         companion object {
+            @Suppress("UNCHECKED_CAST")
             fun forType(type: ParameterizedType): EnumNameStringSet<*> {
                 val rawClass = type.rawType as Class<out Collection<*>>
                 val arg0Type = type.actualTypeArguments[0]
@@ -136,11 +137,10 @@ sealed interface PreferenceType {
             field: Descriptors.FieldDescriptor, tTypeProvider: () -> Type
         ): PreferenceType = if (field.isRepeated) {
             val tType = tTypeProvider()
-            if (field.type != Descriptors.FieldDescriptor.Type.ENUM || tType !is ParameterizedType) {
-                throw IllegalArgumentException("Not support type: $tType $field")
-            } else {
-                EnumNameStringSet.forType(tType)
+            require(field.type == Descriptors.FieldDescriptor.Type.ENUM && tType is ParameterizedType) {
+                "Not support type: $tType $field"
             }
+            EnumNameStringSet.forType(tType)
         } else when (field.javaType) {
             Descriptors.FieldDescriptor.JavaType.INT -> Native.INT
             Descriptors.FieldDescriptor.JavaType.LONG -> Native.LONG
@@ -152,7 +152,7 @@ sealed interface PreferenceType {
             Descriptors.FieldDescriptor.JavaType.BYTE_STRING ->
                 throw IllegalArgumentException("Not support type:ype $field")
             Descriptors.FieldDescriptor.JavaType.ENUM ->
-                EnumNameString(tTypeProvider() as Class<out Enum<*>>)
+                EnumNameString(eClass = tTypeProvider() as Class<out Enum<*>>)
             Descriptors.FieldDescriptor.JavaType.MESSAGE ->
                 throw IllegalArgumentException("Not support type: $field")
         }
