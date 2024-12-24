@@ -2,7 +2,7 @@ package io.github.chenfei0928.demo
 
 import android.content.Context
 import io.github.chenfei0928.content.sp.saver.BaseSpSaver
-import io.github.chenfei0928.content.sp.saver.DataStore.Companion.dataStore
+import io.github.chenfei0928.content.sp.saver.DataStoreDelegateStoreProvider.Companion.dataStore
 import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete.Companion.defaultValue
 import io.github.chenfei0928.content.sp.saver.convert.EnumNameSpConvertSaver
 import io.github.chenfei0928.content.sp.saver.convert.EnumSetNameSpConvertSaver

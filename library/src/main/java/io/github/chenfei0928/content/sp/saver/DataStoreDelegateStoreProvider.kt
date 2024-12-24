@@ -9,7 +9,7 @@ import kotlin.reflect.KProperty
  * @author chenf()
  * @date 2024-12-23 11:33
  */
-class DataStore<SpSaver : AbsSpSaver<SpSaver>, V>(
+class DataStoreDelegateStoreProvider<SpSaver : AbsSpSaver<SpSaver>, V>(
     private val delegate: AbsSpSaver.AbsSpDelegate<V>
 ) : PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, V>> {
     override fun provideDelegate(
@@ -20,7 +20,8 @@ class DataStore<SpSaver : AbsSpSaver<SpSaver>, V>(
     }
 
     companion object {
-        fun <SpSaver : AbsSpSaver<SpSaver>, V> AbsSpSaver.AbsSpDelegate<V>.dataStore(): DataStore<SpSaver, V> =
-            DataStore(this)
+        fun <SpSaver : AbsSpSaver<SpSaver>, V> AbsSpSaver.AbsSpDelegate<V>.dataStore():
+                DataStoreDelegateStoreProvider<SpSaver, V> =
+            DataStoreDelegateStoreProvider(this)
     }
 }
