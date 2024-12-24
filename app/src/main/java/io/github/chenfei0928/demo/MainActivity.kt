@@ -72,14 +72,14 @@ class MainActivity : ComponentActivity() {
             Debug.countTime(TAG, "preload testDataStore") {
                 testDataStore
             }
-            Debug.countTime(TAG, "preload TestSpSaver") {
+            Debug.traceAndTime(TAG, "preload TestSpSaver") {
                 TestSpSaver(this)
             }
             coroutineScope.launch {
-                Debug.traceAndTime(TAG, "jsonDataStore first") {
+                Debug.countTime(TAG, "jsonDataStore first") {
                     jsonDataStore.data.first()
                 }
-                Debug.traceAndTime(TAG, "testDataStore first") {
+                Debug.countTime(TAG, "testDataStore first") {
                     testDataStore.data.first()
                 }
             }

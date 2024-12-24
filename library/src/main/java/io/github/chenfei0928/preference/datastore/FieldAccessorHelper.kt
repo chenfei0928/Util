@@ -2,6 +2,7 @@ package io.github.chenfei0928.preference.datastore
 
 import androidx.collection.ArrayMap
 import io.github.chenfei0928.content.sp.saver.PreferenceType
+import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.preference.FieldAccessor
 import io.github.chenfei0928.preference.datastore.FieldAccessorHelper.Impl.KPropertyDataCopyField
 import io.github.chenfei0928.util.MapCache
@@ -115,14 +116,18 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
         private val dataClassCopyFuncCache =
             MapCache<KClass<*>, KFunction<*>>(ArrayMap()) { kClass ->
                 require(kClass.isData) { "only data class can use copyFunc: $this" }
-                val parameters = kClass.primaryConstructor?.valueParameters
-                kClass.functions.find {
-                    !it.isSuspend
-                            && it.name == "copy"
-                            && it.returnType.classifier == kClass
-                            && !it.returnType.isMarkedNullable
-                            && it.valueParameters == parameters
-                }!!
+                Debug.countTime(
+                    TAG, "dataClassCopyFuncCache: get copy function by reflect: $kClass"
+                ) {
+                    val parameters = kClass.primaryConstructor?.valueParameters
+                    kClass.functions.find {
+                        !it.isSuspend
+                                && it.name == "copy"
+                                && it.returnType.classifier == kClass
+                                && !it.returnType.isMarkedNullable
+                                && it.valueParameters == parameters
+                    }!!
+                }
             }
 
         /**
@@ -224,9 +229,14 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
                     property.returnType.javaType
                 }
             }
-            private val instanceParameter: KParameter = copyFunc.instanceParameter!!
-            private val kParameter: KParameter = copyFunc.parameters
-                .find { it.name == name }!!
+
+            // 这两个方法要读取data class metadata元数据，耗时较久
+            private val instanceParameter: KParameter by lazy {
+                copyFunc.instanceParameter!!
+            }
+            private val kParameter: KParameter by lazy {
+                copyFunc.parameters.find { it.name == name }!!
+            }
 
             override fun get(data: T): V {
                 return property.get(data)
@@ -286,6 +296,8 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
     }
 
     companion object {
+        private const val TAG = "FieldAccessorHelper"
+
         //<editor-fold desc="data class copy方法" defaultstatus="collapsed">
         inline fun <reified T : Any> FieldAccessorHelper<*>.cacheCopyFunc(copyFunc: KFunction<T>) {
             cacheCopyFunc(T::class, copyFunc)

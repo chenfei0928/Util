@@ -26,20 +26,22 @@ object Debug {
         msg: String = tracePath,
         block: () -> T
     ): T {
-        Log.v(tag, "$msg, currentTimeMillis: ${System.currentTimeMillis()}")
-        Debug.startMethodTracing(tracePath)
-        val l = System.nanoTime()
+        val l = System.currentTimeMillis()
+        Log.v(tag, "$msg, currentTimeMillis: $l")
+        Debug.startMethodTracing("${tracePath}_$l")
+        val nanoTime = System.nanoTime()
         return try {
             block()
         } finally {
-            val timeUsed = System.nanoTime() - l
+            val timeUsed = System.nanoTime() - nanoTime
             Debug.stopMethodTracing()
             logCountTime(tag, msg, timeUsed)
         }
     }
 
     inline fun <T> trace(tracePath: String, block: () -> T): T {
-        Debug.startMethodTracing(tracePath)
+        val l = System.currentTimeMillis()
+        Debug.startMethodTracing("${tracePath}_$l")
         return try {
             block()
         } finally {
