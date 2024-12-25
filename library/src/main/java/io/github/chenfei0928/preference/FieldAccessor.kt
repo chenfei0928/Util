@@ -1,6 +1,7 @@
 package io.github.chenfei0928.preference
 
 import androidx.collection.ArrayMap
+import androidx.collection.ArraySet
 import com.google.protobuf.Descriptors
 import com.google.protobuf.GeneratedMessage
 import com.google.protobuf.Message
@@ -122,7 +123,7 @@ interface FieldAccessor<T> {
         } else {
             val enum = data.getField(field) as List<Descriptors.EnumValueDescriptor>
             val vType = vType as PreferenceType.EnumNameStringSet<*>
-            vType.forName(enum.map { it.name }) as V
+            vType.forName(enum.mapTo(ArraySet(enum.size)) { it.name }, true) as V
         }
 
         override fun set(

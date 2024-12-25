@@ -53,3 +53,8 @@ private class WriteableLazy<in T, V>(
 fun <T, V> Lazy<V>.toWriteable(
     lock: Any? = null
 ): ReadWriteProperty<T, V> = WriteableLazy(this, lock)
+
+fun <V> Lazy<V>.toFunc(): () -> V = object : () -> V {
+    private val lazy by this@toFunc
+    override fun invoke(): V = lazy
+}

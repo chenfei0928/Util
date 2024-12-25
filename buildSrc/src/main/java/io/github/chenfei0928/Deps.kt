@@ -165,11 +165,25 @@ object Deps {
 
         // protobuf 序列化框架
         object protobuf {
+            // https://github.com/grpc/grpc-java
+            const val grpcVersion = "1.67.1"
+
+            // https://github.com/grpc/grpc-kotlin
+            const val grpcKotlinVersion = "1.4.2"
+
+            // https://github.com/protocolbuffers/protobuf
+            // https://github.com/protocolbuffers/protobuf/blob/main/java/lite.md
+            // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-javalite
+            const val protobufVersion = "4.28.3"
+
             // https://github.com/protocolbuffers/protobuf/tree/master/java
-            val java = "com.google.protobuf:protobuf-java:3.25.3"
+            val java = "com.google.protobuf:protobuf-java:$protobufVersion"
+            val util = "com.google.protobuf:protobuf-java-util:$protobufVersion"
+            val kotlin = "com.google.protobuf:protobuf-kotlin:$protobufVersion"
 
             // https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md
-            val javaLite = "com.google.protobuf:protobuf-javalite:3.25.3"
+            val javaLite = "com.google.protobuf:protobuf-javalite:$protobufVersion"
+            val kotlinLite = "com.google.protobuf:protobuf-kotlin-lite:$protobufVersion"
         }
 
         // https://github.com/zxing/zxing

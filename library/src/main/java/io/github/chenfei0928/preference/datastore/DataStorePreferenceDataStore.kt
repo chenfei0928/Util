@@ -1,7 +1,6 @@
 package io.github.chenfei0928.preference.datastore
 
 import androidx.datastore.core.DataStore
-import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.preference.BasePreferenceDataStore
 import io.github.chenfei0928.preference.FieldAccessor
 import kotlinx.coroutines.CoroutineScope
@@ -43,16 +42,12 @@ class DataStorePreferenceDataStore<T : Any>(
 
     override fun <V> FieldAccessor.Field<T, V>.set(value: V) {
         if (blockingWrite) {
-            Debug.countTime(TAG, "set $name blockingWrite") {
-                runBlocking(coroutineScope.coroutineContext + Dispatchers.IO) {
-                    suspendSet(value)
-                }
+            runBlocking(coroutineScope.coroutineContext + Dispatchers.IO) {
+                suspendSet(value)
             }
         } else {
             coroutineScope.launch(Dispatchers.IO) {
-                Debug.countTime(TAG, "set $name async") {
-                    suspendSet(value)
-                }
+                suspendSet(value)
             }
         }
     }
@@ -63,11 +58,11 @@ class DataStorePreferenceDataStore<T : Any>(
         }
     }
 
-    override fun <V> FieldAccessor.Field<T, V>.get(): V = Debug.countTime(TAG, "get $name") {
+    override fun <V> FieldAccessor.Field<T, V>.get(): V {
         val data = field.value ?: runBlocking(coroutineScope.coroutineContext + Dispatchers.IO) {
             field.filterNotNull().first()
         }
-        getValue(data)
+        return getValue(data)
     }
 
     companion object {

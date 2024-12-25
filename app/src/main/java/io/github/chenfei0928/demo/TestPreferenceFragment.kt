@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.MainActivity.Companion.testDataStore
+import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.preference.FieldAccessor
 import io.github.chenfei0928.preference.FieldAccessor.Companion.protobufProperty
 import io.github.chenfei0928.preference.FieldAccessor.ProtobufMessageField.Companion.property
@@ -16,7 +17,9 @@ import io.github.chenfei0928.preference.datastore.DataStorePreferenceGroupBuilde
  * @date 2024-07-29 11:15
  */
 class TestPreferenceFragment : PreferenceFragmentCompat() {
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreatePreferences(
+        savedInstanceState: Bundle?, rootKey: String?
+    ) = Debug.countTime(TAG, "testProtobuf") {
         val testDataStore = requireContext().testDataStore
         val dataStore: DataStorePreferenceDataStore<Test> =
             DataStorePreferenceDataStore(coroutineScope, testDataStore)
@@ -27,12 +30,11 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
             ) {
                 title = "boolean"
             }
-//            checkBoxPreference(
-//                dataStore.protobuf("boolean", Test::getBoolean, Test.Builder::setBoolean)
-//            ) {
-//                title = "boolean"
-//            }
             checkBoxPreference(
+//                dataStore.property(
+//                    dataStore.protobufField("test", Test::getTest, Test.Builder::setTest),
+//                    dataStore.protobufField("boolean", Test::getBoolean, Test.Builder::setBoolean),
+//                )
                 dataStore.property(
                     FieldAccessor.ProtobufMessageField<Test, Test>(Test.TEST_FIELD_NUMBER),
                     FieldAccessor.ProtobufMessageField<Test, Boolean>(Test.BOOLEAN_FIELD_NUMBER),

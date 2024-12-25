@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.MainActivity.Companion.jsonDataStore
+import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.preference.bindEnum
 import io.github.chenfei0928.preference.datastore.DataStorePreferenceDataStore
 import io.github.chenfei0928.preference.datastore.DataStorePreferenceGroupBuilder.Companion.buildPreferenceScreen
@@ -15,7 +16,9 @@ import io.github.chenfei0928.preference.datastore.FieldAccessorHelper.Companion.
  * @date 2024-07-29 11:15
  */
 class JsonPreferenceFragment : PreferenceFragmentCompat() {
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreatePreferences(
+        savedInstanceState: Bundle?, rootKey: String?
+    ) = Debug.countTime(TAG, "json") {
         val jsonDataStore = requireContext().jsonDataStore
         val dataStore: DataStorePreferenceDataStore<JsonBean> =
             DataStorePreferenceDataStore(coroutineScope, jsonDataStore)

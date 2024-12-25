@@ -225,7 +225,7 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
         ) : FieldAccessor.Field<T, V> {
             override val name: String = property.name
             override val vType: PreferenceType by lazy {
-                vType ?: PreferenceType.forType(property.returnType.jvmErasure.java) {
+                vType ?: PreferenceType.forType(tClass = property.returnType.jvmErasure.java) {
                     property.returnType.javaType
                 }
             }

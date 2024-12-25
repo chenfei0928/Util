@@ -75,23 +75,24 @@ sealed interface PreferenceType {
             returnType: Class<out Collection<*>>,
         ) : this(eClass.enumConstants, returnType)
 
-        fun forName(names: Collection<String>): Collection<E> =
-            names.mapTo(createCollection()) { name ->
+        fun forName(names: Collection<String>, toSet: Boolean): Collection<E> =
+            names.mapTo(if (toSet) ArraySet(names.size) else createCollection(names.size)) { name ->
                 values.find { it.name == name }!!
             }
 
-        private fun createCollection(): MutableCollection<E> = when {
-            returnType.isSubclassOf(ArraySet::class.java) -> ArraySet()
+        private fun createCollection(size: Int): MutableCollection<E> = when {
+            returnType.isSubclassOf(ArraySet::class.java) -> ArraySet(size)
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                    && returnType.isSubclassOf(android.util.ArraySet::class.java) -> android.util.ArraySet()
-            returnType.isSubclassOf(HashSet::class.java) -> HashSet()
+                    && returnType.isSubclassOf(android.util.ArraySet::class.java) ->
+                android.util.ArraySet(size)
+            returnType.isSubclassOf(HashSet::class.java) -> HashSet(size)
             returnType.isSubclassOf(SortedSet::class.java) -> TreeSet()
-            returnType.isSubclassOf(LinkedHashSet::class.java) -> LinkedHashSet()
-            returnType.isSubclassOf(Set::class.java) -> ArraySet()
-            returnType.isSubclassOf(Queue::class.java) -> ArrayDeque()
+            returnType.isSubclassOf(LinkedHashSet::class.java) -> LinkedHashSet(size)
+            returnType.isSubclassOf(Set::class.java) -> ArraySet(size)
+            returnType.isSubclassOf(Queue::class.java) -> ArrayDeque(size)
             returnType.isSubclassOf(LinkedList::class.java) -> LinkedList()
-            returnType.isSubclassOf(List::class.java) -> ArrayList()
-            else -> mutableListOf()
+            returnType.isSubclassOf(List::class.java) -> ArrayList(size)
+            else -> ArrayList(size)
         }
 
         companion object {
@@ -125,14 +126,18 @@ sealed interface PreferenceType {
             } else if (!tClass.isSubclassOf(Collection::class.java)) {
                 Native.forType(tClass, tTypeProvider)
             } else {
-                val type = tTypeProvider() as ParameterizedType
+                val type = tTypeProvider()
+                require(type is ParameterizedType) { "Not support type: $type" }
                 EnumNameStringSet.forType(type)
             }
         }
 
         inline fun <reified T> forType(): PreferenceType =
-            forType(T::class.java) { jTypeOf<T>() }
+            forType(tClass = T::class.java) { jTypeOf<T>() }
 
+        /**
+         * 为 Protobuf full 的字段 fieldNumber 来获取类型信息
+         */
         fun forType(
             field: Descriptors.FieldDescriptor, tTypeProvider: () -> Type
         ): PreferenceType = if (field.isRepeated) {

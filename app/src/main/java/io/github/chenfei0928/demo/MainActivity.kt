@@ -111,16 +111,16 @@ class MainActivity : ComponentActivity() {
             Log.i(TAG, "onCreate: $type")
             Fragment()
             // 加载Protobuf runtime，其会消耗较长时间
-            Debug.traceAndTime(TAG, "Test_toByteArray_${System.currentTimeMillis()}") {
+            Debug.traceAndTime(TAG, "Test_toByteArray") {
                 Test.getDefaultInstance().toByteArray()
                 Test.getDefaultInstance().parserForType
             }
             // ProtoBufType 支持类，不知为何会有很多的loadClass
-            Debug.traceAndTime(TAG, "ProtoBufType_${System.currentTimeMillis()}") {
+            Debug.traceAndTime(TAG, "ProtoBufType") {
                 BundleSupportType.ProtoBufType(Test::class.java, false)
             }
             // Frag 类加载时会初始化其委托属性的 KProperty 信息实例，会消耗一些时间
-            val f = Debug.traceAndTime(TAG, "f_${System.currentTimeMillis()}") {
+            val f = Debug.traceAndTime(TAG, "f") {
                 Frag().apply {
                     a = 1
                     b = "asd"

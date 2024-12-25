@@ -3,7 +3,6 @@ package io.github.chenfei0928.preference
 import androidx.collection.ArraySet
 import androidx.preference.PreferenceDataStore
 import io.github.chenfei0928.content.sp.saver.PreferenceType
-import kotlin.collections.toMutableSet
 
 /**
  * @author chenf()
@@ -17,17 +16,23 @@ abstract class BasePreferenceDataStore<T : Any>(
     protected abstract fun <V> FieldAccessor.Field<T, V>.set(value: V)
     protected abstract fun <V> FieldAccessor.Field<T, V>.get(): V
 
+    /**
+     * 将 preference screen 数据持久化到本地
+     */
     protected fun <V> FieldAccessor.Field<T, V>.setValue(it: T, value: V): T {
         val vType = vType
         return if (vType is PreferenceType.EnumNameString<*>) {
             set(it, vType.forName(value as String) as V)
         } else if (vType is PreferenceType.EnumNameStringSet<*>) {
-            set(it, vType.forName(value as Collection<String>) as V)
+            set(it, vType.forName(value as Collection<String>, false) as V)
         } else {
             set(it, value)
         }
     }
 
+    /**
+     * 将本地持久化数据读取给 preference screen
+     */
     protected fun <V> FieldAccessor.Field<T, V>.getValue(data: T): V {
         return if (vType is PreferenceType.EnumNameString<*>) {
             (get(data) as Enum<*>).name as V
@@ -68,7 +73,9 @@ abstract class BasePreferenceDataStore<T : Any>(
     }
 
     override fun getStringSet(key: String, defValues: MutableSet<String>?): MutableSet<String>? {
-        return findByName<Set<String>?>(key).get()?.toMutableSet() ?: defValues
+        return findByName<Set<String>?>(key).get()?.let {
+            if (it is MutableSet) it else it.toMutableSet()
+        } ?: defValues
     }
 
     override fun getInt(key: String, defValue: Int): Int {

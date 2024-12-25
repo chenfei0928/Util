@@ -4,6 +4,7 @@ import com.google.protobuf.gradle.GenerateProtoTask
 import com.google.protobuf.gradle.ProtobufExtension
 import com.google.protobuf.gradle.ProtobufPlugin
 import com.google.protobuf.gradle.proto
+import io.github.chenfei0928.Deps
 import io.github.chenfei0928.Env
 import io.github.chenfei0928.compiler.hasKotlin
 import io.github.chenfei0928.util.api
@@ -16,15 +17,15 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 
 // https://github.com/grpc/grpc-java
-private const val grpcVersion = "1.67.1"
+private const val grpcVersion = Deps.lib.protobuf.grpcVersion
 
 // https://github.com/grpc/grpc-kotlin
-private const val grpcKotlinVersion = "1.4.2"
+private const val grpcKotlinVersion = Deps.lib.protobuf.grpcKotlinVersion
 
 // https://github.com/protocolbuffers/protobuf
 // https://github.com/protocolbuffers/protobuf/blob/main/java/lite.md
 // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-javalite
-private const val protobufVersion = "4.28.3"
+private const val protobufVersion = Deps.lib.protobuf.protobufVersion
 
 private const val proguardFileName = "protobuf.pro"
 private const val proguardRules = """
@@ -72,15 +73,15 @@ fun Project.applyProtobufDependencies(includeGrpc: Boolean = true) {
         // Protobuf
         implementation("com.google.protobuf:protoc:$protobufVersion")
         if (Env.protobufType.useFullDependencies) {
-            api("com.google.protobuf:protobuf-java:$protobufVersion")
-            api("com.google.protobuf:protobuf-java-util:$protobufVersion")
+            api(Deps.lib.protobuf.java)
+            api(Deps.lib.protobuf.util)
             if (hasKotlin) {
-                api("com.google.protobuf:protobuf-kotlin:$protobufVersion")
+                api(Deps.lib.protobuf.kotlin)
             }
         } else {
-            implementation("com.google.protobuf:protobuf-javalite:$protobufVersion")
+            implementation(Deps.lib.protobuf.kotlin)
             if (hasKotlin) {
-                api("com.google.protobuf:protobuf-kotlin-lite:$protobufVersion")
+                api(Deps.lib.protobuf.kotlinLite)
             }
         }
     }
