@@ -17,7 +17,7 @@ abstract class BasePreferenceDataStore<T : Any>(
     protected abstract fun <V> FieldAccessor.Field<T, V>.get(): V
 
     /**
-     * 将 preference screen 数据持久化到本地
+     * 将 preference screen 数据持久化到本地，扩展支持了[PreferenceType]的枚举
      */
     protected fun <V> FieldAccessor.Field<T, V>.setValue(it: T, value: V): T {
         val vType = vType
@@ -31,7 +31,7 @@ abstract class BasePreferenceDataStore<T : Any>(
     }
 
     /**
-     * 将本地持久化数据读取给 preference screen
+     * 将本地持久化数据读取给 preference screen，扩展支持了[PreferenceType]的枚举
      */
     protected fun <V> FieldAccessor.Field<T, V>.getValue(data: T): V {
         return if (vType is PreferenceType.EnumNameString<*>) {

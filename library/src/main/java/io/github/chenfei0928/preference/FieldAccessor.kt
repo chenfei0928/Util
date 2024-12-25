@@ -44,7 +44,15 @@ interface FieldAccessor<T> {
     //</editor-fold>
 
     interface Field<T, V> {
-        val name: String
+        /**
+         * 用于在 [androidx.preference.PreferenceDataStore] 中存取所使用的 key，
+         * 同时会设置给 [androidx.preference.Preference.getKey]，不要求与持久化后保存的结构体或Map字典的key相同
+         */
+        val pdsKey: String
+
+        /**
+         * 业务层数据类型与其到持久化后数据类型信息
+         */
         val vType: PreferenceType
         fun get(data: T): V
         fun set(data: T, value: V): T
@@ -60,7 +68,7 @@ interface FieldAccessor<T> {
          * 判断一个字段是否已经注册
          */
         override operator fun contains(field: Field<T, *>): Boolean =
-            field.name in properties
+            field.pdsKey in properties
 
         /**
          * 注册一个持久化字段
@@ -69,7 +77,7 @@ interface FieldAccessor<T> {
          * @param field 字段说明
          */
         override fun <V> property(field: Field<T, V>): Field<T, V> = field.also {
-            val name = field.name
+            val name = field.pdsKey
             require(name !in properties) {
                 "field name:$name is contain properties:${properties.keys.joinToString()}"
             }
@@ -109,7 +117,7 @@ interface FieldAccessor<T> {
             defaultInstance: T, fieldNumber: Int, vTypeProvider: () -> Type,
         ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1], vTypeProvider)
 
-        override val name: String = field.name
+        override val pdsKey: String = field.name
         override val vType: PreferenceType by lazy {
             PreferenceType.forType(field, vTypeProvider)
         }
@@ -187,7 +195,7 @@ interface FieldAccessor<T> {
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: T, value: V) -> T,
         ): Field<T, V> = object : Field<T, V> {
-            override val name: String = name
+            override val pdsKey: String = name
             override val vType = PreferenceType.forType<V>()
 
             override fun get(data: T): V {
@@ -207,7 +215,7 @@ interface FieldAccessor<T> {
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: Builder, value: V) -> Builder,
         ): Field<T, V> = object : Field<T, V> {
-            override val name: String = name
+            override val pdsKey: String = name
             override val vType = PreferenceType.forType<V>()
 
             override fun get(data: T): V = getter(data)
@@ -241,7 +249,7 @@ interface FieldAccessor<T> {
                 Setter : KFunction<Builder>,
                 Setter : Function2<Builder, V, Builder> {
             return object : Field<T, V> {
-                override val name: String = name
+                override val pdsKey: String = name
                 override val vType = PreferenceType.forType<V>()
 
                 override fun get(data: T): V {

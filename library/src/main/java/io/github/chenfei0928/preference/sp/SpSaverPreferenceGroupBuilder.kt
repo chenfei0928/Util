@@ -17,7 +17,7 @@ import kotlin.reflect.KProperty1
  * 通过 [dataStore] 与 [SpSaverPreferenceDataStore] 来存储值，
  * 要求实例化 [SpSaverPreferenceDataStore] 并设置给 [PreferenceManager.setPreferenceDataStore]
  *
- * @param dataStore 传入用于调用 [getPropertySpKeyName] 来获取字段名
+ * @param dataStore 传入用于调用 [getPropertyKey] 来获取字段名
  *
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-26 15:02
@@ -36,13 +36,13 @@ class SpSaverPreferenceGroupBuilder<SpSaver : AbsSpSaver<SpSaver>>(
     }
 
     @RestrictTo(RestrictTo.Scope.SUBCLASSES)
-    override fun getPropertySpKeyName(property: KProperty0<*>): String {
-        return dataStore.findFieldNameByProperty(property)
+    override fun getPropertyKey(property: KProperty0<*>): String {
+        return dataStore.findFieldNameByPropertyOrThrow(property)
     }
 
     @RestrictTo(RestrictTo.Scope.SUBCLASSES)
-    override fun SpSaver.getPropertySpKeyName(property: KProperty1<SpSaver, *>): String {
-        return dataStore.findFieldNameByProperty(property)
+    override fun SpSaver.getPropertyKey(property: KProperty1<SpSaver, *>): String {
+        return dataStore.findFieldNameByPropertyOrThrow(property)
     }
 
     companion object {

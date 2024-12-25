@@ -4,33 +4,31 @@ import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete
 import io.github.chenfei0928.content.sp.saver.convert.SpConvertSaver
-import io.github.chenfei0928.content.sp.saver.getPropertySpKeyName
 import io.github.chenfei0928.preference.FieldAccessor
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KMutableProperty0
-import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.jvm.isAccessible
 
 /**
  * @author chenf()
  * @date 2024-12-20 15:34
  */
 interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<SpSaver> {
-    val accessDelegateName: Boolean
-
+    /**
+     * 使用[property]注册一个字段
+     */
     fun <V> property(
         property0: KMutableProperty0<V>, vType: PreferenceType,
     ): FieldAccessor.Field<SpSaver, V>
 
-    fun <V> propertyUseDelegate(property0: KMutableProperty0<V>): FieldAccessor.Field<SpSaver, V>
-
+    /**
+     * 使用[property]与[delegate]注册一个字段，如果 [delegate] 为 null 则向 [SpSaver] 查询或反射获取
+     */
     fun <V> propertyUseDelegate(
-        property: KMutableProperty<V>, delegate: AbsSpSaver.AbsSpDelegate<V>?
+        property: KMutableProperty<V>, delegate: AbsSpSaver.AbsSpDelegate<V>? = null
     ): FieldAccessor.Field<SpSaver, V>
 
     class Impl<SpSaver : AbsSpSaver<SpSaver>>(
         private val spSaver: SpSaver,
-        override val accessDelegateName: Boolean,
     ) : FieldAccessor.Impl<SpSaver>(false), SpSaverFieldAccessor<SpSaver> {
 
         override fun <V> property(
@@ -41,7 +39,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
             private val property0: KMutableProperty0<V>,
             override val vType: PreferenceType,
         ) : FieldAccessor.Field<SpSaver, V> {
-            override val name: String = property0.name
+            override val pdsKey: String = property0.name
 
             override fun get(data: SpSaver): V = property0.get()
 
@@ -51,75 +49,58 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
             }
         }
 
-        override fun <V> propertyUseDelegate(property0: KMutableProperty0<V>): FieldAccessor.Field<SpSaver, V> {
-            property0.isAccessible = true
-            var delegate: AbsSpSaver.AbsSpDelegate<V>? =
-                property0.getDelegate() as AbsSpSaver.AbsSpDelegate<V>
-            return propertyUseDelegate(property0, delegate)
-        }
-
         override fun <V> propertyUseDelegate(
             property: KMutableProperty<V>, delegate: AbsSpSaver.AbsSpDelegate<V>?
         ): FieldAccessor.Field<SpSaver, V> {
-            val name = spSaver.getPropertySpKeyName(property, delegate, accessDelegateName)
-            val outDelegate = delegate ?: run {
-                property.isAccessible = true
-                when (property) {
-                    is KMutableProperty0 -> property.getDelegate()
-                    is KMutableProperty1<*, *> ->
-                        (property as KMutableProperty1<SpSaver, *>).getDelegate(spSaver)
-                    else -> null
-                } as? AbsSpSaver.AbsSpDelegate<V>
-            }
-            var delegate = delegate
+            val delegate: AbsSpSaver.AbsSpDelegate<V> = delegate
+                ?: spSaver.dataStore.getDelegateByProperty(property)
+            val name: String = property.name
+            val outDelegate: AbsSpSaver.AbsSpDelegate<V> = delegate
+            var spAccessDelegate: AbsSpSaver.AbsSpDelegate<*> = delegate
             var defaultValue: Any? = null
             while (true) {
-                when (delegate) {
+                when (spAccessDelegate) {
                     is DefaultValueSpDelete<*> -> {
                         // 默认值一般是作为最后的装饰，会最先触发，其默认值要保存下来
-                        defaultValue = delegate.defaultValue
-                        delegate = delegate.saver as AbsSpSaver.AbsSpDelegate<V>
+                        defaultValue = spAccessDelegate.defaultValue
+                        spAccessDelegate = spAccessDelegate.saver
                     }
                     is SpConvertSaver<*, *> -> {
                         @Suppress("UNCHECKED_CAST")
-                        delegate as SpConvertSaver<Any, Any?>
+                        spAccessDelegate as SpConvertSaver<Any, Any?>
                         // 转换器装饰器，将其解装饰，并处理默认值
-                        defaultValue = delegate.onSave(defaultValue)
-                        delegate = delegate.saver as AbsSpSaver.AbsSpDelegate<V>
+                        defaultValue = spAccessDelegate.onSave(defaultValue)
+                        spAccessDelegate = spAccessDelegate.saver
                     }
-                    is AbsSpSaver.AbsSpDelegate<*> -> {
-                        @Suppress("UNCHECKED_CAST")
-                        val localDelegate: AbsSpSaver.AbsSpDelegate<Any?> =
-                            delegate as AbsSpSaver.AbsSpDelegate<Any?>
+                    else -> {
+                        spAccessDelegate as AbsSpSaver.AbsSpDelegate<Any?>
                         val field = SpSaverField<SpSaver, Any?>(
-                            name,
                             outDelegate as AbsSpSaver.AbsSpDelegate<Any?>,
-                            localDelegate,
+                            spAccessDelegate,
                             property,
                             defaultValue
                         ) as FieldAccessor.Field<SpSaver, V>
                         return this@Impl.property(field)
                     }
-                    else -> throw IllegalArgumentException("不支持的委托类型: ${delegate?.javaClass} $delegate")
                 }
             }
         }
 
-        class SpSaverField<SpSaver : AbsSpSaver<SpSaver>, V>(
-            override val name: String,
+        internal class SpSaverField<SpSaver : AbsSpSaver<SpSaver>, V>(
             internal val outDelegate: AbsSpSaver.AbsSpDelegate<V>,
-            private val localDelegate: AbsSpSaver.AbsSpDelegate<V?>,
-            val property0: KMutableProperty<*>,
+            private val spAccessDelegate: AbsSpSaver.AbsSpDelegate<V?>,
+            internal val property0: KMutableProperty<*>,
             private val defaultValue: V?,
         ) : FieldAccessor.Field<SpSaver, V?> {
-            override val vType: PreferenceType = localDelegate.spValueType
+            override val pdsKey: String = property0.name
+            override val vType: PreferenceType = spAccessDelegate.spValueType
 
             override fun get(data: SpSaver): V? {
-                return localDelegate.getValue(data, property0) ?: defaultValue
+                return spAccessDelegate.getValue(data, property0) ?: defaultValue
             }
 
             override fun set(data: SpSaver, value: V?): SpSaver {
-                localDelegate.setValue(data, property0, value)
+                spAccessDelegate.setValue(data, property0, value)
                 return data
             }
         }
@@ -128,9 +109,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
     companion object {
         inline fun <SpSaver : AbsSpSaver<SpSaver>, reified V> SpSaverFieldAccessor<SpSaver>.property(
             property0: KMutableProperty0<V>
-        ): FieldAccessor.Field<SpSaver, V> = if (accessDelegateName) {
-            propertyUseDelegate(property0)
-        } else try {
+        ): FieldAccessor.Field<SpSaver, V> = try {
             property(property0, PreferenceType.forType<V>())
         } catch (_: IllegalArgumentException) {
             propertyUseDelegate(property0)

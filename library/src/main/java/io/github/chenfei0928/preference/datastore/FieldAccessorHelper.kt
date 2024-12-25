@@ -223,7 +223,7 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
             private val property: KProperty1<T, V>,
             vType: PreferenceType? = null,
         ) : FieldAccessor.Field<T, V> {
-            override val name: String = property.name
+            override val pdsKey: String = property.name
             override val vType: PreferenceType by lazy {
                 vType ?: PreferenceType.forType(tClass = property.returnType.jvmErasure.java) {
                     property.returnType.javaType
@@ -235,7 +235,7 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
                 copyFunc.instanceParameter!!
             }
             private val kParameter: KParameter by lazy {
-                copyFunc.parameters.find { it.name == name }!!
+                copyFunc.parameters.find { it.name == pdsKey }!!
             }
 
             override fun get(data: T): V {
@@ -280,7 +280,7 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
             private val outerField: FieldAccessor.Field<T, T1>,
             private val innerField: FieldAccessor.Field<T1, V>,
         ) : FieldAccessor.Field<T, V> {
-            override val name: String = outerField.name + "_" + innerField.name
+            override val pdsKey: String = outerField.pdsKey + "_" + innerField.pdsKey
             override val vType: PreferenceType = innerField.vType
 
             override fun get(data: T): V {

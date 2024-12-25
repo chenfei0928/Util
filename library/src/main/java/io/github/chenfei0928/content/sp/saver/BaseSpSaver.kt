@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicReference
  * @date 2020-07-14 16:58
  */
 open class BaseSpSaver<SpSaver : BaseSpSaver<SpSaver>>(
-    override val sp: SharedPreferences
+    override val sp: SharedPreferences,
 ) : AbsSpSaver<SpSaver>() {
     private var spAutoApply: SpSaverAutoApply? = null
 

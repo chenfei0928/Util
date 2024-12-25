@@ -39,9 +39,9 @@ class DataStorePreferenceGroupBuilder<T : Any>(
         block: CheckBoxPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<T> = applyBuilder {
         require(property in dataStore) {
-            "property ${property.name} must in dataStore"
+            "property ${property.pdsKey} must in dataStore"
         }
-        checkBoxPreference(property.name, block)
+        checkBoxPreference(property.pdsKey, block)
     }
 
     inline fun <reified E : Enum<E>> dropDownPreference(
@@ -49,9 +49,9 @@ class DataStorePreferenceGroupBuilder<T : Any>(
         block: DropDownPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<T> = applyBuilder {
         require(property in dataStore) {
-            "property ${property.name} must in dataStore"
+            "property ${property.pdsKey} must in dataStore"
         }
-        dropDownPreference<E>(property.name, block)
+        dropDownPreference<E>(property.pdsKey, block)
     }
 
     inline fun editTextPreference(
@@ -59,9 +59,9 @@ class DataStorePreferenceGroupBuilder<T : Any>(
         block: EditTextPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<T> = applyBuilder {
         require(property in dataStore) {
-            "property ${property.name} must in dataStore"
+            "property ${property.pdsKey} must in dataStore"
         }
-        editTextPreference(property.name, block)
+        editTextPreference(property.pdsKey, block)
     }
 
     inline fun <reified E : Enum<E>> listPreference(
@@ -69,9 +69,9 @@ class DataStorePreferenceGroupBuilder<T : Any>(
         block: ListPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<T> = applyBuilder {
         require(property in dataStore) {
-            "property ${property.name} must in dataStore"
+            "property ${property.pdsKey} must in dataStore"
         }
-        listPreference<E>(property.name, block)
+        listPreference<E>(property.pdsKey, block)
     }
 
     inline fun <reified E : Enum<E>> multiSelectListPreference(
@@ -79,9 +79,9 @@ class DataStorePreferenceGroupBuilder<T : Any>(
         block: MultiSelectListPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<T> = applyBuilder {
         require(property in dataStore) {
-            "property ${property.name} must in dataStore"
+            "property ${property.pdsKey} must in dataStore"
         }
-        multiSelectListPreference<E>(property.name, block)
+        multiSelectListPreference<E>(property.pdsKey, block)
     }
 
     inline fun seekBarPreference(
@@ -89,9 +89,9 @@ class DataStorePreferenceGroupBuilder<T : Any>(
         block: SeekBarPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<T> = applyBuilder {
         require(property in dataStore) {
-            "property ${property.name} must in dataStore"
+            "property ${property.pdsKey} must in dataStore"
         }
-        seekBarPreference(property.name, block)
+        seekBarPreference(property.pdsKey, block)
     }
 
     inline fun switchPreference(
@@ -99,9 +99,9 @@ class DataStorePreferenceGroupBuilder<T : Any>(
         block: SwitchPreference.() -> Unit
     ): DataStorePreferenceGroupBuilder<T> = applyBuilder {
         require(property in dataStore) {
-            "property ${property.name} must in dataStore"
+            "property ${property.pdsKey} must in dataStore"
         }
-        switchPreference(property.name, block)
+        switchPreference(property.pdsKey, block)
     }
     //</editor-fold>
 

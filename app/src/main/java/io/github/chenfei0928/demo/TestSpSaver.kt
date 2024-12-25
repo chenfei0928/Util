@@ -11,6 +11,7 @@ import io.github.chenfei0928.content.sp.saver.delegate.FloatDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.IntDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.LongDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
+import io.github.chenfei0928.content.sp.saver.delegate.StringSetDelegate
 
 /**
  * @author chenf()
@@ -21,7 +22,12 @@ class TestSpSaver(context: Context) : BaseSpSaver<TestSpSaver>(context, "test") 
     var long: Long by LongDelegate().dataStore()
     var float: Float by FloatDelegate().dataStore()
     var boolean: Boolean by BooleanDelegate().dataStore()
-    var string: String by StringDelegate().defaultValue("").dataStore()
+    var string: String by StringDelegate()
+        .defaultValue("")
+        .dataStore()
+    var stringSet: Set<String> by StringSetDelegate()
+        .defaultValue(emptySet())
+        .dataStore()
     var enum: JsonBean.JsonEnum by EnumNameSpConvertSaver<JsonBean.JsonEnum>()
         .defaultValue(JsonBean.JsonEnum.DEFAULT)
         .dataStore()
