@@ -23,13 +23,18 @@ class JsonPreferenceFragment : PreferenceFragmentCompat() {
         val dataStore: DataStorePreferenceDataStore<JsonBean> =
             DataStorePreferenceDataStore(coroutineScope, jsonDataStore)
         preferenceManager.preferenceDataStore = dataStore
+        // 缓存data class copy方法
         dataStore.cacheCopyFunc(JsonBean::class, JsonBean::copy)
-        dataStore.cacheCopyFunc<InnerJsonBean>(InnerJsonBean::copy)
+        dataStore.cacheCopyFunc<JsonBean.InnerJsonBean>(JsonBean.InnerJsonBean::copy)
         preferenceScreen = buildPreferenceScreen(dataStore) {
+            // 字段引用
             checkBoxPreference(dataStore.property(JsonBean::boolean)) {
                 title = "boolean"
             }
-            checkBoxPreference(dataStore.property(JsonBean::inner, InnerJsonBean::boolean)) {
+            // 二层字段引用
+            checkBoxPreference(
+                dataStore.property(JsonBean::inner, JsonBean.InnerJsonBean::boolean)
+            ) {
                 title = "innerBoolean"
             }
             editTextPreference(dataStore.property(JsonBean::string)) {
@@ -38,13 +43,13 @@ class JsonPreferenceFragment : PreferenceFragmentCompat() {
             seekBarPreference(dataStore.property(JsonBean::int)) {
                 title = "int"
             }
-            dropDownPreference<JsonEnum>(dataStore.property(JsonBean::enum)) {
+            dropDownPreference<JsonBean.JsonEnum>(dataStore.property(JsonBean::enum)) {
                 title = "enum"
-                bindEnum<JsonEnum> { it.name }
+                bindEnum<JsonBean.JsonEnum> { it.name }
             }
-            multiSelectListPreference<JsonEnum>(dataStore.property(JsonBean::enums)) {
+            multiSelectListPreference<JsonBean.JsonEnum>(dataStore.property(JsonBean::enums)) {
                 title = "enumList"
-                bindEnum<JsonEnum> { it.name }
+                bindEnum<JsonBean.JsonEnum> { it.name }
             }
         }
     }

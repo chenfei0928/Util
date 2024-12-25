@@ -19,6 +19,7 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
         preferenceManager.preferenceDataStore = spSaver.dataStore
         Log.i(TAG, "onCreatePreferences: buildPreferenceScreen")
         preferenceScreen = buildPreferenceScreen<TestSpSaver>(spSaver.dataStore) {
+            // sp属性引用
             checkBoxPreference(TestSpSaver::boolean) {
                 title = "boolean"
             }
@@ -28,13 +29,13 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
             seekBarPreference(TestSpSaver::int) {
                 title = "int"
             }
-            dropDownPreference<JsonEnum>(TestSpSaver::enum) {
+            dropDownPreference<JsonBean.JsonEnum>(TestSpSaver::enum) {
                 title = "enum"
-                bindEnum<JsonEnum> { it.name }
+                bindEnum<JsonBean.JsonEnum> { it.name }
             }
-            multiSelectListPreference<JsonEnum>(TestSpSaver::enums) {
+            multiSelectListPreference<JsonBean.JsonEnum>(TestSpSaver::enums) {
                 title = "enumList"
-                bindEnum<JsonEnum> { it.name }
+                bindEnum<JsonBean.JsonEnum> { it.name }
             }
         }
     }

@@ -26,18 +26,19 @@ data class JsonBean(
     val inner: InnerJsonBean = InnerJsonBean(),
     val enum: JsonEnum = JsonEnum.DEFAULT,
     val enums: Set<JsonEnum> = emptySet(),
-) : Parcelable
+) : Parcelable {
 
-@Serializable
-@Parcelize
-data class InnerJsonBean(
-    var boolean: Boolean = false,
-) : Parcelable
+    @Serializable
+    @Parcelize
+    data class InnerJsonBean(
+        var boolean: Boolean = false,
+    ) : Parcelable
 
-enum class JsonEnum : VisibleNamed {
-    DEFAULT, ENUM_A, ENUM_B, ENUM_C;
+    enum class JsonEnum : VisibleNamed {
+        DEFAULT, ENUM_A, ENUM_B, ENUM_C;
 
-    override fun getVisibleName(context: Context): CharSequence {
-        return this.name
+        override fun getVisibleName(context: Context): CharSequence {
+            return this.name
+        }
     }
 }

@@ -6,6 +6,7 @@ import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.MainActivity.Companion.testDataStore
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.preference.FieldAccessor
+import io.github.chenfei0928.preference.FieldAccessor.Companion.protobufField
 import io.github.chenfei0928.preference.FieldAccessor.Companion.protobufProperty
 import io.github.chenfei0928.preference.FieldAccessor.ProtobufMessageField.Companion.property
 import io.github.chenfei0928.preference.bindEnum
@@ -25,16 +26,23 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
             DataStorePreferenceDataStore(coroutineScope, testDataStore)
         preferenceManager.preferenceDataStore = dataStore
         preferenceScreen = buildPreferenceScreen(dataStore) {
+            // protobuf 字段引用方式1
             checkBoxPreference(
                 dataStore.protobufProperty("boolean", Test::getBoolean, Test.Builder::setBoolean)
             ) {
                 title = "boolean"
             }
+            // protobuf 二层字段引用方式1
+            seekBarPreference(
+                dataStore.property(
+                    dataStore.protobufField("test", Test::getTest, Test.Builder::setTest),
+                    dataStore.protobufField("int", Test::getInt, Test.Builder::setInt),
+                )
+            ) {
+                title = "innerInt"
+            }
+            // protobuf 二层字段引用方式2（full专用）
             checkBoxPreference(
-//                dataStore.property(
-//                    dataStore.protobufField("test", Test::getTest, Test.Builder::setTest),
-//                    dataStore.protobufField("boolean", Test::getBoolean, Test.Builder::setBoolean),
-//                )
                 dataStore.property(
                     FieldAccessor.ProtobufMessageField<Test, Test>(Test.TEST_FIELD_NUMBER),
                     FieldAccessor.ProtobufMessageField<Test, Boolean>(Test.BOOLEAN_FIELD_NUMBER),
@@ -42,6 +50,7 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
             ) {
                 title = "innerBoolean"
             }
+            // protobuf 字段引用方式2（full专用）
             editTextPreference(dataStore.property(Test.STRING_FIELD_NUMBER)) {
                 title = "string"
             }
