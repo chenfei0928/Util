@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
             Debug.countTime(TAG, "preload testDataStore") {
                 testDataStore
             }
-            Debug.traceAndTime(TAG, "preload TestSpSaver") {
+            Debug.countTime(TAG, "preload TestSpSaver") {
                 TestSpSaver(this)
             }
             coroutineScope.launch {
@@ -111,16 +111,16 @@ class MainActivity : ComponentActivity() {
             Log.i(TAG, "onCreate: $type")
             Fragment()
             // 加载Protobuf runtime，其会消耗较长时间
-            Debug.traceAndTime(TAG, "Test_toByteArray") {
+            Debug.countTime(TAG, "Test_toByteArray") {
                 Test.getDefaultInstance().toByteArray()
                 Test.getDefaultInstance().parserForType
             }
             // ProtoBufType 支持类，不知为何会有很多的loadClass
-            Debug.traceAndTime(TAG, "ProtoBufType") {
+            Debug.countTime(TAG, "ProtoBufType") {
                 BundleSupportType.ProtoBufType(Test::class.java, false)
             }
             // Frag 类加载时会初始化其委托属性的 KProperty 信息实例，会消耗一些时间
-            val f = Debug.traceAndTime(TAG, "f") {
+            val f = Debug.countTime(TAG, "f") {
                 Frag().apply {
                     a = 1
                     b = "asd"

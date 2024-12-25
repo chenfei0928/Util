@@ -26,6 +26,7 @@ object Debug {
         msg: String = tracePath,
         block: () -> T
     ): T {
+        // 追加时间戳后缀，避免AndroidStudio Profiler对trace进行的缓存
         val l = System.currentTimeMillis()
         Log.v(tag, "$msg, currentTimeMillis: $l")
         Debug.startMethodTracing("${tracePath}_$l")
@@ -40,6 +41,7 @@ object Debug {
     }
 
     inline fun <T> trace(tracePath: String, block: () -> T): T {
+        // 追加时间戳后缀，避免AndroidStudio Profiler对trace进行的缓存
         val l = System.currentTimeMillis()
         Debug.startMethodTracing("${tracePath}_$l")
         return try {
