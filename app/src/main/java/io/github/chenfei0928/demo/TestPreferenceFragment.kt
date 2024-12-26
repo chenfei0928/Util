@@ -9,9 +9,10 @@ import io.github.chenfei0928.preference.FieldAccessor
 import io.github.chenfei0928.preference.FieldAccessor.Companion.protobufField
 import io.github.chenfei0928.preference.FieldAccessor.Companion.protobufProperty
 import io.github.chenfei0928.preference.FieldAccessor.ProtobufMessageField.Companion.property
+import io.github.chenfei0928.preference.FieldAccessorHelper
 import io.github.chenfei0928.preference.bindEnum
-import io.github.chenfei0928.preference.datastore.DataStorePreferenceDataStore
-import io.github.chenfei0928.preference.datastore.DataStorePreferenceGroupBuilder.Companion.buildPreferenceScreen
+import io.github.chenfei0928.preference.DataStorePreferenceDataStore
+import io.github.chenfei0928.preference.FieldAccessorPreferenceGroupBuilder.Companion.buildPreferenceScreen
 
 /**
  * @author chenf()
@@ -34,7 +35,7 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
             }
             // protobuf 二层字段引用方式1
             seekBarPreference(
-                dataStore.property(
+                FieldAccessorHelper.property(
                     dataStore.protobufField("test", Test::getTest, Test.Builder::setTest),
                     dataStore.protobufField("int", Test::getInt, Test.Builder::setInt),
                 )
@@ -43,7 +44,7 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
             }
             // protobuf 二层字段引用方式2（full专用）
             checkBoxPreference(
-                dataStore.property(
+                FieldAccessorHelper.property(
                     FieldAccessor.ProtobufMessageField<Test, Test>(Test.TEST_FIELD_NUMBER),
                     FieldAccessor.ProtobufMessageField<Test, Boolean>(Test.BOOLEAN_FIELD_NUMBER),
                 )

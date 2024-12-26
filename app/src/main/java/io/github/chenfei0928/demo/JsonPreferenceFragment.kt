@@ -5,11 +5,12 @@ import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.MainActivity.Companion.jsonDataStore
 import io.github.chenfei0928.os.Debug
+import io.github.chenfei0928.preference.FieldAccessorHelper
 import io.github.chenfei0928.preference.bindEnum
-import io.github.chenfei0928.preference.datastore.DataStorePreferenceDataStore
-import io.github.chenfei0928.preference.datastore.DataStorePreferenceGroupBuilder.Companion.buildPreferenceScreen
-import io.github.chenfei0928.preference.datastore.FieldAccessorHelper.Companion.cacheCopyFunc
-import io.github.chenfei0928.preference.datastore.FieldAccessorHelper.Companion.property
+import io.github.chenfei0928.preference.DataStorePreferenceDataStore
+import io.github.chenfei0928.preference.FieldAccessorPreferenceGroupBuilder.Companion.buildPreferenceScreen
+import io.github.chenfei0928.preference.FieldAccessorHelper.Companion.cacheCopyFunc
+import io.github.chenfei0928.preference.FieldAccessorHelper.Companion.property
 
 /**
  * @author chenf()
@@ -24,7 +25,7 @@ class JsonPreferenceFragment : PreferenceFragmentCompat() {
             DataStorePreferenceDataStore(coroutineScope, jsonDataStore)
         preferenceManager.preferenceDataStore = dataStore
         // 缓存data class copy方法
-        dataStore.cacheCopyFunc(JsonBean::class, JsonBean::copy)
+        FieldAccessorHelper.cacheCopyFunc(JsonBean::class, JsonBean::copy)
         dataStore.cacheCopyFunc<JsonBean.InnerJsonBean>(JsonBean.InnerJsonBean::copy)
         preferenceScreen = buildPreferenceScreen(dataStore) {
             // 字段引用

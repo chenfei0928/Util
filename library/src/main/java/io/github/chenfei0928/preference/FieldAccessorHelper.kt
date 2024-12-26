@@ -1,10 +1,9 @@
-package io.github.chenfei0928.preference.datastore
+package io.github.chenfei0928.preference
 
 import androidx.collection.ArrayMap
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.os.Debug
-import io.github.chenfei0928.preference.FieldAccessor
-import io.github.chenfei0928.preference.datastore.FieldAccessorHelper.Impl.KPropertyDataCopyField
+import io.github.chenfei0928.preference.FieldAccessorHelper.Impl.KPropertyDataCopyField
 import io.github.chenfei0928.util.MapCache
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

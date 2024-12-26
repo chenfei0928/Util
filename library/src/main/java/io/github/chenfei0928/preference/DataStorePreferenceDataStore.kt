@@ -1,8 +1,6 @@
-package io.github.chenfei0928.preference.datastore
+package io.github.chenfei0928.preference
 
 import androidx.datastore.core.DataStore
-import io.github.chenfei0928.preference.BasePreferenceDataStore
-import io.github.chenfei0928.preference.FieldAccessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted

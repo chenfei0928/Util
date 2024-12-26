@@ -25,7 +25,7 @@ import kotlin.reflect.KProperty1
 class SpSaverPreferenceGroupBuilder<SpSaver : AbsSpSaver<SpSaver>>(
     context: Context,
     private val dataStore: SpSaverPreferenceDataStore<SpSaver>,
-    preferenceGroup: PreferenceGroup
+    preferenceGroup: PreferenceGroup,
 ) : AbsPreferenceGroupBuilder1<SpSaver, SpSaverPreferenceGroupBuilder<SpSaver>>(
     context, dataStore.saver, preferenceGroup
 ) {
