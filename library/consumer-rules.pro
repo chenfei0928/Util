@@ -39,6 +39,10 @@
     public int findLastVisibleItemPosition();
 }
 
+## 直接获取 meterial 依赖是否引入
+## io.github.chenfei0928.util.DependencyChecker.MATERIAL
+-dontwarn com.google.android.material.bottomsheet.BottomSheetDialog
+
 ## 反射获取 androidx 的 concurrentFuturesKtx 依赖是否引入
 ## io.github.chenfei0928.util.DependencyChecker.ANDROID_X_LISTENABLE_FUTURE
 -keepnames class androidx.concurrent.futures.ListenableFutureKt
