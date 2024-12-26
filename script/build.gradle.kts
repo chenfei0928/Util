@@ -23,4 +23,8 @@ dependencies {
     // https://github.com/Kotlin/kotlinx.coroutines
     val coroutinesVersion = "1.8.1"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+
+    // https://github.com/ajalt/clikt
+    implementation("com.github.ajalt.clikt:clikt:5.0.1")
+    implementation("com.github.ajalt.clikt:clikt-markdown:5.0.1")
 }
