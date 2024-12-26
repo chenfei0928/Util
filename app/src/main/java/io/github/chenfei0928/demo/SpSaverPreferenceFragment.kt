@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.os.Debug
-import io.github.chenfei0928.preference.bindEnum
+import io.github.chenfei0928.preference.base.bindEnum
 import io.github.chenfei0928.preference.sp.SpSaverPreferenceGroupBuilder.Companion.buildPreferenceScreen
 
 /**

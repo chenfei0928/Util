@@ -7,7 +7,7 @@ import androidx.preference.PreferenceGroup
 import androidx.preference.PreferenceManager
 import androidx.preference.PreferenceScreen
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
-import io.github.chenfei0928.preference.AbsPreferenceGroupBuilder1
+import io.github.chenfei0928.preference.base.AbsPreferenceGroupBuilder1
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 

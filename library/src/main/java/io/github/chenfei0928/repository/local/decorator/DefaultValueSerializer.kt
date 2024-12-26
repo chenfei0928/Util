@@ -1,9 +1,3 @@
-/**
- * 修改默认值的序列化
- *
- * @author chenfei()
- * @date 2022-07-13 18:54
- */
 package io.github.chenfei0928.repository.local.decorator
 
 import io.github.chenfei0928.repository.local.LocalSerializer

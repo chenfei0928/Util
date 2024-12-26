@@ -2,7 +2,7 @@
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-26 11:49
  */
-package io.github.chenfei0928.preference
+package io.github.chenfei0928.preference.base
 
 import android.content.Context
 import androidx.preference.ListPreference

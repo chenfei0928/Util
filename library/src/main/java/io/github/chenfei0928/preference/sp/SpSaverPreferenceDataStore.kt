@@ -4,8 +4,8 @@ import android.content.SharedPreferences.Editor
 import android.util.Log
 import androidx.preference.PreferenceManager
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
-import io.github.chenfei0928.preference.BasePreferenceDataStore
-import io.github.chenfei0928.preference.FieldAccessor
+import io.github.chenfei0928.preference.base.BasePreferenceDataStore
+import io.github.chenfei0928.preference.base.FieldAccessor
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1

@@ -5,12 +5,12 @@ import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.MainActivity.Companion.jsonDataStore
 import io.github.chenfei0928.os.Debug
-import io.github.chenfei0928.preference.FieldAccessorHelper
-import io.github.chenfei0928.preference.bindEnum
+import io.github.chenfei0928.preference.base.FieldAccessorHelper
+import io.github.chenfei0928.preference.base.bindEnum
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 import io.github.chenfei0928.preference.FieldAccessorPreferenceGroupBuilder.Companion.buildPreferenceScreen
-import io.github.chenfei0928.preference.FieldAccessorHelper.Companion.cacheCopyFunc
-import io.github.chenfei0928.preference.FieldAccessorHelper.Companion.property
+import io.github.chenfei0928.preference.base.FieldAccessorHelper.Companion.cacheCopyFunc
+import io.github.chenfei0928.preference.base.FieldAccessorHelper.Companion.property
 
 /**
  * @author chenf()

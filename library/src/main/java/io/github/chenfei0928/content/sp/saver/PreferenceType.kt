@@ -6,7 +6,7 @@ import androidx.collection.ArraySet
 import androidx.preference.PreferenceDataStore
 import com.google.protobuf.Descriptors
 import io.github.chenfei0928.content.sp.saver.PreferenceType.EnumNameString
-import io.github.chenfei0928.preference.FieldAccessor.Field
+import io.github.chenfei0928.preference.base.FieldAccessor.Field
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.jTypeOf

@@ -1,4 +1,4 @@
-package io.github.chenfei0928.preference
+package io.github.chenfei0928.preference.base
 
 import androidx.collection.ArrayMap
 import androidx.collection.ArraySet
@@ -9,7 +9,7 @@ import com.google.protobuf.MessageLite
 import com.google.protobuf.ProtocolMessageEnum
 import com.google.protobuf.getProtobufV3DefaultInstance
 import io.github.chenfei0928.content.sp.saver.PreferenceType
-import io.github.chenfei0928.preference.FieldAccessor.ProtobufMessageField
+import io.github.chenfei0928.preference.base.FieldAccessor.ProtobufMessageField
 import io.github.chenfei0928.reflect.jTypeOf
 import java.lang.reflect.Type
 import kotlin.reflect.KFunction

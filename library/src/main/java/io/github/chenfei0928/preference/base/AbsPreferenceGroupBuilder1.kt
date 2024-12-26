@@ -1,4 +1,4 @@
-package io.github.chenfei0928.preference
+package io.github.chenfei0928.preference.base
 
 import android.content.Context
 import androidx.annotation.RestrictTo

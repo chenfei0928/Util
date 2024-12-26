@@ -2,7 +2,7 @@ package io.github.chenfei0928.demo
 
 import android.content.Context
 import android.os.Parcelable
-import io.github.chenfei0928.preference.VisibleNamed
+import io.github.chenfei0928.preference.base.VisibleNamed
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable

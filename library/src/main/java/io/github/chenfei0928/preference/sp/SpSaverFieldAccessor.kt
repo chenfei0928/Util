@@ -4,7 +4,7 @@ import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete
 import io.github.chenfei0928.content.sp.saver.convert.SpConvertSaver
-import io.github.chenfei0928.preference.FieldAccessor
+import io.github.chenfei0928.preference.base.FieldAccessor
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KMutableProperty0
 
