@@ -4,8 +4,9 @@
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-08-19 16:48
  */
-package io.github.chenfei0928.repository.local
+package io.github.chenfei0928.repository.local.decorator
 
+import io.github.chenfei0928.repository.local.LocalSerializer
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.zip.GZIPInputStream

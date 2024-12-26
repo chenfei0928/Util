@@ -4,11 +4,12 @@
  * @author chenfei(chenfei@gmail.com)
  * @date 2022-01-12 10:25
  */
-package io.github.chenfei0928.repository.local
+package io.github.chenfei0928.repository.local.decorator
 
 import android.util.Base64
 import android.util.Base64InputStream
 import android.util.Base64OutputStream
+import io.github.chenfei0928.repository.local.LocalSerializer
 import java.io.InputStream
 import java.io.OutputStream
 

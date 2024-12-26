@@ -1,9 +1,10 @@
-package io.github.chenfei0928.repository.local
+package io.github.chenfei0928.repository.local.serializer
 
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.reflect.TypeToken
-import io.github.chenfei0928.repository.local.GZipSerializer.Companion.gzip
+import io.github.chenfei0928.repository.local.LocalSerializer
+import io.github.chenfei0928.repository.local.decorator.GZipSerializer.Companion.gzip
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream

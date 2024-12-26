@@ -1,6 +1,7 @@
-package io.github.chenfei0928.repository.local
+package io.github.chenfei0928.repository.local.serializer
 
 import androidx.annotation.Discouraged
+import io.github.chenfei0928.repository.local.LocalSerializer
 import java.io.IOException
 import java.io.InputStream
 import java.io.ObjectInputStream

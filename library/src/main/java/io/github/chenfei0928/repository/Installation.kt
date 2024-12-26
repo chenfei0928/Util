@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.ads.identifier.AdvertisingIdClient
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.repository.local.LocalFileStorage
-import io.github.chenfei0928.repository.local.StringSerializer
+import io.github.chenfei0928.repository.local.serializer.StringSerializer
 import io.github.chenfei0928.util.Log
 import java.util.UUID
 import java.util.concurrent.ExecutionException

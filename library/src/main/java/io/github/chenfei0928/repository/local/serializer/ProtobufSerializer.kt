@@ -1,9 +1,10 @@
-package io.github.chenfei0928.repository.local
+package io.github.chenfei0928.repository.local.serializer
 
 import com.google.protobuf.MessageLite
 import com.google.protobuf.Parser
 import com.google.protobuf.protobufDefaultInstance
 import com.google.protobuf.protobufParserForType
+import io.github.chenfei0928.repository.local.LocalSerializer
 import java.io.InputStream
 import java.io.OutputStream
 

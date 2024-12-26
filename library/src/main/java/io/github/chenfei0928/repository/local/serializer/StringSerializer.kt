@@ -1,5 +1,6 @@
-package io.github.chenfei0928.repository.local
+package io.github.chenfei0928.repository.local.serializer
 
+import io.github.chenfei0928.repository.local.LocalSerializer
 import java.io.InputStream
 import java.io.OutputStream
 

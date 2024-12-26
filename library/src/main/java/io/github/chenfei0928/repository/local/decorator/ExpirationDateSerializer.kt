@@ -1,4 +1,6 @@
-package io.github.chenfei0928.repository.local
+package io.github.chenfei0928.repository.local.decorator
+
+import io.github.chenfei0928.repository.local.LocalSerializer
 
 /**
  * 超时保质期序列化

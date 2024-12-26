@@ -2,8 +2,8 @@ package io.github.chenfei0928.content.sp.saver.convert
 
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
-import io.github.chenfei0928.repository.local.Base64Serializer
-import io.github.chenfei0928.repository.local.Base64Serializer.Companion.base64
+import io.github.chenfei0928.repository.local.decorator.Base64Serializer
+import io.github.chenfei0928.repository.local.decorator.Base64Serializer.Companion.base64
 import io.github.chenfei0928.repository.local.LocalSerializer
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
