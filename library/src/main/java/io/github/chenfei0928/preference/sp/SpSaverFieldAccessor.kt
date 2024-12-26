@@ -27,6 +27,10 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
         property: KMutableProperty<V>, delegate: AbsSpSaver.AbsSpDelegate<V>? = null
     ): FieldAccessor.Field<SpSaver, V>
 
+    interface Field<SpSaver : AbsSpSaver<SpSaver>, V> : FieldAccessor.Field<SpSaver, V> {
+        val property: KMutableProperty<*>
+    }
+
     class Impl<SpSaver : AbsSpSaver<SpSaver>>(
         private val spSaver: SpSaver,
     ) : FieldAccessor.Impl<SpSaver>(false), SpSaverFieldAccessor<SpSaver> {
@@ -35,16 +39,16 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
             property0: KMutableProperty0<V>, vType: PreferenceType
         ): FieldAccessor.Field<SpSaver, V> = property(NativeTypeField(property0, vType))
 
-        private class NativeTypeField<SpSaver : AbsSpSaver<SpSaver>, V>(
-            private val property0: KMutableProperty0<V>,
+        internal class NativeTypeField<SpSaver : AbsSpSaver<SpSaver>, V>(
+            override val property: KMutableProperty0<V>,
             override val vType: PreferenceType,
-        ) : FieldAccessor.Field<SpSaver, V> {
-            override val pdsKey: String = property0.name
+        ) : Field<SpSaver, V> {
+            override val pdsKey: String = property.name
 
-            override fun get(data: SpSaver): V = property0.get()
+            override fun get(data: SpSaver): V = property.get()
 
             override fun set(data: SpSaver, value: V): SpSaver {
-                property0.set(value)
+                property.set(value)
                 return data
             }
         }
@@ -54,7 +58,6 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
         ): FieldAccessor.Field<SpSaver, V> {
             val delegate: AbsSpSaver.AbsSpDelegate<V> = delegate
                 ?: spSaver.dataStore.getDelegateByProperty(property)
-            val name: String = property.name
             val outDelegate: AbsSpSaver.AbsSpDelegate<V> = delegate
             var spAccessDelegate: AbsSpSaver.AbsSpDelegate<*> = delegate
             var defaultValue: Any? = null
@@ -74,7 +77,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
                     }
                     else -> {
                         spAccessDelegate as AbsSpSaver.AbsSpDelegate<Any?>
-                        val field = SpSaverField<SpSaver, Any?>(
+                        val field = SpSaverPropertyDelegateField<SpSaver, Any?>(
                             outDelegate as AbsSpSaver.AbsSpDelegate<Any?>,
                             spAccessDelegate,
                             property,
@@ -86,21 +89,21 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
             }
         }
 
-        internal class SpSaverField<SpSaver : AbsSpSaver<SpSaver>, V>(
+        internal class SpSaverPropertyDelegateField<SpSaver : AbsSpSaver<SpSaver>, V>(
             internal val outDelegate: AbsSpSaver.AbsSpDelegate<V>,
             private val spAccessDelegate: AbsSpSaver.AbsSpDelegate<V?>,
-            internal val property0: KMutableProperty<*>,
+            override val property: KMutableProperty<*>,
             private val defaultValue: V?,
-        ) : FieldAccessor.Field<SpSaver, V?> {
-            override val pdsKey: String = property0.name
+        ) : Field<SpSaver, V?> {
+            override val pdsKey: String = property.name
             override val vType: PreferenceType = spAccessDelegate.spValueType
 
             override fun get(data: SpSaver): V? {
-                return spAccessDelegate.getValue(data, property0) ?: defaultValue
+                return spAccessDelegate.getValue(data, property) ?: defaultValue
             }
 
             override fun set(data: SpSaver, value: V?): SpSaver {
-                spAccessDelegate.setValue(data, property0, value)
+                spAccessDelegate.setValue(data, property, value)
                 return data
             }
         }

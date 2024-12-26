@@ -20,5 +20,13 @@
         <activity
             android:name=".PreferenceActivity"
             android:exported="false" />
+
+        <service
+            android:name=".AudioFocusService"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="io.github.chenfei0928.demo.AudioFocusService" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>

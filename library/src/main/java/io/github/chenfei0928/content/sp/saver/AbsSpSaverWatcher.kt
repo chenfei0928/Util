@@ -6,10 +6,12 @@ import androidx.collection.ArrayMap
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.content.sp.registerOnSharedPreferenceChangeListener
+import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor
 import io.github.chenfei0928.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
@@ -100,34 +102,36 @@ private object AbsSpSaverKProperty1Cache {
  */
 fun <SpSaver : AbsSpSaver<SpSaver>> SpSaver.registerOnSharedPreferenceChangeListener(
     owner: LifecycleOwner,
-    @MainThread callback: (key: KProperty1<SpSaver, *>) -> Unit,
+    @MainThread callback: (key: KProperty<*>) -> Unit,
 ) {
     val spSaver = this
-    AbsSpSaverKProperty1Cache.prepare(owner, this)
-    AbsSpSaver.getSp(this)
-        .registerOnSharedPreferenceChangeListener(owner) { key ->
-            owner.coroutineScope.launch {
-                if (key == null) {
-                    // Android R以上时 clear sp，会回调null，R以下时clear时不会回调
-                    AbsSpSaverKProperty1Cache
-                        .getKotlinClassFieldsCache(spSaver)
-                        .values.filterNotNull()
-                        .forEach(callback)
-                } else {
-                    // 根据key获取其对应的AbsSpSaver字段
-                    val property = AbsSpSaverKProperty1Cache
-                        .findSpKProperty1BySpKey(spSaver, key)
-                    // 找得到属性，回调通知该字段被更改
-                    if (property == null) {
-                        Log.d(TAG, buildString {
-                            append("registerOnSharedPreferenceChangeListener: ")
-                            append("cannot found property of the key($key) in class ")
-                            append(spSaver.javaClass.simpleName)
-                        })
-                    } else {
-                        callback(property)
-                    }
+    AbsSpSaver.getSp(this).registerOnSharedPreferenceChangeListener(owner) { key ->
+        if (key == null) {
+            // Android R以上时 clear sp，会回调null，R以下时clear时不会回调
+            spSaver.dataStore
+                .spSaverPropertyDelegateFields
+                .forEach {
+                    callback(it.property)
                 }
+        } else {
+            // 根据key获取其对应的AbsSpSaver字段
+            val property = spSaver.dataStore
+                .spSaverPropertyDelegateFields
+                .filterIsInstance<SpSaverFieldAccessor.Impl.SpSaverPropertyDelegateField<*, *>>()
+                .find {
+                    it.outDelegate.obtainDefaultKey(it.property) == key
+                }
+                ?.property
+            // 找得到属性，回调通知该字段被更改
+            if (property == null) {
+                Log.d(TAG, buildString {
+                    append("registerOnSharedPreferenceChangeListener: ")
+                    append("cannot found property of the key($key) in class ")
+                    append(spSaver.javaClass.simpleName)
+                })
+            } else {
+                callback(property)
             }
         }
+    }
 }

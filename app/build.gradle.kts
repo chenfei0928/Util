@@ -45,6 +45,7 @@ dependencies {
     implementation(DepsAndroidx.constraintlayout.layout)
     implementation(DepsAndroidx.multidex.core)
     implementation(DepsAndroidx.preference)
+    implementation(DepsAndroidx.lifecycle.service)
     implementation(DepsAndroidx.datastore.core)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.21")
 

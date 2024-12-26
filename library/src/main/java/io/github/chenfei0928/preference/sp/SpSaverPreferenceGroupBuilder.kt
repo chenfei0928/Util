@@ -37,12 +37,12 @@ class SpSaverPreferenceGroupBuilder<SpSaver : AbsSpSaver<SpSaver>>(
 
     @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     override fun getPropertyKey(property: KProperty0<*>): String {
-        return dataStore.findFieldNameByPropertyOrThrow(property)
+        return dataStore.findPdsKeyByPropertyOrThrow(property)
     }
 
     @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     override fun SpSaver.getPropertyKey(property: KProperty1<SpSaver, *>): String {
-        return dataStore.findFieldNameByPropertyOrThrow(property)
+        return dataStore.findPdsKeyByPropertyOrThrow(property)
     }
 
     companion object {

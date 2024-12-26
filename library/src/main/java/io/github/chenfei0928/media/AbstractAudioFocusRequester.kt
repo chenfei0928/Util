@@ -8,6 +8,7 @@ import android.media.AudioManager
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.os.Build
 import android.util.Log
+import androidx.annotation.IntDef
 import androidx.annotation.RequiresApi
 
 /**
@@ -18,7 +19,9 @@ import androidx.annotation.RequiresApi
  */
 abstract class AbstractAudioFocusRequester
 constructor(
+    @StreamType
     private val streamType: Int,
+    @FocusGain
     private val focusGain: Int,
 ) : OnAudioFocusChangeListener {
     @get:RequiresApi(api = Build.VERSION_CODES.O)
@@ -58,7 +61,7 @@ constructor(
         }
     }
 
-    fun audioFocusToString(focus: Int): String {
+    fun audioFocusToString(@FocusGain focus: Int): String {
         return when (focus) {
             AudioManager.AUDIOFOCUS_NONE -> "AUDIOFOCUS_NONE"
             AudioManager.AUDIOFOCUS_GAIN -> "AUDIOFOCUS_GAIN"
@@ -71,6 +74,28 @@ constructor(
             else -> "AUDIO_FOCUS_UNKNOWN($focus)"
         }
     }
+
+    @IntDef(
+        AudioManager.STREAM_VOICE_CALL,
+        AudioManager.STREAM_SYSTEM,
+        AudioManager.STREAM_RING,
+        AudioManager.STREAM_MUSIC,
+        AudioManager.STREAM_ALARM,
+        AudioManager.STREAM_NOTIFICATION
+    )
+    annotation class StreamType
+
+    @IntDef(
+        AudioManager.AUDIOFOCUS_NONE,
+        AudioManager.AUDIOFOCUS_GAIN,
+        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT,
+        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK,
+        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE,
+        AudioManager.AUDIOFOCUS_LOSS,
+        AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
+        AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK
+    )
+    annotation class FocusGain
 
     companion object {
         private const val TAG = "KW_AbstractAudioFocusR"
