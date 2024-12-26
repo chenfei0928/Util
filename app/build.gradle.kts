@@ -12,7 +12,7 @@ plugins {
 
 applyApp()
 applyTest()
-applyKotlin(parcelize = true, json = true)
+applyKotlin(parcelize = true, json = true, protobuf = true)
 applyJetpackCompose()
 applyProtobuf()
 

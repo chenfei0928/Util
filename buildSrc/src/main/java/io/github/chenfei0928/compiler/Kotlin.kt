@@ -38,6 +38,7 @@ fun Project.applyKotlin(
     kapt: Boolean = false,
     ksp: Boolean = false,
     json: Boolean = false,
+    protobuf: Boolean = false,
     atomic: Boolean = false,
 ) {
     apply<KotlinAndroidPluginWrapper>()
@@ -50,7 +51,7 @@ fun Project.applyKotlin(
     if (ksp) {
         apply<KspGradleSubplugin>()
     }
-    if (json) {
+    if (json || protobuf) {
         apply<SerializationGradleSubplugin>()
     }
     if (atomic) {
@@ -122,6 +123,9 @@ fun Project.applyKotlin(
         // https://github.com/Kotlin/kotlinx.serialization
         if (json) {
             implementation(Deps.kotlin.json)
+        }
+        if (protobuf) {
+            implementation(Deps.kotlin.protobuf)
         }
         // 协程库
         // https://github.com/Kotlin/kotlinx.coroutines

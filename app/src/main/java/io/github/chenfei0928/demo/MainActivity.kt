@@ -32,7 +32,7 @@ import io.github.chenfei0928.reflect.parameterized.getParentParameterizedTypeBou
 import io.github.chenfei0928.reflect.parameterized.getParentParameterizedTypeClassDefinedImplInChild
 import io.github.chenfei0928.repository.datastore.ProtobufSerializer
 import io.github.chenfei0928.repository.datastore.toDatastore
-import io.github.chenfei0928.repository.local.KtxsSerializer
+import io.github.chenfei0928.repository.local.KtxsJsonSerializer
 import io.github.chenfei0928.view.listener.setNoDoubleOnClickListener
 import io.github.chenfei0928.viewbinding.setContentViewBinding
 import kotlinx.coroutines.flow.first
@@ -194,7 +194,7 @@ class MainActivity : ComponentActivity() {
             "test.pb", ProtobufSerializer<Test>()
         )
         val Context.jsonDataStore: DataStore<JsonBean> by dataStore<JsonBean>(
-            "jsonBean.json", KtxsSerializer<JsonBean>(JsonBean()).toDatastore()
+            "jsonBean.json", KtxsJsonSerializer<JsonBean>(JsonBean()).toDatastore()
         )
     }
 }

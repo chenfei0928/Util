@@ -1,6 +1,8 @@
 package io.github.chenfei0928.repository.local
 
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
@@ -12,25 +14,29 @@ import java.io.OutputStream
  * @author chenf()
  * @date 2024-12-17 17:43
  */
-class KtxsSerializer<T>(
+class KtxsJsonSerializer<T>(
     private val json: Json,
-    private val serializer: KSerializer<T>,
+    private val serializer: SerializationStrategy<T>,
+    private val deserializer: DeserializationStrategy<T>,
     override val defaultValue: T
 ) : LocalSerializer<T> {
+
+    constructor(
+        json: Json, serializer: KSerializer<T>, defaultValue: T
+    ) : this(json, serializer, serializer, defaultValue)
 
     override fun write(outputStream: OutputStream, obj: T & Any) {
         json.encodeToStream(serializer, obj, outputStream)
     }
 
     override fun read(inputStream: InputStream): T {
-        return json.decodeFromStream(serializer, inputStream)
+        return json.decodeFromStream(deserializer, inputStream)
     }
 
     companion object {
         inline operator fun <reified T> invoke(
-            defaultValue: T,
-            json: Json = Json,
-        ): LocalSerializer<T> = KtxsSerializer(
+            defaultValue: T, json: Json = Json,
+        ): LocalSerializer<T> = KtxsJsonSerializer(
             json, json.serializersModule.serializer<T>(), defaultValue
         )
     }

@@ -17,6 +17,7 @@ object Deps {
         // Json序列化支持
         // https://github.com/Kotlin/kotlinx.serialization
         val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
+        val protobuf = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.7.3"
     }
     //</editor-fold>
 
