@@ -3,7 +3,7 @@ package io.github.chenfei0928.preference
 import androidx.datastore.core.DataStore
 import io.github.chenfei0928.preference.base.BasePreferenceDataStore
 import io.github.chenfei0928.preference.base.FieldAccessor
-import io.github.chenfei0928.preference.base.FieldAccessorHelper
+import io.github.chenfei0928.preference.base.DataCopyClassFieldAccessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,19 +21,20 @@ import kotlin.reflect.KMutableProperty1
  * [DataStore]初次加载数据耗时较久（约300-400ms），建议在提前已经获取过该字段
  *
  *  [DataStore.updateData] 的数据刷写方式要求每次返回一个新实例，
- *  不能使用[KMutableProperty1.set]来优化性能，必须使用[FieldAccessorHelper.copyFunc]写入数据
+ *  不能使用[KMutableProperty1.set]来优化性能，必须使用[DataCopyClassFieldAccessor.copyFunc]写入数据
  *
  * @param blockingWrite true为阻塞方式以 [runBlocking] 写入，false为使用 [launch] 写入，阻塞方式写入时耗时较久
  *
  * @author chenf()
  * @date 2024-08-13 18:18
  */
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class DataStorePreferenceDataStore<T : Any>(
     private val coroutineScope: CoroutineScope,
     private val dataStore: DataStore<T>,
     private val blockingWrite: Boolean = false,
-    private val fieldAccessor: FieldAccessorHelper<T> = FieldAccessorHelper.Impl(true),
-) : BasePreferenceDataStore<T>(fieldAccessor), FieldAccessorHelper<T> by fieldAccessor {
+    private val fieldAccessor: DataCopyClassFieldAccessor<T> = DataCopyClassFieldAccessor.Impl(true),
+) : BasePreferenceDataStore<T>(fieldAccessor), DataCopyClassFieldAccessor<T> by fieldAccessor {
     // 缓存dataStore字段最后的值，否则每次 dataStore.data.first() 耗时较久
     private val field: StateFlow<T?> = dataStore.data.stateIn(
         CoroutineScope(coroutineScope.coroutineContext + Dispatchers.IO),
@@ -64,9 +65,5 @@ class DataStorePreferenceDataStore<T : Any>(
             field.filterNotNull().first()
         }
         return getValue(data)
-    }
-
-    companion object {
-        private const val TAG = "DataStoreDataStore"
     }
 }

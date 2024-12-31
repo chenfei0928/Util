@@ -9,13 +9,14 @@ import com.google.protobuf.MessageLite
 import com.google.protobuf.ProtocolMessageEnum
 import com.google.protobuf.getProtobufV3DefaultInstance
 import io.github.chenfei0928.content.sp.saver.PreferenceType
+import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 import io.github.chenfei0928.preference.base.FieldAccessor.ProtobufMessageField
 import io.github.chenfei0928.reflect.jTypeOf
 import java.lang.reflect.Type
 import kotlin.reflect.KFunction
 
 /**
- * 用于 [DataStoreDataStore] 的字段访问器存储与获取
+ * 用于 [DataStorePreferenceDataStore] 的字段访问器存储与获取
  *
  * @author chenf()
  * @date 2024-10-12 17:54
@@ -38,6 +39,17 @@ interface FieldAccessor<T> {
      */
     fun <V> property(
         field: Field<T, V>
+    ): Field<T, V>
+
+    fun <T1, V> property(
+        outerField: Field<T, T1>,
+        innerField: Field<T1, V>,
+    ): Field<T, V>
+
+    fun <T1, T2, V> property(
+        property0: Field<T, T1>,
+        property1: Field<T1, T2>,
+        property2: Field<T2, V>,
     ): Field<T, V>
 
     fun <V> findByName(name: String): Field<T, V>
@@ -84,6 +96,45 @@ interface FieldAccessor<T> {
             properties[name] = if (readCache) ReadCacheField(field) else field
         }
 
+        override fun <T1, V> property(
+            outerField: Field<T, T1>,
+            innerField: Field<T1, V>,
+        ): Field<T, V> = FieldWrapper(outerField, innerField).let(::property)
+
+        override fun <T1, T2, V> property(
+            property0: Field<T, T1>,
+            property1: Field<T1, T2>,
+            property2: Field<T2, V>
+        ): Field<T, V> = FieldWrapper(
+            FieldWrapper(property0, property1), property2
+        ).let(::property)
+
+        /**
+         * 使用只读属性与该data class类的 copy 方法来进行读写的字段
+         *
+         * @param T 宿主类类型
+         * @param T1 中间宿主类类型
+         * @param V 字段类型
+         * @property outerField 外部字段到中间宿主类型字段的访问方法
+         * @property innerField 中间宿主的子字段的访问方法
+         */
+        private class FieldWrapper<T, T1, V>(
+            private val outerField: Field<T, T1>,
+            private val innerField: Field<T1, V>,
+        ) : Field<T, V> {
+            override val pdsKey: String = outerField.pdsKey + "_" + innerField.pdsKey
+            override val vType: PreferenceType = innerField.vType
+
+            override fun get(data: T): V {
+                return innerField.get(outerField.get(data))
+            }
+
+            override fun set(data: T, value: V): T {
+                val t1 = outerField.get(data)
+                return outerField.set(data, innerField.set(t1, value))
+            }
+        }
+
         override fun <V> findByName(name: String): Field<T, V> {
             @Suppress("UNCHECKED_CAST")
             return properties[name] as? Field<T, V>
@@ -122,6 +173,7 @@ interface FieldAccessor<T> {
             PreferenceType.forType(field, vTypeProvider)
         }
 
+        @Suppress("UNCHECKED_CAST")
         override fun get(data: T): V = if (field.type != Descriptors.FieldDescriptor.Type.ENUM) {
             data.getField(field) as V
         } else if (!field.isRepeated) {
@@ -134,12 +186,13 @@ interface FieldAccessor<T> {
             vType.forName(enum.mapTo(ArraySet(enum.size)) { it.name }, true) as V
         }
 
+        @Suppress("UNCHECKED_CAST")
         override fun set(
             data: T, value: V
         ): T = if (field.type != Descriptors.FieldDescriptor.Type.ENUM) {
             data.toBuilder().setField(field, value).build() as T
         } else if (field.isRepeated) {
-            value as Collection<out ProtocolMessageEnum>
+            value as Collection<ProtocolMessageEnum>
             data.toBuilder().setField(field, value.map { it.valueDescriptor }).build() as T
         } else {
             value as ProtocolMessageEnum
@@ -257,6 +310,7 @@ interface FieldAccessor<T> {
                 }
 
                 override fun set(data: T, value: V): T {
+                    @Suppress("UNCHECKED_CAST")
                     return setter(data.toBuilder() as Builder, value).build() as T
                 }
             }

@@ -12,7 +12,6 @@ import android.view.View
 import androidx.collection.ArrayMap
 import androidx.core.content.res.use
 import io.github.chenfei0928.util.MapCache
-import io.github.chenfei0928.util.MapWeakCache
 import io.github.chenfei0928.util.R
 import kotlin.math.abs
 import kotlin.math.max
@@ -93,9 +92,10 @@ class IconFontView
     }
 
     companion object {
-        private val typefaceCache = MapCache<Context, MapWeakCache<String, Typeface>> { context ->
-            // 其key内存占用可以忽略，主要是value需要weakRef
-            MapWeakCache(ArrayMap()) { key -> Typeface.createFromAsset(context.assets, key) }
-        }
+        private val typefaceCache =
+            MapCache.Basic<Context, MapCache<String, Typeface>> { context ->
+                // 其key内存占用可以忽略，主要是value需要weakRef
+                MapCache.Weak(ArrayMap()) { key -> Typeface.createFromAsset(context.assets, key) }
+            }
     }
 }

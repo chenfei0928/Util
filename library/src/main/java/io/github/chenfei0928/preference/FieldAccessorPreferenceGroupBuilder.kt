@@ -17,20 +17,21 @@ import io.github.chenfei0928.preference.base.AbsPreferenceGroupBuilder
 import io.github.chenfei0928.preference.base.FieldAccessor
 
 /**
- * 使用 [dataStore] 字段并通过 [PreferenceManager.setPreferenceDataStore] 设置来存储值
+ * 使用 [fieldAccessor] 字段并通过 [PreferenceManager.setPreferenceDataStore] 设置来存储值
  *
  * @author chenf()
  * @date 2024-08-13 18:54
  */
-class FieldAccessorPreferenceGroupBuilder<T : Any>(
+class FieldAccessorPreferenceGroupBuilder<T : Any>
+constructor(
     context: Context,
     preferenceGroup: PreferenceGroup,
-    val dataStore: FieldAccessor<T>,
+    val fieldAccessor: FieldAccessor<T>,
 ) : AbsPreferenceGroupBuilder<FieldAccessorPreferenceGroupBuilder<T>>(context, preferenceGroup) {
 
     @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     override fun createInstance(): FieldAccessorPreferenceGroupBuilder<T> {
-        return FieldAccessorPreferenceGroupBuilder(context, preferenceGroup, dataStore)
+        return FieldAccessorPreferenceGroupBuilder(context, preferenceGroup, fieldAccessor)
     }
 
     //<editor-fold desc="Field来获取字段名" defaultstate="collapsed">
@@ -38,7 +39,7 @@ class FieldAccessorPreferenceGroupBuilder<T : Any>(
         property: FieldAccessor.Field<T, Boolean>,
         block: CheckBoxPreference.() -> Unit
     ): FieldAccessorPreferenceGroupBuilder<T> = applyBuilder {
-        require(property in dataStore) {
+        require(property in fieldAccessor) {
             "property ${property.pdsKey} must in dataStore"
         }
         checkBoxPreference(property.pdsKey, block)
@@ -48,7 +49,7 @@ class FieldAccessorPreferenceGroupBuilder<T : Any>(
         property: FieldAccessor.Field<T, E>,
         block: DropDownPreference.() -> Unit
     ): FieldAccessorPreferenceGroupBuilder<T> = applyBuilder {
-        require(property in dataStore) {
+        require(property in fieldAccessor) {
             "property ${property.pdsKey} must in dataStore"
         }
         dropDownPreference<E>(property.pdsKey, block)
@@ -58,7 +59,7 @@ class FieldAccessorPreferenceGroupBuilder<T : Any>(
         property: FieldAccessor.Field<T, String>,
         block: EditTextPreference.() -> Unit
     ): FieldAccessorPreferenceGroupBuilder<T> = applyBuilder {
-        require(property in dataStore) {
+        require(property in fieldAccessor) {
             "property ${property.pdsKey} must in dataStore"
         }
         editTextPreference(property.pdsKey, block)
@@ -68,7 +69,7 @@ class FieldAccessorPreferenceGroupBuilder<T : Any>(
         property: FieldAccessor.Field<T, E>,
         block: ListPreference.() -> Unit
     ): FieldAccessorPreferenceGroupBuilder<T> = applyBuilder {
-        require(property in dataStore) {
+        require(property in fieldAccessor) {
             "property ${property.pdsKey} must in dataStore"
         }
         listPreference<E>(property.pdsKey, block)
@@ -78,7 +79,7 @@ class FieldAccessorPreferenceGroupBuilder<T : Any>(
         property: FieldAccessor.Field<T, Set<E>>,
         block: MultiSelectListPreference.() -> Unit
     ): FieldAccessorPreferenceGroupBuilder<T> = applyBuilder {
-        require(property in dataStore) {
+        require(property in fieldAccessor) {
             "property ${property.pdsKey} must in dataStore"
         }
         multiSelectListPreference<E>(property.pdsKey, block)
@@ -88,7 +89,7 @@ class FieldAccessorPreferenceGroupBuilder<T : Any>(
         property: FieldAccessor.Field<T, Int>,
         block: SeekBarPreference.() -> Unit
     ): FieldAccessorPreferenceGroupBuilder<T> = applyBuilder {
-        require(property in dataStore) {
+        require(property in fieldAccessor) {
             "property ${property.pdsKey} must in dataStore"
         }
         seekBarPreference(property.pdsKey, block)
@@ -98,7 +99,7 @@ class FieldAccessorPreferenceGroupBuilder<T : Any>(
         property: FieldAccessor.Field<T, Boolean>,
         block: SwitchPreference.() -> Unit
     ): FieldAccessorPreferenceGroupBuilder<T> = applyBuilder {
-        require(property in dataStore) {
+        require(property in fieldAccessor) {
             "property ${property.pdsKey} must in dataStore"
         }
         switchPreference(property.pdsKey, block)
@@ -107,10 +108,10 @@ class FieldAccessorPreferenceGroupBuilder<T : Any>(
 
     companion object {
         inline fun <T : Any> PreferenceFragmentCompat.buildPreferenceScreen(
-            dataStore: DataStorePreferenceDataStore<T>,
+            fieldAccessor: FieldAccessor<T>,
             builder: FieldAccessorPreferenceGroupBuilder<T>.() -> Unit
         ): PreferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).also {
-            FieldAccessorPreferenceGroupBuilder(requireContext(), it, dataStore).builder()
+            FieldAccessorPreferenceGroupBuilder(requireContext(), it, fieldAccessor).builder()
         }
     }
 }

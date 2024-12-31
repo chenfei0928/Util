@@ -10,20 +10,28 @@ import java.io.File
 import java.util.concurrent.atomic.AtomicReference
 
 abstract class LocalFileStorage0<T>(
-    context: Context,
+    file: File,
     serializer: LocalSerializer<T>,
-    fileName: String,
-    cacheDir: Boolean = false,
     private val memoryCacheable: Boolean = true
 ) {
-    private val serializer = NoopIODecorator.wrap(serializer)
-    private val atomicFile: AtomicFile = AtomicFile(
-        if (cacheDir) {
+    constructor(
+        context: Context,
+        fileName: String,
+        serializer: LocalSerializer<T>,
+        cacheDir: Boolean = false,
+        memoryCacheable: Boolean = true
+    ) : this(
+        file = if (cacheDir) {
             File(File(context.cacheDir, "localFileStorage"), fileName)
         } else {
             File(File(context.filesDir, "localFileStorage"), fileName)
-        }
+        },
+        serializer = serializer,
+        memoryCacheable = memoryCacheable
     )
+
+    private val serializer = NoopIODecorator.wrap(serializer)
+    private val atomicFile: AtomicFile = AtomicFile(file)
 
     //<editor-fold defaultstate="collapsed" desc="通过文件锁读写文件的实现">
     /**

@@ -19,7 +19,7 @@ import java.lang.reflect.Modifier
 val <T : Parcelable> Class<T>.PARCELABLE_CREATOR: Parcelable.Creator<T>
     get() = parcelableCache[this] as Parcelable.Creator<T>
 
-private val parcelableCache = MapCache<Class<out Parcelable>, Parcelable.Creator<out Parcelable>> {
+private val parcelableCache = MapCache.Basic<Class<out Parcelable>, Parcelable.Creator<out Parcelable>> {
     readParcelableCreator(it)
 }
 

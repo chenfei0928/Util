@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.datastore.core.DataStore
@@ -23,8 +24,17 @@ import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelab
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelableNull
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argString
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argStringNull
+import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.databinding.ActivityMainBinding
+import io.github.chenfei0928.demo.storage.Bean
+import io.github.chenfei0928.demo.storage.JsonBean
+import io.github.chenfei0928.demo.storage.JsonDataStorePreferenceFragment
+import io.github.chenfei0928.demo.storage.JsonLocalFileStoragePreferenceFragment
+import io.github.chenfei0928.demo.storage.PreferenceActivity
+import io.github.chenfei0928.demo.storage.SpSaverPreferenceFragment
+import io.github.chenfei0928.demo.storage.TestPreferenceFragment
+import io.github.chenfei0928.demo.storage.TestSpSaver
 import io.github.chenfei0928.lang.toString0
 import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.Debug
@@ -56,14 +66,19 @@ class MainActivity : ComponentActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        binding.btnTestPreference.setNoDoubleOnClickListener {
-            gotoPreferenceActivity<TestPreferenceFragment>()
-        }
-        binding.btnJsonPreference.setNoDoubleOnClickListener {
-            gotoPreferenceActivity<JsonPreferenceFragment>()
-        }
-        binding.btnSpSaverPreference.setNoDoubleOnClickListener {
-            gotoPreferenceActivity<SpSaverPreferenceFragment>()
+        binding.btnPreference.setNoDoubleOnClickListener {
+            val items = arrayOf(
+                "spSaver" to SpSaverPreferenceFragment::class.java,
+                "protobufDataStore" to TestPreferenceFragment::class.java,
+                "jsonDataStore" to JsonDataStorePreferenceFragment::class.java,
+                "jsonLocalFileStorage" to JsonLocalFileStoragePreferenceFragment.StorageFragment::class.java,
+                "jsonLocalFileStorage0" to JsonLocalFileStoragePreferenceFragment.Storage0Fragment::class.java,
+            )
+            AlertDialog.Builder(this)
+                .setItems(items.mapToArray { it.first }) { dialog, which ->
+                    gotoPreferenceActivity(items[which].second)
+                }
+                .show()
         }
         binding.btnPreload.setNoDoubleOnClickListener {
             Debug.countTime(TAG, "preload jsonDataStore") {
@@ -144,8 +159,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private inline fun <reified F : Fragment> gotoPreferenceActivity() {
+        gotoPreferenceActivity(F::class.java)
+    }
+
+    private fun <F : Fragment> gotoPreferenceActivity(fClass: Class<F>) {
         startActivity(Intent(this, PreferenceActivity::class.java).apply {
-            putExtra("fragmentName", F::class.java.name)
+            putExtra("fragmentName", fClass.name)
         })
     }
 

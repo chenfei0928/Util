@@ -19,7 +19,7 @@ import kotlin.reflect.jvm.isAccessible
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-04-24 10:42
  */
-@Suppress("TooManyFunctions")
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class SpSaverPreferenceDataStore<SpSaver : AbsSpSaver<SpSaver>>
 constructor(
     internal val saver: SpSaver,
@@ -48,6 +48,7 @@ constructor(
      * [io.github.chenfei0928.content.sp.saver.DataStoreDelegateStoreProvider.dataStore] 来存储该委托信息，
      * 或调用任意 [property] 方法来获取并存储委托，如果没有存储将会返回 null ，该方法不会产生反射或其它长耗时调用
      */
+    @Suppress("UNCHECKED_CAST")
     internal fun <V> findFieldByProperty(
         property: KProperty<V>
     ): SpSaverFieldAccessor.Field<SpSaver, V>? = spSaverPropertyDelegateFields.find {
@@ -57,6 +58,7 @@ constructor(
     /**
      * 根据 [property] 查询对应的委托，如果查找不到则通过反射获取其委托
      */
+    @Suppress("UNCHECKED_CAST")
     internal fun <V> getDelegateByProperty(property: KProperty<V>): AbsSpSaver.AbsSpDelegate<V> {
         return findFieldByProperty(property)?.let {
             if (it is SpSaverFieldAccessor.Impl.SpSaverPropertyDelegateField<*, *>) {

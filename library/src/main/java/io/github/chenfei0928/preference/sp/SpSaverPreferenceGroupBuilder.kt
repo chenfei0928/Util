@@ -14,30 +14,30 @@ import kotlin.reflect.KProperty1
 /**
  * PreferenceScreen的构建器
  *
- * 通过 [dataStore] 与 [SpSaverPreferenceDataStore] 来存储值，
+ * 通过 [spSaverDataStore] 与 [SpSaverPreferenceDataStore] 来存储值，
  * 要求实例化 [SpSaverPreferenceDataStore] 并设置给 [PreferenceManager.setPreferenceDataStore]
  *
- * @param dataStore 传入用于调用 [getPropertyKey] 来获取字段名
+ * @param spSaverDataStore 传入用于调用 [getPropertyKey] 来获取字段名
  *
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-26 15:02
  */
 class SpSaverPreferenceGroupBuilder<SpSaver : AbsSpSaver<SpSaver>>(
     context: Context,
-    private val dataStore: SpSaverPreferenceDataStore<SpSaver>,
+    private val spSaverDataStore: SpSaverPreferenceDataStore<SpSaver>,
     preferenceGroup: PreferenceGroup,
 ) : AbsPreferenceGroupBuilder1<SpSaver, SpSaverPreferenceGroupBuilder<SpSaver>>(
-    context, dataStore.saver, preferenceGroup
+    context, spSaverDataStore.saver, preferenceGroup
 ) {
 
     @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     override fun createInstance(): SpSaverPreferenceGroupBuilder<SpSaver> {
-        return SpSaverPreferenceGroupBuilder(context, dataStore, preferenceGroup)
+        return SpSaverPreferenceGroupBuilder(context, spSaverDataStore, preferenceGroup)
     }
 
     @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     override fun getPropertyKey(property: KProperty0<*>): String {
-        return dataStore.findPdsKeyByPropertyOrThrow(property)
+        return spSaverDataStore.findPdsKeyByPropertyOrThrow(property)
     }
 
     @RestrictTo(RestrictTo.Scope.SUBCLASSES)

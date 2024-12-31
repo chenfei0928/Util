@@ -6,8 +6,8 @@ import androidx.collection.ArraySet
 import androidx.preference.PreferenceDataStore
 import com.google.protobuf.Descriptors
 import io.github.chenfei0928.content.sp.saver.PreferenceType.EnumNameString
-import io.github.chenfei0928.preference.base.FieldAccessor.Field
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
+import io.github.chenfei0928.preference.base.FieldAccessor.Field
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.jTypeOf
 import java.lang.reflect.ParameterizedType
@@ -18,6 +18,9 @@ import java.util.LinkedList
 import java.util.Queue
 import java.util.SortedSet
 import java.util.TreeSet
+import kotlin.reflect.KType
+import kotlin.reflect.jvm.javaType
+import kotlin.reflect.jvm.jvmErasure
 
 /**
  * @author chenf()
@@ -134,6 +137,9 @@ sealed interface PreferenceType {
 
         inline fun <reified T> forType(): PreferenceType =
             forType(tClass = T::class.java) { jTypeOf<T>() }
+
+        fun forType(kType: KType): PreferenceType =
+            forType(tClass = kType.jvmErasure.java) { kType.javaType }
 
         /**
          * 为 Protobuf full 的字段 fieldNumber 来获取类型信息

@@ -19,6 +19,7 @@ abstract class BasePreferenceDataStore<T : Any>(
     /**
      * 将 preference screen 数据持久化到本地，扩展支持了[PreferenceType]的枚举
      */
+    @Suppress("UNCHECKED_CAST")
     protected fun <V> FieldAccessor.Field<T, V>.setValue(it: T, value: V): T {
         val vType = vType
         return if (vType is PreferenceType.EnumNameString<*>) {
@@ -33,6 +34,7 @@ abstract class BasePreferenceDataStore<T : Any>(
     /**
      * 将本地持久化数据读取给 preference screen，扩展支持了[PreferenceType]的枚举
      */
+    @Suppress("UNCHECKED_CAST")
     protected fun <V> FieldAccessor.Field<T, V>.getValue(data: T): V {
         return if (vType is PreferenceType.EnumNameString<*>) {
             (get(data) as Enum<*>).name as V

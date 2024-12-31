@@ -1,4 +1,4 @@
-package io.github.chenfei0928.demo
+package io.github.chenfei0928.demo.storage
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -8,6 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import io.github.chenfei0928.app.activity.IntentDelegate.Companion.intentString
+import io.github.chenfei0928.demo.R
 
 class PreferenceActivity : AppCompatActivity() {
     private val fragmentName: String by intentString()

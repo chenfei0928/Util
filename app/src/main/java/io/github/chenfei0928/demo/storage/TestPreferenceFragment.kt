@@ -1,18 +1,20 @@
-package io.github.chenfei0928.demo
+package io.github.chenfei0928.demo.storage
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.MainActivity.Companion.testDataStore
+import io.github.chenfei0928.demo.Test
+import io.github.chenfei0928.demo.TestEnum
 import io.github.chenfei0928.os.Debug
+import io.github.chenfei0928.preference.DataStorePreferenceDataStore
+import io.github.chenfei0928.preference.FieldAccessorPreferenceGroupBuilder.Companion.buildPreferenceScreen
 import io.github.chenfei0928.preference.base.FieldAccessor
 import io.github.chenfei0928.preference.base.FieldAccessor.Companion.protobufField
 import io.github.chenfei0928.preference.base.FieldAccessor.Companion.protobufProperty
+import io.github.chenfei0928.preference.base.FieldAccessor.ProtobufMessageField.Companion.invoke
 import io.github.chenfei0928.preference.base.FieldAccessor.ProtobufMessageField.Companion.property
 import io.github.chenfei0928.preference.base.bindEnum
-import io.github.chenfei0928.preference.DataStorePreferenceDataStore
-import io.github.chenfei0928.preference.FieldAccessorPreferenceGroupBuilder.Companion.buildPreferenceScreen
-import io.github.chenfei0928.preference.base.FieldAccessorHelper
 
 /**
  * @author chenf()
@@ -35,7 +37,7 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
             }
             // protobuf 二层字段引用方式1
             seekBarPreference(
-                FieldAccessorHelper.Companion.property(
+                dataStore.property(
                     dataStore.protobufField("test", Test::getTest, Test.Builder::setTest),
                     dataStore.protobufField("int", Test::getInt, Test.Builder::setInt),
                 )
@@ -44,7 +46,7 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
             }
             // protobuf 二层字段引用方式2（full专用）
             checkBoxPreference(
-                FieldAccessorHelper.Companion.property(
+                dataStore.property(
                     FieldAccessor.ProtobufMessageField<Test, Test>(Test.TEST_FIELD_NUMBER),
                     FieldAccessor.ProtobufMessageField<Test, Boolean>(Test.BOOLEAN_FIELD_NUMBER),
                 )

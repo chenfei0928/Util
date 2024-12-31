@@ -3,7 +3,6 @@ package io.github.chenfei0928.preference.base
 import androidx.collection.ArrayMap
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.os.Debug
-import io.github.chenfei0928.preference.base.FieldAccessorHelper.Impl.KPropertyDataCopyField
 import io.github.chenfei0928.util.MapCache
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -13,8 +12,6 @@ import kotlin.reflect.full.functions
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
-import kotlin.reflect.jvm.javaType
-import kotlin.reflect.jvm.jvmErasure
 
 /**
  * Kotlin data class字段访问器存储与获取
@@ -22,7 +19,7 @@ import kotlin.reflect.jvm.jvmErasure
  * @author chenf()
  * @date 2024-10-12 18:40
  */
-interface FieldAccessorHelper<T> : FieldAccessor<T> {
+interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
 
     //<editor-fold desc="data class copy方法" defaultstatus="collapsed">
     /**
@@ -65,7 +62,7 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
      * @return 该字段描述说明
      */
     @Suppress("LongParameterList")
-    fun <T1 : Any, V> property(
+    fun <T1, V> property(
         tCopyFunc: KFunction<T>,
         tProperty: KProperty1<T, T1>,
         t1CopyFunc: KFunction<T1>,
@@ -84,7 +81,7 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
      * @return 该字段描述说明
      */
     @Suppress("LongParameterList")
-    fun <T1 : Any, T2 : Any, V> property(
+    fun <T1, T2, V> property(
         tCopyFunc: KFunction<T>,
         tProperty: KProperty1<T, T1>,
         t1CopyFunc: KFunction<T1>,
@@ -95,25 +92,12 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
     ): FieldAccessor.Field<T, V>
     //</editor-fold>
 
-    //<editor-fold desc="对其他的访问" defaultstatus="collapsed">
-    fun <T1, V> property(
-        outerField: FieldAccessor.Field<T, T1>,
-        innerField: FieldAccessor.Field<T1, V>,
-    ): FieldAccessor.Field<T, V>
-
-    fun <T1, T2, V> property(
-        property0: FieldAccessor.Field<T, T1>,
-        property1: FieldAccessor.Field<T1, T2>,
-        property2: FieldAccessor.Field<T2, V>,
-    ): FieldAccessor.Field<T, V>
-    //</editor-fold>
-
     open class Impl<T : Any>(
         readCache: Boolean
-    ) : FieldAccessor.Impl<T>(readCache), FieldAccessorHelper<T> {
+    ) : FieldAccessor.Impl<T>(readCache), DataCopyClassFieldAccessor<T> {
         //<editor-fold desc="data class copy方法" defaultstatus="collapsed">
         private val dataClassCopyFuncCache =
-            MapCache<KClass<*>, KFunction<*>>(ArrayMap()) { kClass ->
+            MapCache.Basic<KClass<*>, KFunction<*>>(ArrayMap()) { kClass ->
                 require(kClass.isData) { "only data class can use copyFunc: $this" }
                 Debug.countTime(
                     TAG, "dataClassCopyFuncCache: get copy function by reflect: $kClass"
@@ -149,6 +133,14 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
         //</editor-fold>
 
         //<editor-fold desc="给data class的字段拷贝访问方法" defaultstatus="collapsed">
+        protected open fun <T, V> field(
+            tCopyFunc: KFunction<T>,
+            tProperty: KProperty1<T, V>,
+            vType: PreferenceType? = null,
+        ): FieldAccessor.Field<T, V> = KPropertyDataCopyField<T, V>(
+            tCopyFunc, tProperty, vType
+        )
+
         /**
          * 注册一个data class的字段
          *
@@ -161,7 +153,7 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
             tCopyFunc: KFunction<T>,
             tProperty: KProperty1<T, V>,
             vType: PreferenceType,
-        ): FieldAccessor.Field<T, V> = KPropertyDataCopyField(
+        ): FieldAccessor.Field<T, V> = field(
             tCopyFunc, tProperty, vType
         ).let(::property)
 
@@ -174,15 +166,15 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
          * @param tProperty [T]的某个字段
          * @return 该字段描述说明
          */
-        override fun <T1 : Any, V> property(
+        override fun <T1, V> property(
             tCopyFunc: KFunction<T>,
             tProperty: KProperty1<T, T1>,
             t1CopyFunc: KFunction<T1>,
             t1Property: KProperty1<T1, V>,
             vType: PreferenceType,
         ): FieldAccessor.Field<T, V> = property(
-            KPropertyDataCopyField(tCopyFunc, tProperty),
-            KPropertyDataCopyField(t1CopyFunc, t1Property, vType),
+            field(tCopyFunc, tProperty),
+            field(t1CopyFunc, t1Property, vType),
         )
 
         /**
@@ -195,7 +187,7 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
          * @param tProperty [T]的某个字段
          * @return 该字段描述说明
          */
-        override fun <T1 : Any, T2 : Any, V> property(
+        override fun <T1, T2, V> property(
             tCopyFunc: KFunction<T>,
             tProperty: KProperty1<T, T1>,
             t1CopyFunc: KFunction<T1>,
@@ -204,9 +196,9 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
             t2Property: KProperty1<T2, V>,
             vType: PreferenceType,
         ): FieldAccessor.Field<T, V> = property(
-            KPropertyDataCopyField(tCopyFunc, tProperty),
-            KPropertyDataCopyField(t1CopyFunc, t1Property),
-            KPropertyDataCopyField(t2CopyFunc, t2Property, vType),
+            field(tCopyFunc, tProperty),
+            field(t1CopyFunc, t1Property),
+            field(t2CopyFunc, t2Property, vType),
         )
 
         /**
@@ -217,16 +209,14 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
          * @property copyFunc [T] 类的copy函数
          * @property property [T]的某个字段
          */
-        class KPropertyDataCopyField<T : Any, V>(
+        class KPropertyDataCopyField<T, V>(
             private val copyFunc: KFunction<T>,
             private val property: KProperty1<T, V>,
             vType: PreferenceType? = null,
         ) : FieldAccessor.Field<T, V> {
             override val pdsKey: String = property.name
             override val vType: PreferenceType by lazy {
-                vType ?: PreferenceType.forType(tClass = property.returnType.jvmErasure.java) {
-                    property.returnType.javaType
-                }
+                vType ?: PreferenceType.forType(property.returnType)
             }
 
             // 这两个方法要读取data class metadata元数据，耗时较久
@@ -251,66 +241,25 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
             }
         }
         //</editor-fold>
-
-        //<editor-fold desc="对其他的访问" defaultstatus="collapsed">
-        override fun <T1, V> property(
-            outerField: FieldAccessor.Field<T, T1>,
-            innerField: FieldAccessor.Field<T1, V>,
-        ): FieldAccessor.Field<T, V> = FieldWrapper(outerField, innerField).let(::property)
-
-        override fun <T1, T2, V> property(
-            property0: FieldAccessor.Field<T, T1>,
-            property1: FieldAccessor.Field<T1, T2>,
-            property2: FieldAccessor.Field<T2, V>
-        ): FieldAccessor.Field<T, V> = FieldWrapper(
-            FieldWrapper(property0, property1), property2
-        ).let(::property)
-
-        /**
-         * 使用只读属性与该data class类的 copy 方法来进行读写的字段
-         *
-         * @param T 宿主类类型
-         * @param T1 中间宿主类类型
-         * @param V 字段类型
-         * @property outerField 外部字段到中间宿主类型字段的访问方法
-         * @property innerField 中间宿主的子字段的访问方法
-         */
-        private class FieldWrapper<T, T1, V>(
-            private val outerField: FieldAccessor.Field<T, T1>,
-            private val innerField: FieldAccessor.Field<T1, V>,
-        ) : FieldAccessor.Field<T, V> {
-            override val pdsKey: String = outerField.pdsKey + "_" + innerField.pdsKey
-            override val vType: PreferenceType = innerField.vType
-
-            override fun get(data: T): V {
-                return innerField.get(outerField.get(data))
-            }
-
-            override fun set(data: T, value: V): T {
-                val t1 = outerField.get(data)
-                return outerField.set(data, innerField.set(t1, value))
-            }
-        }
-        //</editor-fold>
     }
 
     companion object {
         private const val TAG = "FieldAccessorHelper"
 
         //<editor-fold desc="data class copy方法" defaultstatus="collapsed">
-        inline fun <reified T : Any> FieldAccessorHelper<*>.cacheCopyFunc(copyFunc: KFunction<T>) {
+        inline fun <reified T : Any> DataCopyClassFieldAccessor<*>.cacheCopyFunc(copyFunc: KFunction<T>) {
             cacheCopyFunc(T::class, copyFunc)
         }
         //</editor-fold>
 
         //<editor-fold desc="给data class的字段拷贝访问方法" defaultstatus="collapsed">
-        inline fun <reified T : Any, reified V : Any> FieldAccessorHelper<T>.property(
+        inline fun <reified T : Any, reified V : Any> DataCopyClassFieldAccessor<T>.property(
             tProperty: KProperty1<T, V>,
         ): FieldAccessor.Field<T, V> = property(
             T::class.copyFunc, tProperty, PreferenceType.forType<V>()
         )
 
-        inline fun <reified T : Any, reified T1 : Any, reified V> FieldAccessorHelper<T>.property(
+        inline fun <reified T : Any, reified T1 : Any, reified V> DataCopyClassFieldAccessor<T>.property(
             tProperty: KProperty1<T, T1>,
             t1Property: KProperty1<T1, V>,
         ): FieldAccessor.Field<T, V> = property(
@@ -320,7 +269,7 @@ interface FieldAccessorHelper<T> : FieldAccessor<T> {
         )
 
         inline fun <reified T : Any, reified T1 : Any, reified T2 : Any, reified V>
-                FieldAccessorHelper<T>.property(
+                DataCopyClassFieldAccessor<T>.property(
             tProperty: KProperty1<T, T1>,
             t1Property: KProperty1<T1, T2>,
             t2Property: KProperty1<T2, V>,

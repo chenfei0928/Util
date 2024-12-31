@@ -1,11 +1,13 @@
-package io.github.chenfei0928.demo
+package io.github.chenfei0928.demo.storage
 
 import android.content.Context
 import io.github.chenfei0928.content.sp.saver.BaseSpSaver
 import io.github.chenfei0928.content.sp.saver.DataStoreDelegateStoreProvider.Companion.dataStore
 import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete.Companion.defaultValue
 import io.github.chenfei0928.content.sp.saver.convert.EnumNameSpConvertSaver
+import io.github.chenfei0928.content.sp.saver.convert.EnumNameSpConvertSaver.Companion.invoke
 import io.github.chenfei0928.content.sp.saver.convert.EnumSetNameSpConvertSaver
+import io.github.chenfei0928.content.sp.saver.convert.EnumSetNameSpConvertSaver.Companion.invoke
 import io.github.chenfei0928.content.sp.saver.delegate.BooleanDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.FloatDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.IntDelegate

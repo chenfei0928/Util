@@ -19,7 +19,7 @@ fun <T : GeneratedMessageLite<T, *>> Class<T>.getProtobufLiteParserForType(): Pa
 }
 
 private val protobufDefaultInstanceCache =
-    MapCache<Class<out Message>, Message> {
+    MapCache.Basic<Class<out Message>, Message> {
         @Suppress("kotlin:S6531")
         it.getMethod("getDefaultInstance").invoke(null) as Message
     }
