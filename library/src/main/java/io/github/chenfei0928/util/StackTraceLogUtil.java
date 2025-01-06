@@ -3,7 +3,7 @@ package io.github.chenfei0928.util;
 import java.util.Locale;
 
 import androidx.annotation.CheckResult;
-import androidx.annotation.NoSideEffects;
+import io.github.chenfei0928.annotation.NoSideEffects;
 import androidx.annotation.NonNull;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;

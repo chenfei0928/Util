@@ -247,17 +247,12 @@ interface FieldAccessor<T> {
             name: String,
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: T, value: V) -> T,
-        ): Field<T, V> = object : Field<T, V> {
+        ): Field<T, V> = object : Field<T, V>, () -> PreferenceType {
             override val pdsKey: String = name
-            override val vType = PreferenceType.forType<V>()
-
-            override fun get(data: T): V {
-                return getter(data)
-            }
-
-            override fun set(data: T, value: V): T {
-                return setter(data, value)
-            }
+            override val vType by lazy(this)
+            override fun get(data: T): V = getter(data)
+            override fun set(data: T, value: V): T = setter(data, value)
+            override fun invoke(): PreferenceType = PreferenceType.forType<V>()
         }
 
         /**
@@ -267,15 +262,16 @@ interface FieldAccessor<T> {
             name: String,
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: Builder, value: V) -> Builder,
-        ): Field<T, V> = object : Field<T, V> {
+        ): Field<T, V> = object : Field<T, V>, () -> PreferenceType {
             override val pdsKey: String = name
-            override val vType = PreferenceType.forType<V>()
-
+            override val vType by lazy(this)
             override fun get(data: T): V = getter(data)
 
             @Suppress("UNCHECKED_CAST")
             override fun set(data: T, value: V): T =
                 setter(data.toBuilder() as Builder, value).build() as T
+
+            override fun invoke(): PreferenceType = PreferenceType.forType<V>()
         }
 
         /**

@@ -3,7 +3,7 @@ package io.github.chenfei0928.demo.storage
 import android.os.Parcelable
 import androidx.lifecycle.Lifecycle
 import com.google.protobuf.ProtobufParceler
-import io.github.chenfei0928.demo.Test
+import io.github.chenfei0928.demo.bean.Test
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
 

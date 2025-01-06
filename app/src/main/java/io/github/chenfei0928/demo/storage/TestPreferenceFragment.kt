@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.MainActivity.Companion.testDataStore
-import io.github.chenfei0928.demo.Test
-import io.github.chenfei0928.demo.TestEnum
+import io.github.chenfei0928.demo.bean.Test
+import io.github.chenfei0928.demo.bean.TestEnum
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 import io.github.chenfei0928.preference.FieldAccessorPreferenceGroupBuilder.Companion.buildPreferenceScreen

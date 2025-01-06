@@ -9,7 +9,7 @@
 
 ## 使指定方法在编译时被去除，用于去除日志
 -assumenosideeffects class * {
-    @androidx.annotation.NoSideEffects *;
+    @io.github.chenfei0928.annotation.NoSideEffects *;
 }
 
 ## 为了可以访问到FragmentViewLifecycleOwner的Fragment
@@ -23,7 +23,7 @@
 ## 在 com.google.protobuf.ProtobufAccessHelperKt.protobufDefaultInstanceCache 字段中使用
 ## com.google.protobuf.ProtobufAccessHelperKt.getProtobufDefaultInstance
 ## io.github.chenfei0928.util.DependencyChecker.PROTOBUF
--keepnames class * extends com.google.protobuf.GeneratedMessageV3 {
+-keepnames class * extends com.google.protobuf.MessageLite {
     public static * getDefaultInstance();
 }
 

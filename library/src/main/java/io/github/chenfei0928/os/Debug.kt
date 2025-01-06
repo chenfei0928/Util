@@ -1,7 +1,7 @@
 package io.github.chenfei0928.os
 
 import android.os.Debug
-import androidx.annotation.NoSideEffects
+import io.github.chenfei0928.annotation.NoSideEffects
 import androidx.annotation.Size
 import io.github.chenfei0928.text.appendFormat
 import io.github.chenfei0928.util.Log
