@@ -3,6 +3,8 @@ package io.github.chenfei0928.annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import androidx.annotation.Keep;
+
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.FIELD;

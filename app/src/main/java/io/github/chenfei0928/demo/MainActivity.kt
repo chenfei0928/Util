@@ -26,8 +26,8 @@ import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argString
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argStringNull
 import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
-import io.github.chenfei0928.demo.databinding.ActivityMainBinding
 import io.github.chenfei0928.demo.bean.Test
+import io.github.chenfei0928.demo.databinding.ActivityMainBinding
 import io.github.chenfei0928.demo.storage.Bean
 import io.github.chenfei0928.demo.storage.JsonBean
 import io.github.chenfei0928.demo.storage.JsonDataStorePreferenceFragment
@@ -39,8 +39,6 @@ import io.github.chenfei0928.demo.storage.TestSpSaver
 import io.github.chenfei0928.lang.toString0
 import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.Debug
-import io.github.chenfei0928.reflect.parameterized.getParentParameterizedTypeBoundsContractDefinedImplInChild
-import io.github.chenfei0928.reflect.parameterized.getParentParameterizedTypeClassDefinedImplInChild
 import io.github.chenfei0928.repository.datastore.ProtobufSerializer
 import io.github.chenfei0928.repository.datastore.toDatastore
 import io.github.chenfei0928.repository.local.serializer.KtxsJsonSerializer
@@ -48,6 +46,7 @@ import io.github.chenfei0928.view.listener.setNoDoubleOnClickListener
 import io.github.chenfei0928.viewbinding.setContentViewBinding
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.util.LinkedList
 
 /**
  * @author chenf()
@@ -101,30 +100,22 @@ class MainActivity : ComponentActivity() {
             }
         }
         binding.btnTest.setNoDoubleOnClickListener {
-            val typeUseOld =
-                Debug.countTime(TAG, "getParentParameterizedTypeBoundsContractDefinedImplInChild") {
-                    I.I1.IArrayList()
-                        .getParentParameterizedTypeBoundsContractDefinedImplInChild<I<*>, ArrayList<Any>>(
-                            0
-                        )
-                }
-            Log.i(TAG, "onCreate: $typeUseOld")
-            val typeUseKt =
-                Debug.countTime(TAG, "getParentParameterizedTypeClassDefinedImplInChild true") {
-                    I.I1.IArrayList()
-                        .getParentParameterizedTypeClassDefinedImplInChild<I<*>, ArrayList<Any>>(
-                            0, true
-                        )
-                }
-            Log.i(TAG, "onCreate: $typeUseKt")
-            val type =
-                Debug.countTime(TAG, "getParentParameterizedTypeClassDefinedImplInChild false") {
-                    I.I1.IArrayList()
-                        .getParentParameterizedTypeClassDefinedImplInChild<I<*>, ArrayList<Any>>(
-                            0, false
-                        )
-                }
-            Log.i(TAG, "onCreate: $type")
+            val typeUseOld = Debug.countTime(TAG, "I.I1") {
+                I.I1<Any, LinkedList<Any>>(false)
+            }
+            Log.i(TAG, "onCreate: ${typeUseOld.eClass}\n ${typeUseOld.typeBundle}")
+            val typeUseKt = Debug.countTime(TAG, "I.I1.IArrayList true") {
+                I.I1.IArrayList(true)
+            }
+            Log.i(TAG, "onCreate: ${typeUseKt.eClass}\n ${typeUseKt.typeBundle}")
+            val type = Debug.countTime(TAG, "I.I1.IArrayList false") {
+                I.I1.IArrayList(false)
+            }
+            Log.i(TAG, "onCreate: ${type.eClass}\n ${type.typeBundle}")
+            val imType = Debug.countTime(TAG, "I.I1.IM") {
+                I.I1.IM<Any, LinkedList<Any>>(true)
+            }
+            Log.i(TAG, "onCreate: ${imType.eClass}\n ${imType.typeBundle}")
             Fragment()
             // 加载Protobuf runtime，其会消耗较长时间
             Debug.countTime(TAG, "Test_toByteArray") {
@@ -157,10 +148,6 @@ class MainActivity : ComponentActivity() {
             }
             Log.i(TAG, "onCreate: $f")
         }
-    }
-
-    private inline fun <reified F : Fragment> gotoPreferenceActivity() {
-        gotoPreferenceActivity(F::class.java)
     }
 
     private fun <F : Fragment> gotoPreferenceActivity(fClass: Class<F>) {

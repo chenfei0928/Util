@@ -12,6 +12,9 @@
     @io.github.chenfei0928.annotation.NoSideEffects *;
 }
 
+## 保留类但允许混淆
+-keep,allowobfuscation @io.github.chenfei0928.annotation.KeepAllowObfuscation class * {*;}
+
 ## 为了可以访问到FragmentViewLifecycleOwner的Fragment
 ## 在 androidx.fragment.app.FragmentViewLifecycleAccessor 中使用
 ## androidx.fragment.app.FragmentViewLifecycleAccessor
