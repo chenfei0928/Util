@@ -8,7 +8,7 @@
  * 3. [getParentParameterizedTypeClassDefinedImplInChild] useKtReflect=false 无缓存（可能会消耗1000ms）
  *
  * 如果启用R8FullMode后由于其压缩类继承栈等导致调用该方法时出现了NPE等情况，
- * 可以对继承路径上各个类添加 [Keep] 或 [KeepAllowObfuscation] 注解规避
+ * 可以对继承路径上各个类（包含Parent至进行其泛型约束的Child）添加 [Keep] 或 [KeepAllowObfuscation] 注解解决
  * （Gson 的 [TypeToken] 也在混淆规则中添加了对其所有子类的keep）
  *
  * @author ChenFei(chenfei0928@gmail.com)
