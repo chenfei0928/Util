@@ -109,7 +109,9 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
                                 && it.returnType.classifier == kClass
                                 && !it.returnType.isMarkedNullable
                                 && it.valueParameters == parameters
-                    }!!
+                    } ?: throw IllegalArgumentException(
+                        "Cant found copy function in $kClass"
+                    )
                 }
             }
 

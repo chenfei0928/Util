@@ -16,10 +16,13 @@ import io.github.chenfei0928.preference.base.bindEnum
  * @author chenf()
  * @date 2024-07-29 11:15
  */
-abstract class JsonLocalFileStoragePreferenceFragment : PreferenceFragmentCompat() {
+abstract class JsonLocalFileStoragePreferenceFragment(
+    private val name: String
+) : PreferenceFragmentCompat() {
+
     override fun onCreatePreferences(
         savedInstanceState: Bundle?, rootKey: String?
-    ) = Debug.countTime(TAG, "json") {
+    ) = Debug.countTime(TAG, name) {
         val dataStore: LocalStoragePreferenceDataStore<JsonBean> =
             createPreferenceDataStore()
         preferenceManager.preferenceDataStore = dataStore
@@ -56,13 +59,13 @@ abstract class JsonLocalFileStoragePreferenceFragment : PreferenceFragmentCompat
 
     abstract fun createPreferenceDataStore(): LocalStoragePreferenceDataStore<JsonBean>
 
-    class StorageFragment : JsonLocalFileStoragePreferenceFragment() {
+    class StorageFragment : JsonLocalFileStoragePreferenceFragment("json") {
         override fun createPreferenceDataStore(): LocalStoragePreferenceDataStore<JsonBean> {
             return LocalStoragePreferenceDataStore(JsonLocalFileStorage.storage(requireContext()))
         }
     }
 
-    class Storage0Fragment : JsonLocalFileStoragePreferenceFragment() {
+    class Storage0Fragment : JsonLocalFileStoragePreferenceFragment("json0") {
         override fun createPreferenceDataStore(): LocalStoragePreferenceDataStore<JsonBean> {
             return LocalStoragePreferenceDataStore(requireContext().jsonLocalStorage0)
         }
