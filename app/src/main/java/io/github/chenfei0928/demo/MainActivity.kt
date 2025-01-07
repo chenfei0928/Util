@@ -26,10 +26,10 @@ import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argString
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argStringNull
 import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
+import io.github.chenfei0928.demo.bean.Bean
+import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.demo.bean.Test
 import io.github.chenfei0928.demo.databinding.ActivityMainBinding
-import io.github.chenfei0928.demo.storage.Bean
-import io.github.chenfei0928.demo.storage.JsonBean
 import io.github.chenfei0928.demo.storage.JsonDataStorePreferenceFragment
 import io.github.chenfei0928.demo.storage.JsonLocalFileStoragePreferenceFragment
 import io.github.chenfei0928.demo.storage.PreferenceActivity

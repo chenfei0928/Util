@@ -1,6 +1,7 @@
 package io.github.chenfei0928.demo.storage
 
 import android.content.Context
+import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.preference.LocalStoragePreferenceDataStore
 import io.github.chenfei0928.repository.local.LocalFileStorage
 import io.github.chenfei0928.repository.local.serializer.KtxsJsonSerializer

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.MainActivity.Companion.jsonDataStore
+import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 import io.github.chenfei0928.preference.FieldAccessorPreferenceGroupBuilder.Companion.buildPreferenceScreen

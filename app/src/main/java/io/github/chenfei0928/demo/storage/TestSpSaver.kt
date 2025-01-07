@@ -14,6 +14,7 @@ import io.github.chenfei0928.content.sp.saver.delegate.IntDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.LongDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.StringSetDelegate
+import io.github.chenfei0928.demo.bean.JsonBean
 
 /**
  * @author chenf()

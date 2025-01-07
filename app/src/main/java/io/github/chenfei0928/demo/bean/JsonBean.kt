@@ -1,4 +1,4 @@
-package io.github.chenfei0928.demo.storage
+package io.github.chenfei0928.demo.bean
 
 import android.content.Context
 import android.os.Parcelable
@@ -9,6 +9,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 /**
+ * 貌似在 R8FullMode 时会缓存 copy 方法会缓存失败，所以把它们丢到了bean包下，避免被混淆
+ *
  * @author chenf()
  * @date 2024-12-11 17:25
  */

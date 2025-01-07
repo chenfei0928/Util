@@ -2,6 +2,7 @@ package io.github.chenfei0928.demo.storage
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
+import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.demo.storage.JsonLocalFileStorage0.Companion.jsonLocalStorage0
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.preference.FieldAccessorPreferenceGroupBuilder.Companion.buildPreferenceScreen

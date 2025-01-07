@@ -21,10 +21,12 @@ abstract class I<E : Any> {
     open class I1<E, T : List<E>>(
         override val useKtReflect: Boolean
     ) : I<T>() {
+        @KeepAllowObfuscation
         open class IM<E, T : MutableList<E>>(
             useKtReflect: Boolean
         ) : I1<E, T>(useKtReflect)
 
+        @KeepAllowObfuscation
         class IArrayList(
             useKtReflect: Boolean
         ) : IM<Any, ArrayList<Any>>(useKtReflect)
