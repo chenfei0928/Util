@@ -5,6 +5,10 @@ import androidx.preference.PreferenceDataStore
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 
 /**
+ * 首选项值访问
+ *
+ * 封装了对 [Field] 的各个类型[Field.vType]读写类型判断处理
+ *
  * @author chenf()
  * @date 2024-12-17 15:41
  */

@@ -211,21 +211,21 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
          * @property copyFunc [T] 类的copy函数
          * @property property [T]的某个字段
          */
-        class KPropertyDataCopyField<T, V>(
+        private class KPropertyDataCopyField<T, V>(
             private val copyFunc: KFunction<T>,
             private val property: KProperty1<T, V>,
             vType: PreferenceType? = null,
         ) : FieldAccessor.Field<T, V> {
             override val pdsKey: String = property.name
-            override val vType: PreferenceType by lazy {
+            override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE) {
                 vType ?: PreferenceType.forType(property.returnType)
             }
 
             // 这两个方法要读取data class metadata元数据，耗时较久
-            private val instanceParameter: KParameter by lazy {
+            private val instanceParameter: KParameter by lazy(LazyThreadSafetyMode.NONE) {
                 copyFunc.instanceParameter!!
             }
-            private val kParameter: KParameter by lazy {
+            private val kParameter: KParameter by lazy(LazyThreadSafetyMode.NONE) {
                 copyFunc.parameters.find { it.name == pdsKey }!!
             }
 
