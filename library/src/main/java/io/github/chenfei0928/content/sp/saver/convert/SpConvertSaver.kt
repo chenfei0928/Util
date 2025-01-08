@@ -2,6 +2,7 @@ package io.github.chenfei0928.content.sp.saver.convert
 
 import android.content.SharedPreferences
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
+import io.github.chenfei0928.content.sp.saver.PreferenceType
 import kotlin.reflect.KProperty
 
 /**
@@ -12,7 +13,8 @@ import kotlin.reflect.KProperty
  */
 abstract class SpConvertSaver<SpValueType, FieldType>(
     internal val saver: AbsSpSaver.AbsSpDelegate<SpValueType>,
-) : AbsSpSaver.AbsSpDelegate<FieldType>(saver.spValueType) {
+    spValueType: PreferenceType = saver.spValueType,
+) : AbsSpSaver.AbsSpDelegate<FieldType>(spValueType) {
 
     override fun obtainDefaultKey(property: KProperty<*>): String {
         return saver.obtainDefaultKey(property)

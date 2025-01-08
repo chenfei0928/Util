@@ -60,12 +60,12 @@ class ProtobufMessageField<T : Message, V>(
         // repeat enum，返回 List<EnumValueDescriptor>
         val enum = data.getField(fieldDescriptor) as List<Descriptors.EnumValueDescriptor>
         when (val vType = vType) {
-            is PreferenceType.EnumNameStringSet<*> -> {
+            is PreferenceType.EnumNameStringCollection<*> -> {
                 // 此处并不关心返回的数据类型必须是field类型，不使用field的类型返回
                 // 因为当前get方法的返回值是给 BasePreferenceDataStore.getValue 使用的，它会再次进行mapTo
                 vType.forProtobufEnumValueDescriptors(enum, false) as V
             }
-            is PreferenceType.BaseEnumNameStringSet<*, *> -> {
+            is PreferenceType.BaseEnumNameStringCollection<*, *> -> {
                 // 根据其 List<EnumValueDescriptor> 获取 Collection<enum>
                 vType.forProtobufEnumValueDescriptors(enum) as V
             }

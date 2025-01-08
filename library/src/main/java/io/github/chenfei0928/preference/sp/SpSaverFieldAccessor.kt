@@ -7,6 +7,7 @@ import io.github.chenfei0928.content.sp.saver.convert.SpConvertSaver
 import io.github.chenfei0928.content.sp.saver.delegate.AbsSpAccessDefaultValueDelegate
 import io.github.chenfei0928.preference.base.FieldAccessor
 import kotlin.reflect.KMutableProperty0
+import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty
 
 /**
@@ -39,9 +40,13 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
         override fun <V> property(
             property: KProperty<V>, vType: PreferenceType, delegate: AbsSpSaver.AbsSpDelegate<V>?
         ): FieldAccessor.Field<SpSaver, V> = if (
-            property is KMutableProperty0 && delegate != null && vType is PreferenceType.Native
+            property is KMutableProperty0 && delegate != null
         ) {
-            property(NativeTypeField(property, delegate, vType))
+            property(NativeTypeField0(property, delegate, vType))
+        } else if (property is KMutableProperty1<*, *> && delegate != null) {
+            @Suppress("UNCHECKED_CAST")
+            property as KMutableProperty1<SpSaver, V>
+            property(NativeTypeField1(property, delegate, vType))
         } else {
             val delegate: AbsSpSaver.AbsSpDelegate<V> = delegate
                 ?: spSaver.dataStore.getDelegateByProperty(property)
@@ -77,10 +82,10 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
             this@Impl.property(field)
         }
 
-        private class NativeTypeField<SpSaver : AbsSpSaver<SpSaver>, V>(
+        private class NativeTypeField0<SpSaver : AbsSpSaver<SpSaver>, V>(
             override val property: KMutableProperty0<V>,
             override val outDelegate: AbsSpSaver.AbsSpDelegate<V>,
-            override val vType: PreferenceType.Native,
+            override val vType: PreferenceType,
         ) : Field<SpSaver, V> {
             override val pdsKey: String = property.name
 
@@ -88,6 +93,21 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
 
             override fun set(data: SpSaver, value: V): SpSaver {
                 property.set(value)
+                return data
+            }
+        }
+
+        private class NativeTypeField1<SpSaver : AbsSpSaver<SpSaver>, V>(
+            override val property: KMutableProperty1<SpSaver, V>,
+            override val outDelegate: AbsSpSaver.AbsSpDelegate<V>,
+            override val vType: PreferenceType,
+        ) : Field<SpSaver, V> {
+            override val pdsKey: String = property.name
+
+            override fun get(data: SpSaver): V = property.get(data)
+
+            override fun set(data: SpSaver, value: V): SpSaver {
+                property.set(data, value)
                 return data
             }
         }
@@ -113,6 +133,8 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
     }
 
     companion object {
+        private const val TAG = "SpSaverFieldAccessor"
+
         inline fun <SpSaver : AbsSpSaver<SpSaver>, reified V> SpSaverFieldAccessor<SpSaver>.property(
             property0: KMutableProperty0<V>
         ): FieldAccessor.Field<SpSaver, V> = property(property0, PreferenceType.forType<V>())

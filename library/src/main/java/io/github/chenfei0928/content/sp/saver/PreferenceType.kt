@@ -7,6 +7,7 @@ import androidx.collection.ArraySet
 import androidx.preference.PreferenceDataStore
 import com.google.protobuf.Descriptors
 import io.github.chenfei0928.content.sp.saver.PreferenceType.EnumNameString
+import io.github.chenfei0928.content.sp.saver.convert.SpConvertSaver
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 import io.github.chenfei0928.preference.base.FieldAccessor.Field
@@ -76,7 +77,7 @@ sealed interface PreferenceType {
         }
     }
 
-    abstract class BaseEnumNameStringSet<E : Enum<E>, C : MutableCollection<E>>(
+    abstract class BaseEnumNameStringCollection<E : Enum<E>, C : MutableCollection<E>>(
         private val values: Array<E>,
     ) : PreferenceType {
         fun forName(name: String): E = values.find { it.name == name }!!
@@ -94,7 +95,7 @@ sealed interface PreferenceType {
         companion object {
             inline operator fun <reified E : Enum<E>, C : MutableCollection<E>> invoke(
                 crossinline createCollection: (size: Int) -> C
-            ) = object : BaseEnumNameStringSet<E, C>(enumValues<E>()) {
+            ) = object : BaseEnumNameStringCollection<E, C>(enumValues<E>()) {
                 override fun createCollection(size: Int): C = createCollection(size)
             }
         }
@@ -104,7 +105,7 @@ sealed interface PreferenceType {
      * 用于 [DataStorePreferenceDataStore] 的 [Field] 的数据类型，
      * 在[DataStorePreferenceDataStore]中对该类型进行判断
      */
-    open class EnumNameStringSet<E : Enum<E>>(
+    open class EnumNameStringCollection<E : Enum<E>>(
         private val values: Array<E>,
         private val returnType: Class<out Collection<*>>,
     ) : PreferenceType {
@@ -164,22 +165,22 @@ sealed interface PreferenceType {
         }
 
         companion object {
-            inline operator fun <reified E : Enum<E>, reified C : Collection<E>> invoke(): EnumNameStringSet<E> =
-                EnumNameStringSet<E>(E::class.java, C::class.java)
+            inline operator fun <reified E : Enum<E>, reified C : Collection<E>> invoke(): EnumNameStringCollection<E> =
+                EnumNameStringCollection<E>(E::class.java, C::class.java)
 
             @Suppress("UNCHECKED_CAST")
-            fun forType(type: ParameterizedType): EnumNameStringSet<*> {
+            fun forType(type: ParameterizedType): EnumNameStringCollection<*> {
                 val rawClass = type.rawType as Class<out Collection<*>>
                 val arg0Type = type.actualTypeArguments[0]
                 return if (arg0Type is Class<*> && arg0Type.isSubclassOf(Enum::class.java)) {
-                    EnumNameStringSet(
+                    EnumNameStringCollection(
                         eClass = arg0Type as Class<out Enum<*>>,
                         returnType = rawClass,
                     )
                 } else if (arg0Type is WildcardType &&
                     arg0Type.upperBounds[0].let { it is Class<*> && it.isSubclassOf(Enum::class.java) }
                 ) {
-                    EnumNameStringSet(
+                    EnumNameStringCollection(
                         eClass = arg0Type.upperBounds[0] as Class<out Enum<*>>,
                         returnType = rawClass,
                     )
@@ -203,7 +204,7 @@ sealed interface PreferenceType {
             } else {
                 val type = tTypeProvider()
                 require(type is ParameterizedType) { "Not support type: $type" }
-                EnumNameStringSet.forType(type)
+                EnumNameStringCollection.forType(type)
             }
         }
 
@@ -223,7 +224,7 @@ sealed interface PreferenceType {
             require(field.type == Descriptors.FieldDescriptor.Type.ENUM && tType is ParameterizedType) {
                 "Not support type: $tType $field"
             }
-            EnumNameStringSet.forType(tType)
+            EnumNameStringCollection.forType(tType)
         } else when (field.javaType) {
             Descriptors.FieldDescriptor.JavaType.INT -> Native.INT
             Descriptors.FieldDescriptor.JavaType.LONG -> Native.LONG

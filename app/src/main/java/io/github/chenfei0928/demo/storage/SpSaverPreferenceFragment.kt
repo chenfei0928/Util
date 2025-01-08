@@ -2,7 +2,10 @@ package io.github.chenfei0928.demo.storage
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.preference.PreferenceFragmentCompat
+import io.github.chenfei0928.content.sp.saver.registerOnSpPropertyChangeListener
+import io.github.chenfei0928.content.sp.saver.toLiveData
 import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.preference.base.bindEnum
@@ -13,10 +16,24 @@ import io.github.chenfei0928.preference.sp.SpSaverPreferenceGroupBuilder.Compani
  * @date 2024-12-20 11:42
  */
 class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
+    private val spSaver by lazy { TestSpSaver(requireContext()) }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        spSaver.toLiveData(spSaver::int).observe(viewLifecycleOwner) {
+            Log.v(TAG, "onCreate: spSaver int newValue is $it")
+        }
+        spSaver.registerOnSpPropertyChangeListener(viewLifecycleOwner, spSaver::enum) {
+            Log.v(TAG, "onCreate: spSaver enum newValue is $it")
+        }
+        spSaver.registerOnSpPropertyChangeListener(viewLifecycleOwner) {
+            Log.v(TAG, "onCreate: spSaver onSpPropertyChange $it")
+        }
+    }
+
     override fun onCreatePreferences(
         savedInstanceState: Bundle?, rootKey: String?
     ) = Debug.countTime(TAG, "spSaver") {
-        val spSaver = TestSpSaver(requireContext())
         preferenceManager.preferenceDataStore = spSaver.dataStore
         Log.i(TAG, "onCreatePreferences: buildPreferenceScreen")
         preferenceScreen = buildPreferenceScreen<TestSpSaver>(spSaver.dataStore) {

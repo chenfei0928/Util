@@ -3,6 +3,7 @@ package io.github.chenfei0928.content.sp.saver
 import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.content.sp.registerOnSharedPreferenceChangeListener
+import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor
 import io.github.chenfei0928.util.Log
 import kotlin.reflect.KProperty
 
@@ -11,10 +12,13 @@ private const val TAG = "KW_AbsSpSaverWatcher"
 /**
  * 监听sp的变化并通知任何字段变化
  *
+ * 只会回调通过 [DataStoreDelegateStoreProvider.dataStore]、
+ * [SpSaverFieldAccessor.property] 在 [AbsSpSaver.dataStore] 中注册并含有委托的字段
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-08-05 16:12
  */
-fun <SpSaver : AbsSpSaver<SpSaver>> SpSaver.registerOnSharedPreferenceChangeListener(
+fun <SpSaver : AbsSpSaver<SpSaver>> SpSaver.registerOnSpPropertyChangeListener(
     owner: LifecycleOwner,
     @MainThread callback: (key: KProperty<*>) -> Unit,
 ) {

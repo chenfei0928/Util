@@ -1,12 +1,13 @@
 package io.github.chenfei0928.content.sp.saver.convert
 
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
+import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 
 class EnumNameSpConvertSaver<E : Enum<E>>(
     private val enumValues: Array<E>,
     saver: AbsSpSaver.AbsSpDelegate<String?>,
-) : SpConvertSaver<String?, E?>(saver) {
+) : SpConvertSaver<String?, E?>(saver, PreferenceType.EnumNameString(enumValues)) {
 
     constructor(
         enumValues: Array<E>, key: String? = null
