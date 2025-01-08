@@ -73,7 +73,6 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
         }
 
         //<editor-fold desc="KMutableProperty的访问方法" defaultstatus="collapsed">
-
         protected open fun <T, V> field(
             property: KMutableProperty1<T, V>,
             vType: PreferenceType? = null
@@ -144,14 +143,11 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
             vType: PreferenceType? = null,
         ) : FieldAccessor.Field<T, V> {
             override val pdsKey: String = property.name
-            override val vType: PreferenceType by lazy {
+            override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE) {
                 vType ?: PreferenceType.forType(property.returnType)
             }
 
-            override fun get(data: T): V {
-                return property.get(data)
-            }
-
+            override fun get(data: T): V = property.get(data)
             override fun set(data: T, value: V): T {
                 property.set(data, value)
                 return data

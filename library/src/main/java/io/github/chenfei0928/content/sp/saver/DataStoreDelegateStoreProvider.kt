@@ -2,7 +2,6 @@ package io.github.chenfei0928.content.sp.saver
 
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
 
 /**
@@ -15,7 +14,7 @@ class DataStoreDelegateStoreProvider<SpSaver : AbsSpSaver<SpSaver>, V>(
     override fun provideDelegate(
         thisRef: SpSaver, property: KProperty<*>
     ): ReadWriteProperty<SpSaver, V> {
-        thisRef.dataStore.propertyUseDelegate(property as KMutableProperty<V>, delegate)
+        thisRef.dataStore.propertyUseDelegate(property as KProperty<V>, delegate)
         return delegate
     }
 

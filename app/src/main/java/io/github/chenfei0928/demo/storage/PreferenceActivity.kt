@@ -24,6 +24,7 @@ class PreferenceActivity : AppCompatActivity() {
         }
 
         supportFragmentManager.commit {
+            @Suppress("UNCHECKED_CAST")
             add(R.id.main, Class.forName(fragmentName) as Class<out Fragment>, Bundle.EMPTY)
         }
     }

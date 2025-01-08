@@ -20,13 +20,25 @@ abstract class BasePreferenceDataStore<T : Any>(
      * 将 preference screen 数据持久化到本地，扩展支持了[PreferenceType]的枚举
      */
     @Suppress("UNCHECKED_CAST")
-    protected fun <V> FieldAccessor.Field<T, V>.setValue(it: T, value: V): T {
-        val vType = vType
-        return if (vType is PreferenceType.EnumNameString<*>) {
+    protected fun <V> FieldAccessor.Field<T, V>.setValue(
+        it: T, value: V
+    ): T = when (val vType = vType) {
+        is PreferenceType.EnumNameString<*> -> {
+            // 将preference的字符串转换为Enum设置给field
             set(it, vType.forName(value as String) as V)
-        } else if (vType is PreferenceType.EnumNameStringSet<*>) {
-            set(it, vType.forName(value as Collection<String>, false) as V)
-        } else {
+        }
+        is PreferenceType.EnumNameStringSet<*> -> {
+            // 将preference的字符串集合转换为Enum集合设置给field
+            // forName时使用field的字段类型
+            set(it, vType.forNames(value as Collection<String>, true) as V)
+        }
+        is PreferenceType.BaseEnumNameStringSet<*, *> -> {
+            // 将preference的字符串集合转换为Enum集合设置给field
+            // forName时使用field的字段类型
+            set(it, vType.forNames(value as Collection<String>) as V)
+        }
+        is PreferenceType.Native -> {
+            // preference原生支持的类型，直接设置
             set(it, value)
         }
     }
@@ -35,12 +47,25 @@ abstract class BasePreferenceDataStore<T : Any>(
      * 将本地持久化数据读取给 preference screen，扩展支持了[PreferenceType]的枚举
      */
     @Suppress("UNCHECKED_CAST")
-    protected fun <V> FieldAccessor.Field<T, V>.getValue(data: T): V {
-        return if (vType is PreferenceType.EnumNameString<*>) {
+    protected fun <V> FieldAccessor.Field<T, V>.getValue(
+        data: T
+    ): V = when (vType) {
+        is PreferenceType.EnumNameString<*> -> {
+            // 将field的Enum转换为preference的字符串
             (get(data) as Enum<*>).name as V
-        } else if (vType is PreferenceType.EnumNameStringSet<*>) {
-            (get(data) as Collection<Enum<*>>).mapTo(ArraySet()) { it.name } as V
-        } else {
+        }
+        is PreferenceType.EnumNameStringSet<*> -> {
+            // 将field的Enum集合转换为preference的字符串Set
+            val enums = get(data) as Collection<Enum<*>>
+            enums.mapTo(ArraySet(enums.size)) { it.name } as V
+        }
+        is PreferenceType.BaseEnumNameStringSet<*, *> -> {
+            // 将field的Enum集合转换为preference的字符串Set
+            val enums = get(data) as Collection<Enum<*>>
+            enums.mapTo(ArraySet(enums.size)) { it.name } as V
+        }
+        is PreferenceType.Native -> {
+            // preference原生支持的类型，直接返回
             get(data)
         }
     }

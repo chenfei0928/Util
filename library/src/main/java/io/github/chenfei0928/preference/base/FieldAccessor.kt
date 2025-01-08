@@ -1,7 +1,6 @@
 package io.github.chenfei0928.preference.base
 
 import androidx.collection.ArrayMap
-import androidx.collection.ArraySet
 import com.google.protobuf.Descriptors
 import com.google.protobuf.GeneratedMessage
 import com.google.protobuf.Message
@@ -160,43 +159,81 @@ interface FieldAccessor<T> {
     }
 
     //<editor-fold desc="Protobuf 标准版字段访问的Field" defaultstate="collapsed">
+    /**
+     * 非Lite版Protobuf消息字段
+     *
+     * 当前类 [get]、[set] 方法中对 [V] 类型的判断不要直接使用 [vType]，先判断是否是枚举型
+     * [Descriptors.FieldDescriptor.Type.ENUM]，
+     * 可能会涉及到 [Descriptors.FieldDescriptor.JavaType.MESSAGE] 类型，
+     * 其在 [PreferenceType.forType] 获取类型时会抛出异常，因为[PreferenceType] 不支持对 [Message] 类型的描述。
+     *
+     * @param T 字段宿主对象类型
+     * @param V 字段类型
+     * @property fieldDescriptor 字段描述信息
+     *
+     * @param vTypeProvider [V] 类型的获取lambda
+     */
     class ProtobufMessageField<T : Message, V>(
-        private val field: Descriptors.FieldDescriptor,
+        private val fieldDescriptor: Descriptors.FieldDescriptor,
         vTypeProvider: () -> Type,
     ) : Field<T, V> {
         constructor(
             defaultInstance: T, fieldNumber: Int, vTypeProvider: () -> Type,
         ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1], vTypeProvider)
 
-        override val pdsKey: String = field.name
-        override val vType: PreferenceType by lazy {
-            PreferenceType.forType(field, vTypeProvider)
+        override val pdsKey: String = fieldDescriptor.name
+        override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE) {
+            PreferenceType.forType(fieldDescriptor, vTypeProvider)
         }
 
         @Suppress("UNCHECKED_CAST")
-        override fun get(data: T): V = if (field.type != Descriptors.FieldDescriptor.Type.ENUM) {
-            data.getField(field) as V
-        } else if (!field.isRepeated) {
-            val enum = data.getField(field) as Descriptors.EnumValueDescriptor
+        override fun get(
+            data: T
+        ): V = if (fieldDescriptor.type != Descriptors.FieldDescriptor.Type.ENUM) {
+            // 不是枚举enum，将直接返回原生类型的装箱或protobuf结构体
+            data.getField(fieldDescriptor) as V
+        } else if (!fieldDescriptor.isRepeated) {
+            // 非重复的枚举，返回 EnumValueDescriptor
+            val enum = data.getField(fieldDescriptor) as Descriptors.EnumValueDescriptor
             val vType = vType as PreferenceType.EnumNameString<*>
+            // 根据其name获取enum
             vType.forName(enum.name) as V
         } else {
-            val enum = data.getField(field) as List<Descriptors.EnumValueDescriptor>
-            val vType = vType as PreferenceType.EnumNameStringSet<*>
-            vType.forName(enum.mapTo(ArraySet(enum.size)) { it.name }, true) as V
+            // repeat enum，返回 List<EnumValueDescriptor>
+            val enum = data.getField(fieldDescriptor) as List<Descriptors.EnumValueDescriptor>
+            when (val vType = vType) {
+                is PreferenceType.EnumNameStringSet<*> -> {
+                    // 此处并不关心返回的数据类型必须是field类型，不使用field的类型返回
+                    // 因为当前get方法的返回值是给 BasePreferenceDataStore.getValue 使用的，它会再次进行mapTo
+                    vType.forProtobufEnumValueDescriptors(enum, false) as V
+                }
+                is PreferenceType.BaseEnumNameStringSet<*, *> -> {
+                    // 根据其 List<EnumValueDescriptor> 获取 Collection<enum>
+                    vType.forProtobufEnumValueDescriptors(enum) as V
+                }
+                else -> {
+                    @Suppress("UseRequire")
+                    throw IllegalArgumentException("Protobuf 枚举字段 $fieldDescriptor 与vType信息 $vType 类型不匹配")
+                }
+            }
         }
 
         @Suppress("UNCHECKED_CAST")
         override fun set(
             data: T, value: V
-        ): T = if (field.type != Descriptors.FieldDescriptor.Type.ENUM) {
-            data.toBuilder().setField(field, value).build() as T
-        } else if (field.isRepeated) {
+        ): T = if (fieldDescriptor.type != Descriptors.FieldDescriptor.Type.ENUM) {
+            // 不是枚举enum，直接设置原生类型的装箱或protobuf结构体
+            data.toBuilder().setField(fieldDescriptor, value).build() as T
+        } else if (fieldDescriptor.isRepeated) {
+            // repeat enum，设置 List<EnumValueDescriptor>
             value as Collection<ProtocolMessageEnum>
-            data.toBuilder().setField(field, value.map { it.valueDescriptor }).build() as T
+            data.toBuilder()
+                .setField(fieldDescriptor, value.map { it.valueDescriptor })
+                .build() as T
         } else {
+            // 非重复的枚举，设置 EnumValueDescriptor
             value as ProtocolMessageEnum
-            data.toBuilder().setField(field, value.valueDescriptor).build() as T
+            data.toBuilder().setField(fieldDescriptor, value.valueDescriptor).build() as T
         }
 
         companion object {

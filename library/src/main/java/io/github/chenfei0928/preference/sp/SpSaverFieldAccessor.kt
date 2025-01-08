@@ -5,8 +5,8 @@ import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete
 import io.github.chenfei0928.content.sp.saver.convert.SpConvertSaver
 import io.github.chenfei0928.preference.base.FieldAccessor
-import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KMutableProperty0
+import kotlin.reflect.KProperty
 
 /**
  * @author chenf()
@@ -24,11 +24,11 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
      * 使用[property]与[delegate]注册一个字段，如果 [delegate] 为 null 则向 [SpSaver] 查询或反射获取
      */
     fun <V> propertyUseDelegate(
-        property: KMutableProperty<V>, delegate: AbsSpSaver.AbsSpDelegate<V>? = null
+        property: KProperty<V>, delegate: AbsSpSaver.AbsSpDelegate<V>? = null
     ): FieldAccessor.Field<SpSaver, V>
 
     interface Field<SpSaver : AbsSpSaver<SpSaver>, V> : FieldAccessor.Field<SpSaver, V> {
-        val property: KMutableProperty<*>
+        val property: KProperty<*>
     }
 
     class Impl<SpSaver : AbsSpSaver<SpSaver>>(
@@ -55,7 +55,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
 
         @Suppress("UNCHECKED_CAST")
         override fun <V> propertyUseDelegate(
-            property: KMutableProperty<V>, delegate: AbsSpSaver.AbsSpDelegate<V>?
+            property: KProperty<V>, delegate: AbsSpSaver.AbsSpDelegate<V>?
         ): FieldAccessor.Field<SpSaver, V> {
             val delegate: AbsSpSaver.AbsSpDelegate<V> = delegate
                 ?: spSaver.dataStore.getDelegateByProperty(property)
@@ -92,7 +92,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
         internal class SpSaverPropertyDelegateField<SpSaver : AbsSpSaver<SpSaver>, V>(
             internal val outDelegate: AbsSpSaver.AbsSpDelegate<V>,
             private val spAccessDelegate: AbsSpSaver.AbsSpDelegate<V?>,
-            override val property: KMutableProperty<*>,
+            override val property: KProperty<*>,
             private val defaultValue: V?,
         ) : Field<SpSaver, V?> {
             override val pdsKey: String = property.name

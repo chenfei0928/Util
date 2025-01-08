@@ -2,14 +2,17 @@ package io.github.chenfei0928.content.sp.saver
 
 import android.content.SharedPreferences
 import android.os.Build
+import android.util.Log
 import androidx.collection.ArraySet
 import androidx.preference.PreferenceDataStore
 import com.google.protobuf.Descriptors
 import io.github.chenfei0928.content.sp.saver.PreferenceType.EnumNameString
+import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 import io.github.chenfei0928.preference.base.FieldAccessor.Field
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.jTypeOf
+import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
@@ -43,6 +46,9 @@ sealed interface PreferenceType {
         BOOLEAN(Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType);
 
         companion object {
+            inline fun <reified T> forType(): Native =
+                forType(T::class.java) { jTypeOf<T>() }
+
             fun forType(tClass: Class<*>, tTypeProvider: () -> Type): Native {
                 return entries.find { it.type == tClass || it.primitiveType == tClass }
                     ?: tTypeProvider().let { tType ->
@@ -63,13 +69,42 @@ sealed interface PreferenceType {
         constructor(eClass: Class<E>) : this(eClass.enumConstants)
 
         fun forName(name: String): E = values.find { it.name == name }!!
+
+        companion object {
+            inline operator fun <reified E : Enum<E>> invoke() =
+                EnumNameString<E>(E::class.java)
+        }
+    }
+
+    abstract class BaseEnumNameStringSet<E : Enum<E>, C : MutableCollection<E>>(
+        private val values: Array<E>,
+    ) : PreferenceType {
+        fun forName(name: String): E = values.find { it.name == name }!!
+
+        fun forNames(
+            names: Collection<String>
+        ): C = names.mapTo(createCollection(names.size)) { forName(it) }
+
+        fun forProtobufEnumValueDescriptors(
+            enums: List<Descriptors.EnumValueDescriptor>
+        ): C = enums.mapTo(createCollection(enums.size)) { forName(it.name) }
+
+        protected abstract fun createCollection(size: Int): C
+
+        companion object {
+            inline operator fun <reified E : Enum<E>, C : MutableCollection<E>> invoke(
+                crossinline createCollection: (size: Int) -> C
+            ) = object : BaseEnumNameStringSet<E, C>(enumValues<E>()) {
+                override fun createCollection(size: Int): C = createCollection(size)
+            }
+        }
     }
 
     /**
      * 用于 [DataStorePreferenceDataStore] 的 [Field] 的数据类型，
      * 在[DataStorePreferenceDataStore]中对该类型进行判断
      */
-    class EnumNameStringSet<E : Enum<E>>(
+    open class EnumNameStringSet<E : Enum<E>>(
         private val values: Array<E>,
         private val returnType: Class<out Collection<*>>,
     ) : PreferenceType {
@@ -78,12 +113,26 @@ sealed interface PreferenceType {
             returnType: Class<out Collection<*>>,
         ) : this(eClass.enumConstants, returnType)
 
-        fun forName(names: Collection<String>, toSet: Boolean): Collection<E> =
-            names.mapTo(if (toSet) ArraySet(names.size) else createCollection(names.size)) { name ->
-                values.find { it.name == name }!!
-            }
+        fun forName(name: String): E = values.find { it.name == name }!!
 
-        private fun createCollection(size: Int): MutableCollection<E> = when {
+        fun forNames(
+            names: Collection<String>, focusReturnType: Boolean
+        ): Collection<E> = names.mapTo(
+            if (focusReturnType) createCollection(names.size) else ArraySet(names.size),
+        ) { forName(it) }
+
+        fun forProtobufEnumValueDescriptors(
+            enums: List<Descriptors.EnumValueDescriptor>, focusReturnType: Boolean
+        ): Collection<E> = enums.mapTo(
+            if (focusReturnType) createCollection(enums.size) else ArraySet(enums.size)
+        ) { forName(it.name) }
+
+        /**
+         * 构建集合，查表 like Gson:
+         * [com.google.gson.internal.ConstructorConstructor.newDefaultImplementationConstructor]
+         */
+        @Suppress("CyclomaticComplexMethod")
+        protected open fun createCollection(size: Int): MutableCollection<E> = when {
             returnType.isSubclassOf(ArraySet::class.java) -> ArraySet(size)
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                     && returnType.isSubclassOf(android.util.ArraySet::class.java) ->
@@ -95,10 +144,29 @@ sealed interface PreferenceType {
             returnType.isSubclassOf(Queue::class.java) -> ArrayDeque(size)
             returnType.isSubclassOf(LinkedList::class.java) -> LinkedList()
             returnType.isSubclassOf(List::class.java) -> ArrayList(size)
-            else -> ArrayList(size)
+            // 抽象类或接口，返回arrayList
+            returnType.isInterface
+                    || Modifier.ABSTRACT in returnType.modifiers -> ArrayList(size)
+            else -> try {
+                // 反射创建实例
+                @Suppress("UNCHECKED_CAST")
+                returnType.getConstructor(Integer.TYPE).newInstance(size) as MutableCollection<E>
+            } catch (e: ReflectiveOperationException) {
+                Log.v(TAG, "createCollection by reflect: size int constructor $returnType", e)
+                try {
+                    @Suppress("UNCHECKED_CAST")
+                    returnType.getConstructor().newInstance() as MutableCollection<E>
+                } catch (e: ReflectiveOperationException) {
+                    Log.v(TAG, "createCollection by reflect: empty constructor $returnType", e)
+                    ArrayList(size)
+                }
+            }
         }
 
         companion object {
+            inline operator fun <reified E : Enum<E>, reified C : Collection<E>> invoke(): EnumNameStringSet<E> =
+                EnumNameStringSet<E>(E::class.java, C::class.java)
+
             @Suppress("UNCHECKED_CAST")
             fun forType(type: ParameterizedType): EnumNameStringSet<*> {
                 val rawClass = type.rawType as Class<out Collection<*>>
@@ -116,6 +184,7 @@ sealed interface PreferenceType {
                         returnType = rawClass,
                     )
                 } else {
+                    @Suppress("UseRequire")
                     throw IllegalArgumentException("Not support type: $type")
                 }
             }
@@ -123,8 +192,11 @@ sealed interface PreferenceType {
     }
 
     companion object {
+        private const val TAG = "PreferenceType"
+
         fun forType(tClass: Class<*>, tTypeProvider: () -> Type): PreferenceType {
             return if (tClass.isSubclassOf(Enum::class.java)) {
+                @Suppress("UNCHECKED_CAST")
                 EnumNameString(tClass as Class<out Enum<*>>)
             } else if (!tClass.isSubclassOf(Collection::class.java)) {
                 Native.forType(tClass, tTypeProvider)
@@ -161,8 +233,9 @@ sealed interface PreferenceType {
             Descriptors.FieldDescriptor.JavaType.BOOLEAN -> Native.BOOLEAN
             Descriptors.FieldDescriptor.JavaType.STRING -> Native.STRING
             Descriptors.FieldDescriptor.JavaType.BYTE_STRING ->
-                throw IllegalArgumentException("Not support type:ype $field")
+                throw IllegalArgumentException("Not support type: $field")
             Descriptors.FieldDescriptor.JavaType.ENUM ->
+                @Suppress("UNCHECKED_CAST")
                 EnumNameString(eClass = tTypeProvider() as Class<out Enum<*>>)
             Descriptors.FieldDescriptor.JavaType.MESSAGE ->
                 throw IllegalArgumentException("Not support type: $field")
