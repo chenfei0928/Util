@@ -10,7 +10,7 @@ import io.github.chenfei0928.content.sp.saver.AbsSpSaver
  */
 class DefaultValueSpDelete<T>(
     saver: AbsSpSaver.AbsSpDelegate<T?>,
-    internal val defaultValue: T
+    internal val defaultValue: T,
 ) : SpConvertSaver<T?, T>(saver) {
 
     override fun onRead(value: T?): T {

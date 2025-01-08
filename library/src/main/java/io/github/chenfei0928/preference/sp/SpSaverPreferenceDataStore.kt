@@ -60,14 +60,7 @@ constructor(
      */
     @Suppress("UNCHECKED_CAST")
     internal fun <V> getDelegateByProperty(property: KProperty<V>): AbsSpSaver.AbsSpDelegate<V> {
-        return findFieldByProperty(property)?.let {
-            if (it is SpSaverFieldAccessor.Impl.SpSaverPropertyDelegateField<*, *>) {
-                it as SpSaverFieldAccessor.Impl.SpSaverPropertyDelegateField<SpSaver, V>
-                it.outDelegate
-            } else {
-                null
-            }
-        } ?: run {
+        return findFieldByProperty(property)?.outDelegate ?: run {
             Log.w(TAG, "getDelegateByProperty: $property in ${properties.keys.joinToString()}")
             val delegate0 = when (property) {
                 is KProperty0<*> -> {

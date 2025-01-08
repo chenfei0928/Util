@@ -6,7 +6,7 @@ import io.github.chenfei0928.content.sp.saver.delegate.StringSetDelegate
 
 class EnumSetNameSpConvertSaver<E : Enum<E>>(
     private val enumValues: Array<E>,
-    saver: AbsSpSaver.AbsSpDelegate0<Set<String>?>
+    saver: AbsSpSaver.AbsSpDelegate<Set<String>?>,
 ) : SpConvertSaver<Set<String>?, Set<E>?>(saver) {
 
     constructor(

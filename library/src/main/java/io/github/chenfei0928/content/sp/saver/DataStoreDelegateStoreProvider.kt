@@ -11,10 +11,11 @@ import kotlin.reflect.KProperty
 class DataStoreDelegateStoreProvider<SpSaver : AbsSpSaver<SpSaver>, V>(
     private val delegate: AbsSpSaver.AbsSpDelegate<V>
 ) : PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, V>> {
+
     override fun provideDelegate(
         thisRef: SpSaver, property: KProperty<*>
     ): ReadWriteProperty<SpSaver, V> {
-        thisRef.dataStore.propertyUseDelegate(property as KProperty<V>, delegate)
+        thisRef.dataStore.property(property as KProperty<V>, delegate.spValueType, delegate)
         return delegate
     }
 

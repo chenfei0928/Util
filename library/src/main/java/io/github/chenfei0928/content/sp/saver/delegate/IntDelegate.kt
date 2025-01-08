@@ -4,8 +4,8 @@ import android.content.SharedPreferences
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 
 class IntDelegate(
-    key: String? = null, defaultValue: Int = 0
-) : AbsDefaultValueSpDelegate<Int>(key, PreferenceType.Native.INT, defaultValue) {
+    key: String? = null, defaultValue: Int = 0,
+) : AbsSpAccessDefaultValueDelegate<Int>(key, PreferenceType.Native.INT, defaultValue) {
     override fun getValueImpl(sp: SharedPreferences, key: String): Int =
         sp.getInt(key, defaultValue)
 

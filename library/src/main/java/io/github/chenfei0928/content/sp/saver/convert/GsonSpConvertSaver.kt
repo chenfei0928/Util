@@ -7,7 +7,7 @@ import io.github.chenfei0928.reflect.jTypeOf
 import java.lang.reflect.Type
 
 class GsonSpConvertSaver<T>(
-    saver: AbsSpSaver.AbsSpDelegate0<String?>,
+    saver: AbsSpSaver.AbsSpDelegate<String?>,
     private val gson: Gson = io.github.chenfei0928.json.gson.gson,
     private val type: Type,
 ) : SpConvertSaver<String?, T?>(saver) {

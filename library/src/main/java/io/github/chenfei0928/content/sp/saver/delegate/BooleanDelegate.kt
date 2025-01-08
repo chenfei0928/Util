@@ -4,8 +4,8 @@ import android.content.SharedPreferences
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 
 class BooleanDelegate(
-    key: String? = null, defaultValue: Boolean = false
-) : AbsDefaultValueSpDelegate<Boolean>(key, PreferenceType.Native.BOOLEAN, defaultValue) {
+    key: String? = null, defaultValue: Boolean = false,
+) : AbsSpAccessDefaultValueDelegate<Boolean>(key, PreferenceType.Native.BOOLEAN, defaultValue) {
     override fun getValueImpl(sp: SharedPreferences, key: String): Boolean =
         sp.getBoolean(key, defaultValue)
 

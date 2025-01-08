@@ -5,7 +5,7 @@ import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 
 class IntArraySpConvertSaver(
-    saver: AbsSpSaver.AbsSpDelegate0<String?>
+    saver: AbsSpSaver.AbsSpDelegate<String?>,
 ) : SpConvertSaver<String?, IntArray?>(saver) {
 
     constructor(key: String) : this(StringDelegate(key))

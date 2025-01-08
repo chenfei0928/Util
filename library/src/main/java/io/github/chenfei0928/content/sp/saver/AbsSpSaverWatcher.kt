@@ -3,7 +3,6 @@ package io.github.chenfei0928.content.sp.saver
 import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.content.sp.registerOnSharedPreferenceChangeListener
-import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor
 import io.github.chenfei0928.util.Log
 import kotlin.reflect.KProperty
 
@@ -32,7 +31,6 @@ fun <SpSaver : AbsSpSaver<SpSaver>> SpSaver.registerOnSharedPreferenceChangeList
             // 根据key获取其对应的AbsSpSaver字段
             val property = spSaver.dataStore
                 .spSaverPropertyDelegateFields
-                .filterIsInstance<SpSaverFieldAccessor.Impl.SpSaverPropertyDelegateField<*, *>>()
                 .find {
                     it.outDelegate.obtainDefaultKey(it.property) == key
                 }

@@ -38,20 +38,6 @@ abstract class AbsSpSaver<SpSaver : AbsSpSaver<SpSaver>> : SpCommit {
 
         internal abstract fun putValue(editor: SharedPreferences.Editor, key: String, value: T)
     }
-
-    /**
-     * 根据构造器传入的key名或字段名来存取值，字段名将由kotlin负责维护，会在编译期生成而不会受到混淆的影响
-     * 本类用来对实现类提供[sp]、[editor]字段
-     */
-    abstract class AbsSpDelegate0<T>(
-        internal val key: String?,
-        spValueType: PreferenceType,
-    ) : AbsSpDelegate<T>(spValueType) {
-
-        override fun obtainDefaultKey(property: KProperty<*>): String {
-            return key ?: property.name
-        }
-    }
     //</editor-fold>
 
     val dataStore: SpSaverPreferenceDataStore<SpSaver> by lazy {
