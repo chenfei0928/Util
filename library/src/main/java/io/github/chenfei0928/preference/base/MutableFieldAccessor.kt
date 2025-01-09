@@ -152,6 +152,8 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
                 property.set(data, value)
                 return data
             }
+
+            override fun toString(): String = "KMutablePropertyField($pdsKey:$vType)"
         }
         //</editor-fold>
     }

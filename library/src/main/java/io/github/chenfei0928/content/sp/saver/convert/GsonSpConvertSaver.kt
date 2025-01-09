@@ -2,6 +2,7 @@ package io.github.chenfei0928.content.sp.saver.convert
 
 import com.google.gson.Gson
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
+import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 import io.github.chenfei0928.reflect.jTypeOf
 import java.lang.reflect.Type
@@ -10,9 +11,9 @@ class GsonSpConvertSaver<T>(
     saver: AbsSpSaver.AbsSpDelegate<String?>,
     private val gson: Gson = io.github.chenfei0928.json.gson.gson,
     private val type: Type,
-) : SpConvertSaver<String?, T?>(saver) {
+) : SpConvertSaver<String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
     @Volatile
-    private var cacheValue: Any? = this
+    private var cacheValue: Pair<String, T>? = null
 
     constructor(
         key: String,
@@ -21,19 +22,20 @@ class GsonSpConvertSaver<T>(
     ) : this(StringDelegate(key), gson, type)
 
     override fun onRead(value: String?): T? {
-        if (cacheValue == this) {
-            synchronized(this) {
-                if (cacheValue == this) {
-                    cacheValue = gson.fromJson(value, type)
-                }
-            }
+        val cacheValue = cacheValue
+        return if (cacheValue?.first == value) {
+            cacheValue?.second
+        } else value?.let {
+            val t = gson.fromJson<T>(value, type)
+            this.cacheValue = it to t
+            t
         }
-        return cacheValue as T?
     }
 
-    override fun onSave(value: T?): String? {
-        cacheValue = value
-        return gson.toJson(value)
+    override fun onSave(value: T?): String? = value?.let {
+        val json = gson.toJson(value)
+        cacheValue = json to value
+        json
     }
 
     companion object {

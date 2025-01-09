@@ -45,6 +45,8 @@ abstract class AbsSpSaver<SpSaver : AbsSpSaver<SpSaver>> : SpCommit {
         SpSaverPreferenceDataStore<SpSaver>(this as SpSaver)
     }
 
+    override fun toString(): String = dataStore.toPropertyString()
+
     companion object {
         @JvmStatic
         protected inline fun AbsSpSaver<*>.edit(

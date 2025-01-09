@@ -8,6 +8,9 @@ import io.github.chenfei0928.content.sp.saver.convert.EnumNameSpConvertSaver
 import io.github.chenfei0928.content.sp.saver.convert.EnumNameSpConvertSaver.Companion.invoke
 import io.github.chenfei0928.content.sp.saver.convert.EnumSetNameSpConvertSaver
 import io.github.chenfei0928.content.sp.saver.convert.EnumSetNameSpConvertSaver.Companion.invoke
+import io.github.chenfei0928.content.sp.saver.convert.GsonSpConvertSaver
+import io.github.chenfei0928.content.sp.saver.convert.IntArraySpConvertSaver
+import io.github.chenfei0928.content.sp.saver.convert.LocalSerializerSpConvertSaver
 import io.github.chenfei0928.content.sp.saver.delegate.BooleanDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.FloatDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.IntDelegate
@@ -15,6 +18,8 @@ import io.github.chenfei0928.content.sp.saver.delegate.LongDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.StringSetDelegate
 import io.github.chenfei0928.demo.bean.JsonBean
+import io.github.chenfei0928.demo.bean.Test
+import io.github.chenfei0928.repository.local.serializer.ProtobufSerializer
 
 /**
  * @author chenf()
@@ -37,4 +42,9 @@ class TestSpSaver(context: Context) : BaseSpSaver<TestSpSaver>(context, "test") 
     var enums: Set<JsonBean.JsonEnum> by EnumSetNameSpConvertSaver<JsonBean.JsonEnum>()
         .defaultValue(emptySet())
         .dataStore()
+
+    // 下面三个是复合类型，不支持作为 preferenceDataStore
+    var json: JsonBean.InnerJsonBean? by GsonSpConvertSaver<JsonBean.InnerJsonBean>().dataStore()
+    var intArray: IntArray? by IntArraySpConvertSaver().dataStore()
+    var test: Test? by LocalSerializerSpConvertSaver<Test>(ProtobufSerializer()).dataStore()
 }

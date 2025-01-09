@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicReference
  * @date 2020-07-14 16:58
  */
 open class BaseSpSaver<SpSaver : BaseSpSaver<SpSaver>>(
-    override val sp: SharedPreferences,
+    final override val sp: SharedPreferences,
 ) : AbsSpSaver<SpSaver>() {
     private var spAutoApply: SpSaverAutoApply? = null
 
@@ -23,7 +23,7 @@ open class BaseSpSaver<SpSaver : BaseSpSaver<SpSaver>>(
     private val editorAtomicReference = AtomicReference<SharedPreferences.Editor?>()
 
     @get:Synchronized
-    override val editor: SharedPreferences.Editor
+    final override val editor: SharedPreferences.Editor
         get() = editorAtomicReference.get() ?: (editorAtomicReference.updateAndGetCompat {
             it ?: sp.edit()
         }!!.apply {
@@ -38,14 +38,14 @@ open class BaseSpSaver<SpSaver : BaseSpSaver<SpSaver>>(
         }
     }
 
-    override fun getSpAll(): Map<String, *> = sp.all
+    final override fun getSpAll(): Map<String, *> = sp.all
 
-    override fun clear() {
+    final override fun clear() {
         editor.clear()
     }
 
     @Synchronized
-    override fun commit(): Boolean {
+    final override fun commit(): Boolean {
         val editor = editorAtomicReference.get()
             ?: return false
         val result = editor.commit()
@@ -54,7 +54,7 @@ open class BaseSpSaver<SpSaver : BaseSpSaver<SpSaver>>(
     }
 
     @Synchronized
-    override fun apply() {
+    final override fun apply() {
         val editor = editorAtomicReference.get()
             ?: return
         editor.apply()

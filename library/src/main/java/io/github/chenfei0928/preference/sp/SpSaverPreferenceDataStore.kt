@@ -3,7 +3,9 @@ package io.github.chenfei0928.preference.sp
 import android.content.SharedPreferences.Editor
 import android.util.Log
 import androidx.preference.PreferenceManager
+import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
+import io.github.chenfei0928.lang.toStringRef
 import io.github.chenfei0928.preference.base.BasePreferenceDataStore
 import io.github.chenfei0928.preference.base.FieldAccessor
 import kotlin.reflect.KProperty
@@ -61,7 +63,7 @@ constructor(
     @Suppress("UNCHECKED_CAST")
     internal fun <V> getDelegateByProperty(property: KProperty<V>): AbsSpSaver.AbsSpDelegate<V> {
         return findFieldByProperty(property)?.outDelegate ?: run {
-            Log.w(TAG, StringBuilder().apply {
+            Log.w(TAG, buildString {
                 append("getDelegateByProperty: getDelegate by reflect, because ")
                 append(property)
                 append(" not found in ")
@@ -105,6 +107,9 @@ constructor(
      */
     internal fun <V> getSpKeyByProperty(property: KProperty<V>): String =
         getDelegateByProperty(property).obtainDefaultKey(property)
+
+    internal fun toPropertyString(): String =
+        saver.toStringRef(spSaverPropertyDelegateFields.mapToArray { it.property })
     //</editor-fold>
 
     override fun <V> FieldAccessor.Field<SpSaver, V>.set(value: V) {

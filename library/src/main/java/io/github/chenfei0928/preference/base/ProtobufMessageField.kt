@@ -69,7 +69,9 @@ class ProtobufMessageField<T : Message, V>(
                 // 根据其 List<EnumValueDescriptor> 获取 Collection<enum>
                 vType.forProtobufEnumValueDescriptors(enum) as V
             }
-            else -> {
+            is PreferenceType.Native,
+            is PreferenceType.EnumNameString<*>,
+            is PreferenceType.NoSupportPreferenceDataStore -> {
                 @Suppress("UseRequire")
                 throw IllegalArgumentException("Protobuf 枚举字段 $fieldDescriptor 与vType信息 $vType 类型不匹配")
             }
@@ -93,6 +95,8 @@ class ProtobufMessageField<T : Message, V>(
         value as ProtocolMessageEnum
         data.toBuilder().setField(fieldDescriptor, value.valueDescriptor).build() as T
     }
+
+    override fun toString(): String = "ProtobufMessageField($pdsKey:${fieldDescriptor.type})"
 
     companion object {
         inline operator fun <reified T : Message, reified V> invoke(
@@ -121,12 +125,12 @@ class ProtobufMessageField<T : Message, V>(
             override val pdsKey: String = name
             override val vType by lazy(this)
             override fun get(data: T): V = getter(data)
-
-            @Suppress("UNCHECKED_CAST")
             override fun set(data: T, value: V): T =
+                @Suppress("UNCHECKED_CAST")
                 setter(data.toBuilder() as Builder, value).build() as T
 
             override fun invoke(): PreferenceType = PreferenceType.forType<V>()
+            override fun toString(): String = "protobufField($pdsKey:$vType)"
         }
 
         /**
@@ -152,18 +156,16 @@ class ProtobufMessageField<T : Message, V>(
                 Getter : Function1<T, V>,
                 Setter : KFunction<Builder>,
                 Setter : Function2<Builder, V, Builder> {
-            return object : Field<T, V> {
+            return object : Field<T, V>, () -> PreferenceType {
                 override val pdsKey: String = name
-                override val vType = PreferenceType.forType<V>()
-
-                override fun get(data: T): V {
-                    return getter(data)
-                }
-
-                override fun set(data: T, value: V): T {
+                override val vType by lazy(this)
+                override fun get(data: T): V = getter(data)
+                override fun set(data: T, value: V): T =
                     @Suppress("UNCHECKED_CAST")
-                    return setter(data.toBuilder() as Builder, value).build() as T
-                }
+                    setter(data.toBuilder() as Builder, value).build() as T
+
+                override fun invoke(): PreferenceType = PreferenceType.forType<V>()
+                override fun toString(): String = "protobuf($pdsKey:$vType)"
             }
         }
         //</editor-fold>

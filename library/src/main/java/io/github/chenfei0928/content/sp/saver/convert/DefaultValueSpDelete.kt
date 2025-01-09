@@ -1,5 +1,6 @@
 package io.github.chenfei0928.content.sp.saver.convert
 
+import android.content.SharedPreferences
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 
 /**
@@ -12,6 +13,14 @@ class DefaultValueSpDelete<T>(
     saver: AbsSpSaver.AbsSpDelegate<T?>,
     internal val defaultValue: T,
 ) : SpConvertSaver<T?, T>(saver) {
+
+    override fun getValue(sp: SharedPreferences, key: String): T {
+        return if (sp.contains(key)) {
+            super.getValue(sp, key)
+        } else {
+            defaultValue
+        }
+    }
 
     override fun onRead(value: T?): T {
         return value ?: defaultValue

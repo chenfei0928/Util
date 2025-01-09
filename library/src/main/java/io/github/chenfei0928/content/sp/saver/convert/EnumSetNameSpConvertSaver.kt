@@ -6,13 +6,16 @@ import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.delegate.StringSetDelegate
 
 class EnumSetNameSpConvertSaver<E : Enum<E>>(
+    eClass: Class<E>,
     private val enumValues: Array<E>,
     saver: AbsSpSaver.AbsSpDelegate<Set<String>?>,
-) : SpConvertSaver<Set<String>?, Set<E>?>(saver, EnumNameStringSet(enumValues)) {
+) : SpConvertSaver<Set<String>?, Set<E>?>(saver, EnumNameStringSet(eClass, enumValues)) {
 
     constructor(
-        enumValues: Array<E>, key: String? = null
-    ) : this(enumValues, StringSetDelegate(key))
+        eClass: Class<E>,
+        enumValues: Array<E> = eClass.enumConstants as Array<E>,
+        key: String? = null,
+    ) : this(eClass, enumValues, StringSetDelegate(key))
 
     override fun onRead(value: Set<String>?): Set<E>? {
         return value?.mapNotNullTo(ArraySet(value.size)) { item ->
@@ -27,14 +30,14 @@ class EnumSetNameSpConvertSaver<E : Enum<E>>(
     }
 
     private class EnumNameStringSet<E : Enum<E>>(
-        values: Array<E>,
-    ) : PreferenceType.BaseEnumNameStringCollection<E, MutableSet<E>>(values) {
+        eClass: Class<E>, values: Array<E>,
+    ) : PreferenceType.BaseEnumNameStringCollection<E, MutableSet<E>>(eClass, values) {
         override fun createCollection(size: Int): MutableSet<E> = ArraySet(size)
     }
 
     companion object {
         inline operator fun <reified E : Enum<E>> invoke(
             key: String? = null
-        ) = EnumSetNameSpConvertSaver(enumValues<E>(), key)
+        ) = EnumSetNameSpConvertSaver(E::class.java, enumValues<E>(), key)
     }
 }

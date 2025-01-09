@@ -57,6 +57,8 @@ interface FieldAccessor<T> {
         val vType: PreferenceType
         fun get(data: T): V
         fun set(data: T, value: V): T
+
+        override fun toString(): String
     }
 
     open class Impl<T : Any>(
@@ -122,6 +124,8 @@ interface FieldAccessor<T> {
                 val t1 = outerField.get(data)
                 return outerField.set(data, innerField.set(t1, value))
             }
+
+            override fun toString(): String = "FieldWrapper($pdsKey:$vType)"
         }
 
         override fun <V> findByName(name: String): Field<T, V> {
@@ -191,6 +195,7 @@ interface FieldAccessor<T> {
             override fun get(data: T): V = getter(data)
             override fun set(data: T, value: V): T = setter(data, value)
             override fun invoke(): PreferenceType = PreferenceType.forType<V>()
+            override fun toString(): String = "field($pdsKey:$vType)"
         }
         //</editor-fold>
     }

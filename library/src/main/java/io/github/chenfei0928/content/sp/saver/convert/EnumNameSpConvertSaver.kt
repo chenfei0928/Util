@@ -5,13 +5,16 @@ import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 
 class EnumNameSpConvertSaver<E : Enum<E>>(
+    eClass: Class<E>,
     private val enumValues: Array<E>,
     saver: AbsSpSaver.AbsSpDelegate<String?>,
-) : SpConvertSaver<String?, E?>(saver, PreferenceType.EnumNameString(enumValues)) {
+) : SpConvertSaver<String?, E?>(saver, PreferenceType.EnumNameString(eClass, enumValues)) {
 
     constructor(
-        enumValues: Array<E>, key: String? = null
-    ) : this(enumValues, StringDelegate(key))
+        eClass: Class<E>,
+        enumValues: Array<E> = eClass.enumConstants as Array<E>,
+        key: String? = null,
+    ) : this(eClass, enumValues, StringDelegate(key))
 
     override fun onRead(value: String?): E? {
         return enumValues.find { value == it.name }
@@ -24,6 +27,6 @@ class EnumNameSpConvertSaver<E : Enum<E>>(
     companion object {
         inline operator fun <reified E : Enum<E>> invoke(
             key: String? = null
-        ) = EnumNameSpConvertSaver(enumValues<E>(), key)
+        ) = EnumNameSpConvertSaver(E::class.java, enumValues<E>(), key)
     }
 }

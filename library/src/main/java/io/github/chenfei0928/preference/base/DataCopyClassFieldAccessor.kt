@@ -241,6 +241,8 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
                     )
                 )
             }
+
+            override fun toString(): String = "KPropertyDataCopyField($pdsKey:$vType)"
         }
         //</editor-fold>
     }

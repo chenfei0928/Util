@@ -95,6 +95,7 @@ fun Any.toStringRef(fields: Array<Any>) = buildString {
     append(')')
 }
 
+@Suppress("UNCHECKED_CAST")
 private fun getValue(
     thisRef: Any, field: Any?,
 ): Any? = when (field) {

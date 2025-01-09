@@ -64,12 +64,16 @@ sealed interface PreferenceType {
      * 用于 [DataStorePreferenceDataStore] 的 [Field] 的数据类型，
      * 在[DataStorePreferenceDataStore]中对该类型进行判断
      */
-    class EnumNameString<E : Enum<E>>(
-        private val values: Array<E>
+    data class EnumNameString<E : Enum<E>>(
+        private val eClass: Class<E>,
+        private val values: Array<E>,
     ) : PreferenceType {
-        constructor(eClass: Class<E>) : this(eClass.enumConstants)
+        constructor(eClass: Class<E>) : this(eClass, eClass.enumConstants)
 
         fun forName(name: String): E = values.find { it.name == name }!!
+
+        override fun toString(): String =
+            "EnumNameString(eClass=$eClass)"
 
         companion object {
             inline operator fun <reified E : Enum<E>> invoke() =
@@ -78,6 +82,7 @@ sealed interface PreferenceType {
     }
 
     abstract class BaseEnumNameStringCollection<E : Enum<E>, C : MutableCollection<E>>(
+        private val eClass: Class<E>,
         private val values: Array<E>,
     ) : PreferenceType {
         fun forName(name: String): E = values.find { it.name == name }!!
@@ -92,10 +97,13 @@ sealed interface PreferenceType {
 
         protected abstract fun createCollection(size: Int): C
 
+        override fun toString(): String =
+            "BaseEnumNameStringCollection(eClass=$eClass)"
+
         companion object {
             inline operator fun <reified E : Enum<E>, C : MutableCollection<E>> invoke(
                 crossinline createCollection: (size: Int) -> C
-            ) = object : BaseEnumNameStringCollection<E, C>(enumValues<E>()) {
+            ) = object : BaseEnumNameStringCollection<E, C>(E::class.java, enumValues<E>()) {
                 override fun createCollection(size: Int): C = createCollection(size)
             }
         }
@@ -105,14 +113,15 @@ sealed interface PreferenceType {
      * 用于 [DataStorePreferenceDataStore] 的 [Field] 的数据类型，
      * 在[DataStorePreferenceDataStore]中对该类型进行判断
      */
-    open class EnumNameStringCollection<E : Enum<E>>(
+    data class EnumNameStringCollection<E : Enum<E>>(
+        private val eClass: Class<E>,
         private val values: Array<E>,
         private val returnType: Class<out Collection<*>>,
     ) : PreferenceType {
         constructor(
             eClass: Class<E>,
             returnType: Class<out Collection<*>>,
-        ) : this(eClass.enumConstants, returnType)
+        ) : this(eClass, eClass.enumConstants, returnType)
 
         fun forName(name: String): E = values.find { it.name == name }!!
 
@@ -128,12 +137,15 @@ sealed interface PreferenceType {
             if (focusReturnType) createCollection(enums.size) else ArraySet(enums.size)
         ) { forName(it.name) }
 
+        override fun toString(): String =
+            "EnumNameStringCollection(eClass=$eClass, returnType=$returnType)"
+
         /**
          * 构建集合，查表 like Gson:
          * [com.google.gson.internal.ConstructorConstructor.newDefaultImplementationConstructor]
          */
         @Suppress("CyclomaticComplexMethod")
-        protected open fun createCollection(size: Int): MutableCollection<E> = when {
+        private fun createCollection(size: Int): MutableCollection<E> = when {
             returnType.isSubclassOf(ArraySet::class.java) -> ArraySet(size)
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                     && returnType.isSubclassOf(android.util.ArraySet::class.java) ->
@@ -191,6 +203,12 @@ sealed interface PreferenceType {
             }
         }
     }
+
+    /**
+     * 其它平台未原生支持的复杂类型，在当前类的各个 forType 中均不会返回该类型，
+     * 仅用作 [SpConvertSaver] 的子类中使用
+     */
+    object NoSupportPreferenceDataStore : PreferenceType
 
     companion object {
         private const val TAG = "PreferenceType"

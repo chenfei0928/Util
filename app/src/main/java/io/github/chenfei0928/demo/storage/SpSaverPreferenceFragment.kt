@@ -3,13 +3,17 @@ package io.github.chenfei0928.demo.storage
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.os.postDelayed
 import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.content.sp.saver.registerOnSpPropertyChangeListener
 import io.github.chenfei0928.content.sp.saver.toLiveData
 import io.github.chenfei0928.demo.bean.JsonBean
+import io.github.chenfei0928.demo.bean.Test
 import io.github.chenfei0928.os.Debug
+import io.github.chenfei0928.os.safeHandler
 import io.github.chenfei0928.preference.base.bindEnum
 import io.github.chenfei0928.preference.sp.SpSaverPreferenceGroupBuilder.Companion.buildPreferenceScreen
+import kotlin.random.Random
 
 /**
  * @author chenf()
@@ -28,6 +32,13 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
         }
         spSaver.registerOnSpPropertyChangeListener(viewLifecycleOwner) {
             Log.v(TAG, "onCreate: spSaver onSpPropertyChange $it")
+        }
+        safeHandler.postDelayed(100L) {
+            Log.i(TAG, "onViewCreated: set obj, before is $spSaver")
+            spSaver.intArray = intArrayOf(Random.nextInt(), Random.nextInt())
+            spSaver.json = JsonBean.InnerJsonBean(Random.nextBoolean())
+            spSaver.test = Test.newBuilder().setInt(Random.nextInt()).build()
+            spSaver.apply()
         }
     }
 

@@ -1,8 +1,11 @@
 package io.github.chenfei0928.preference.sp
 
+import android.util.Log
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete
+import io.github.chenfei0928.content.sp.saver.convert.EnumNameSpConvertSaver
+import io.github.chenfei0928.content.sp.saver.convert.EnumSetNameSpConvertSaver
 import io.github.chenfei0928.content.sp.saver.convert.SpConvertSaver
 import io.github.chenfei0928.content.sp.saver.delegate.AbsSpAccessDefaultValueDelegate
 import io.github.chenfei0928.preference.base.FieldAccessor
@@ -41,18 +44,27 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
             property: KProperty<V>, vType: PreferenceType, delegate: AbsSpSaver.AbsSpDelegate<V>?
         ): FieldAccessor.Field<SpSaver, V> = if (
             property is KMutableProperty0 && delegate != null
+            && vType !is PreferenceType.NoSupportPreferenceDataStore
         ) {
+            // 原生支持的vType类型，传入了委托
+            Log.v(TAG, "property: KMutableProperty0 $property")
             property(NativeTypeField0(property, delegate, vType))
-        } else if (property is KMutableProperty1<*, *> && delegate != null) {
+        } else if (property is KMutableProperty1<*, *> && delegate != null
+            && vType !is PreferenceType.NoSupportPreferenceDataStore
+        ) {
+            // 原生支持的vType类型，传入了委托
+            Log.v(TAG, "property: KMutableProperty1 $property")
             @Suppress("UNCHECKED_CAST")
             property as KMutableProperty1<SpSaver, V>
             property(NativeTypeField1(property, delegate, vType))
         } else {
+            // vType复合类型或没传入委托，需要查找委托信息中的 spAccessDelegate
             val delegate: AbsSpSaver.AbsSpDelegate<V> = delegate
                 ?: spSaver.dataStore.getDelegateByProperty(property)
             val outDelegate: AbsSpSaver.AbsSpDelegate<V> = delegate
             var spAccessDelegate: AbsSpSaver.AbsSpDelegate<*> = delegate
             var defaultValue: Any? = null
+            // 查找 spAccessDelegate 为sp原生值访问委托
             while (spAccessDelegate !is AbsSpAccessDefaultValueDelegate<*>) {
                 when (spAccessDelegate) {
                     is DefaultValueSpDelete<*> -> {
@@ -72,6 +84,19 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
                     }
                 }
             }
+            Log.v(TAG, buildString {
+                append("property: property:")
+                append(property)
+                appendLine()
+                append("vType:")
+                append(spAccessDelegate.spValueType)
+                append(", outDelegate:")
+                append(outDelegate.javaClass.simpleName)
+                append(", spAccessDelegate:")
+                append(spAccessDelegate.javaClass.simpleName)
+                append(", defaultValue:")
+                append(defaultValue)
+            })
             @Suppress("UNCHECKED_CAST")
             val field = SpSaverPropertyDelegateField<SpSaver, Any?>(
                 outDelegate as AbsSpSaver.AbsSpDelegate<Any?>,
@@ -88,13 +113,9 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
             override val vType: PreferenceType,
         ) : Field<SpSaver, V> {
             override val pdsKey: String = property.name
-
             override fun get(data: SpSaver): V = property.get()
-
-            override fun set(data: SpSaver, value: V): SpSaver {
-                property.set(value)
-                return data
-            }
+            override fun set(data: SpSaver, value: V): SpSaver = data.apply { property.set(value) }
+            override fun toString(): String = "NativeTypeField0($pdsKey:$vType)"
         }
 
         private class NativeTypeField1<SpSaver : AbsSpSaver<SpSaver>, V>(
@@ -103,15 +124,23 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
             override val vType: PreferenceType,
         ) : Field<SpSaver, V> {
             override val pdsKey: String = property.name
-
             override fun get(data: SpSaver): V = property.get(data)
+            override fun set(data: SpSaver, value: V): SpSaver =
+                data.apply { property.set(data, value) }
 
-            override fun set(data: SpSaver, value: V): SpSaver {
-                property.set(data, value)
-                return data
-            }
+            override fun toString(): String = "NativeTypeField1($pdsKey:$vType)"
         }
 
+        /**
+         * 对于使用了 [SpConvertSaver] 委托但又不是 [EnumNameSpConvertSaver]
+         * 或 [EnumSetNameSpConvertSaver] 字段使用的字段
+         *
+         * @param V 值类型
+         * @property outDelegate 最外层委托
+         * @property spAccessDelegate sp访问的委托
+         * @property property 字段信息
+         * @property defaultValue 默认值（如果设置了[DefaultValueSpDelete]）
+         */
         private class SpSaverPropertyDelegateField<SpSaver : AbsSpSaver<SpSaver>, V>(
             override val outDelegate: AbsSpSaver.AbsSpDelegate<V?>,
             private val spAccessDelegate: AbsSpAccessDefaultValueDelegate<V?>,
@@ -120,15 +149,14 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
         ) : Field<SpSaver, V?> {
             override val pdsKey: String = property.name
             override val vType: PreferenceType = spAccessDelegate.spValueType
+            override fun get(data: SpSaver): V? =
+                spAccessDelegate.getValue(data, property) ?: defaultValue
 
-            override fun get(data: SpSaver): V? {
-                return spAccessDelegate.getValue(data, property) ?: defaultValue
-            }
-
-            override fun set(data: SpSaver, value: V?): SpSaver {
+            override fun set(data: SpSaver, value: V?): SpSaver = data.apply {
                 spAccessDelegate.setValue(data, property, value)
-                return data
             }
+
+            override fun toString(): String = "SpSaverPropertyDelegateField($pdsKey:$vType)"
         }
     }
 
