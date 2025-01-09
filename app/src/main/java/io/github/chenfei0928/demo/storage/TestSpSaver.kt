@@ -8,8 +8,8 @@ import io.github.chenfei0928.content.sp.saver.convert.EnumNameSpConvertSaver
 import io.github.chenfei0928.content.sp.saver.convert.EnumNameSpConvertSaver.Companion.invoke
 import io.github.chenfei0928.content.sp.saver.convert.EnumSetNameSpConvertSaver
 import io.github.chenfei0928.content.sp.saver.convert.EnumSetNameSpConvertSaver.Companion.invoke
-import io.github.chenfei0928.content.sp.saver.convert.GsonSpConvertSaver
 import io.github.chenfei0928.content.sp.saver.convert.IntArraySpConvertSaver
+import io.github.chenfei0928.content.sp.saver.convert.KtxsJsonSpConvertSaver
 import io.github.chenfei0928.content.sp.saver.convert.LocalSerializerSpConvertSaver
 import io.github.chenfei0928.content.sp.saver.delegate.BooleanDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.FloatDelegate
@@ -43,8 +43,13 @@ class TestSpSaver(context: Context) : BaseSpSaver<TestSpSaver>(context, "test") 
         .defaultValue(emptySet())
         .dataStore()
 
-    // 下面三个是复合类型，不支持作为 preferenceDataStore
-    var json: JsonBean.InnerJsonBean? by GsonSpConvertSaver<JsonBean.InnerJsonBean>().dataStore()
-    var intArray: IntArray by IntArraySpConvertSaver().defaultValue(intArrayOf()).dataStore()
-    var test: Test? by LocalSerializerSpConvertSaver<Test>(ProtobufSerializer()).dataStore()
+    // 下面三个是结构体类型，不支持作为 preferenceDataStore
+    var json: JsonBean.InnerJsonBean? by KtxsJsonSpConvertSaver<JsonBean.InnerJsonBean>()
+        .dataStore()
+    var intArray: IntArray by IntArraySpConvertSaver()
+        .defaultValue(intArrayOf())
+        .dataStore()
+    var test: Test by LocalSerializerSpConvertSaver<Test>(ProtobufSerializer())
+        .defaultValue(Test.getDefaultInstance())
+        .dataStore()
 }

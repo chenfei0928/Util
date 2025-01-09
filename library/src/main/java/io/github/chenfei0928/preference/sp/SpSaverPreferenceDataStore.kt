@@ -1,10 +1,12 @@
 package io.github.chenfei0928.preference.sp
 
+import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import android.util.Log
 import androidx.preference.PreferenceManager
 import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
+import io.github.chenfei0928.content.sp.saver.DataStoreDelegateStoreProvider.Companion
 import io.github.chenfei0928.lang.toStringRef
 import io.github.chenfei0928.preference.base.BasePreferenceDataStore
 import io.github.chenfei0928.preference.base.FieldAccessor
@@ -46,12 +48,16 @@ constructor(
     /**
      * 根据 [property] 查找对应的委托
      *
+     * 该方法支持的 [V] 的类型仅限于 [SharedPreferences] 所原生支持的数据类型和 `Enum`、`Set<Enum>`
+     *
      * 需要其委托创建最后阶段最后调用
      * [io.github.chenfei0928.content.sp.saver.DataStoreDelegateStoreProvider.dataStore] 来存储该委托信息，
-     * 或调用任意 [property] 方法来获取并存储委托，如果没有存储将会返回 null ，该方法不会产生反射或其它长耗时调用
+     * 或调用任意 [property] 方法来获取并存储委托
+     *
+     * 如果没有存储将会返回 null ，该方法不会产生反射或其它长耗时调用
      */
     @Suppress("UNCHECKED_CAST")
-    internal fun <V> findFieldByProperty(
+    internal fun <V> findFieldOrNullByProperty(
         property: KProperty<V>
     ): SpSaverFieldAccessor.Field<SpSaver, V>? = spSaverPropertyDelegateFields.find {
         it.property.name == property.name
@@ -62,7 +68,7 @@ constructor(
      */
     @Suppress("UNCHECKED_CAST")
     internal fun <V> getDelegateByProperty(property: KProperty<V>): AbsSpSaver.AbsSpDelegate<V> {
-        return findFieldByProperty(property)?.outDelegate ?: run {
+        return findFieldOrNullByProperty(property)?.outDelegate ?: run {
             Log.w(TAG, buildString {
                 append("getDelegateByProperty: getDelegate by reflect, because ")
                 append(property)
@@ -98,7 +104,7 @@ constructor(
      * 或调用任意 [property] 方法来获取并存储委托，如果没有存储将会返回 null ，该方法不会产生反射或其它长耗时调用
      */
     internal fun findPdsKeyByPropertyOrThrow(property: KProperty<*>): String {
-        return findFieldByProperty(property)?.pdsKey
+        return findFieldOrNullByProperty(property)?.pdsKey
             ?: throw IllegalArgumentException("Not registered property: $property in ${properties.keys.joinToString()}")
     }
 

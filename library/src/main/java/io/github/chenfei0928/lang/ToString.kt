@@ -116,7 +116,7 @@ private fun getValue(
     else -> field
 }
 
-private fun Any?.toStr(): String = when (this) {
+fun Any?.toStr(): String = when (this) {
     is Array<*> -> contentToString()
     is ByteArray -> contentToString()
     is ShortArray -> contentToString()

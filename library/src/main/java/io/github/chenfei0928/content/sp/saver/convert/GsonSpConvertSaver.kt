@@ -14,9 +14,9 @@ class GsonSpConvertSaver<T>(
 ) : SpConvertSaver<String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
 
     constructor(
-        key: String,
+        key: String? = null,
         gson: Gson = io.github.chenfei0928.json.gson.gson,
-        type: Type
+        type: Type,
     ) : this(StringDelegate(key), gson, type)
 
     override fun onRead(value: String): T & Any = gson.fromJson<T & Any>(value, type)
