@@ -9,7 +9,7 @@ class BooleanDelegate(
     override fun getValueImpl(sp: SharedPreferences, key: String): Boolean =
         sp.getBoolean(key, defaultValue)
 
-    override fun putValueImpl(editor: SharedPreferences.Editor, key: String, value: Boolean) {
+    override fun putValue(editor: SharedPreferences.Editor, key: String, value: Boolean) {
         editor.putBoolean(key, value)
     }
 }

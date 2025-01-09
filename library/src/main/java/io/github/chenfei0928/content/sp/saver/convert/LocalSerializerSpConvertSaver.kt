@@ -9,7 +9,7 @@ import io.github.chenfei0928.repository.local.decorator.Base64Serializer.Compani
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
-class LocalSerializerSpConvertSaver<T>(
+class LocalSerializerSpConvertSaver<T : Any>(
     serializer: LocalSerializer<T>,
     saver: AbsSpSaver.AbsSpDelegate<String?>,
 ) : SpConvertSaver<String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
@@ -21,26 +21,20 @@ class LocalSerializerSpConvertSaver<T>(
 
     private val serializer: Base64Serializer<T> = serializer.base64() as Base64Serializer<T>
 
-    override fun onRead(value: String?): T? {
-        return ByteArrayInputStream(
-            value?.toByteArray() ?: byteArrayOf()
-        ).let {
+    override fun onRead(value: String): T {
+        return ByteArrayInputStream(value.toByteArray()).let {
             serializer.onOpenInputStream(it)
         }.use {
             serializer.read(it)
         }
     }
 
-    override fun onSave(value: T?): String? {
-        return if (value == null) {
-            null
-        } else {
-            ByteArrayOutputStream().use { byteArrayOutputStream ->
-                serializer.onOpenOutStream(byteArrayOutputStream).use {
-                    serializer.write(byteArrayOutputStream, value)
-                }
-                String(byteArrayOutputStream.toByteArray())
+    override fun onSave(value: T): String {
+        return ByteArrayOutputStream().use { byteArrayOutputStream ->
+            serializer.onOpenOutStream(byteArrayOutputStream).use {
+                serializer.write(byteArrayOutputStream, value)
             }
+            String(byteArrayOutputStream.toByteArray())
         }
     }
 }

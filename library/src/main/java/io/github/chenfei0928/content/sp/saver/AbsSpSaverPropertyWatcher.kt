@@ -7,8 +7,8 @@ import io.github.chenfei0928.content.sp.registerOnSharedPreferenceChangeListener
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 
-internal fun <SpSaver : AbsSpSaver<SpSaver>> SpSaver.internalRegisterOnSharedPreferenceChangeListener(
-    owner: LifecycleOwner, filterKey: String, listener: () -> Unit,
+internal inline fun <SpSaver : AbsSpSaver<SpSaver>> SpSaver.internalRegisterOnSharedPreferenceChangeListener(
+    owner: LifecycleOwner, filterKey: String, crossinline listener: () -> Unit,
 ) {
     listener()
     // 监听sp变化并调用回调

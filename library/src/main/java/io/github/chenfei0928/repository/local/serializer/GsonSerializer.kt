@@ -13,23 +13,25 @@ import java.lang.reflect.Type
 /**
  * 使用[Gson]来对结构体进行序列化和反序列化
  */
-class GsonSerializer<T>(
+class GsonSerializer<T : Any>(
     gson: Gson = io.github.chenfei0928.json.gson.gson,
     typeToken: TypeToken<T>,
 ) : LocalSerializer<T> {
     private val typeAdapter: TypeAdapter<T> = gson.getAdapter(typeToken) as TypeAdapter<T>
 
+    @Suppress("UNCHECKED_CAST")
     constructor(
         gson: Gson = io.github.chenfei0928.json.gson.gson,
         type: Type
     ) : this(gson = gson, typeToken = TypeToken.get(type) as TypeToken<T>)
 
+    @Suppress("UNCHECKED_CAST")
     override val defaultValue: T by lazy {
         typeToken.rawType.getDeclaredConstructor().newInstance() as T
     }
 
     @Throws(IOException::class)
-    override fun write(outputStream: OutputStream, obj: T & Any) {
+    override fun write(outputStream: OutputStream, obj: T) {
         outputStream.bufferedWriter().use {
             typeAdapter.toJson(it, obj)
             it.flush()
@@ -43,18 +45,18 @@ class GsonSerializer<T>(
         }
     }
 
-    override fun copy(obj: T & Any): T & Any {
+    override fun copy(obj: T): T {
         val json = typeAdapter.toJson(obj)
-        return typeAdapter.fromJson(json)!!
+        return typeAdapter.fromJson(json)
     }
 
     companion object {
         /**
          * 快速创建序列化工具实例，避免重复键入类型
          */
-        inline operator fun <reified T> invoke() =
+        inline operator fun <reified T : Any> invoke() =
             GsonSerializer(typeToken = object : TypeToken<T>() {})
 
-        inline fun <reified T> createGzipped() = invoke<T>().gzip()
+        inline fun <reified T : Any> createGzipped() = invoke<T>().gzip()
     }
 }

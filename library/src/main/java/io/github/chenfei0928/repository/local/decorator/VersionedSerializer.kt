@@ -13,7 +13,7 @@ import java.io.OutputStream
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-09-05 15:20
  */
-class VersionedSerializer<T>
+class VersionedSerializer<T : Any>
 private constructor(
     serializer: LocalSerializer<T>,
     versionCodeLong: Long
@@ -41,7 +41,7 @@ private constructor(
     }
 
     companion object {
-        fun <T> LocalSerializer<T>.versioned(
+        fun <T : Any> LocalSerializer<T>.versioned(
             versionCodeInt: Long
         ): LocalSerializer<T> = if (this is VersionedSerializer) {
             this

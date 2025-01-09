@@ -39,7 +39,7 @@ interface LifecycleBindOnSharedPreferenceChangeListener
         override val filterKey: String?,
     ) : LifecycleBindOnSharedPreferenceChangeListener, LifecycleEventObserver {
 
-        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        final override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
             if (event == Lifecycle.Event.ON_DESTROY) {
                 sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
                 return
@@ -63,7 +63,7 @@ interface LifecycleBindOnSharedPreferenceChangeListener
         override val filterKey: String?,
     ) : LiveData<R>(), LifecycleBindOnSharedPreferenceChangeListener {
 
-        override fun onChangedOrClear(sharedPreferences: SharedPreferences, key: String?) {
+        final override fun onChangedOrClear(sharedPreferences: SharedPreferences, key: String?) {
             ExecutorUtil.runOnUiThread {
                 value = valueGetter()
             }
@@ -71,13 +71,13 @@ interface LifecycleBindOnSharedPreferenceChangeListener
 
         protected abstract fun valueGetter(): R
 
-        override fun onActive() {
+        final override fun onActive() {
             super.onActive()
             value = valueGetter()
             sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         }
 
-        override fun onInactive() {
+        final override fun onInactive() {
             super.onInactive()
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         }

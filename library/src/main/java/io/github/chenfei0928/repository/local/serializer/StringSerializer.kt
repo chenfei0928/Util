@@ -11,7 +11,6 @@ import java.io.OutputStream
  * @date 2020-08-20 16:28
  */
 class StringSerializer : LocalSerializer<String> {
-
     override val defaultValue: String = ""
 
     override fun write(outputStream: OutputStream, obj: String) {

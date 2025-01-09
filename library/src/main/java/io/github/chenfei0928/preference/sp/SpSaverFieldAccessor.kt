@@ -76,7 +76,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
                         @Suppress("UNCHECKED_CAST")
                         spAccessDelegate as SpConvertSaver<Any, Any?>
                         // 转换器装饰器，将其解装饰，并处理默认值
-                        defaultValue = spAccessDelegate.onSave(defaultValue)
+                        defaultValue = defaultValue?.let { spAccessDelegate.onSave(it) }
                         spAccessDelegate = spAccessDelegate.saver
                     }
                     else -> {

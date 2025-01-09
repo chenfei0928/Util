@@ -12,21 +12,21 @@ import java.io.OutputStream
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-09-05 12:06
  */
-interface LocalSerializer<T> {
+interface LocalSerializer<T : Any> {
     val defaultValue: T
 
     @Throws(IOException::class)
-    fun write(outputStream: OutputStream, obj: T & Any)
+    fun write(outputStream: OutputStream, obj: T)
 
     @Throws(IOException::class)
     fun read(inputStream: InputStream): T
 
-    fun copy(obj: T & Any): T & Any {
+    fun copy(obj: T): T {
         return ByteArrayOutputStream().use {
             write(it, obj)
             it.toByteArray()
         }.let { ByteArrayInputStream(it) }.use {
-            read(it)!!
+            read(it)
         }
     }
 
@@ -35,7 +35,7 @@ interface LocalSerializer<T> {
      *
      * 实现时需要先判断序列化实现是否也是一个装饰器，建议继承[BaseIODecorator]类来实现。
      */
-    interface IODecorator<T> : LocalSerializer<T> {
+    interface IODecorator<T : Any> : LocalSerializer<T> {
         @Throws(IOException::class)
         fun onOpenInputStream(inputStream: InputStream): InputStream
 
@@ -50,7 +50,7 @@ interface LocalSerializer<T> {
      *
      * 如果子类需要对数据进行添加校验头，也是重写该方法并在实际写入/读取前处理校验数据并直接返回入参
      */
-    abstract class BaseIODecorator<T>(
+    abstract class BaseIODecorator<T : Any>(
         private val serializer: LocalSerializer<T>
     ) : LocalSerializer<T> by serializer, IODecorator<T> {
 

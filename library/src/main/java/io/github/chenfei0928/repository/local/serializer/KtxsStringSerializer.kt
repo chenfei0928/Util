@@ -14,7 +14,7 @@ import java.io.OutputStream
  * @author chenf()
  * @date 2024-12-17 17:43
  */
-class KtxsStringSerializer<T>(
+class KtxsStringSerializer<T : Any>(
     private val format: StringFormat,
     private val serializer: SerializationStrategy<T>,
     private val deserializer: DeserializationStrategy<T>,
@@ -25,7 +25,7 @@ class KtxsStringSerializer<T>(
         format: StringFormat, serializer: KSerializer<T>, defaultValue: T
     ) : this(format, serializer, serializer, defaultValue)
 
-    override fun write(outputStream: OutputStream, obj: T & Any) {
+    override fun write(outputStream: OutputStream, obj: T) {
         outputStream.write(format.encodeToString(serializer, obj).toByteArray())
     }
 
@@ -34,7 +34,7 @@ class KtxsStringSerializer<T>(
     }
 
     companion object {
-        inline operator fun <reified T> invoke(
+        inline operator fun <reified T : Any> invoke(
             defaultValue: T, json: Json = Json,
         ): LocalSerializer<T> = KtxsStringSerializer(
             json, json.serializersModule.serializer<T>(), defaultValue

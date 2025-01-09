@@ -18,7 +18,7 @@ import java.util.zip.GZIPOutputStream
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-08-19 16:48
  */
-class GZipSerializer<T>
+class GZipSerializer<T : Any>
 private constructor(
     serializer: LocalSerializer<T>
 ) : LocalSerializer.BaseIODecorator<T>(serializer) {
@@ -35,12 +35,7 @@ private constructor(
         /**
          * 对数据进行GZip压缩
          */
-        fun <T> LocalSerializer<T>.gzip(): LocalSerializer<T> {
-            return if (this is GZipSerializer) {
-                this
-            } else {
-                GZipSerializer(this)
-            }
-        }
+        fun <T : Any> LocalSerializer<T>.gzip(): LocalSerializer<T> =
+            if (this is GZipSerializer) this else GZipSerializer(this)
     }
 }

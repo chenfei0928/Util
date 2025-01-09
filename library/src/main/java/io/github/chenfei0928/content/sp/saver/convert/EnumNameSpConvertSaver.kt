@@ -8,20 +8,22 @@ class EnumNameSpConvertSaver<E : Enum<E>>(
     eClass: Class<E>,
     private val enumValues: Array<E>,
     saver: AbsSpSaver.AbsSpDelegate<String?>,
+    private val nameNotFoundDefaultValue: E? = null,
 ) : SpConvertSaver<String?, E?>(saver, PreferenceType.EnumNameString(eClass, enumValues)) {
 
     constructor(
         eClass: Class<E>,
         enumValues: Array<E> = eClass.enumConstants as Array<E>,
         key: String? = null,
-    ) : this(eClass, enumValues, StringDelegate(key))
+        nameNotFoundDefaultValue: E? = null,
+    ) : this(eClass, enumValues, StringDelegate(key), nameNotFoundDefaultValue)
 
-    override fun onRead(value: String?): E? {
-        return enumValues.find { value == it.name }
+    override fun onRead(value: String): E? {
+        return enumValues.find { value == it.name } ?: nameNotFoundDefaultValue
     }
 
-    override fun onSave(value: E?): String? {
-        return value?.name
+    override fun onSave(value: E): String {
+        return value.name
     }
 
     companion object {

@@ -14,20 +14,36 @@ import kotlin.reflect.KProperty
 abstract class SpConvertSaver<SpValueType, FieldType>(
     internal val saver: AbsSpSaver.AbsSpDelegate<SpValueType>,
     spValueType: PreferenceType = saver.spValueType,
-) : AbsSpSaver.AbsSpDelegate<FieldType>(spValueType) {
+) : AbsSpSaver.AbsSpDelegate<FieldType?>(spValueType) {
+    @Volatile
+    private var cacheValue: Pair<SpValueType, FieldType>? = null
 
-    override fun obtainDefaultKey(property: KProperty<*>): String {
+    final override fun obtainDefaultKey(property: KProperty<*>): String {
         return saver.obtainDefaultKey(property)
     }
 
-    override fun getValue(sp: SharedPreferences, key: String): FieldType {
-        return onRead(saver.getValue(sp, key))
+    @Synchronized
+    final override fun getValue(sp: SharedPreferences, key: String): FieldType? {
+        return saver.getValue(sp, key)?.let {
+            val cacheValue = cacheValue
+            return if (cacheValue != null && cacheValue.first == it) {
+                cacheValue.second
+            } else {
+                val t = onRead(it)
+                this.cacheValue = it to t
+                t
+            }
+        }
     }
 
-    override fun putValue(editor: SharedPreferences.Editor, key: String, value: FieldType) {
-        saver.putValue(editor, key, onSave(value))
+    final override fun putValue(
+        editor: SharedPreferences.Editor, key: String, value: FieldType & Any
+    ) {
+        val t = onSave(value)
+        cacheValue = t to value
+        saver.putValue(editor, key, t)
     }
 
-    abstract fun onRead(value: SpValueType): FieldType
-    abstract fun onSave(value: FieldType): SpValueType
+    abstract fun onRead(value: SpValueType & Any): FieldType
+    abstract fun onSave(value: FieldType & Any): SpValueType & Any
 }

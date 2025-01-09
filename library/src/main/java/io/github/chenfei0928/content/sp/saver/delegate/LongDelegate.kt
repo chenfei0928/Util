@@ -9,7 +9,7 @@ class LongDelegate(
     override fun getValueImpl(sp: SharedPreferences, key: String): Long =
         sp.getLong(key, defaultValue)
 
-    override fun putValueImpl(editor: SharedPreferences.Editor, key: String, value: Long) {
+    override fun putValue(editor: SharedPreferences.Editor, key: String, value: Long) {
         editor.putLong(key, value)
     }
 }

@@ -12,8 +12,6 @@ class GsonSpConvertSaver<T>(
     private val gson: Gson = io.github.chenfei0928.json.gson.gson,
     private val type: Type,
 ) : SpConvertSaver<String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
-    @Volatile
-    private var cacheValue: Pair<String, T>? = null
 
     constructor(
         key: String,
@@ -21,22 +19,8 @@ class GsonSpConvertSaver<T>(
         type: Type
     ) : this(StringDelegate(key), gson, type)
 
-    override fun onRead(value: String?): T? {
-        val cacheValue = cacheValue
-        return if (cacheValue?.first == value) {
-            cacheValue?.second
-        } else value?.let {
-            val t = gson.fromJson<T>(value, type)
-            this.cacheValue = it to t
-            t
-        }
-    }
-
-    override fun onSave(value: T?): String? = value?.let {
-        val json = gson.toJson(value)
-        cacheValue = json to value
-        json
-    }
+    override fun onRead(value: String): T & Any = gson.fromJson<T & Any>(value, type)
+    override fun onSave(value: T & Any): String = gson.toJson(value)
 
     companion object {
         inline operator fun <reified T> invoke(

@@ -10,7 +10,7 @@ import java.io.FileDescriptor
 import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicReference
 
-abstract class LocalFileStorage<T>(
+abstract class LocalFileStorage<T : Any>(
     serializer: LocalSerializer<T>,
     private val fileName: String,
     private val cacheDir: Boolean = false,
@@ -44,6 +44,7 @@ abstract class LocalFileStorage<T>(
     /**
      * 从本地文件反序列化
      */
+    @Suppress("TooGenericExceptionCaught")
     private fun loadFromLocalFile(context: Context): T = runFileWithLock(context) { file ->
         // 文件不存在，直接返回空
         if (!file.exists()) {
@@ -62,6 +63,7 @@ abstract class LocalFileStorage<T>(
     /**
      * 将数据序列化到本地文件
      */
+    @Suppress("TooGenericExceptionCaught")
     private fun saveToLocalFileOrDelete(context: Context, value: T?): Unit =
         runFileWithLock(context) { file ->
             if (value == null) {
@@ -123,7 +125,7 @@ abstract class LocalFileStorage<T>(
      * 当子类返回的数据后会对实例进行修改，可能会污染缓存时，
      * 使用实例自身的clone或copy方法，或使用该方法获得一个新的实例后在返回
      */
-    protected fun <Tn : T & Any> Tn.serializerCopy(): T & Any {
+    protected fun <Tn : T> Tn.serializerCopy(): T {
         return serializer.copy(this)
     }
 

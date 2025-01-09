@@ -10,19 +10,11 @@ import java.io.OutputStream
  * @author chenfei()
  * @date 2022-07-13 18:54
  */
-class DefaultValueSerializer<T>
+class DefaultValueSerializer<T : Any>
 private constructor(
-    private val serializer: LocalSerializer<T?>,
+    private val serializer: LocalSerializer<T>,
     override val defaultValue: T
-) : LocalSerializer.IODecorator<T> {
-
-    override fun write(outputStream: OutputStream, obj: T & Any) {
-        serializer.write(outputStream, obj)
-    }
-
-    override fun read(inputStream: InputStream): T {
-        return serializer.read(inputStream) ?: defaultValue
-    }
+) : LocalSerializer<T> by serializer, LocalSerializer.IODecorator<T> {
 
     override fun onOpenInputStream(inputStream: InputStream): InputStream {
         return if (serializer is LocalSerializer.IODecorator) {
@@ -44,7 +36,7 @@ private constructor(
         /**
          * 修改默认值的序列化
          */
-        fun <T> LocalSerializer<T?>.defaultValue(defaultValue: T): LocalSerializer<T> =
+        fun <T : Any> LocalSerializer<T>.defaultValue(defaultValue: T): LocalSerializer<T> =
             DefaultValueSerializer(this, defaultValue)
     }
 }

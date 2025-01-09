@@ -10,7 +10,7 @@ import java.io.OutputStream
  * @author chenf()
  * @date 2024-08-20 15:29
  */
-internal class NoopIODecorator<T>
+internal class NoopIODecorator<T : Any>
 private constructor(
     serializer: LocalSerializer<T>
 ) : BaseIODecorator<T>(serializer) {
@@ -23,7 +23,7 @@ private constructor(
     }
 
     companion object {
-        fun <T> wrap(serializer: LocalSerializer<T>): LocalSerializer.IODecorator<T> =
+        fun <T : Any> wrap(serializer: LocalSerializer<T>): LocalSerializer.IODecorator<T> =
             if (serializer is LocalSerializer.IODecorator) serializer
             else NoopIODecorator(serializer)
     }

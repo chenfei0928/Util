@@ -45,6 +45,6 @@ class TestSpSaver(context: Context) : BaseSpSaver<TestSpSaver>(context, "test") 
 
     // 下面三个是复合类型，不支持作为 preferenceDataStore
     var json: JsonBean.InnerJsonBean? by GsonSpConvertSaver<JsonBean.InnerJsonBean>().dataStore()
-    var intArray: IntArray? by IntArraySpConvertSaver().dataStore()
+    var intArray: IntArray by IntArraySpConvertSaver().defaultValue(intArrayOf()).dataStore()
     var test: Test? by LocalSerializerSpConvertSaver<Test>(ProtobufSerializer()).dataStore()
 }

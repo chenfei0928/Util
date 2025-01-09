@@ -9,7 +9,7 @@ class IntDelegate(
     override fun getValueImpl(sp: SharedPreferences, key: String): Int =
         sp.getInt(key, defaultValue)
 
-    override fun putValueImpl(editor: SharedPreferences.Editor, key: String, value: Int) {
+    override fun putValue(editor: SharedPreferences.Editor, key: String, value: Int) {
         editor.putInt(key, value)
     }
 }

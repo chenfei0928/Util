@@ -9,7 +9,7 @@ class StringDelegate(
     override fun getValueImpl(sp: SharedPreferences, key: String): String? =
         sp.getString(key, null)
 
-    override fun putValueImpl(editor: SharedPreferences.Editor, key: String, value: String?) {
+    override fun putValue(editor: SharedPreferences.Editor, key: String, value: String) {
         editor.putString(key, value)
     }
 }

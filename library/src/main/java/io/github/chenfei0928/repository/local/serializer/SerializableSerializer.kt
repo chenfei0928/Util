@@ -13,10 +13,9 @@ import java.io.Serializable
  * 对JDK的 [Serializable] 实现序列化和反序列化
  */
 @Discouraged("don't use Serializable interface")
-class SerializableSerializer<T : Serializable>
-    : LocalSerializer.IODecorator<T?> {
-
-    override val defaultValue: T? = null
+class SerializableSerializer<T : Serializable>(
+    override val defaultValue: T
+) : LocalSerializer.IODecorator<T> {
 
     @Throws(IOException::class)
     override fun write(outputStream: OutputStream, obj: T) {
@@ -29,6 +28,7 @@ class SerializableSerializer<T : Serializable>
     @Throws(IOException::class)
     override fun read(inputStream: InputStream): T {
         return (inputStream as ObjectInputStream).run {
+            @Suppress("UNCHECKED_CAST")
             readObject() as T
         }
     }

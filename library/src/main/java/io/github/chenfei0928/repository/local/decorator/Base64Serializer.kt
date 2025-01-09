@@ -19,7 +19,7 @@ import java.io.OutputStream
  * @author chenfei(chenfei@gmail.com)
  * @date 2022-01-12 10:25
  */
-class Base64Serializer<T>
+class Base64Serializer<T : Any>
 private constructor(
     serializer: LocalSerializer<T>
 ) : LocalSerializer.BaseIODecorator<T>(serializer) {
@@ -35,10 +35,7 @@ private constructor(
         /**
          * 数据Base64化修饰器
          */
-        fun <T> LocalSerializer<T>.base64(): LocalSerializer<T> = if (this is Base64Serializer) {
-            this
-        } else {
-            Base64Serializer(this)
-        }
+        fun <T : Any> LocalSerializer<T>.base64(): LocalSerializer<T> =
+            if (this is Base64Serializer) this else Base64Serializer(this)
     }
 }

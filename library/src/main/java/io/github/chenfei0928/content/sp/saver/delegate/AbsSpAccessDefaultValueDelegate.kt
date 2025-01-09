@@ -19,11 +19,10 @@ sealed class AbsSpAccessDefaultValueDelegate<T>(
     protected val defaultValue: T,
 ) : AbsSpSaver.AbsSpDelegate<T>(spValueType) {
 
-    override fun obtainDefaultKey(property: KProperty<*>): String {
-        return key ?: property.name
-    }
+    final override fun obtainDefaultKey(property: KProperty<*>): String =
+        key ?: property.name
 
-    override fun getValue(sp: SharedPreferences, key: String): T {
+    final override fun getValue(sp: SharedPreferences, key: String): T {
         return if (sp.contains(key)) {
             getValueImpl(sp, key)
         } else {
@@ -32,14 +31,4 @@ sealed class AbsSpAccessDefaultValueDelegate<T>(
     }
 
     protected abstract fun getValueImpl(sp: SharedPreferences, key: String): T
-
-    override fun putValue(editor: SharedPreferences.Editor, key: String, value: T) {
-        if (value == null) {
-            editor.remove(key)
-        } else {
-            putValueImpl(editor, key, value)
-        }
-    }
-
-    protected abstract fun putValueImpl(editor: SharedPreferences.Editor, key: String, value: T)
 }

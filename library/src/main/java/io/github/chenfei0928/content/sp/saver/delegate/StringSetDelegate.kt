@@ -9,7 +9,7 @@ class StringSetDelegate(
     override fun getValueImpl(sp: SharedPreferences, key: String): Set<String>? =
         sp.getStringSet(key, null)
 
-    override fun putValueImpl(editor: SharedPreferences.Editor, key: String, value: Set<String>?) {
+    override fun putValue(editor: SharedPreferences.Editor, key: String, value: Set<String>) {
         editor.putStringSet(key, value)
     }
 }

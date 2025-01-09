@@ -8,7 +8,7 @@ import io.github.chenfei0928.repository.local.LocalSerializer
  * @author chenfei(chenfei@gmail.com)
  * @date 2022-01-12 10:25
  */
-class ExpirationDateSerializer<T>(
+class ExpirationDateSerializer<T : Any>(
     serializer: LocalSerializer<T>,
     private val timeout: Long
 ) : BaseExpirationDateSerializer<T>(serializer) {

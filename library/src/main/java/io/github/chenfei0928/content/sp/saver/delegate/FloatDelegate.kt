@@ -9,7 +9,7 @@ class FloatDelegate(
     override fun getValueImpl(sp: SharedPreferences, key: String): Float =
         sp.getFloat(key, defaultValue)
 
-    override fun putValueImpl(editor: SharedPreferences.Editor, key: String, value: Float) {
+    override fun putValue(editor: SharedPreferences.Editor, key: String, value: Float) {
         editor.putFloat(key, value)
     }
 }

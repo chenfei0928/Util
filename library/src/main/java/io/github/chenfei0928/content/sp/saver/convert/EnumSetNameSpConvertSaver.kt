@@ -9,24 +9,24 @@ class EnumSetNameSpConvertSaver<E : Enum<E>>(
     eClass: Class<E>,
     private val enumValues: Array<E>,
     saver: AbsSpSaver.AbsSpDelegate<Set<String>?>,
+    private val nameNotFoundDefaultValue: E? = null,
 ) : SpConvertSaver<Set<String>?, Set<E>?>(saver, EnumNameStringSet(eClass, enumValues)) {
 
     constructor(
         eClass: Class<E>,
         enumValues: Array<E> = eClass.enumConstants as Array<E>,
         key: String? = null,
-    ) : this(eClass, enumValues, StringSetDelegate(key))
+        nameNotFoundDefaultValue: E? = null,
+    ) : this(eClass, enumValues, StringSetDelegate(key), nameNotFoundDefaultValue)
 
-    override fun onRead(value: Set<String>?): Set<E>? {
-        return value?.mapNotNullTo(ArraySet(value.size)) { item ->
-            enumValues.find { enum ->
-                item == enum.name
-            }
+    override fun onRead(value: Set<String>): Set<E> {
+        return value.mapNotNullTo(ArraySet(value.size)) { item ->
+            enumValues.find { enum -> item == enum.name } ?: nameNotFoundDefaultValue
         }
     }
 
-    override fun onSave(value: Set<E>?): Set<String>? {
-        return value?.mapTo(ArraySet(value.size)) { it.name }
+    override fun onSave(value: Set<E>): Set<String> {
+        return value.mapTo(ArraySet(value.size)) { it.name }
     }
 
     private class EnumNameStringSet<E : Enum<E>>(

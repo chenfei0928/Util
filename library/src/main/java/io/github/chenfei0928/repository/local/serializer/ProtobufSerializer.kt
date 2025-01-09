@@ -25,6 +25,7 @@ class ProtobufSerializer<MessageType : MessageLite>(
 
     constructor(parser: Parser<MessageType>) : this(parser, parser.parseFrom(byteArrayOf()))
 
+    @Suppress("UNCHECKED_CAST")
     constructor(defaultValue: MessageType) : this(
         defaultValue.parserForType as Parser<MessageType>, defaultValue
     )
@@ -39,6 +40,7 @@ class ProtobufSerializer<MessageType : MessageLite>(
     }
 
     override fun copy(obj: MessageType): MessageType {
+        @Suppress("UNCHECKED_CAST")
         return obj.toBuilder().build() as MessageType
     }
 

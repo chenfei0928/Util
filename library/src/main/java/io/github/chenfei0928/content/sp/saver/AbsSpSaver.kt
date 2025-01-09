@@ -24,19 +24,28 @@ abstract class AbsSpSaver<SpSaver : AbsSpSaver<SpSaver>> : SpCommit {
 
         abstract fun obtainDefaultKey(property: KProperty<*>): String
 
-        override fun getValue(thisRef: AbsSpSaver<*>, property: KProperty<*>): T {
+        final override fun getValue(thisRef: AbsSpSaver<*>, property: KProperty<*>): T {
             val key = obtainDefaultKey(property)
+            // 允许子类处理key不存在时返回默认值
             return getValue(thisRef.sp, key)
         }
 
         internal abstract fun getValue(sp: SharedPreferences, key: String): T
 
-        override fun setValue(thisRef: AbsSpSaver<*>, property: KProperty<*>, value: T) {
+        final override fun setValue(thisRef: AbsSpSaver<*>, property: KProperty<*>, value: T) {
             val key = obtainDefaultKey(property)
-            putValue(thisRef.editor, key, value)
+            val editor = thisRef.editor
+            // put null时直接remove掉key，交由子类处理时均是nonnull
+            if (value == null) {
+                editor.remove(key)
+            } else {
+                putValue(editor, key, value)
+            }
         }
 
-        internal abstract fun putValue(editor: SharedPreferences.Editor, key: String, value: T)
+        internal abstract fun putValue(
+            editor: SharedPreferences.Editor, key: String, value: T & Any
+        )
     }
     //</editor-fold>
 

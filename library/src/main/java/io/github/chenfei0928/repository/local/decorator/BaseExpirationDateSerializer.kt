@@ -11,7 +11,7 @@ import java.io.OutputStream
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-09-10 09:35
  */
-abstract class BaseExpirationDateSerializer<T>(
+abstract class BaseExpirationDateSerializer<T : Any>(
     serializer: LocalSerializer<T>
 ) : LocalSerializer.BaseIODecorator<T>(serializer) {
 
