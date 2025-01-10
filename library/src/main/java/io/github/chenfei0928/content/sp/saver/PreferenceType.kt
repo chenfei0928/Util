@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import androidx.collection.ArraySet
 import androidx.preference.PreferenceDataStore
+import com.google.gson.internal.`$Gson$Types`
 import com.google.protobuf.Descriptors
 import io.github.chenfei0928.content.sp.saver.PreferenceType.EnumNameString
 import io.github.chenfei0928.content.sp.saver.convert.SpConvertSaver
@@ -40,7 +41,14 @@ sealed interface PreferenceType {
         private val primitiveType: Class<*>?,
     ) : PreferenceType {
         STRING(String::class.java, null),
-        STRING_SET(jTypeOf<Set<String>>(), null),
+        STRING_SET(
+            // 经测试此与 jTypeOf<Set<String>>() 类型一致，直接构建类型以减少一次类创建与反射开销
+            // 不过为何第三个参数不是 String::class.java，而是 subtypeOf
+            // String 是final类，还能有类是它的子类？¯\_(ツ)_/¯
+            `$Gson$Types`.newParameterizedTypeWithOwner(
+                null, Set::class.java, `$Gson$Types`.subtypeOf(String::class.java)
+            ), null
+        ),
         INT(Int::class.javaObjectType, Int::class.javaPrimitiveType),
         LONG(Long::class.javaObjectType, Long::class.javaPrimitiveType),
         FLOAT(Float::class.javaObjectType, Float::class.javaPrimitiveType),

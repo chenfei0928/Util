@@ -31,6 +31,8 @@ import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.demo.bean.Test
 import io.github.chenfei0928.demo.databinding.ActivityMainBinding
 import io.github.chenfei0928.demo.storage.JsonDataStorePreferenceFragment
+import io.github.chenfei0928.demo.storage.JsonLocalFileStorage
+import io.github.chenfei0928.demo.storage.JsonLocalFileStorage0.Companion.jsonLocalStorage0
 import io.github.chenfei0928.demo.storage.JsonLocalFileStoragePreferenceFragment
 import io.github.chenfei0928.demo.storage.PreferenceActivity
 import io.github.chenfei0928.demo.storage.SpSaverPreferenceFragment
@@ -39,6 +41,7 @@ import io.github.chenfei0928.demo.storage.TestSpSaver
 import io.github.chenfei0928.lang.toString0
 import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.Debug
+import io.github.chenfei0928.reflect.jTypeOf
 import io.github.chenfei0928.repository.datastore.ProtobufSerializer
 import io.github.chenfei0928.repository.datastore.toDatastore
 import io.github.chenfei0928.repository.local.serializer.KtxsJsonSerializer
@@ -81,6 +84,15 @@ class MainActivity : ComponentActivity() {
                 .show()
         }
         binding.btnPreload.setNoDoubleOnClickListener {
+            Debug.countTime(TAG, "preload testSpSaver") {
+                TestSpSaver(this)
+            }
+            Debug.countTime(TAG, "preload JsonLocalFileStorage") {
+                JsonLocalFileStorage.storage(this).get()
+            }
+            Debug.countTime(TAG, "preload jsonLocalStorage0") {
+                jsonLocalStorage0.get()
+            }
             Debug.countTime(TAG, "preload jsonDataStore") {
                 jsonDataStore
             }

@@ -1,6 +1,5 @@
 package io.github.chenfei0928.preference.sp
 
-import android.util.Log
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete
@@ -47,13 +46,11 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
             && vType !is PreferenceType.NoSupportPreferenceDataStore
         ) {
             // 原生支持的vType类型，传入了委托
-            Log.v(TAG, "property: KMutableProperty0 $property")
             property(NativeTypeField0(property, delegate, vType))
         } else if (property is KMutableProperty1<*, *> && delegate != null
             && vType !is PreferenceType.NoSupportPreferenceDataStore
         ) {
             // 原生支持的vType类型，传入了委托
-            Log.v(TAG, "property: KMutableProperty1 $property")
             @Suppress("UNCHECKED_CAST")
             property as KMutableProperty1<SpSaver, V>
             property(NativeTypeField1(property, delegate, vType))
@@ -84,19 +81,6 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
                     }
                 }
             }
-            Log.v(TAG, buildString {
-                append("property: property:")
-                append(property)
-                appendLine()
-                append("vType:")
-                append(spAccessDelegate.spValueType)
-                append(", outDelegate:")
-                append(outDelegate.javaClass.simpleName)
-                append(", spAccessDelegate:")
-                append(spAccessDelegate.javaClass.simpleName)
-                append(", defaultValue:")
-                append(defaultValue)
-            })
             @Suppress("UNCHECKED_CAST")
             val field = SpSaverPropertyDelegateField<SpSaver, Any?>(
                 outDelegate as AbsSpSaver.AbsSpDelegate<Any?>,
@@ -161,8 +145,6 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver>> : FieldAccessor<Sp
     }
 
     companion object {
-        private const val TAG = "SpSaverFieldAccessor"
-
         inline fun <SpSaver : AbsSpSaver<SpSaver>, reified V> SpSaverFieldAccessor<SpSaver>.property(
             property0: KMutableProperty0<V>
         ): FieldAccessor.Field<SpSaver, V> = property(property0, PreferenceType.forType<V>())
