@@ -43,7 +43,7 @@ class ArgumentDelegate<T>(
     companion object {
         inline operator fun <reified T> invoke(
             isMarkedNullable: Boolean = false, name: String? = null, defaultValue: T? = null
-        ) = ArgumentDelegate(
+        ): ReadWriteProperty<Fragment, T> = ArgumentDelegate(
             BundleSupportType.AutoFind.findByType(isMarkedNullable), name, defaultValue
         )
 
@@ -52,13 +52,13 @@ class ArgumentDelegate<T>(
             isMarkedNullable: Boolean = false,
             name: String? = null,
             defaultValue: T? = null
-        ) = ArgumentDelegate<T>(
+        ): ReadWriteProperty<Fragment, T> = ArgumentDelegate<T>(
             BundleSupportType.ParcelerType(parceler, isMarkedNullable), name, defaultValue
         )
 
         inline operator fun <reified T : MessageLite> invoke(
             isMarkedNullable: Boolean = false, name: String? = null,
-        ) = ArgumentDelegate(
+        ): ReadWriteProperty<Fragment, T> = ArgumentDelegate(
             BundleSupportType.ProtoBufType<T>(isMarkedNullable),
             name,
             if (isMarkedNullable) null else T::class.java.protobufDefaultInstance

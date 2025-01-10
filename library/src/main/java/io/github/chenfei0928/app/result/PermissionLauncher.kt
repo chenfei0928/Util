@@ -22,7 +22,7 @@ abstract class PermissionLauncher(
     private val callback: PermissionResultCallback,
 ) : ActivityResultLauncher<Unit?>() {
 
-    override val contract: ActivityResultContract<Unit?, Map<String, Boolean>>
+    final override val contract: ActivityResultContract<Unit?, Map<String, Boolean>>
         get() = object : ActivityResultContract<Unit?, Map<String, Boolean>>() {
             val requestMultiplePermissions =
                 ActivityResultContracts.RequestMultiplePermissions()
@@ -36,7 +36,7 @@ abstract class PermissionLauncher(
             }
         }
 
-    override fun launch(input: Unit?, options: ActivityOptionsCompat?) {
+    final override fun launch(input: Unit?, options: ActivityOptionsCompat?) {
         when {
             PermissionUtils.hasSelfPermissions(context(), permissions = permissions) -> {
                 callback.onActivityResult(emptyMap())
@@ -60,7 +60,7 @@ abstract class PermissionLauncher(
         }
     }
 
-    override fun unregister() {
+    final override fun unregister() {
         launcher.unregister()
     }
 

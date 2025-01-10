@@ -25,3 +25,16 @@ fun Any?.deepEquals(b: Any?): Boolean {
         else -> this == b
     }
 }
+
+fun Any?.toStr(): String = when (this) {
+    is Array<*> -> contentToString()
+    is ByteArray -> contentToString()
+    is ShortArray -> contentToString()
+    is IntArray -> contentToString()
+    is LongArray -> contentToString()
+    is CharArray -> contentToString()
+    is FloatArray -> contentToString()
+    is DoubleArray -> contentToString()
+    is BooleanArray -> contentToString()
+    else -> toString()
+}

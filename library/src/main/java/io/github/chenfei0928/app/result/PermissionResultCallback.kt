@@ -13,7 +13,7 @@ abstract class PermissionResultCallback(
     private val permissions: Array<String>,
 ) : ActivityResultCallback<Map<String, Boolean>> {
 
-    override fun onActivityResult(result: Map<String, Boolean>) {
+    final override fun onActivityResult(result: Map<String, Boolean>) {
         when {
             PermissionUtils.hasSelfPermissions(context, permissions = permissions) -> {
                 // 如果有所有的权限，处理

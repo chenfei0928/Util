@@ -36,7 +36,7 @@ class IntentDelegate<T>(
     companion object {
         inline operator fun <reified T> invoke(
             isMarkedNullable: Boolean = false, name: String? = null, defaultValue: T? = null
-        ) = IntentDelegate(
+        ): ReadOnlyProperty<Activity, T> = IntentDelegate(
             BundleSupportType.AutoFind.findByType(isMarkedNullable), name, defaultValue
         )
 
@@ -45,13 +45,13 @@ class IntentDelegate<T>(
             isMarkedNullable: Boolean = false,
             name: String? = null,
             defaultValue: T? = null
-        ) = IntentDelegate(
+        ): ReadOnlyProperty<Activity, T> = IntentDelegate(
             BundleSupportType.ParcelerType(parceler, isMarkedNullable), name, defaultValue
         )
 
         inline operator fun <reified T : MessageLite> invoke(
             isMarkedNullable: Boolean = false, name: String? = null,
-        ) = IntentDelegate(
+        ): ReadOnlyProperty<Activity, T> = IntentDelegate(
             BundleSupportType.ProtoBufType<T>(isMarkedNullable),
             name,
             if (isMarkedNullable) null else T::class.java.protobufDefaultInstance

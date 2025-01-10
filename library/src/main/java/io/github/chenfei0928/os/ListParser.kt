@@ -27,7 +27,7 @@ open class ListParser<T>(
     private val parceler: Parceler<T>,
 ) : Parceler<List<T?>?> {
 
-    override fun create(parcel: Parcel): List<T?>? {
+    final override fun create(parcel: Parcel): List<T?>? {
         val size = parcel.readInt()
         return if (size < 0) {
             null
@@ -38,7 +38,7 @@ open class ListParser<T>(
         }
     }
 
-    override fun List<T?>?.write(parcel: Parcel, flags: Int) = if (this == null) {
+    final override fun List<T?>?.write(parcel: Parcel, flags: Int) = if (this == null) {
         parcel.writeInt(-1)
     } else {
         parcel.writeInt(size)

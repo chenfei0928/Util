@@ -15,7 +15,7 @@ abstract class BaseExpirationDateSerializer<T : Any>(
     serializer: LocalSerializer<T>
 ) : LocalSerializer.BaseIODecorator<T>(serializer) {
 
-    override fun wrapInputStream(inputStream: InputStream): InputStream {
+    final override fun wrapInputStream(inputStream: InputStream): InputStream {
         // long 类型8字节
         val savedVersionCode = ByteArray(Long.SIZE_BYTES)
         // 读取本地保存的内容的数据结构版本号
@@ -29,7 +29,7 @@ abstract class BaseExpirationDateSerializer<T : Any>(
         return inputStream
     }
 
-    override fun wrapOutputStream(outputStream: OutputStream): OutputStream {
+    final override fun wrapOutputStream(outputStream: OutputStream): OutputStream {
         // 记录保存时间
         val currentTimeMillis = System.currentTimeMillis()
         outputStream.write((currentTimeMillis shr Int.SIZE_BITS).toInt())
@@ -37,5 +37,5 @@ abstract class BaseExpirationDateSerializer<T : Any>(
         return outputStream
     }
 
-    abstract fun check(localSavedTimeMillis: Long): Boolean
+    protected abstract fun check(localSavedTimeMillis: Long): Boolean
 }

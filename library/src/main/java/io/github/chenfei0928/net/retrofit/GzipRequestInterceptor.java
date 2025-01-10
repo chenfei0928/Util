@@ -19,7 +19,7 @@ import okio.Okio;
  * @date 2016/8/10
  * @see <a href="https://github.com/square/okhttp/wiki/Interceptors">Github Wiki</a>
  */
-public class GzipRequestInterceptor implements Interceptor {
+public final class GzipRequestInterceptor implements Interceptor {
     @NonNull
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {

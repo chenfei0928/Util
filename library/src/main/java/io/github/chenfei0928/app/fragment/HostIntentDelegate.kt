@@ -36,7 +36,7 @@ class HostIntentDelegate<T>(
     companion object {
         inline operator fun <reified T> invoke(
             isMarkedNullable: Boolean = false, name: String? = null, defaultValue: T? = null
-        ) = HostIntentDelegate(
+        ): ReadOnlyProperty<Fragment, T> = HostIntentDelegate(
             BundleSupportType.AutoFind.findByType(isMarkedNullable), name, defaultValue
         )
 
@@ -45,13 +45,13 @@ class HostIntentDelegate<T>(
             isMarkedNullable: Boolean = false,
             name: String? = null,
             defaultValue: T? = null
-        ) = HostIntentDelegate(
+        ): ReadOnlyProperty<Fragment, T> = HostIntentDelegate(
             BundleSupportType.ParcelerType(parceler, isMarkedNullable), name, defaultValue
         )
 
         inline operator fun <reified T : MessageLite> invoke(
             isMarkedNullable: Boolean = false, name: String? = null,
-        ) = HostIntentDelegate(
+        ): ReadOnlyProperty<Fragment, T> = HostIntentDelegate(
             BundleSupportType.ProtoBufType<T>(isMarkedNullable),
             name,
             if (isMarkedNullable) null else T::class.java.protobufDefaultInstance

@@ -58,14 +58,15 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
     //</editor-fold>
 
     open class Impl<T : Any>(
-        readCache: Boolean
+        private val redirectToMutableField: Boolean,
+        readCache: Boolean,
     ) : DataCopyClassFieldAccessor.Impl<T>(readCache), MutableFieldAccessor<T> {
         override fun <T, V> field(
             tCopyFunc: KFunction<T>,
             tProperty: KProperty1<T, V>,
             vType: PreferenceType?,
         ): FieldAccessor.Field<T, V> {
-            return if (tProperty is KMutableProperty1) {
+            return if (redirectToMutableField && tProperty is KMutableProperty1) {
                 field<T, V>(tProperty, vType)
             } else {
                 super.field(tCopyFunc, tProperty, vType)

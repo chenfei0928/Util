@@ -34,12 +34,16 @@ fun <T : Message> Class<T>.getProtobufV3ParserForType(): Parser<T> {
     return getProtobufV3DefaultInstance().parserForType as Parser<T>
 }
 
+private val shortDebugStringer by lazy(LazyThreadSafetyMode.NONE) {
+    TextFormat.printer().emittingSingleLine(true)
+}
+
 fun Message.toShortString() = buildString {
     append(this@toShortString.javaClass.simpleName)
     append('@')
     append(Integer.toHexString(hashCode()))
     append("(")
-    append(TextFormat.shortDebugString(this@toShortString))
+    shortDebugStringer.print(this@toShortString, this)
     append(')')
 }
 

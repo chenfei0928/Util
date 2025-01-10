@@ -18,7 +18,7 @@ abstract class RegisterLauncherProperty<Host, I> :
     ReadOnlyProperty<Host, ActivityResultLauncher<I>> {
     private lateinit var launcher: ActivityResultLauncher<I>
 
-    override fun getValue(thisRef: Host, property: KProperty<*>): ActivityResultLauncher<I> {
+    final override fun getValue(thisRef: Host, property: KProperty<*>): ActivityResultLauncher<I> {
         return launcher
     }
 
@@ -26,7 +26,7 @@ abstract class RegisterLauncherProperty<Host, I> :
         launcher = register()
     }
 
-    abstract fun register(): ActivityResultLauncher<I>
+    protected abstract fun register(): ActivityResultLauncher<I>
 }
 
 fun ActivityResultCaller.registerAllActivityResultLauncher() {

@@ -73,9 +73,9 @@ interface LocalSerializer<T : Any> {
         }
 
         @Throws(IOException::class)
-        abstract fun wrapInputStream(inputStream: InputStream): InputStream
+        protected abstract fun wrapInputStream(inputStream: InputStream): InputStream
 
         @Throws(IOException::class)
-        abstract fun wrapOutputStream(outputStream: OutputStream): OutputStream
+        protected abstract fun wrapOutputStream(outputStream: OutputStream): OutputStream
     }
 }

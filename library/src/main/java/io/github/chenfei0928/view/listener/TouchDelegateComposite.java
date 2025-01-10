@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
  * @date 2021-06-24 14:54
  * @see <a href="https://www.jianshu.com/p/ce14c7d96b0c">博文</a>
  */
-public class TouchDelegateComposite extends TouchDelegate {
+public final class TouchDelegateComposite extends TouchDelegate {
     private static final Rect USELESS_RECT = new Rect();
     private final List<TouchDelegate> mDelegates = new ArrayList<>(8);
 
