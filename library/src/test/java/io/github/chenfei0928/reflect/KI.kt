@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken
 import io.github.chenfei0928.bean.DataA
 import io.github.chenfei0928.bean.DataB
 import io.github.chenfei0928.bean.DataInterface
+import io.github.chenfei0928.lang.arrayClass
 
 /**
  * @author chenf()

@@ -56,5 +56,5 @@ dependencies {
 //        isChanging = "SNAPSHOT" in version.toString()
 //    }
     implementation(projects.library)
-    implementation(Deps.lib.gson)
+    implementation(Deps.lib.google.gson)
 }

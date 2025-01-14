@@ -4,6 +4,7 @@
  */
 package io.github.chenfei0928.lang
 
+import android.os.Build
 import java.util.Arrays
 
 /**
@@ -38,3 +39,11 @@ fun Any?.toStr(): String = when (this) {
     is BooleanArray -> contentToString()
     else -> toString()
 }
+
+@Suppress("UNCHECKED_CAST")
+fun <T> Class<T>.arrayClass(): Class<Array<T>> =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        arrayType() as Class<Array<T>>
+    } else {
+        java.lang.reflect.Array.newInstance(this, 0).javaClass as Class<Array<T>>
+    }

@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 
-import io.github.chenfei0928.reflect.ReflectKt;
+import io.github.chenfei0928.lang.ArrayKt;
 
 /**
  * @author ChenFei(chenfei0928 @ gmail.com)
@@ -146,7 +146,7 @@ public class ParameterizedTypeReflect0 {
         if (genericComponentType instanceof Class<?>) {
             // 如果当前类直接指定了范型元素类型
             // Child extends Parent<R-Element[]>
-            Class<R> arrayClass = (Class<R>) ReflectKt.arrayClass((Class<?>) genericComponentType);
+            Class<R> arrayClass = (Class<R>) ArrayKt.arrayClass((Class<?>) genericComponentType);
             return new TypeBoundsContract<>(arrayClass, null, null);
         } else if (genericComponentType instanceof TypeVariable<?>) {
             // 这一层子类只实现了范型为数组（且未约束范围），但数组元素仍由范型约束由子类提供
@@ -155,7 +155,7 @@ public class ParameterizedTypeReflect0 {
             TypeBoundsContract<Object> parameterizedTypeDefinedImplInChild = findParameterizedTypeDefinedImplInChild(
                     parentClass, finalChildClass, (TypeVariable<?>) genericComponentType);
             // 将生成ChildR的数组
-            Class<R> arrayClass = (Class<R>) ReflectKt.arrayClass(parameterizedTypeDefinedImplInChild.getClazz());
+            Class<R> arrayClass = (Class<R>) ArrayKt.arrayClass(parameterizedTypeDefinedImplInChild.getClazz());
             return new TypeBoundsContract<>(arrayClass, null, null);
         } else if (genericComponentType instanceof GenericArrayType genericArrayType) {
             // 二阶或多阶数组
@@ -163,14 +163,14 @@ public class ParameterizedTypeReflect0 {
             TypeBoundsContract<Object> typeBoundsContract =
                     findParameterizedArrayTypeDefinedImplInChild(parentClass, finalChildClass, genericArrayType);
             // 将生成ChildR的数组
-            Class<R> arrayClass = (Class<R>) ReflectKt.arrayClass(typeBoundsContract.getClazz());
+            Class<R> arrayClass = (Class<R>) ArrayKt.arrayClass(typeBoundsContract.getClazz());
             return new TypeBoundsContract<>(arrayClass, null, null);
         } else if (genericComponentType instanceof ParameterizedType parameterizedType) {
             // 子类的范型约束虽然是一个Interface或Class，但其仍有范型定义
             // Child<ChildR> extends Parent<List<ChildR>[]>
             // 将生成ChildR的数组
             // 由于有范型擦除机制，此处定义的 ChildR 在 List<ChildR>[] 中会被擦除，无法维持到运行时，只获取数组元素类型即可
-            Class<R> arrayClass = (Class<R>) ReflectKt.arrayClass((Class<?>) parameterizedType.getRawType());
+            Class<R> arrayClass = (Class<R>) ArrayKt.arrayClass((Class<?>) parameterizedType.getRawType());
             return new TypeBoundsContract<>(arrayClass, null, null);
         } else if (genericComponentType instanceof WildcardType wildcardType) {
             // 范型约束只约束了范围，而没有继续约束实现，通常不会被类实现，或许为字段或方法（？）

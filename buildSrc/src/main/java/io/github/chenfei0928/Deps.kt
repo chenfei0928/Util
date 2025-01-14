@@ -9,15 +9,15 @@ object Deps {
     object kotlin {
 
         // https://github.com/Kotlin/kotlinx-datetime
-        val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.4.0"
+        val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.1"
 
         // https://github.com/fengzhizi715/Lifecycle-Coroutines-Extension
         val coroutinesExt = "com.safframework.lifecycle:lifecycle-coroutine-ext:1.2.1"
 
         // Json序列化支持
         // https://github.com/Kotlin/kotlinx.serialization
-        val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
-        val protobuf = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.7.3"
+        val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0"
+        val protobuf = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.8.0"
     }
     //</editor-fold>
 
@@ -158,9 +158,6 @@ object Deps {
         // https://github.com/leotyndale/EnFloatingView
         val floatView = "com.imuxuan:floatingview:1.6"
 
-        // https://github.com/google/gson
-        val gson = "com.google.code.gson:gson:2.11.0"
-
         // https://github.com/square/okio
         val okio = "com.squareup.okio:okio:3.5.0"
 
@@ -187,12 +184,6 @@ object Deps {
             val kotlinLite = "com.google.protobuf:protobuf-kotlin-lite:$protobufVersion"
         }
 
-        // https://github.com/zxing/zxing
-        // https://repo1.maven.org/maven2/com/google/zxing/core/
-        object zxing {
-            val core = "com.google.zxing:core:3.5.3"
-        }
-
         // https://github.com/Curzibn/Luban
         val luban = "top.zibin:Luban:1.1.8"
 
@@ -216,10 +207,6 @@ object Deps {
         // https://github.com/johncarl81/parceler
         val parceler = "org.parceler:parceler-api:1.1.13"
 
-        // Java标注
-        // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
-        val jsr305 = "com.google.code.findbugs:jsr305:3.0.2"
-
         // https://repo1.maven.org/maven2/org/glassfish/javax.annotation/
 //        val javax = "org.glassfish:javax.annotation:3.2-b06"
         val javax = "javax.annotation:javax.annotation-api:1.3.2"
@@ -239,7 +226,18 @@ object Deps {
         // Google工具类
         object google {
             // https://github.com/google/guava
-            val guava = "com.google.guava:guava:33.2.1-android"
+            val guavaAndroid = "com.google.guava:guava:33.4.0-android"
+
+            // https://github.com/google/gson
+            val gson = "com.google.code.gson:gson:2.11.0"
+
+            // https://github.com/zxing/zxing
+            // https://repo1.maven.org/maven2/com/google/zxing/core/
+            val zxingCore = "com.google.zxing:core:3.5.3"
+
+            // Java标注
+            // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
+            val jsr305 = "com.google.code.findbugs:jsr305:3.0.2"
         }
 
         // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3

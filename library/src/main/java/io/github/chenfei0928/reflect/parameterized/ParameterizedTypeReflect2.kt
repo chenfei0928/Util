@@ -1,7 +1,7 @@
 package io.github.chenfei0928.reflect.parameterized
 
 import androidx.annotation.IntRange
-import io.github.chenfei0928.reflect.arrayClass
+import io.github.chenfei0928.lang.arrayClass
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeParameter

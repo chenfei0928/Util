@@ -75,7 +75,7 @@ dependencies {
     // https://github.com/Meituan-Dianping/walle
     implementation("com.meituan.android.walle:plugin:1.1.7")
     // https://github.com/google/guava
-    implementation("com.google.guava:guava:33.3.1-jre")
+    implementation("com.google.guava:guava:33.4.0-jre")
     // 腾讯Bugly混淆表上传工具
     // https://bugly.qq.com/docs/utility-tools/plugin-gradle-bugly/
     // https://repo1.maven.org/maven2/com/tencent/bugly/symtabfileuploader/
