@@ -1,8 +1,9 @@
 package io.github.chenfei0928.reflect.parameterized
 
 import androidx.annotation.IntRange
+import com.google.common.reflect.GoogleTypes
 import io.github.chenfei0928.collection.mapToArray
-import io.github.chenfei0928.reflect.arrayClass
+import io.github.chenfei0928.lang.arrayClass
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -182,7 +183,7 @@ class ParameterizedTypeReflect1<Parent>(
             // 如果是数组范型，还要查找子类中该范型数组元素的具体实现
             // Child extends Parent<XXX[]>
             // 将生成ChildR的数组
-            com.google.gson.internal.`$Gson$Types`.arrayOf(
+            GoogleTypes.arrayOf(
                 getType(
                     currentNode, typeImplOnParent.genericComponentType
                 )
@@ -194,7 +195,7 @@ class ParameterizedTypeReflect1<Parent>(
             // 将生成ChildR的数组
             // 由于有范型擦除机制，此处定义的 ChildR 在 List<ChildR>[] 中会被擦除，无法维持到运行时，只获取数组元素类型即可
             @Suppress("SpreadOperator")
-            com.google.gson.internal.`$Gson$Types`.newParameterizedTypeWithOwner(
+            GoogleTypes.newParameterizedTypeWithOwner(
                 typeImplOnParent.ownerType,
                 typeImplOnParent.rawType,
                 *typeImplOnParent.actualTypeArguments.mapToArray {

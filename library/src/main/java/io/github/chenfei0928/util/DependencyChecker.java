@@ -14,7 +14,7 @@ import androidx.concurrent.futures.ListenableFutureKt;
  * 进行性能测试：
  * <ul>
  *     <li>{@link DependencyChecker#MATERIAL} 获取{@link BottomSheetDialog}</li>
- *     <li>{@link DependencyChecker#GUAVA} 获取{@link ListenableFuture}</li>
+ *     <li>{@link DependencyChecker#GUAVA_LISTENABLE_FUTURE} 获取{@link ListenableFuture}</li>
  *     <li>{@link DependencyChecker#ANDROID_X_LISTENABLE_FUTURE} 获取{@link ListenableFutureKt}</li>
  *     <li>{@link DependencyChecker#FLEXBOX} 获取{@link FlexboxLayoutManager}</li>
  * </ul>
@@ -55,7 +55,7 @@ public enum DependencyChecker {
      * Guava依赖可以判断{@link ListenableFuture}是否存在，它的{@code await}方法在另一个deps中，
      * 需要额外判断 {@link ListenableFutureKt} 类是否存在，并调用一下它们的方法避免编译器优化将class优化掉。
      */
-    GUAVA {
+    GUAVA_LISTENABLE_FUTURE {
         @Override
         protected boolean initValue() {
             try {
@@ -120,6 +120,30 @@ public enum DependencyChecker {
                 // protobufLite库大概率不存在，使用方案2加载
                 // lite库会keep这个类 https://github.com/protocolbuffers/protobuf/blob/main/java/lite/proguard.pgcfg
                 Class.forName("com.google.protobuf.GeneratedMessageLite");
+                return true;
+            } catch (ClassNotFoundException ignore) {
+                return false;
+            }
+        }
+    },
+    GSON {
+        @Override
+        protected boolean initValue() {
+            try {
+                // gson 轻量级常用，大概率会存在，使用方案1加载
+                com.google.gson.reflect.TypeToken.class.toString();
+                return true;
+            } catch (NoClassDefFoundError ignore) {
+                return false;
+            }
+        }
+    },
+    GUAVA {
+        @Override
+        protected boolean initValue() {
+            try {
+                // guava库大概率不存在，使用方案2加载
+                Class.forName("com.google.common.reflect.TypeToken");
                 return true;
             } catch (ClassNotFoundException ignore) {
                 return false;

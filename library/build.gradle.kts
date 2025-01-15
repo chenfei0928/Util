@@ -3,6 +3,7 @@ import io.github.chenfei0928.DepsAndroidx
 import io.github.chenfei0928.android.applyLibrary
 import io.github.chenfei0928.android.applyTest
 import io.github.chenfei0928.compiler.applyKotlin
+import io.github.chenfei0928.data.applyProtobuf
 import me.omico.age.dsl.withKotlinAndroidMavenPublication
 
 plugins {
@@ -74,6 +75,7 @@ dependencies {
     compileOnly(Deps.network.okhttp)
     compileOnly(Deps.network.retrofit.core)
     compileOnly(Deps.lib.protobuf.java)
+    compileOnly(Deps.lib.google.guavaAndroid)
 
     // ARouter
     compileOnly(Deps.lib.aRouter.api)
