@@ -5,14 +5,15 @@ import android.os.Build
 import android.util.Log
 import androidx.collection.ArraySet
 import androidx.preference.PreferenceDataStore
-import com.google.gson.internal.`$Gson$Types`
 import com.google.protobuf.Descriptors
 import io.github.chenfei0928.content.sp.saver.PreferenceType.EnumNameString
 import io.github.chenfei0928.content.sp.saver.convert.SpConvertSaver
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 import io.github.chenfei0928.preference.base.FieldAccessor.Field
-import io.github.chenfei0928.reflect.isSubclassOf
+import com.google.common.reflect.GoogleTypes
+import io.github.chenfei0928.reflect.jvmErasureClassOrNull
+import io.github.chenfei0928.reflect.isSubtypeOf
 import io.github.chenfei0928.reflect.jTypeOf
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
@@ -28,6 +29,8 @@ import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.jvmErasure
 
 /**
+ * 当前类中 [Native.STRING_SET] 依赖了 [GsonTypes] 类
+ *
  * @author chenf()
  * @date 2024-12-18 15:51
  */
@@ -44,9 +47,9 @@ sealed interface PreferenceType {
         STRING_SET(
             // 经测试此与 jTypeOf<Set<String>>() 类型一致，直接构建类型以减少一次类创建与反射开销
             // 不过为何第三个参数不是 String::class.java，而是 subtypeOf
-            // String 是final类，还能有类是它的子类？¯\_(ツ)_/¯
-            `$Gson$Types`.newParameterizedTypeWithOwner(
-                null, Set::class.java, `$Gson$Types`.subtypeOf(String::class.java)
+            // String 是final类，还能有类是它的子类？是怕sdk随意变更么¯\_(ツ)_/¯
+            GoogleTypes.newParameterizedTypeWithOwner(
+                null, Set::class.java, GoogleTypes.subtypeOf(String::class.java)
             ), null
         ),
         INT(Int::class.javaObjectType, Int::class.javaPrimitiveType),
@@ -61,8 +64,10 @@ sealed interface PreferenceType {
             fun forType(tClass: Class<*>, tTypeProvider: () -> Type): Native {
                 return entries.find { it.type == tClass || it.primitiveType == tClass }
                     ?: tTypeProvider().let { tType ->
-                        STRING_SET.takeIf { it.type == tType }
-                            ?: throw IllegalArgumentException("Not support type: $tType")
+                        require(tType.isSubtypeOf(STRING_SET.type)) {
+                            "Not support type: $tType"
+                        }
+                        STRING_SET
                     }
             }
         }
@@ -154,17 +159,17 @@ sealed interface PreferenceType {
          */
         @Suppress("CyclomaticComplexMethod")
         private fun createCollection(size: Int): MutableCollection<E> = when {
-            returnType.isSubclassOf(ArraySet::class.java) -> ArraySet(size)
+            returnType.isSubtypeOf(ArraySet::class.java) -> ArraySet(size)
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                    && returnType.isSubclassOf(android.util.ArraySet::class.java) ->
+                    && returnType.isSubtypeOf(android.util.ArraySet::class.java) ->
                 android.util.ArraySet(size)
-            returnType.isSubclassOf(HashSet::class.java) -> HashSet(size)
-            returnType.isSubclassOf(SortedSet::class.java) -> TreeSet()
-            returnType.isSubclassOf(LinkedHashSet::class.java) -> LinkedHashSet(size)
-            returnType.isSubclassOf(Set::class.java) -> ArraySet(size)
-            returnType.isSubclassOf(Queue::class.java) -> ArrayDeque(size)
-            returnType.isSubclassOf(LinkedList::class.java) -> LinkedList()
-            returnType.isSubclassOf(List::class.java) -> ArrayList(size)
+            returnType.isSubtypeOf(HashSet::class.java) -> HashSet(size)
+            returnType.isSubtypeOf(SortedSet::class.java) -> TreeSet()
+            returnType.isSubtypeOf(LinkedHashSet::class.java) -> LinkedHashSet(size)
+            returnType.isSubtypeOf(Set::class.java) -> ArraySet(size)
+            returnType.isSubtypeOf(Queue::class.java) -> ArrayDeque(size)
+            returnType.isSubtypeOf(LinkedList::class.java) -> LinkedList()
+            returnType.isSubtypeOf(List::class.java) -> ArrayList(size)
             // 抽象类或接口，返回arrayList
             returnType.isInterface
                     || Modifier.ABSTRACT in returnType.modifiers -> ArrayList(size)
@@ -192,22 +197,22 @@ sealed interface PreferenceType {
             fun forType(type: ParameterizedType): EnumNameStringCollection<*> {
                 val rawClass = type.rawType as Class<out Collection<*>>
                 val arg0Type = type.actualTypeArguments[0]
-                return if (arg0Type is Class<*> && arg0Type.isSubclassOf(Enum::class.java)) {
-                    EnumNameStringCollection(
+                if (arg0Type is Class<*> && arg0Type.isSubtypeOf(Enum::class.java)) {
+                    return EnumNameStringCollection(
                         eClass = arg0Type as Class<out Enum<*>>,
                         returnType = rawClass,
                     )
-                } else if (arg0Type is WildcardType &&
-                    arg0Type.upperBounds[0].let { it is Class<*> && it.isSubclassOf(Enum::class.java) }
-                ) {
-                    EnumNameStringCollection(
-                        eClass = arg0Type.upperBounds[0] as Class<out Enum<*>>,
-                        returnType = rawClass,
-                    )
-                } else {
-                    @Suppress("UseRequire")
-                    throw IllegalArgumentException("Not support type: $type")
                 }
+                if (arg0Type is WildcardType) {
+                    val arg0Class = arg0Type.jvmErasureClassOrNull<Enum<*>>()
+                    if (arg0Class?.isSubtypeOf(Enum::class.java) == true) {
+                        return EnumNameStringCollection(
+                            eClass = arg0Class, returnType = rawClass,
+                        )
+                    }
+                }
+                @Suppress("UseRequire")
+                throw IllegalArgumentException("Not support type: $type")
             }
         }
     }
@@ -222,10 +227,10 @@ sealed interface PreferenceType {
         private const val TAG = "PreferenceType"
 
         fun forType(tClass: Class<*>, tTypeProvider: () -> Type): PreferenceType {
-            return if (tClass.isSubclassOf(Enum::class.java)) {
+            return if (tClass.isSubtypeOf(Enum::class.java)) {
                 @Suppress("UNCHECKED_CAST")
                 EnumNameString(tClass as Class<out Enum<*>>)
-            } else if (!tClass.isSubclassOf(Collection::class.java)) {
+            } else if (!tClass.isSubtypeOf(Collection::class.java)) {
                 Native.forType(tClass, tTypeProvider)
             } else {
                 val type = tTypeProvider()

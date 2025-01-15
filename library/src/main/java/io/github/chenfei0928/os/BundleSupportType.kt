@@ -19,7 +19,8 @@ import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.lang.toByteArray
 import io.github.chenfei0928.os.BundleSupportType.ProtoBufType
-import io.github.chenfei0928.reflect.isSubclassOf
+import io.github.chenfei0928.reflect.jvmErasureClassOrNull
+import io.github.chenfei0928.reflect.isSubtypeOf
 import io.github.chenfei0928.reflect.jTypeOf
 import io.github.chenfei0928.util.DependencyChecker
 import kotlinx.parcelize.Parceler
@@ -1373,33 +1374,33 @@ abstract class BundleSupportType<T>(
                 clazz == Size::class.java -> SizeType
                 clazz == SizeF::class.java -> SizeFType
                 // 原生的非final类型
-                clazz.isSubclassOf(Parcelable::class.java) -> ParcelableType
-                clazz.isSubclassOf(CharSequence::class.java) -> CharSequenceType
-                clazz.isSubclassOf(SparseArray::class.java) -> SparseArrayType
-                clazz.isSubclassOf(IBinder::class.java) -> IBinderType
+                clazz.isSubtypeOf(Parcelable::class.java) -> ParcelableType
+                clazz.isSubtypeOf(CharSequence::class.java) -> CharSequenceType
+                clazz.isSubtypeOf(SparseArray::class.java) -> SparseArrayType
+                clazz.isSubtypeOf(IBinder::class.java) -> IBinderType
                 // List类型
-                clazz.isSubclassOf(List::class.java) -> {
+                clazz.isSubtypeOf(List::class.java) -> {
                     val arg0Class = type.argument0TypeClass<Any>()
                     when {
-                        arg0Class.isSubclassOf(Parcelable::class.java) -> ListParcelableType
+                        arg0Class.isSubtypeOf(Parcelable::class.java) -> ListParcelableType
                         arg0Class == String::class.java -> ListStringType
-                        arg0Class.isSubclassOf(CharSequence::class.java) -> ListCharSequenceType
+                        arg0Class.isSubtypeOf(CharSequence::class.java) -> ListCharSequenceType
                         arg0Class == Integer::class.java -> ListIntegerType
-                        DependencyChecker.PROTOBUF_LITE() && arg0Class.isSubclassOf(MessageLite::class.java) ->
+                        DependencyChecker.PROTOBUF_LITE() && arg0Class.isSubtypeOf(MessageLite::class.java) ->
                             ListProtoBufType
                         else -> NotSupportType
                     }
                 }
                 // 数组类型
-                clazz.isSubclassOf(Array<Parcelable>::class.java) -> ArrayParcelableType
+                clazz.isSubtypeOf(Array<Parcelable>::class.java) -> ArrayParcelableType
                 clazz == Array<String>::class.java -> ArrayStringType
-                clazz.isSubclassOf(Array<CharSequence>::class.java) -> ArrayCharSequenceType
+                clazz.isSubtypeOf(Array<CharSequence>::class.java) -> ArrayCharSequenceType
                 // 扩展支持
-                clazz.isSubclassOf(Enum::class.java) -> EnumType
-                DependencyChecker.PROTOBUF_LITE() && clazz.isSubclassOf(MessageLite::class.java) ->
+                clazz.isSubtypeOf(Enum::class.java) -> EnumType
+                DependencyChecker.PROTOBUF_LITE() && clazz.isSubtypeOf(MessageLite::class.java) ->
                     ProtoBufType
                 // 原生的非final类型（protobuf 标准版的实体类都实现了 Serializable 接口，避免使用其为protobuf序列化）
-                clazz.isSubclassOf(Serializable::class.java) -> SerializableType
+                clazz.isSubtypeOf(Serializable::class.java) -> SerializableType
                 else -> NotSupportType
             }
             @Suppress("UNCHECKED_CAST")
@@ -1461,7 +1462,7 @@ abstract class BundleSupportType<T>(
                     // List<Xxx>
                     val arg0Type = tType.actualTypeArguments[0]
                     val arg0Class = (arg0Type as? Class<*>)
-                        ?: ((arg0Type as? WildcardType)?.upperBounds?.get(0) as Class<*>)
+                        ?: (arg0Type as? WildcardType)?.jvmErasureClassOrNull<Any>()
                     arg0Class as Class<T>
                 }
                 is GenericArrayType -> {
