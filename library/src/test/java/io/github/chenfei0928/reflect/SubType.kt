@@ -22,10 +22,14 @@ class SubType {
         check<Set<Enum<*>>, MutableSet<Lifecycle.State>>()
         check<Any, IntArray>()
         check<Array<Any>, Array<I<*>>>()
+        check<Array<Any>, Array<Array<Set<out String>>>>()
         check<Array<Any>, Array<Int>>()
-        check<Map<DataInterface, Long>, HashMap<DataA, Long>>()
+        not<Array<Any>, IntArray>()
+        check<Map<DataInterface, Number>, HashMap<DataA, Long>>()
 //        check<GeneratedMessageLite, >()
         check<Set<String>, ArraySet<String>>()
+        check<Set<String>, Set<String>>()
+        not<Set<String>, ArraySet<out CharSequence>>()
         check<Any, Int>()
     }
 

@@ -14,23 +14,30 @@ import java.util.Queue
 fun Class<*>.isSubclassOf(base: Class<*>): Boolean =
     base.isAssignableFrom(this)
 
-fun Type.isSubtypeOf(base: Type): Boolean =
-    SubtypeChecker().isSubtypeOf(this, base)
+fun Type.isSubtypeOf(
+    base: Type,
+    sameBoxedAndPrimitiveType: Boolean = true,
+    indexOfTypeVariable: Int = 0,
+): Boolean = SubtypeChecker(
+    sameBoxedAndPrimitiveType, indexOfTypeVariable
+).isSubtypeOf(this, base)
 
+/**
+ * @param sameBoxedAndPrimitiveType 将JVM装箱类型与原始类型认为是同一个类型
+ * @author chenf()
+ * @date 2025-01-14 16:43
+ */
 private class SubtypeChecker(
-    private val sameBoxedAndPrimitiveType: Boolean = true,
-    private val indexOfTypeVariable: Int = 0,
+    private val sameBoxedAndPrimitiveType: Boolean,
+    private val indexOfTypeVariable: Int,
 ) {
     // 替换为 Host.typeParameters[which] = WhoClass 如果Host which WhoClass 一致则不判断 WhoClass
     private val parentParameterChain: Queue<ParametersCheckRecord> = LinkedList()
 
-    /**
-     * @param sameBoxedAndPrimitiveType 将JVM装箱类型与原始类型认为是同一个类型
-     * @author chenf()
-     * @date 2025-01-14 16:43
-     */
     @Suppress("CyclomaticComplexMethod")
-    fun isSubtypeOf(child: Type, base: Type): Boolean = if (base == Any::class.java) {
+    fun isSubtypeOf(
+        child: Type, base: Type
+    ): Boolean = if (base == Any::class.java) {
         true
     } else when (base) {
         is Class<*> -> isSubtypeOfClass(child, base)
@@ -39,7 +46,7 @@ private class SubtypeChecker(
         is WildcardType -> isSubTypeOfWildcardType(child, base)
         is TypeVariable<*> -> isSubTypeOfTypeVariable(child, base)
         else -> @Suppress("UseRequire") throw IllegalArgumentException(
-            "Not support type: ${child.javaClass.name} $child and base ${base.javaClass.name} $base"
+            "Not support base type: ${child.javaClass.name} $child and base ${base.javaClass.name} $base"
         )
     }
 
@@ -159,7 +166,7 @@ private class SubtypeChecker(
             // 两者都是范围约束泛型，检查参数上下限
             base.upperBounds.all { baseType ->
                 child.upperBounds.any { isSubtypeOf(it, baseType) }
-            } && base.lowerBounds.any { baseType ->
+            } && base.lowerBounds.all { baseType ->
                 child.lowerBounds.any { isSubtypeOf(baseType, it) }
             }
         }
@@ -182,6 +189,7 @@ private class SubtypeChecker(
         is GenericArrayType -> false
         is WildcardType -> base.bounds.all { baseType ->
             child.upperBounds.any { isSubtypeOf(it, baseType) }
+                    && child.lowerBounds.all { isSubtypeOf(baseType, it) }
         }
         is TypeVariable<*> -> base.bounds.all { baseType ->
             child.bounds.any { isSubtypeOf(it, baseType) }
@@ -205,6 +213,7 @@ private class SubtypeChecker(
         is GenericArrayType -> false
         is WildcardType -> upperBounds.all { upperBound ->
             child.upperBounds.any { isSubtypeOf(it, upperBound) }
+                    && child.lowerBounds.all { isSubtypeOf(upperBound, it) }
         }
         is TypeVariable<*> -> upperBounds.all { upperBound ->
             isSubtypeOf(child.bounds[indexOfTypeVariable], upperBound)
