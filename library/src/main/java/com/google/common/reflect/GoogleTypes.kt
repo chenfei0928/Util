@@ -7,6 +7,9 @@ import java.lang.reflect.Type
 import com.google.gson.internal.`$Gson$Types` as GsonTypes
 
 /**
+ * 使用 Google 开源库中的 [Type] 处理类来提供泛型构建
+ * 依赖了 [Gson](https://github.com/google/gson) 或 [Guava](https://github.com/google/guava) 库作为内部实现。
+ *
  * @author chenf()
  * @date 2025-01-14 11:28
  */

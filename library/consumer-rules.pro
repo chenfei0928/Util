@@ -15,6 +15,9 @@
 ## 保留类但允许混淆
 -keep,allowobfuscation @io.github.chenfei0928.annotation.KeepAllowObfuscation class * {*;}
 
+## Type类型懒获取，它需要保证父类继承顺序不被R8破坏，但允许混淆类名与方法名
+-keep,allowobfuscation class * extends io.github.chenfei0928.reflect.LazyTypeToken
+
 ## 为了可以访问到FragmentViewLifecycleOwner的Fragment
 ## 在 androidx.fragment.app.FragmentViewLifecycleAccessor 中使用
 ## androidx.fragment.app.FragmentViewLifecycleAccessor

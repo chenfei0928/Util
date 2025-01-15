@@ -5,7 +5,7 @@
 package com.google.protobuf
 
 import io.github.chenfei0928.lang.contains
-import io.github.chenfei0928.reflect.isSubtypeOf
+import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.util.DependencyChecker
 import io.github.chenfei0928.util.MapCache
 import java.lang.reflect.Modifier
@@ -51,7 +51,7 @@ fun Message.toShortString() = buildString {
 val <T : MessageLite> Class<T>.protobufDefaultInstance: T?
     get() = if (Modifier.FINAL !in modifiers) {
         null
-    } else if (DependencyChecker.PROTOBUF() && isSubtypeOf(Message::class.java)) {
+    } else if (DependencyChecker.PROTOBUF() && isSubclassOf(Message::class.java)) {
         (this as Class<out Message>).getProtobufV3DefaultInstance() as T
     } else {
         (this as Class<out GeneratedMessageLite<*, *>>)

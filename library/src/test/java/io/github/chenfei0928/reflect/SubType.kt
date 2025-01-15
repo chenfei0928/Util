@@ -6,7 +6,7 @@ import io.github.chenfei0928.bean.DataA
 import io.github.chenfei0928.bean.DataInterface
 import org.junit.Before
 
- /**
+/**
  * @author chenf()
  * @date 2025-01-14 16:42
  */
@@ -22,9 +22,10 @@ class SubType {
         check<Set<Enum<*>>, MutableSet<Lifecycle.State>>()
         check<Any, IntArray>()
         check<Array<Any>, Array<I<*>>>()
-        check<Array<Any>, IntArray>()
+        check<Array<Any>, Array<Int>>()
         check<Map<DataInterface, Long>, HashMap<DataA, Long>>()
 //        check<GeneratedMessageLite, >()
+        check<Set<String>, ArraySet<String>>()
         check<Any, Int>()
     }
 

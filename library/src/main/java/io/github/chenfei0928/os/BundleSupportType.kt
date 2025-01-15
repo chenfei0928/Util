@@ -19,9 +19,9 @@ import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.lang.toByteArray
 import io.github.chenfei0928.os.BundleSupportType.ProtoBufType
+import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.jvmErasureClassOrNull
-import io.github.chenfei0928.reflect.isSubtypeOf
-import io.github.chenfei0928.reflect.jTypeOf
+import io.github.chenfei0928.reflect.lazyJTypeOf
 import io.github.chenfei0928.util.DependencyChecker
 import kotlinx.parcelize.Parceler
 import java.io.ByteArrayInputStream
@@ -32,8 +32,6 @@ import java.lang.reflect.GenericArrayType
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
-import java.lang.reflect.WildcardType
-import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.KType
 import kotlin.reflect.full.createInstance
@@ -1334,23 +1332,21 @@ abstract class BundleSupportType<T>(
 
         @Suppress("kotlin:S6530")
         private fun findType(property: KProperty<*>): BundleSupportType<Any> = findByType(
-            TypeInfo(null, { property.returnType }, null), NullableCheck.DEFAULT_INSTANCE
+            TypeInfo.ByKProperty(property), NullableCheck.DEFAULT_INSTANCE
         )
 
         inline fun <reified T> findByType(
             isMarkedNullable: Boolean?
         ): BundleSupportType<T> = findByType(
-            TypeInfo(T::class.java, { typeOf<T>() }, { jTypeOf<T>() }),
-            NullableCheck.formBoolean(isMarkedNullable)
+            TypeInfo.ByInline<T>(isMarkedNullable), NullableCheck.formBoolean(isMarkedNullable)
         )
 
         @Suppress("CyclomaticComplexMethod", "kotlin:S1479")
         fun <T> findByType(
             type: TypeInfo, checkNullable: NullableCheck
         ): BundleSupportType<T> {
-            val clazz = type.jClass
+            val clazz = type.tClass<Any>()
             val creator: Creator<*> = when {
-                clazz == null -> NotSupportType
                 // 基础数据类型与其数组
                 clazz == java.lang.Byte::class.java || clazz == java.lang.Byte.TYPE -> ByteType
                 clazz == ByteArray::class.java -> ByteArrayType
@@ -1374,46 +1370,58 @@ abstract class BundleSupportType<T>(
                 clazz == Size::class.java -> SizeType
                 clazz == SizeF::class.java -> SizeFType
                 // 原生的非final类型
-                clazz.isSubtypeOf(Parcelable::class.java) -> ParcelableType
-                clazz.isSubtypeOf(CharSequence::class.java) -> CharSequenceType
-                clazz.isSubtypeOf(SparseArray::class.java) -> SparseArrayType
-                clazz.isSubtypeOf(IBinder::class.java) -> IBinderType
+                clazz.isSubclassOf(Parcelable::class.java) -> ParcelableType
+                clazz.isSubclassOf(CharSequence::class.java) -> CharSequenceType
+                clazz.isSubclassOf(SparseArray::class.java) -> SparseArrayType
+                clazz.isSubclassOf(IBinder::class.java) -> IBinderType
                 // List类型
-                clazz.isSubtypeOf(List::class.java) -> {
+                clazz.isSubclassOf(List::class.java) -> {
                     val arg0Class = type.argument0TypeClass<Any>()
                     when {
-                        arg0Class.isSubtypeOf(Parcelable::class.java) -> ListParcelableType
+                        arg0Class.isSubclassOf(Parcelable::class.java) -> ListParcelableType
                         arg0Class == String::class.java -> ListStringType
-                        arg0Class.isSubtypeOf(CharSequence::class.java) -> ListCharSequenceType
+                        arg0Class.isSubclassOf(CharSequence::class.java) -> ListCharSequenceType
                         arg0Class == Integer::class.java -> ListIntegerType
-                        DependencyChecker.PROTOBUF_LITE() && arg0Class.isSubtypeOf(MessageLite::class.java) ->
+                        DependencyChecker.PROTOBUF_LITE() && arg0Class.isSubclassOf(MessageLite::class.java) ->
                             ListProtoBufType
                         else -> NotSupportType
                     }
                 }
                 // 数组类型
-                clazz.isSubtypeOf(Array<Parcelable>::class.java) -> ArrayParcelableType
+                clazz.isSubclassOf(Array<Parcelable>::class.java) -> ArrayParcelableType
                 clazz == Array<String>::class.java -> ArrayStringType
-                clazz.isSubtypeOf(Array<CharSequence>::class.java) -> ArrayCharSequenceType
+                clazz.isSubclassOf(Array<CharSequence>::class.java) -> ArrayCharSequenceType
                 // 扩展支持
-                clazz.isSubtypeOf(Enum::class.java) -> EnumType
-                DependencyChecker.PROTOBUF_LITE() && clazz.isSubtypeOf(MessageLite::class.java) ->
+                clazz.isSubclassOf(Enum::class.java) -> EnumType
+                DependencyChecker.PROTOBUF_LITE() && clazz.isSubclassOf(MessageLite::class.java) ->
                     ProtoBufType
                 // 原生的非final类型（protobuf 标准版的实体类都实现了 Serializable 接口，避免使用其为protobuf序列化）
-                clazz.isSubtypeOf(Serializable::class.java) -> SerializableType
+                clazz.isSubclassOf(Serializable::class.java) -> SerializableType
                 else -> NotSupportType
             }
             @Suppress("UNCHECKED_CAST")
             return when (checkNullable) {
                 NullableCheck.NONNULL -> creator.byType(type, false)
                 NullableCheck.NULLABLE -> creator.byType(type, true)
-                NullableCheck.CHECK_NOW -> creator.byType(type, type.kType.isMarkedNullable)
+                NullableCheck.CHECK_NOW -> creator.byType(type, type.isMarkedNullable)
                 NullableCheck.DEFAULT_INSTANCE -> creator.default
             } as BundleSupportType<T>
         }
 
+        /**
+         * 值的空安全检查处理类型，用于获取 [Creator.default] 或传入 [Creator.byType] 中使用
+         *
+         * - [NONNULL] ：值非空，不为null
+         * - [NULLABLE] ：值可空
+         * - [CHECK_NOW] ：立即检查值的nullable信息，通过调用 [TypeInfo.isMarkedNullable] 来检查 nullable 信息，
+         * 该过程可能会调用到Kotlin反射
+         * - [DEFAULT_INSTANCE] ：调用 [Creator.default] 来获取默认实现，并在调用读写时访问
+         * [KProperty.returnType] 的 [KType.isMarkedNullable] 来获取nullable信息。
+         * 不对外使用，仅在 [AutoFind] 中使用，即 [findByType] 方法中，用于提供通用实现中的读写委托。
+         */
         enum class NullableCheck {
-            NONNULL, NULLABLE, CHECK_NOW, DEFAULT_INSTANCE;
+            NONNULL, NULLABLE, CHECK_NOW,
+            /* internal */ DEFAULT_INSTANCE;
 
             companion object {
                 fun formBoolean(
@@ -1426,31 +1434,85 @@ abstract class BundleSupportType<T>(
             }
         }
 
+        /**
+         * 每个具体类型 [BundleSupportType] 的实现都需要提供一个此接口的单例实现，
+         * 用于提供其默认实例（需要通过反射 [KProperty] 解析 nullable 并提供读写支持）、
+         * 通过给定 [TypeInfo] 与 nullable 信息返回一个新实例用于处理该类型的读写支持。
+         */
         interface Creator<T> {
+            /**
+             * 用于提供其默认实例（需要通过反射 [KProperty] 解析 nullable 并提供读写支持）
+             */
             val default: BundleSupportType<T>
+
+            /**
+             * 通过给定 [type] 与 [isMarkedNullable] 信息返回一个新实例用于处理该类型 [T] 的读写支持。
+             */
             fun byType(
                 type: TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<T>
         }
 
-        class TypeInfo(
-            val jClass: Class<*>?,
-            kTypeInitializer: () -> KType,
-            jTypeInitializer: (() -> Type)?,
+        /**
+         * 储存、解析并提供类型信息、nullable信息
+         */
+        sealed class TypeInfo(
+            private val jClass: Class<*>?,
         ) {
-            val kType: KType by lazy(LazyThreadSafetyMode.NONE, kTypeInitializer)
-            val jType: Type? by lazy(LazyThreadSafetyMode.NONE, jTypeInitializer ?: { null })
+            protected abstract val kType: KType
+            protected abstract val jType: Type?
+            internal abstract val isMarkedNullable: Boolean
+
+            class ByKProperty(property: KProperty<*>) : TypeInfo(null) {
+                override val kType: KType by lazy(LazyThreadSafetyMode.NONE, property::returnType)
+                override val jType: Type? = null
+                override val isMarkedNullable: Boolean = kType.isMarkedNullable
+            }
+
+            abstract class ByInline(
+                jClass: Class<*>,
+                private val privateIsMarkedNullable: Boolean?,
+            ) : TypeInfo(jClass) {
+                //<editor-fold desc="kType与jType字段的getter懒加载与是否空标记" defaultstatus="collapsed">
+                @field:Volatile
+                final override var kType: KType
+                    field : KType? = null
+                    private set
+                    get() {
+                        val type = field
+                        return if (type != null) {
+                            type
+                        } else synchronized(this) {
+                            val type = field
+                            if (type != null) {
+                                type
+                            } else {
+                                val type = kType()
+                                field = type
+                                type
+                            }
+                        }
+                    }
+
+                final override val isMarkedNullable: Boolean
+                    get() = privateIsMarkedNullable ?: kType.isMarkedNullable
+
+                protected abstract fun kType(): KType
+                //</editor-fold>
+
+                companion object {
+                    inline operator fun <reified T> invoke(
+                        isMarkedNullable: Boolean?
+                    ) = object : ByInline(T::class.java, isMarkedNullable) {
+                        override fun kType(): KType = typeOf<T>()
+                        override val jType: Type by lazyJTypeOf<T>()
+                    }
+                }
+            }
 
             @Suppress("UNCHECKED_CAST")
-            fun <T> tClass(): Class<T> = if (jClass != null) {
-                jClass as Class<T>
-            } else if (jType == null) {
-                (kType.classifier as KClass<*>).java as Class<T>
-            } else {
-                val type = jType
-                val tClass = (type as? Class<*>) ?: (type as ParameterizedType).ownerType
-                tClass as Class<T>
-            }
+            fun <T> tClass(): Class<T> =
+                (jClass ?: jType?.jvmErasureClassOrNull<Any>() ?: kType.jvmErasure.java) as Class<T>
 
             @Suppress("UNCHECKED_CAST")
             fun <T : Any> argument0TypeClass(): Class<T> = if (jClass?.isArray == true) {
@@ -1460,10 +1522,7 @@ abstract class BundleSupportType<T>(
             } else when (val tType = jType) {
                 is ParameterizedType -> {
                     // List<Xxx>
-                    val arg0Type = tType.actualTypeArguments[0]
-                    val arg0Class = (arg0Type as? Class<*>)
-                        ?: (arg0Type as? WildcardType)?.jvmErasureClassOrNull<Any>()
-                    arg0Class as Class<T>
+                    tType.actualTypeArguments[0].jvmErasureClassOrNull<Any>() as Class<T>
                 }
                 is GenericArrayType -> {
                     // Array<Xxx>

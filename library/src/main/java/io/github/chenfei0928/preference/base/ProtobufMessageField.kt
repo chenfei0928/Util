@@ -10,7 +10,7 @@ import com.google.protobuf.getProtobufV3DefaultInstance
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.PreferenceType.Companion
 import io.github.chenfei0928.preference.base.FieldAccessor.Field
-import io.github.chenfei0928.reflect.jTypeOf
+import io.github.chenfei0928.reflect.lazyJTypeOf
 import java.lang.reflect.Type
 import kotlin.reflect.KFunction
 
@@ -102,8 +102,8 @@ class ProtobufMessageField<T : Message, V>(
         inline operator fun <reified T : Message, reified V> invoke(
             fieldNumber: Int
         ) = ProtobufMessageField<T, V>(
-            T::class.java.getProtobufV3DefaultInstance(), fieldNumber
-        ) { jTypeOf<V>() }
+            T::class.java.getProtobufV3DefaultInstance(), fieldNumber, lazyJTypeOf<V>()
+        )
 
         inline fun <reified T : GeneratedMessage, reified V> FieldAccessor<T>.field(
             fieldNumber: Int

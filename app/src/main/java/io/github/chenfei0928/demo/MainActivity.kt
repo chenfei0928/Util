@@ -41,7 +41,6 @@ import io.github.chenfei0928.demo.storage.TestSpSaver
 import io.github.chenfei0928.lang.toString0
 import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.Debug
-import io.github.chenfei0928.reflect.jTypeOf
 import io.github.chenfei0928.repository.datastore.ProtobufSerializer
 import io.github.chenfei0928.repository.datastore.toDatastore
 import io.github.chenfei0928.repository.local.serializer.KtxsJsonSerializer

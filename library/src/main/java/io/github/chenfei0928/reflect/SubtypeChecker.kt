@@ -11,6 +11,9 @@ import java.lang.reflect.WildcardType
 import java.util.LinkedList
 import java.util.Queue
 
+fun Class<*>.isSubclassOf(base: Class<*>): Boolean =
+    base.isAssignableFrom(this)
+
 fun Type.isSubtypeOf(base: Type): Boolean =
     SubtypeChecker().isSubtypeOf(this, base)
 
