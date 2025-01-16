@@ -18,6 +18,17 @@ object Deps {
         // https://github.com/Kotlin/kotlinx.serialization
         val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0"
         val protobuf = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.8.0"
+
+        val ktor_version = "3.0.3"
+
+        // Ktor
+        // https://ktor.io/docs/client-create-multiplatform-application.html#ktor-dependencies
+        val ktorClientCore = "io.ktor:ktor-client-core:$ktor_version"
+        val ktorClientOkhttp = "io.ktor:ktor-client-okhttp:$ktor_version"
+        val ktorClientDarwin = "io.ktor:ktor-client-darwin:$ktor_version"
+
+        // 服务端
+        val ktorClientCio = "io.ktor:ktor-client-cio:$ktor_version"
     }
     //</editor-fold>
 
@@ -94,7 +105,7 @@ object Deps {
 
         // https://github.com/socketio/socket.io-client-java
         // 使用时要 exclude group: 'org.json', module: 'json'
-        val ioSocket = "io.socket:socket.io-client:2.0.1"
+        val ioSocket = "io.socket:socket.io-client:2.1.1"
 
         // https://github.com/square/picasso
         val picasso = "com.squareup.picasso:picasso:2.8"
@@ -167,7 +178,7 @@ object Deps {
             const val grpcVersion = "1.69.0"
 
             // https://github.com/grpc/grpc-kotlin
-            const val grpcKotlinVersion = "1.4.2"
+            const val grpcKotlinVersion = "1.4.1"
 
             // https://github.com/protocolbuffers/protobuf
             // https://github.com/protocolbuffers/protobuf/blob/main/java/lite.md

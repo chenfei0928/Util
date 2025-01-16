@@ -37,6 +37,7 @@ private const val proguardRules = """
  * 添加Protobuf依赖
  *
  * [JavaLite](https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md)
+ * [GrpcKotlin 接入指南](https://github.com/grpc/grpc-kotlin/blob/master/compiler/README.md)
  *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-10-28 15:12
