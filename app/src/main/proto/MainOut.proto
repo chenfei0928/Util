@@ -1,8 +1,7 @@
 syntax = "proto3";
 
-package chenfei0928;
-option java_multiple_files = true;
-option java_package = "io.github.chenfei0928.demo.bean";
+package chenfei0928.out;
+option java_outer_classname = "MainJavaOuter";
 
 service Service {
   rpc TestRpc(Test) returns (Test2) {}

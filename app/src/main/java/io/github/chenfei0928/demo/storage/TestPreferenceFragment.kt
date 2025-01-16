@@ -10,7 +10,6 @@ import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 import io.github.chenfei0928.preference.FieldAccessorPreferenceGroupBuilder.Companion.buildPreferenceScreen
 import io.github.chenfei0928.preference.base.ProtobufMessageField
-import io.github.chenfei0928.preference.base.ProtobufMessageField.Companion.invoke
 import io.github.chenfei0928.preference.base.ProtobufMessageField.Companion.property
 import io.github.chenfei0928.preference.base.ProtobufMessageField.Companion.protobufField
 import io.github.chenfei0928.preference.base.ProtobufMessageField.Companion.protobufProperty

@@ -25,6 +25,7 @@ data class JsonBean(
     val float: Float = 0f,
     var boolean: Boolean = false,
     val string: String = "",
+    val strings: Set<String> = emptySet(),
     val inner: InnerJsonBean = InnerJsonBean(),
     val enum: JsonEnum = JsonEnum.DEFAULT,
     val enums: Set<JsonEnum> = emptySet(),

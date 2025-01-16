@@ -18,7 +18,7 @@ fun Type.isSubtypeOf(
     base: Type,
     sameBoxedAndPrimitiveType: Boolean = true,
     indexOfTypeVariable: Int = 0,
-): Boolean = SubtypeChecker(
+): Boolean = this == base || SubtypeChecker(
     sameBoxedAndPrimitiveType, indexOfTypeVariable
 ).isSubtypeOf(this, base)
 

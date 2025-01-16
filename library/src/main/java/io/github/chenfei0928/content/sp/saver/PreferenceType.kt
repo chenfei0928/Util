@@ -7,7 +7,8 @@ import androidx.collection.ArraySet
 import androidx.preference.PreferenceDataStore
 import com.google.common.reflect.GoogleTypes
 import com.google.protobuf.Descriptors
-import io.github.chenfei0928.content.sp.saver.PreferenceType.EnumNameString
+import com.google.protobuf.enumClass
+import io.github.chenfei0928.content.sp.saver.PreferenceType.Native
 import io.github.chenfei0928.content.sp.saver.convert.SpConvertSaver
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
@@ -20,7 +21,6 @@ import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
-import java.util.ArrayList
 import java.util.LinkedList
 import java.util.Queue
 import java.util.SortedSet
@@ -63,14 +63,15 @@ sealed interface PreferenceType {
             inline fun <reified T> forType(): Native =
                 forType(T::class.java, lazyJTypeOf<T>())
 
-            fun forType(tClass: Class<*>, tTypeProvider: () -> Type): Native {
+            fun forTypeOrNull(tClass: Class<*>, tTypeProvider: () -> Type): Native? {
                 return entries.find { it.type == tClass || it.primitiveType == tClass }
-                    ?: tTypeProvider().let { tType ->
-                        require(tType.isSubtypeOf(STRING_SET.type)) {
-                            "Not support type: $tType"
-                        }
-                        STRING_SET
-                    }
+                    ?: if (tTypeProvider().isSubtypeOf(STRING_SET.type))
+                        STRING_SET else null
+            }
+
+            fun forType(tClass: Class<*>, tTypeProvider: () -> Type): Native {
+                return forTypeOrNull(tClass, tTypeProvider)
+                    ?: throw IllegalArgumentException("Not support type: ${tTypeProvider()}")
             }
         }
     }
@@ -120,6 +121,17 @@ sealed interface PreferenceType {
                 crossinline createCollection: (size: Int) -> C
             ) = object : BaseEnumNameStringCollection<E, C>(E::class.java, enumValues<E>()) {
                 override fun createCollection(size: Int): C = createCollection(size)
+            }
+
+            fun <E : Enum<E>> forEnumDescriptor(
+                enumDescriptor: Descriptors.EnumDescriptor
+            ): BaseEnumNameStringCollection<E, MutableList<E>> {
+                val eClass = enumDescriptor.enumClass<E>()
+                return object : BaseEnumNameStringCollection<E, MutableList<E>>(
+                    eClass, eClass.enumConstants
+                ) {
+                    override fun createCollection(size: Int): MutableList<E> = ArrayList(size)
+                }
             }
         }
     }
@@ -216,7 +228,7 @@ sealed interface PreferenceType {
                     }
                 } else {
                     @Suppress("UseRequire")
-                    throw IllegalArgumentException("Not support type: $type");
+                    throw IllegalArgumentException("Not support type: $type")
                 }
             }
         }
@@ -226,7 +238,7 @@ sealed interface PreferenceType {
      * 其它平台未原生支持的复杂类型，在当前类的各个 forType 中均不会返回该类型，
      * 仅用作 [SpConvertSaver] 的子类中使用
      */
-    object NoSupportPreferenceDataStore : PreferenceType
+    data object NoSupportPreferenceDataStore : PreferenceType
 
     companion object {
         private const val TAG = "PreferenceType"
@@ -235,9 +247,7 @@ sealed interface PreferenceType {
             return if (tClass.isSubclassOf(Enum::class.java)) {
                 @Suppress("UNCHECKED_CAST")
                 EnumNameString(tClass as Class<out Enum<*>>)
-            } else if (!tClass.isSubclassOf(Collection::class.java)) {
-                Native.forType(tClass, tTypeProvider)
-            } else {
+            } else Native.forTypeOrNull(tClass, tTypeProvider) ?: run {
                 val type = tTypeProvider()
                 require(type is ParameterizedType) { "Not support type: $type" }
                 EnumNameStringCollection.forType(type)
@@ -257,13 +267,13 @@ sealed interface PreferenceType {
          * 为 Protobuf full 的字段 fieldNumber 来获取类型信息
          */
         fun forType(
-            field: Descriptors.FieldDescriptor, tTypeProvider: () -> Type
+            field: Descriptors.FieldDescriptor
         ): PreferenceType = if (field.isRepeated) {
-            val tType = tTypeProvider()
-            require(field.type == Descriptors.FieldDescriptor.Type.ENUM && tType is ParameterizedType) {
-                "Not support type: $tType $field"
+            // protobuf 不支持 Set<String> 类型，只有 List<String> 类型，不处理 Native.StringSet
+            require(field.type == Descriptors.FieldDescriptor.Type.ENUM) {
+                "Not support type: $field"
             }
-            EnumNameStringCollection.forType(tType)
+            BaseEnumNameStringCollection.forEnumDescriptor(field.enumType)
         } else when (field.javaType) {
             Descriptors.FieldDescriptor.JavaType.INT -> Native.INT
             Descriptors.FieldDescriptor.JavaType.LONG -> Native.LONG
@@ -275,8 +285,7 @@ sealed interface PreferenceType {
             Descriptors.FieldDescriptor.JavaType.BYTE_STRING ->
                 throw IllegalArgumentException("Not support type: $field")
             Descriptors.FieldDescriptor.JavaType.ENUM ->
-                @Suppress("UNCHECKED_CAST")
-                EnumNameString(eClass = tTypeProvider() as Class<out Enum<*>>)
+                EnumNameString(field.enumType.enumClass())
             Descriptors.FieldDescriptor.JavaType.MESSAGE ->
                 throw IllegalArgumentException("Not support type: $field")
         }

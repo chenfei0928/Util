@@ -1,4 +1,4 @@
-package com.chenfei.util
+package io.github.chenfei0928.util
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry

@@ -1,17 +1,13 @@
 package io.github.chenfei0928.preference.base
 
 import com.google.protobuf.Descriptors
-import com.google.protobuf.Descriptors.FieldDescriptor.JavaType
 import com.google.protobuf.GeneratedMessage
 import com.google.protobuf.Message
 import com.google.protobuf.MessageLite
 import com.google.protobuf.ProtocolMessageEnum
 import com.google.protobuf.getProtobufV3DefaultInstance
 import io.github.chenfei0928.content.sp.saver.PreferenceType
-import io.github.chenfei0928.content.sp.saver.PreferenceType.Companion
 import io.github.chenfei0928.preference.base.FieldAccessor.Field
-import io.github.chenfei0928.reflect.lazyJTypeOf
-import java.lang.reflect.Type
 import kotlin.reflect.KFunction
 
 /**
@@ -26,22 +22,19 @@ import kotlin.reflect.KFunction
  * @param V 字段类型
  * @property fieldDescriptor 字段描述信息
  *
- * @param vTypeProvider [V] 类型的获取lambda
- *
  * @author chenf()
  * @date 2024-12-19 17:21
  */
 class ProtobufMessageField<T : Message, V>(
     private val fieldDescriptor: Descriptors.FieldDescriptor,
-    vTypeProvider: () -> Type,
 ) : Field<T, V> {
     constructor(
-        defaultInstance: T, fieldNumber: Int, vTypeProvider: () -> Type,
-    ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1], vTypeProvider)
+        defaultInstance: T, fieldNumber: Int,
+    ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1])
 
     override val pdsKey: String = fieldDescriptor.name
     override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE) {
-        PreferenceType.forType(fieldDescriptor, vTypeProvider)
+        PreferenceType.forType(fieldDescriptor)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -99,17 +92,17 @@ class ProtobufMessageField<T : Message, V>(
     override fun toString(): String = "ProtobufMessageField($pdsKey:${fieldDescriptor.type})"
 
     companion object {
-        inline operator fun <reified T : Message, reified V> invoke(
+        inline operator fun <reified T : Message, V> invoke(
             fieldNumber: Int
         ) = ProtobufMessageField<T, V>(
-            T::class.java.getProtobufV3DefaultInstance(), fieldNumber, lazyJTypeOf<V>()
+            T::class.java.getProtobufV3DefaultInstance(), fieldNumber
         )
 
-        inline fun <reified T : GeneratedMessage, reified V> FieldAccessor<T>.field(
+        inline fun <reified T : GeneratedMessage, V> FieldAccessor<T>.field(
             fieldNumber: Int
         ): Field<T, V> = invoke<T, V>(fieldNumber)
 
-        inline fun <reified T : GeneratedMessage, reified V> FieldAccessor<T>.property(
+        inline fun <reified T : GeneratedMessage, V> FieldAccessor<T>.property(
             fieldNumber: Int
         ): Field<T, V> = field<T, V>(fieldNumber).let(::property)
 

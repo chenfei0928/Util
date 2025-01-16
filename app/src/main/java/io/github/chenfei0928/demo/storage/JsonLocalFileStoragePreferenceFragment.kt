@@ -29,6 +29,7 @@ abstract class JsonLocalFileStoragePreferenceFragment(
         // 缓存data class copy方法
         dataStore.cacheCopyFunc(JsonBean::class, JsonBean::copy)
         dataStore.cacheCopyFunc<JsonBean.InnerJsonBean>(JsonBean.InnerJsonBean::copy)
+        dataStore.property(JsonBean::strings)
         preferenceScreen = buildPreferenceScreen(dataStore) {
             // 字段引用
             checkBoxPreference(dataStore.property(JsonBean::boolean)) {
