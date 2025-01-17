@@ -24,6 +24,7 @@
 
     <declare-styleable name="IconFontView">
         <attr name="fontAsset" format="string" />
+        <attr name="android:font" />
         <attr name="android:textColor" />
         <attr name="android:text" />
     </declare-styleable>

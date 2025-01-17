@@ -3,13 +3,13 @@ package io.github.chenfei0928.widget
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
 import androidx.collection.ArrayMap
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.content.res.use
 import io.github.chenfei0928.util.MapCache
 import io.github.chenfei0928.util.R
@@ -21,10 +21,12 @@ import kotlin.math.min
  * Created by wangjinpeng on 16/2/1.
  * IconFontView 为了IconFont设置的View，必须设定宽高为固定值，
  * xml使用时必须引用 xmlns:app="http://schemas.android.com/apk/res-auto"
- * 必须引用
- * app:fontAsset  -- 字体引用的ttf文件路径，目前只能放在assets资源目录下
- * android:textColor  -- 字体颜色，不传则为黑色
- * android:text -- 字体内容
+ *
+ * 必须引用:
+ * - `app:fontAsset` 字体引用的ttf文件路径，目前只能放在assets资源目录下
+ * - `android:font` 字体引用的ttf文件路径，API 26或以上可用
+ * - `android:textColor` 字体颜色，不传则为黑色
+ * - `android:text` 字体内容
  */
 class IconFontView
 @JvmOverloads constructor(
@@ -34,14 +36,20 @@ class IconFontView
     defStyleRes: Int = 0
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
     private val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
-    private var iconFontText = ""
+    var iconFontText = ""
+        set(value) {
+            field = value
+            invalidate()
+        }
+    var colorListState: ColorStateList? = null
+        set(value) {
+            field = value
+            drawableStateChanged()
+        }
 
     init {
         textPaint.density = resources.displayMetrics.density
         textPaint.textAlign = Paint.Align.CENTER
-
-        var textColor: ColorStateList? = null
-        var fontAsset: String? = null
 
         context.obtainStyledAttributes(
             attrs, R.styleable.IconFontView, defStyleAttr, defStyleRes
@@ -51,20 +59,31 @@ class IconFontView
                     R.styleable.IconFontView_android_text -> {
                         iconFontText = a.getText(attr).toString()
                     }
+                    R.styleable.IconFontView_android_font -> {
+                        textPaint.typeface =
+                            ResourcesCompat.getCachedFont(context, a.getResourceId(attr, 0))
+                    }
                     R.styleable.IconFontView_android_textColor -> {
-                        textColor = a.getColorStateList(attr)
+                        colorListState = a.getColorStateList(attr)
                     }
                     R.styleable.IconFontView_fontAsset -> {
-                        fontAsset = a.getString(attr)
+                        textPaint.typeface =
+                            typefaceCache[getContext().applicationContext][a.getString(attr)!!]
                     }
                 }
             }
         }
+    }
 
-        textPaint.typeface = fontAsset?.let {
-            typefaceCache[getContext().applicationContext][it]
+    override fun drawableStateChanged() {
+        super.drawableStateChanged()
+        val colorListState = colorListState
+        if (colorListState?.isStateful == true) {
+            textPaint.color = colorListState.getColorForState(
+                drawableState, colorListState.defaultColor
+            )
+            invalidate()
         }
-        textPaint.color = textColor?.defaultColor ?: Color.BLACK
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -95,7 +114,12 @@ class IconFontView
         private val typefaceCache =
             MapCache.Basic<Context, MapCache<String, Typeface>> { context ->
                 // 其key内存占用可以忽略，主要是value需要weakRef
-                MapCache.Weak(ArrayMap()) { key -> Typeface.createFromAsset(context.assets, key) }
+                MapCache.WeakValue(ArrayMap()) { key ->
+                    Typeface.createFromAsset(
+                        context.assets,
+                        key
+                    )
+                }
             }
     }
 }
