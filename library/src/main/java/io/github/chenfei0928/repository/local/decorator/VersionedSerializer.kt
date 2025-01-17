@@ -15,12 +15,12 @@ import java.io.OutputStream
  */
 class VersionedSerializer<T : Any>
 private constructor(
-    serializer: LocalSerializer<T>,
+    private val serializer: LocalSerializer<T>,
     versionCodeLong: Long
-) : LocalSerializer.BaseIODecorator<T>(serializer) {
+) : LocalSerializer<T> by serializer {
     private val versionCode: ByteArray = versionCodeLong.toByteArray()
 
-    override fun wrapInputStream(inputStream: InputStream): InputStream {
+    override fun read(inputStream: InputStream): T {
         // long 类型8字节
         val savedVersionCode = ByteArray(Long.SIZE_BYTES)
         // 读取本地保存的内容的数据结构版本号
@@ -30,14 +30,14 @@ private constructor(
             "当前版本是${versionCode.toLong()}, 本地文件的版本是${savedVersionCode.toLong()}，版本不匹配！数据结构可能已经被修改"
         }
         // 版本号校验一致，读取内容
-        return inputStream
+        return serializer.read(inputStream)
     }
 
-    override fun wrapOutputStream(outputStream: OutputStream): OutputStream {
+    override fun write(outputStream: OutputStream, obj: T) {
         // 写入应用版本号
         outputStream.write(versionCode)
         // 将数据结构版本号写入io流
-        return outputStream
+        return serializer.write(outputStream, obj)
     }
 
     companion object {

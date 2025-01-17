@@ -22,18 +22,14 @@ class LocalSerializerSpConvertSaver<T : Any>(
     private val serializer: Base64Serializer<T> = serializer.base64() as Base64Serializer<T>
 
     override fun onRead(value: String): T {
-        return ByteArrayInputStream(value.toByteArray()).let {
-            serializer.onOpenInputStream(it)
-        }.use {
+        return ByteArrayInputStream(value.toByteArray()).use {
             serializer.read(it)
         }
     }
 
     override fun onSave(value: T): String {
         return ByteArrayOutputStream().use { byteArrayOutputStream ->
-            serializer.onOpenOutStream(byteArrayOutputStream).use {
-                serializer.write(byteArrayOutputStream, value)
-            }
+            serializer.write(byteArrayOutputStream, value)
             String(byteArrayOutputStream.toByteArray())
         }
     }

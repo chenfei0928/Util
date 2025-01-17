@@ -33,6 +33,10 @@ class KtxsBinarySerializer<T : Any>(
         return format.decodeFromByteArray(deserializer, inputStream.readBytes())
     }
 
+    override fun copy(obj: T): T {
+        return format.decodeFromByteArray(deserializer, format.encodeToByteArray(serializer, obj))
+    }
+
     companion object {
         inline operator fun <reified T : Any> invoke(
             defaultValue: T,

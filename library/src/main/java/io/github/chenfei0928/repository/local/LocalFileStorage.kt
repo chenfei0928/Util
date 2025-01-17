@@ -5,18 +5,18 @@ import android.util.Log
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.concurrent.updateAndGetCompat
 import io.github.chenfei0928.io.ShareFileLockHelper
+import io.github.chenfei0928.io.UncloseableOutputStream
 import java.io.File
 import java.io.FileDescriptor
 import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicReference
 
 abstract class LocalFileStorage<T : Any>(
-    serializer: LocalSerializer<T>,
+    private val serializer: LocalSerializer<T>,
     private val fileName: String,
     private val cacheDir: Boolean = false,
     private val memoryCacheable: Boolean = true
 ) {
-    private val serializer = NoopIODecorator.wrap(serializer)
 
     private fun getFile(context: Context, fileName: String): File {
         val dir = if (cacheDir) {
@@ -51,7 +51,6 @@ abstract class LocalFileStorage<T : Any>(
             serializer.defaultValue
         } else try {
             file.inputStream()
-                .let { serializer.onOpenInputStream(it) }
                 .use { serializer.read(it) }
         } catch (e: Exception) {
             Log.e(TAG, "loadFromLocalFile: $file, $serializer", e)
@@ -77,8 +76,8 @@ abstract class LocalFileStorage<T : Any>(
             }
             try {
                 tmpFile.createNewFile()
-                serializer.onOpenOutStream(FileSyncOutputStream(tmpFile)).use {
-                    serializer.write(it, value)
+                FileSyncOutputStream(tmpFile).use {
+                    serializer.write(UncloseableOutputStream(it), value)
                     it.flush()
                 }
                 // 保存成功后，重命名备份文件
@@ -125,7 +124,7 @@ abstract class LocalFileStorage<T : Any>(
      * 当子类返回的数据后会对实例进行修改，可能会污染缓存时，
      * 使用实例自身的clone或copy方法，或使用该方法获得一个新的实例后在返回
      */
-    protected fun <Tn : T> Tn.serializerCopy(): T {
+    protected fun T.serializerCopy(): T {
         return serializer.copy(this)
     }
 

@@ -12,10 +12,18 @@ import java.io.OutputStream
  * @date 2019-09-10 09:35
  */
 abstract class BaseExpirationDateSerializer<T : Any>(
-    serializer: LocalSerializer<T>
-) : LocalSerializer.BaseIODecorator<T>(serializer) {
+    private val serializer: LocalSerializer<T>
+) : LocalSerializer<T> by serializer {
 
-    final override fun wrapInputStream(inputStream: InputStream): InputStream {
+    override fun write(outputStream: OutputStream, obj: T) {
+        // 记录保存时间
+        val currentTimeMillis = System.currentTimeMillis()
+        outputStream.write((currentTimeMillis shr Int.SIZE_BITS).toInt())
+        outputStream.write(currentTimeMillis.toInt())
+        return serializer.write(outputStream, obj)
+    }
+
+    override fun read(inputStream: InputStream): T {
         // long 类型8字节
         val savedVersionCode = ByteArray(Long.SIZE_BYTES)
         // 读取本地保存的内容的数据结构版本号
@@ -26,15 +34,7 @@ abstract class BaseExpirationDateSerializer<T : Any>(
             "本地文件的标记时间是${savedVersionCode.toLong()}，数据已过期"
         }
         // 版本号校验一致，读取内容
-        return inputStream
-    }
-
-    final override fun wrapOutputStream(outputStream: OutputStream): OutputStream {
-        // 记录保存时间
-        val currentTimeMillis = System.currentTimeMillis()
-        outputStream.write((currentTimeMillis shr Int.SIZE_BITS).toInt())
-        outputStream.write(currentTimeMillis.toInt())
-        return outputStream
+        return serializer.read(inputStream)
     }
 
     protected abstract fun check(localSavedTimeMillis: Long): Boolean

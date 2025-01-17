@@ -33,6 +33,10 @@ class KtxsStringSerializer<T : Any>(
         return format.decodeFromString(deserializer, String(inputStream.readBytes()))
     }
 
+    override fun copy(obj: T): T {
+        return format.decodeFromString(deserializer, format.encodeToString(serializer, obj))
+    }
+
     companion object {
         inline operator fun <reified T : Any> invoke(
             defaultValue: T, json: Json = Json,

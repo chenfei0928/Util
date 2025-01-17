@@ -15,29 +15,21 @@ import java.io.Serializable
 @Discouraged("don't use Serializable interface")
 class SerializableSerializer<T : Serializable>(
     override val defaultValue: T
-) : LocalSerializer.IODecorator<T> {
+) : LocalSerializer<T> {
 
     @Throws(IOException::class)
     override fun write(outputStream: OutputStream, obj: T) {
-        (outputStream as ObjectOutputStream).run {
-            writeObject(obj)
-            flush()
+        ObjectOutputStream(outputStream).use {
+            it.writeObject(obj)
+            it.flush()
         }
     }
 
     @Throws(IOException::class)
     override fun read(inputStream: InputStream): T {
-        return (inputStream as ObjectInputStream).run {
+        return ObjectInputStream(inputStream).use {
             @Suppress("UNCHECKED_CAST")
-            readObject() as T
+            it.readObject() as T
         }
-    }
-
-    override fun onOpenInputStream(inputStream: InputStream): InputStream {
-        return ObjectInputStream(inputStream)
-    }
-
-    override fun onOpenOutStream(outputStream: OutputStream): OutputStream {
-        return ObjectOutputStream(outputStream)
     }
 }

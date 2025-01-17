@@ -41,9 +41,9 @@ import io.github.chenfei0928.demo.storage.TestSpSaver
 import io.github.chenfei0928.lang.toString0
 import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.Debug
-import io.github.chenfei0928.repository.datastore.ProtobufSerializer
 import io.github.chenfei0928.repository.datastore.toDatastore
 import io.github.chenfei0928.repository.local.serializer.KtxsJsonSerializer
+import io.github.chenfei0928.repository.local.serializer.ProtobufSerializer
 import io.github.chenfei0928.view.listener.setNoDoubleOnClickListener
 import io.github.chenfei0928.viewbinding.setContentViewBinding
 import kotlinx.coroutines.flow.first
@@ -209,7 +209,7 @@ class MainActivity : ComponentActivity() {
         private const val TAG = "MainActivity"
 
         val Context.testDataStore: DataStore<Test> by dataStore<Test>(
-            "test.pb", ProtobufSerializer<Test>()
+            "test.pb", ProtobufSerializer<Test>().toDatastore()
         )
         val Context.jsonDataStore: DataStore<JsonBean> by dataStore<JsonBean>(
             "jsonBean.json", KtxsJsonSerializer<JsonBean>(JsonBean()).toDatastore()

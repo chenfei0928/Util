@@ -20,15 +20,20 @@ import java.util.zip.GZIPOutputStream
  */
 class GZipSerializer<T : Any>
 private constructor(
-    serializer: LocalSerializer<T>
-) : LocalSerializer.BaseIODecorator<T>(serializer) {
+    private val serializer: LocalSerializer<T>
+) : LocalSerializer<T> by serializer {
 
-    override fun wrapInputStream(inputStream: InputStream): InputStream {
-        return GZIPInputStream(inputStream)
+    override fun read(inputStream: InputStream): T {
+        return GZIPInputStream(inputStream).use {
+            serializer.read(it)
+        }
     }
 
-    override fun wrapOutputStream(outputStream: OutputStream): OutputStream {
-        return GZIPOutputStream(outputStream)
+    override fun write(outputStream: OutputStream, obj: T) {
+        GZIPOutputStream(outputStream).use {
+            serializer.write(it, obj)
+            it.flush()
+        }
     }
 
     companion object {

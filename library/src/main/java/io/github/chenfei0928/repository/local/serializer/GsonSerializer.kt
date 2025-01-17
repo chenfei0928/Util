@@ -46,8 +46,7 @@ class GsonSerializer<T : Any>(
     }
 
     override fun copy(obj: T): T {
-        val json = typeAdapter.toJson(obj)
-        return typeAdapter.fromJson(json)
+        return typeAdapter.fromJson(typeAdapter.toJson(obj))
     }
 
     companion object {

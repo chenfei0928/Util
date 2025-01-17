@@ -21,14 +21,20 @@ import java.io.OutputStream
  */
 class Base64Serializer<T : Any>
 private constructor(
-    serializer: LocalSerializer<T>
-) : LocalSerializer.BaseIODecorator<T>(serializer) {
-    override fun wrapInputStream(inputStream: InputStream): InputStream {
-        return Base64InputStream(inputStream, Base64.DEFAULT)
+    private val serializer: LocalSerializer<T>,
+    private val base64Flag: Int = Base64.DEFAULT
+) : LocalSerializer<T> by serializer {
+
+    override fun read(inputStream: InputStream): T {
+        return Base64InputStream(inputStream, base64Flag).use {
+            serializer.read(it)
+        }
     }
 
-    override fun wrapOutputStream(outputStream: OutputStream): OutputStream {
-        return Base64OutputStream(outputStream, Base64.DEFAULT)
+    override fun write(outputStream: OutputStream, obj: T) {
+        Base64OutputStream(outputStream, base64Flag).use {
+            serializer.write(it, obj)
+        }
     }
 
     companion object {

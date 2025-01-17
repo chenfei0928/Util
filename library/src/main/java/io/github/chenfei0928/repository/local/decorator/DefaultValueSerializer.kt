@@ -1,8 +1,6 @@
 package io.github.chenfei0928.repository.local.decorator
 
 import io.github.chenfei0928.repository.local.LocalSerializer
-import java.io.InputStream
-import java.io.OutputStream
 
 /**
  * 修改默认值的序列化
@@ -14,23 +12,7 @@ class DefaultValueSerializer<T : Any>
 private constructor(
     private val serializer: LocalSerializer<T>,
     override val defaultValue: T
-) : LocalSerializer<T> by serializer, LocalSerializer.IODecorator<T> {
-
-    override fun onOpenInputStream(inputStream: InputStream): InputStream {
-        return if (serializer is LocalSerializer.IODecorator) {
-            serializer.onOpenInputStream(inputStream)
-        } else {
-            inputStream
-        }
-    }
-
-    override fun onOpenOutStream(outputStream: OutputStream): OutputStream {
-        return if (serializer is LocalSerializer.IODecorator) {
-            serializer.onOpenOutStream(outputStream)
-        } else {
-            outputStream
-        }
-    }
+) : LocalSerializer<T> by serializer {
 
     companion object {
         /**

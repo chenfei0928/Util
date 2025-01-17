@@ -6,12 +6,13 @@ import android.util.Log
 import androidx.core.util.tryWrite
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.concurrent.updateAndGetCompat
+import io.github.chenfei0928.io.UncloseableOutputStream
 import java.io.File
 import java.util.concurrent.atomic.AtomicReference
 
 abstract class LocalFileStorage0<T : Any>(
     file: File,
-    serializer: LocalSerializer<T>,
+    private val serializer: LocalSerializer<T>,
     private val memoryCacheable: Boolean = true
 ) {
     constructor(
@@ -30,7 +31,6 @@ abstract class LocalFileStorage0<T : Any>(
         memoryCacheable = memoryCacheable
     )
 
-    private val serializer = NoopIODecorator.wrap(serializer)
     private val atomicFile: AtomicFile = AtomicFile(file)
 
     //<editor-fold defaultstate="collapsed" desc="通过文件锁读写文件的实现">
@@ -45,7 +45,6 @@ abstract class LocalFileStorage0<T : Any>(
             serializer.defaultValue
         } else try {
             atomicFile.openRead()
-                .let { serializer.onOpenInputStream(it) }
                 .use { serializer.read(it) }
         } catch (e: Exception) {
             Log.e(TAG, "loadFromLocalFile: ${atomicFile.baseFile}, $serializer", e)
@@ -66,8 +65,8 @@ abstract class LocalFileStorage0<T : Any>(
         }
         try {
             atomicFile.tryWrite { write ->
-                serializer.onOpenOutStream(write).use {
-                    serializer.write(it, value)
+                write.use {
+                    serializer.write(UncloseableOutputStream(it), value)
                     it.flush()
                 }
             }
@@ -112,7 +111,7 @@ abstract class LocalFileStorage0<T : Any>(
      * 当子类返回的数据后会对实例进行修改，可能会污染缓存时，
      * 使用实例自身的clone或copy方法，或使用该方法获得一个新的实例后在返回
      */
-    protected fun <Tn : T> Tn.serializerCopy(): T {
+    protected fun T.serializerCopy(): T {
         return serializer.copy(this)
     }
 
