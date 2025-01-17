@@ -27,15 +27,14 @@ import kotlin.reflect.KFunction
  */
 class ProtobufMessageField<T : Message, V>(
     private val fieldDescriptor: Descriptors.FieldDescriptor,
-) : Field<T, V> {
+) : Field<T, V>, () -> PreferenceType {
     constructor(
         defaultInstance: T, fieldNumber: Int,
     ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1])
 
     override val pdsKey: String = fieldDescriptor.name
-    override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE) {
-        PreferenceType.forType(fieldDescriptor)
-    }
+    override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE, this)
+    override fun invoke(): PreferenceType = PreferenceType.forType(fieldDescriptor)
 
     @Suppress("UNCHECKED_CAST")
     override fun get(

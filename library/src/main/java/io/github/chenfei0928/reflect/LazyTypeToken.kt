@@ -17,19 +17,12 @@ abstract class LazyTypeToken<T> : () -> Type, Lazy<Type> {
     @Volatile
     private var type: Type? = null
 
-    final override fun invoke(): Type {
-        val type = type
-        return if (type != null) {
+    final override fun invoke(): Type = this.type ?: synchronized(this) {
+        this.type ?: run {
+            val type = (javaClass.genericSuperclass as ParameterizedType)
+                .actualTypeArguments[0]
+            this.type = type
             type
-        } else synchronized(this) {
-            val type = this.type
-            if (type != null) {
-                type
-            } else {
-                val type = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0]
-                this.type = type
-                type
-            }
         }
     }
 

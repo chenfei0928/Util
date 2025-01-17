@@ -18,7 +18,6 @@ import com.google.protobuf.protobufParserForType
 import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.lang.toByteArray
-import io.github.chenfei0928.os.BundleSupportType.ProtoBufType
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.jvmErasureClassOrNull
 import io.github.chenfei0928.reflect.lazyJTypeOf
@@ -27,7 +26,6 @@ import kotlinx.parcelize.Parceler
 import java.io.ByteArrayInputStream
 import java.io.DataInputStream
 import java.io.Serializable
-import java.lang.Class
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
@@ -1478,19 +1476,11 @@ abstract class BundleSupportType<T>(
                 final override var kType: KType
                     field : KType? = null
                     private set
-                    get() {
-                        val type = field
-                        return if (type != null) {
+                    get() = field ?: synchronized(this) {
+                        field ?: run {
+                            val type = kType()
+                            field = type
                             type
-                        } else synchronized(this) {
-                            val type = field
-                            if (type != null) {
-                                type
-                            } else {
-                                val type = kType()
-                                field = type
-                                type
-                            }
                         }
                     }
 
@@ -1511,11 +1501,11 @@ abstract class BundleSupportType<T>(
             }
 
             @Suppress("UNCHECKED_CAST")
-            fun <T> tClass(): Class<T> =
+            internal fun <T> tClass(): Class<T> =
                 (jClass ?: jType?.jvmErasureClassOrNull<Any>() ?: kType.jvmErasure.java) as Class<T>
 
             @Suppress("UNCHECKED_CAST")
-            fun <T : Any> argument0TypeClass(): Class<T> = if (jClass?.isArray == true) {
+            internal fun <T : Any> argument0TypeClass(): Class<T> = if (jClass?.isArray == true) {
                 jClass.componentType as Class<T>
             } else if (jType == null) {
                 kType.argument0TypeJClass<T>()

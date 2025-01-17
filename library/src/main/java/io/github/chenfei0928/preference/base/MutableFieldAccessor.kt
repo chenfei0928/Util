@@ -141,18 +141,14 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
          */
         private class KMutablePropertyField<T, V>(
             private val property: KMutableProperty1<T, V>,
-            vType: PreferenceType? = null,
-        ) : FieldAccessor.Field<T, V> {
+            private val vTypeOrNull: PreferenceType? = null,
+        ) : FieldAccessor.Field<T, V>, () -> PreferenceType {
             override val pdsKey: String = property.name
-            override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE) {
-                vType ?: PreferenceType.forType(property.returnType)
-            }
-
+            override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE, this)
             override fun get(data: T): V = property.get(data)
-            override fun set(data: T, value: V): T {
-                property.set(data, value)
-                return data
-            }
+            override fun set(data: T, value: V): T = data.apply { property.set(data, value) }
+            override fun invoke(): PreferenceType =
+                vTypeOrNull ?: PreferenceType.forType(property.returnType)
 
             override fun toString(): String = "KMutablePropertyField($pdsKey:$vType)"
         }

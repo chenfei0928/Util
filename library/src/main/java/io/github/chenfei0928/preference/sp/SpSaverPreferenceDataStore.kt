@@ -74,7 +74,7 @@ constructor(
                 append(property)
                 append(" not found in ")
                 properties.keys.joinTo(this)
-            }.toString())
+            })
             val delegate0 = when (property) {
                 is KProperty0<*> -> {
                     property.isAccessible = true

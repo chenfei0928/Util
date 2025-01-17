@@ -241,7 +241,6 @@ private class SubtypeChecker(
             }
             parentParameterChain.offer(typeRecord)
             val typeIndex = typeChecker.getType(index)
-            typeRecord
             if (!isSubtypeOf(typeIndex, type)) {
                 parentParameterChain.remove(typeRecord)
                 return false

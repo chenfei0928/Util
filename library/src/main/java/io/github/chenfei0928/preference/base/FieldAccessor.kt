@@ -115,15 +115,9 @@ interface FieldAccessor<T> {
         ) : Field<T, V> {
             override val pdsKey: String = outerField.pdsKey + "_" + innerField.pdsKey
             override val vType: PreferenceType = innerField.vType
-
-            override fun get(data: T): V {
-                return innerField.get(outerField.get(data))
-            }
-
-            override fun set(data: T, value: V): T {
-                val t1 = outerField.get(data)
-                return outerField.set(data, innerField.set(t1, value))
-            }
+            override fun get(data: T): V = innerField.get(outerField.get(data))
+            override fun set(data: T, value: V): T =
+                outerField.set(data, innerField.set(outerField.get(data), value))
 
             override fun toString(): String = "FieldWrapper($pdsKey:$vType)"
         }

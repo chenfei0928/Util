@@ -229,18 +229,10 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
                 copyFunc.parameters.find { it.name == pdsKey }!!
             }
 
-            override fun get(data: T): V {
-                return property.get(data)
-            }
-
-            override fun set(data: T, value: V): T {
-                return copyFunc.callBy(
-                    mapOf(
-                        instanceParameter to data,
-                        kParameter to value,
-                    )
-                )
-            }
+            override fun get(data: T): V = property.get(data)
+            override fun set(data: T, value: V): T = copyFunc.callBy(
+                mapOf(instanceParameter to data, kParameter to value)
+            )
 
             override fun toString(): String = "KPropertyDataCopyField($pdsKey:$vType)"
         }

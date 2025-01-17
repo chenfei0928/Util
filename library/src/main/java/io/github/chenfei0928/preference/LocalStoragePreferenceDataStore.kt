@@ -20,7 +20,9 @@ import io.github.chenfei0928.repository.local.LocalFileStorage0
 @Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class LocalStoragePreferenceDataStore<T : Any>(
     private val storage: Storage<T>,
-    private val fieldAccessor: MutableFieldAccessor<T> = MutableFieldAccessor.Impl(true, true),
+    private val fieldAccessor: MutableFieldAccessor<T> = MutableFieldAccessor.Impl(
+        redirectToMutableField = true, readCache = true
+    ),
 ) : BasePreferenceDataStore<T>(fieldAccessor), MutableFieldAccessor<T> by fieldAccessor {
 
     /**
