@@ -9,6 +9,6 @@ import java.lang.ref.WeakReference
  */
 class WeakValueMap<K, V>(
     map: MutableMap<K, WeakReference<V>> = ArrayMap()
-) : WrapMutableMap<K, K, V?, WeakReference<V>>(
-    map, WrapMutableMapConvertor.Key.NoTodo(), WrapMutableMapConvertor.Value.WeakReference()
+) : WrapMutableMap<K, K, V, WeakReference<V>>(
+    map, WrapMutableMapConvertor.Key.NoTodo(), WrapMutableMapConvertor.Value.WeakRef()
 )

@@ -1,7 +1,12 @@
 package io.github.chenfei0928.util
 
+import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
+import io.github.chenfei0928.collection.WeakValueMap
+import io.github.chenfei0928.collection.WrapMutableMap
+import io.github.chenfei0928.collection.WrapMutableMapConvertor
 import java.lang.ref.WeakReference
 import java.util.WeakHashMap
 import kotlin.properties.ReadWriteProperty
@@ -41,58 +46,50 @@ interface MapCache<T, R> : ReadWriteProperty<T, R> {
         }
     }
 
-    open class Weak<T, R>(
-        private val cache: MutableMap<T, WeakReference<R>> = WeakHashMap(),
-        private val creator: (T) -> R,
-    ) : MapCache<T, R> {
-        override operator fun set(key: T, value: R) {
-            cache[key] = WeakReference(value)
+    companion object {
+        fun <T, R> WeakValue(
+            cache: MutableMap<T, WeakReference<R>> = WeakHashMap(),
+            creator: (T) -> R,
+        ) = Basic<T, R>(cache = WeakValueMap(cache), creator)
+
+        fun <R> Application(
+            cache: MutableMap<Application, R> = WeakHashMap(),
+            creator: (Context) -> R
+        ) = Basic<Context, R>(
+            WrapMutableMap<Context, Application, R, R>(
+                cache, applicationKey, WrapMutableMapConvertor.Value.NoTodo()
+            ), creator
+        )
+
+        fun <R> Activity(
+            cache: MutableMap<Context, R> = WeakHashMap(),
+            creator: (Context) -> R
+        ) = Basic<Context, R>(
+            WrapMutableMap<Context, Context, R, R>(
+                cache, activityKey, WrapMutableMapConvertor.Value.NoTodo()
+            ), creator
+        )
+
+        private val applicationKey = object : WrapMutableMapConvertor.Key<Context, Application> {
+            override fun <WKA : Context> WKA.toK(): Application =
+                this.applicationContext as Application
+
+            override fun <KA : Application> KA.toWK(): Context = this
         }
 
-        override operator fun get(key: T): R {
-            val value = cache[key]?.get()
-            return if (value == null) {
-                val answer = creator(key)
-                cache[key] = WeakReference(answer)
-                answer
-            } else {
-                value
+        private val activityKey = object : WrapMutableMapConvertor.Key<Context, Context> {
+            override fun <WKA : Context> WKA.toK(): Context {
+                var thiz: Context? = this
+                while (thiz is ContextWrapper && thiz !is Activity) {
+                    thiz = thiz.baseContext
+                    if (thiz is Activity) {
+                        return thiz
+                    }
+                }
+                return thiz ?: this
             }
-        }
-    }
 
-    class Activity<R>(
-        cache: MutableMap<Context, R> = WeakHashMap(),
-        creator: (Context) -> R
-    ) : Basic<Context, R>(cache, creator) {
-        override fun set(key: Context, value: R) {
-            if (key is ContextWrapper && key !is android.app.Activity) {
-                set(key.baseContext, value)
-            } else {
-                super.set(key, value)
-            }
-            super.set(key, value)
-        }
-
-        override fun get(key: Context): R {
-            return if (key is ContextWrapper && key !is android.app.Activity) {
-                get(key.baseContext)
-            } else {
-                super.get(key)
-            }
-        }
-    }
-
-    class Application<R>(
-        cache: MutableMap<Context, R> = WeakHashMap(),
-        creator: (Context) -> R
-    ) : Basic<Context, R>(cache, creator) {
-        override fun set(key: Context, value: R) {
-            super.set(key.applicationContext, value)
-        }
-
-        override fun get(key: Context): R {
-            return super.get(key.applicationContext)
+            override fun <KA : Context> KA.toWK(): Context = toK()
         }
     }
 }
