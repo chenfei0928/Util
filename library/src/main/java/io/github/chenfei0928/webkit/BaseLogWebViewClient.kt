@@ -204,6 +204,8 @@ open class BaseLogWebViewClient : WebViewClientCompat() {
 
     companion object {
         private const val TAG = "KW_BaseLogWebViewClient"
+
+        // release 下由于混淆规则，该参数会被认为永远为false，即不会输出debug日志
         var debugLog = false
     }
 }

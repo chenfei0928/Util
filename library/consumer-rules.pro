@@ -12,8 +12,26 @@
     @io.github.chenfei0928.annotation.NoSideEffects *;
 }
 
+## release下移除debug日志，参考protobuf lite配置
+-assumevalues class io.github.chenfei0928.webkit.BaseLogWebViewClient$Companion { boolean getDebugLog() return false; }
+-assumevalues class io.github.chenfei0928.webkit.BaseWebViewClient$Companion { boolean getIgnoreSslError() return false; }
+
 ## 保留类但允许混淆
 -keep,allowobfuscation @io.github.chenfei0928.annotation.KeepAllowObfuscation class * {*;}
+## 参考了retrofit的混淆配置，keep类，但允许对成员优化、压缩和混淆
+-keep,allowoptimization,allowshrinking,allowobfuscation @io.github.chenfei0928.annotation.KeepAllowOptimizationShrinkingObfuscation class * {*;}
+
+## 使WithChildInObfuscation应用到子类，参考gson与retrofit配置
+-if @io.github.chenfei0928.annotation.KeepAllowObfuscation @androidx.annotation.Keep class **
+-keep class * extends <1>
+
+## 使WithChildInObfuscation应用到子类，参考gson与retrofit配置
+-if @io.github.chenfei0928.annotation.WithChildInObfuscation @io.github.chenfei0928.annotation.KeepAllowObfuscation class **
+-keep,allowobfuscation class * extends <1>
+
+## 使WithChildInObfuscation应用到子类，参考gson与retrofit配置
+-if @io.github.chenfei0928.annotation.WithChildInObfuscation @io.github.chenfei0928.annotation.KeepAllowOptimizationShrinkingObfuscation class **
+-keep,allowoptimization,allowshrinking,allowobfuscation class * extends <1>
 
 ## Type类型懒获取，它需要保证父类继承顺序不被R8破坏，但允许混淆类名与方法名
 -keep,allowobfuscation class * extends io.github.chenfei0928.reflect.LazyTypeToken

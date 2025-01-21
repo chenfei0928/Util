@@ -77,8 +77,10 @@ class MainActivity : ComponentActivity() {
                 "jsonLocalFileStorage0" to JsonLocalFileStoragePreferenceFragment.Storage0Fragment::class.java,
             )
             AlertDialog.Builder(this)
-                .setItems(items.mapToArray { it.first }) { dialog, which ->
-                    gotoPreferenceActivity(items[which].second)
+                .setItems(items.mapToArray { it.first }) { _, which ->
+                    startActivity(Intent(this, PreferenceActivity::class.java).apply {
+                        putExtra("fragmentName", items[which].second.name)
+                    })
                 }
                 .show()
         }
@@ -159,12 +161,6 @@ class MainActivity : ComponentActivity() {
             }
             Log.i(TAG, "onCreate: $f")
         }
-    }
-
-    private fun <F : Fragment> gotoPreferenceActivity(fClass: Class<F>) {
-        startActivity(Intent(this, PreferenceActivity::class.java).apply {
-            putExtra("fragmentName", fClass.name)
-        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

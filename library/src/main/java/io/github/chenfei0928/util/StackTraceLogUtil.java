@@ -3,8 +3,9 @@ package io.github.chenfei0928.util;
 import java.util.Locale;
 
 import androidx.annotation.CheckResult;
-import io.github.chenfei0928.annotation.NoSideEffects;
+import androidx.annotation.DoNotInline;
 import androidx.annotation.NonNull;
+import io.github.chenfei0928.annotation.NoSideEffects;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
@@ -20,6 +21,7 @@ public class StackTraceLogUtil {
 
     @NonNull
     @CheckResult
+    @DoNotInline
     public static Function1<Throwable, Unit> onError(int level) {
         String strings = generateTags(level);
         return throwable -> {
@@ -32,6 +34,7 @@ public class StackTraceLogUtil {
      * @param level 每嵌套一层方法调用 +1
      * @return 返回格式为 KW_类名 类名.调用方法名(文件名.java:行号)
      */
+    @DoNotInline
     public static String generateTags(int level) {
         StackTraceElement caller = Thread.currentThread().getStackTrace()[4 + level];
         String callerClazzName = caller.getClassName();
