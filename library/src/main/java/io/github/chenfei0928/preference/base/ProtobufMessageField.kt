@@ -117,8 +117,9 @@ class ProtobufMessageField<T : Message, V>(
             override val pdsKey: String = name
             override val vType by lazy(this)
             override fun get(data: T): V = getter(data)
+
+            @Suppress("UNCHECKED_CAST")
             override fun set(data: T, value: V): T =
-                @Suppress("UNCHECKED_CAST")
                 setter(data.toBuilder() as Builder, value).build() as T
 
             override fun invoke(): PreferenceType = PreferenceType.forType<V>()
@@ -152,8 +153,9 @@ class ProtobufMessageField<T : Message, V>(
                 override val pdsKey: String = name
                 override val vType by lazy(this)
                 override fun get(data: T): V = getter(data)
+
+                @Suppress("UNCHECKED_CAST")
                 override fun set(data: T, value: V): T =
-                    @Suppress("UNCHECKED_CAST")
                     setter(data.toBuilder() as Builder, value).build() as T
 
                 override fun invoke(): PreferenceType = PreferenceType.forType<V>()

@@ -16,6 +16,7 @@ constructor(
     private val childClassTypeParameter: TypeVariable<out Class<T>>? = null,
     private val childClassWildcardType: WildcardType? = null,
 ) {
+    @Suppress("UNCHECKED_CAST")
     val clazz: Class<T> = tClass ?: childClassTypeParameter?.run {
         // 当前子类直接实现了一个范围
         bounds
@@ -35,6 +36,7 @@ constructor(
             .firstOrNull()
     } ?: Any::class.java as Class<T>
 
+    @Suppress("ReturnCount")
     fun isInstance(obj: Any?): Boolean {
         if (tClass != null) {
             return tClass.isInstance(obj)

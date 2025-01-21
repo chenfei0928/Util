@@ -16,6 +16,7 @@ import kotlin.reflect.KProperty
 fun <T : View> ViewGroup.findChildById(@IdRes id: Int): T? {
     forEach {
         if (it.id == id) {
+            @Suppress("UNCHECKED_CAST")
             return it as T
         }
     }
@@ -34,6 +35,7 @@ fun View?.removeSelfFromParent() {
  * 根据view查找距离其最近的fragment
  * [com.bumptech.glide.manager.RequestManagerRetriever.findSupportFragment]
  */
+@Suppress("ReturnCount")
 fun View.findParentFragment(): Fragment? {
     val findViewFragment = FragmentManagerAccessor.findViewFragment(this)
     if (findViewFragment != null) {
@@ -78,6 +80,7 @@ inline fun <V : View, R> V.getTagOrPut(
 ): R {
     val tag = this.getTag(id)
     return if (tag != null) {
+        @Suppress("UNCHECKED_CAST")
         tag as R
     } else {
         creator(this).also {
@@ -93,6 +96,7 @@ class ViewTagDelegate<R>(
     @IdRes private val id: Int
 ) : ReadWriteProperty<View, R> {
     override fun getValue(thisRef: View, property: KProperty<*>): R {
+        @Suppress("UNCHECKED_CAST")
         return thisRef.getTag(id) as R
     }
 

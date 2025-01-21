@@ -16,6 +16,7 @@ inline fun <reified T> Array<T?>.filterNotNull(): Array<T> {
     }
     val count = count { it != null }
     if (count == size) {
+        @Suppress("UNCHECKED_CAST")
         return this as Array<T>
     }
     if (count == 0) {

@@ -10,6 +10,7 @@ import androidx.collection.SimpleArrayMap
  * 将[Map]转换为[SimpleArrayMap]，[SimpleArrayMap]的实现性能更高
  */
 fun <K, V> Map<K, V>.asSimpleArrayMap(): SimpleArrayMap<K, V> = if (this is SimpleArrayMap<*, *>) {
+    @Suppress("UNCHECKED_CAST")
     this as SimpleArrayMap<K, V>
 } else {
     SimpleArrayMap<K, V>(size).also {

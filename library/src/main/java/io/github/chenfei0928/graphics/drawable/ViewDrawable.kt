@@ -125,6 +125,7 @@ class ViewDrawable(
         return (view.alpha * 255).toInt()
     }
 
+    @Deprecated("This method is no longer used in graphics optimizations")
     override fun getOpacity(): Int {
         return PixelFormat.TRANSLUCENT
     }

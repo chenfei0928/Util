@@ -57,6 +57,7 @@ object LikeListViewRecyclerViewAdapterInjector {
                 view.injectorClassNameTag == binderClassName
 
             override fun onBindView(view: View, bean: Int) {
+                @Suppress("UNCHECKED_CAST")
                 adapter.onBindViewHolder(view.viewHolderTag as VH, bean, emptyList())
             }
         })

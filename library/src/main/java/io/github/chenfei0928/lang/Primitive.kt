@@ -5,6 +5,7 @@ package io.github.chenfei0928.lang
  * @date 2025-01-14 16:25
  */
 
+@Suppress("UNCHECKED_CAST")
 fun <T> Class<T>.javaPrimitiveType(): Class<T> = when (this) {
     java.lang.Integer::class.java -> java.lang.Integer.TYPE
     java.lang.Float::class.java -> java.lang.Float.TYPE
@@ -18,6 +19,7 @@ fun <T> Class<T>.javaPrimitiveType(): Class<T> = when (this) {
     else -> this
 } as Class<T>
 
+@Suppress("UNCHECKED_CAST")
 fun <T> Class<T>.javaBoxedType(): Class<T> = when (this) {
     java.lang.Integer.TYPE -> java.lang.Integer::class.java
     java.lang.Float.TYPE -> java.lang.Float::class.java

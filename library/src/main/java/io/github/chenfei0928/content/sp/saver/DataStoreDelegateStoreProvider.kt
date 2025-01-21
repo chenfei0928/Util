@@ -15,6 +15,7 @@ class DataStoreDelegateStoreProvider<SpSaver : AbsSpSaver<SpSaver>, V>(
     override fun provideDelegate(
         thisRef: SpSaver, property: KProperty<*>
     ): ReadWriteProperty<SpSaver, V> {
+        @Suppress("UNCHECKED_CAST")
         thisRef.dataStore.property(property as KProperty<V>, delegate.spValueType, delegate)
         return delegate
     }

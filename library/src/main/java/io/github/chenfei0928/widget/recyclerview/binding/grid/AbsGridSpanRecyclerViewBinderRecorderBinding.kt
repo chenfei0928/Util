@@ -35,6 +35,7 @@ abstract class AbsGridSpanRecyclerViewBinderRecorderBinding
     }
 
     protected fun <T> generateTypedDefaultLayoutParams(): LP {
+        @Suppress("UNCHECKED_CAST")
         return LayoutParams<T>(spanCount, NONE, null) as LP
     }
 

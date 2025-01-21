@@ -60,6 +60,7 @@ abstract class BaseViewHolderParentLayoutBinder<T, VH : ViewHolder<T>> :
         val childBinderInfo = ChildBinderInfo(
             childBinder, childBeanField, childHolderField, binderAllowNullBean
         )
+        @Suppress("UNCHECKED_CAST")
         childBinders.add(childBinderInfo as ChildBinderInfo<T, VH, Any, RecyclerView.ViewHolder>)
     }
 
@@ -107,6 +108,7 @@ abstract class BaseViewHolderParentLayoutBinder<T, VH : ViewHolder<T>> :
             binderAllowNullBean -> {
                 // 子Binder的Bean是可空的（null值由子binder自己处理）
                 childHolder.itemView.isVisible = true
+                @Suppress("UNCHECKED_CAST")
                 val childBinder: ItemViewDelegate<Any?, RecyclerView.ViewHolder> =
                     childBinder as ItemViewDelegate<Any?, RecyclerView.ViewHolder>
                 childBinder.onBindViewHolder(childHolder, childBean, payloads)

@@ -8,6 +8,7 @@ import androidx.core.content.getSystemService
 object RunningEnvironmentUtil {
 
     fun isServiceWork(context: Context, service: Class<out Service>): Boolean {
+        @Suppress("DEPRECATION")
         val runningService = context.getSystemService<ActivityManager>()
             ?.getRunningServices(40)
             ?: return false

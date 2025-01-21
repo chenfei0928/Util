@@ -22,6 +22,7 @@ abstract class AbsRecyclerViewBinderRecorderBinding<LP : LayoutParams<*>>(
     contentView, list
 ) {
     override fun generateDefaultLayoutParams(): LP {
+        @Suppress("UNCHECKED_CAST")
         return LayoutParams<Any>(null) as LP
     }
 

@@ -13,6 +13,7 @@ class GsonSpConvertSaver<T>(
     private val type: TypeToken<T>,
 ) : SpConvertSaver<String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
 
+    @Suppress("UNCHECKED_CAST")
     constructor(
         key: String? = null,
         gson: Gson = io.github.chenfei0928.json.gson.gson,

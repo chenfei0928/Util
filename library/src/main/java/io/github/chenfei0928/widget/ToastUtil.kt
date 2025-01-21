@@ -111,6 +111,7 @@ object ToastUtil {
                 return null
             }
             if (sToastView == null) {
+                @Suppress("DEPRECATION")
                 sToastView = Toast.makeText(context.applicationContext, "", Toast.LENGTH_SHORT).view
             }
             return sToastView

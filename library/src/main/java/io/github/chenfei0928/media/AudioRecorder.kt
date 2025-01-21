@@ -24,7 +24,7 @@ constructor(
     private var recorder: MediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         MediaRecorder(context)
     } else {
-        MediaRecorder()
+        @Suppress("DEPRECATION") MediaRecorder()
     }
 
     fun startRecord(): Boolean {

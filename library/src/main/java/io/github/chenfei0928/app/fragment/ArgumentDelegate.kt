@@ -73,6 +73,7 @@ class ArgumentDelegate<T>(
         fun Fragment.argString(name: String? = null): ReadWriteProperty<Fragment, String> =
             ArgumentDelegate(BundleSupportType.StringType(false), name)
 
+        @Suppress("UNCHECKED_CAST")
         fun Fragment.argStringNull(name: String? = null): ReadWriteProperty<Fragment, String?> =
             ArgumentDelegate(BundleSupportType.StringType(true) as BundleSupportType<String?>, name)
 
@@ -82,6 +83,7 @@ class ArgumentDelegate<T>(
             BundleSupportType.ParcelableType(T::class.java, false), name
         )
 
+        @Suppress("UNCHECKED_CAST")
         inline fun <reified T : Parcelable> Fragment.argParcelableNull(
             name: String? = null
         ): ReadWriteProperty<Fragment, T?> = ArgumentDelegate<T?>(

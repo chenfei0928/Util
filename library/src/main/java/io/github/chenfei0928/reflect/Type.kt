@@ -13,34 +13,33 @@ inline fun <reified T> jTypeOf(): Type = lazyJTypeOf<T>()()
 inline fun <reified T> lazyJTypeOf(): LazyTypeToken<T> = object : LazyTypeToken<T>() {}
 
 inline fun <reified T> Type.jvmErasureClassOrNull(): Class<out T>? =
-    jvmErasureClassOrNull(T::class.java) as? Class<T>
+    jvmErasureClassOrNull(T::class.java)
 
 /**
  * Must class or null
  * [kotlin.reflect.jvm.jvmErasure]
  */
-fun <T> Type.jvmErasureClassOrNull(base: Class<T>): Class<out T>? {
-    return when (this) {
-        is Class<*> -> this
-        is GenericArrayType -> {
-            // 获取元素的数组
-            genericComponentType.jvmErasureClassOrNull(base.componentType ?: Any::class.java)
-                ?.arrayClass()
-        }
-        is ParameterizedType -> {
-            // 泛型擦除，只获取其原始类型信息，不获取其泛型
-            rawType.jvmErasureClassOrNull(base)
-        }
-        is WildcardType -> upperBounds.firstOrNull {
-            val mustClass = it.jvmErasureClassOrNull<T>(base)
-            // kotlin.reflect.jvm.jvmErasure
-            mustClass != null && Modifier.INTERFACE !in mustClass.modifiers && !mustClass.isAnnotation
-        }
-        is TypeVariable<*> -> bounds.firstOrNull {
-            val mustClass = it.jvmErasureClassOrNull<T>(base)
-            // kotlin.reflect.jvm.jvmErasure
-            mustClass != null && Modifier.INTERFACE !in mustClass.modifiers && !mustClass.isAnnotation
-        }
-        else -> throw IllegalArgumentException("Not support type ${this.javaClass.name} $this")
-    } as? Class<T>
-}
+@Suppress("UNCHECKED_CAST")
+fun <T> Type.jvmErasureClassOrNull(base: Class<T>): Class<out T>? = when (this) {
+    is Class<*> -> this
+    is GenericArrayType -> {
+        // 获取元素的数组
+        genericComponentType.jvmErasureClassOrNull(base.componentType ?: Any::class.java)
+            ?.arrayClass()
+    }
+    is ParameterizedType -> {
+        // 泛型擦除，只获取其原始类型信息，不获取其泛型
+        rawType.jvmErasureClassOrNull(base)
+    }
+    is WildcardType -> upperBounds.firstOrNull {
+        val mustClass = it.jvmErasureClassOrNull<T>(base)
+        // kotlin.reflect.jvm.jvmErasure
+        mustClass != null && Modifier.INTERFACE !in mustClass.modifiers && !mustClass.isAnnotation
+    }
+    is TypeVariable<*> -> bounds.firstOrNull {
+        val mustClass = it.jvmErasureClassOrNull<T>(base)
+        // kotlin.reflect.jvm.jvmErasure
+        mustClass != null && Modifier.INTERFACE !in mustClass.modifiers && !mustClass.isAnnotation
+    }
+    else -> throw IllegalArgumentException("Not support type ${this.javaClass.name} $this")
+} as? Class<T>

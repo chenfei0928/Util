@@ -30,6 +30,7 @@ abstract class PaintDrawable : Drawable() {
         paint.colorFilter = colorFilter
     }
 
+    @Deprecated("This method is no longer used in graphics optimizations")
     override fun getOpacity(): Int =
         PixelFormat.TRANSLUCENT
 }

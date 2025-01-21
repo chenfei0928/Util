@@ -101,7 +101,7 @@ abstract class FragmentBinder<T> : ItemViewDelegate<T, MultiTypeFragmentViewHold
         /** Special case when [RecyclerView] decides to keep the [container]
          * attached to the window, but not to the view hierarchy (i.e. parent is null)  */
         val container = holder.container
-        if (ViewCompat.isAttachedToWindow(container)) {
+        if (container.isAttachedToWindow) {
             check(container.parent == null) { "Design assumption violated." }
             container.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
                 override fun onLayoutChange(
@@ -278,7 +278,7 @@ abstract class FragmentBinder<T> : ItemViewDelegate<T, MultiTypeFragmentViewHold
                         return
                     }
                     source.lifecycle.removeObserver(this)
-                    if (ViewCompat.isAttachedToWindow(holder.container)) {
+                    if (holder.container.isAttachedToWindow) {
                         placeFragmentInViewHolder(holder)
                     }
                 }

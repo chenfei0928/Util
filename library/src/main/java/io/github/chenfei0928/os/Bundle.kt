@@ -21,6 +21,7 @@ inline fun <reified T : Parcelable> Bundle.getParcelableArrayCompat(key: String)
         getParcelableArray(key, T::class.java)
     } else BundleCompat.getParcelableArray(this, key, T::class.java)?.let { array ->
         if (array.isArrayOf<T>()) {
+            @Suppress("UNCHECKED_CAST")
             array as Array<T>
         } else {
             Array(array.size) { array[it] as T }
@@ -45,6 +46,7 @@ inline fun <reified T : Parcelable> Intent.getParcelableArrayExtraCompat(key: St
         getParcelableArrayExtra(key, T::class.java)
     } else IntentCompat.getParcelableArrayExtra(this, key, T::class.java)?.let { array ->
         if (array.isArrayOf<T>()) {
+            @Suppress("UNCHECKED_CAST")
             array as Array<T>
         } else {
             Array(array.size) { array[it] as T }

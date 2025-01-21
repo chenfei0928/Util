@@ -148,6 +148,7 @@ sealed class OutlineType : ViewOutlineProvider() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 outline.setPath(path)
             } else {
+                @Suppress("DEPRECATION")
                 outline.setConvexPath(path)
             }
         }

@@ -11,6 +11,7 @@ import kotlin.reflect.KProperty
 abstract class ReadOnlyCacheDelegate<Host : Any, T> : ReadOnlyProperty<Host, T> {
     protected var value: Any? = UNINITIALIZED_VALUE
 
+    @Suppress("UNCHECKED_CAST")
     final override fun getValue(thisRef: Host, property: KProperty<*>): T {
         if (value !is UNINITIALIZED_VALUE) {
             return value as T

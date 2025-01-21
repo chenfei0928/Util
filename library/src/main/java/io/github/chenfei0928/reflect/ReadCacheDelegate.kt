@@ -17,6 +17,7 @@ open class ReadCacheDelegate<Host, T>(
 ) : ReadOnlyProperty<Host, T> {
     protected var value: Any? = UNINITIALIZED_VALUE
 
+    @Suppress("UNCHECKED_CAST")
     final override fun getValue(thisRef: Host, property: KProperty<*>): T {
         if (value !is UNINITIALIZED_VALUE) {
             return value as T
@@ -38,6 +39,7 @@ open class ReadCacheDelegate<Host, T>(
         // Host to <PropertyName, value>
         private val cache = WeakHashMap<Any, ArrayMap<String, Any>>()
 
+        @Suppress("UNCHECKED_CAST")
         fun <Host, T> ReadOnlyProperty<Host, T>.getCacheOrValue(
             thisRef: Host, property: KProperty<*>
         ): T = cache.getOrPut(thisRef, ::ArrayMap).getContainOrPut(property.name) {

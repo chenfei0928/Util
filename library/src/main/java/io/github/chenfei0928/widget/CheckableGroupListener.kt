@@ -91,6 +91,7 @@ open class CheckableGroupListener<T : Checkable>(
 
     val asRadioButtonListener: CompoundButton.OnCheckedChangeListener by lazy(LazyThreadSafetyMode.NONE) {
         return@lazy CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            @Suppress("UNCHECKED_CAST")
             onCheckedChangedImpl(buttonView as T, isChecked)
         }
     }

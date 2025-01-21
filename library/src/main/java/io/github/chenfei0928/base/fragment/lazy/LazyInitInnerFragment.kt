@@ -17,6 +17,7 @@ open class LazyInitInnerFragment<F : Fragment>(
     childFragmentClass: Class<F>? = null
 ) : BaseDoubleCheckLazyInitFragment() {
     val fragment: F by lazy {
+        @Suppress("UNCHECKED_CAST")
         childFragmentManager.findFragmentByTag(FRAGMENT_TAG) as? F
             ?: createFragment()
             ?: (childFragmentClass ?: getParentParameterizedTypeClassDefinedImplInChild(0))

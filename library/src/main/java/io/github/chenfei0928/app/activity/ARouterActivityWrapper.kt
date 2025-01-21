@@ -1,6 +1,5 @@
 package io.github.chenfei0928.app.activity
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
@@ -13,7 +12,7 @@ import androidx.fragment.app.Fragment
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-06-13 19:27
  */
-@SuppressLint("Registered")
+@Suppress("DEPRECATION", "Registered", "OVERRIDE_DEPRECATION")
 class ARouterActivityWrapper(
     private val fragment: Fragment
 ) : Activity() {

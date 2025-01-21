@@ -16,6 +16,7 @@ internal class AwaitCall<T>(
 ) : Call<T> {
     private var canceled = false
     private val realCall: Lazy<Call<T>> = lazyByAutoLoad {
+        @Suppress("UNCHECKED_CAST")
         method.safeInvoke(service, args) as Call<T>
     }
 
