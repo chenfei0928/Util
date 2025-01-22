@@ -44,7 +44,7 @@ public enum DependencyChecker {
         protected boolean initValue() {
             try {
                 // material 库存在大量标准控件，大概率存在，使用方案1加载
-                com.google.android.material.bottomsheet.BottomSheetDialog.class.toString();
+                String ignore = com.google.android.material.bottomsheet.BottomSheetDialog.class.toString();
                 return true;
             } catch (NoClassDefFoundError ignore) {
                 return false;
@@ -60,7 +60,7 @@ public enum DependencyChecker {
         protected boolean initValue() {
             try {
                 // guava listenerFuture 被androidx core依赖，大概率存在，使用方案1加载
-                com.google.common.util.concurrent.ListenableFuture.class.toString();
+                String ignore = com.google.common.util.concurrent.ListenableFuture.class.toString();
                 return true;
             } catch (NoClassDefFoundError ignore) {
                 return false;
@@ -131,7 +131,7 @@ public enum DependencyChecker {
         protected boolean initValue() {
             try {
                 // gson 轻量级常用，大概率会存在，使用方案1加载
-                com.google.gson.reflect.TypeToken.class.toString();
+                String ignore = com.google.gson.reflect.TypeToken.class.toString();
                 return true;
             } catch (NoClassDefFoundError ignore) {
                 return false;

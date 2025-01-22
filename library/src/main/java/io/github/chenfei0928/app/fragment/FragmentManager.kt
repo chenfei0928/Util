@@ -45,10 +45,10 @@ inline fun <reified F> FragmentManager.findFragmentWithChildByType(): F? {
  */
 @Suppress("UNCHECKED_CAST")
 fun <F> Fragment.findFragmentWithChildByType(clazz: Class<F>): F? {
-    if (clazz.isInstance(this)) {
-        return this as F
+    return if (clazz.isInstance(this)) {
+        this as F
     } else if (host == null) {
-        return null
+        null
     } else {
         childFragmentManager.fragments.forEach {
             val findWithChildByType = it.findFragmentWithChildByType(clazz)
@@ -56,7 +56,7 @@ fun <F> Fragment.findFragmentWithChildByType(clazz: Class<F>): F? {
                 return findWithChildByType
             }
         }
-        return null
+        null
     }
 }
 

@@ -43,7 +43,7 @@ class GlideSplitTransformation(
     override fun updateDiskCacheKey(messageDigest: MessageDigest) {
         messageDigest.update(ID_BYTES)
 
-        val radiusData = ByteBuffer.allocate(4).putInt(page).putInt(pageHeight).array()
+        val radiusData = ByteBuffer.allocate(8).putInt(page).putInt(pageHeight).array()
         messageDigest.update(radiusData)
     }
 

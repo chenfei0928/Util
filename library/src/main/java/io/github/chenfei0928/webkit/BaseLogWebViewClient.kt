@@ -130,6 +130,7 @@ open class BaseLogWebViewClient : WebViewClientCompat() {
      *
      * [相关博客](https://droidyue.com/blog/2019/10/20/how-to-diagnose-webview-in-android/)
      */
+    @Suppress("LongMethod", "LongParameterList")
     private fun debugWebViewMessage(
         methodName: String,
         webView: WebView,

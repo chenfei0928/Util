@@ -1,5 +1,6 @@
 package io.github.chenfei0928.webkit
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.util.Log
@@ -22,6 +23,7 @@ class OsResourcesPathHandler(
 
     override fun handle(path: String): WebResourceResponse {
         try {
+            @SuppressLint("RestrictedApi")
             val mimeType = AssetHelper.guessMimeType(path)
             return openResourceAsResponse(path, mimeType)
         } catch (e: Resources.NotFoundException) {

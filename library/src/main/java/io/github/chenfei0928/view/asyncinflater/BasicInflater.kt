@@ -24,7 +24,7 @@ internal class BasicInflater(
                 if (view != null) {
                     return view
                 }
-            } catch (e: ClassNotFoundException) {
+            } catch (_: ClassNotFoundException) {
                 // In this case we want to let the base class take a crack
                 // at it.
             }

@@ -71,27 +71,26 @@ object FileUtil {
     }
 
     @JvmStatic
-    fun moveDirToDest(source: File, dest: File): Boolean {
-        if (source.isFile) {
-            return copyFileToDest(source, dest) && deleteFileOrDir(source)
-        }
-        if (!source.isDirectory) {
-            return false
-        }
-        if (!dest.exists() && !dest.mkdirs()) {
-            return false
-        }
+    fun moveDirToDest(
+        source: File, dest: File
+    ): Boolean = if (source.isFile) {
+        copyFileToDest(source, dest) && deleteFileOrDir(source)
+    } else if (!source.isDirectory) {
+        false
+    } else if (!dest.exists() && !dest.mkdirs()) {
+        false
+    } else {
+        // 不是目录（但上方已判断是否为目录），或发生io错误时会返回null
+        // 此处返回null时为发生了io错误，返回false
         val files = source.listFiles()
             ?: return false
         var finish = true
-        for (file in files) {
-            val name = file.name
-            val destChild = File(dest, name)
-            if (!moveDirToDest(file, destChild)) {
+        files.forEach { file ->
+            if (!moveDirToDest(file, File(dest, file.name))) {
                 finish = false
             }
         }
-        return if (finish) {
+        if (finish) {
             deleteFileOrDir(source)
             true
         } else {
@@ -100,6 +99,7 @@ object FileUtil {
     }
 
     @JvmStatic
+    @Suppress("NestedBlockDepth")
     fun copyFileToDest(source: File, dest: File): Boolean {
         if (!dest.exists()) {
             dest.parentFile?.mkdirs()
@@ -113,11 +113,16 @@ object FileUtil {
             source.inputStream().use { fis ->
                 dest.outputStream().use { fos ->
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        FileUtils.copy(fis.fd, fos.fd)
+                        val fosFd = fos.fd
+                        FileUtils.copy(fis.fd, fosFd)
+                        fosFd.sync()
                     } else {
-                        val inputChannel = fis.channel
-                        fos.channel.transferFrom(inputChannel, 0, inputChannel.size())
-                        fos.flush()
+                        fis.channel.use { inputChannel ->
+                            fos.channel.use { fosChannel ->
+                                fosChannel.transferFrom(inputChannel, 0, inputChannel.size())
+                                fos.flush()
+                            }
+                        }
                     }
                     return true
                 }
@@ -129,6 +134,7 @@ object FileUtil {
     }
 
     @JvmStatic
+    @Suppress("NestedBlockDepth", "ReturnCount")
     fun copyUriToDestFile(context: Context, source: Uri?, dest: File): Boolean {
         if (source == null) {
             return false
@@ -185,6 +191,7 @@ object FileUtil {
      * [android.webkit.MimeTypeMap.getFileExtensionFromUrl]
      */
     @JvmStatic
+    @Suppress("ReturnCount")
     fun getFileExtensionFromUrl(url: String): String {
         val extension = MimeTypeMap.getFileExtensionFromUrl(url)
         if (extension.isNotEmpty()) {

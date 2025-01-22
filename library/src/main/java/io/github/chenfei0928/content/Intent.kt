@@ -54,23 +54,11 @@ fun Bundle.getAll(): Map<String, Any> {
 }
 
 fun Bundle.contentEquals(other: Bundle): Boolean {
-    if (size() != other.size()) {
+    return if (size() != other.size()) {
         return false
+    } else keySet().all {
+        other.containsKey(it) && get(it).deepEquals(other.get(it))
     }
-    keySet().forEach {
-        if (!other.containsKey(it)) {
-            return false
-        }
-        val value = get(it)
-        val otherValue = other.get(it)
-
-        if (value != null || otherValue != null) {
-            if (!value.deepEquals(otherValue)) {
-                return false
-            }
-        }
-    }
-    return true
 }
 
 @ReturnThis

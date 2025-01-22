@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
+import com.drakeet.multitype.Types
 import io.github.chenfei0928.os.getParcelableCompat
 import io.github.chenfei0928.widget.recyclerview.adapter.IMultiTypeAdapterStringer
 
@@ -24,6 +25,11 @@ constructor(
     initialCapacity: Int = 0,
     types: AttachedTypes = FragmentStateMultiTypes(initialCapacity),
 ) : IMultiTypeAdapterStringer.IMultiTypeAdapter(items, initialCapacity, types), StatefulAdapter {
+
+    override var types: Types = types
+        set(value) {
+            field = value as AttachedTypes
+        }
 
     //<editor-fold desc="构造器" defaultstatus="collapsed">
     @JvmOverloads

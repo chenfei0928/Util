@@ -32,6 +32,7 @@ object ToastUtil {
     @Volatile
     private var sToast: WeakReference<Toast>? = null
 
+    @SuppressLint("StaticFieldLeak")
     @Volatile
     private var sToastShowTask: ToastShowTask? = null
 

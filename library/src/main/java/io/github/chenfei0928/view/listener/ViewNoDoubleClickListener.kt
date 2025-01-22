@@ -39,7 +39,7 @@ private data class ViewOnClickInfo(
 )
 
 private val onDetach = object : View.OnAttachStateChangeListener {
-    override fun onViewAttachedToWindow(v: View) {}
+    override fun onViewAttachedToWindow(v: View) = Unit
 
     override fun onViewDetachedFromWindow(v: View) {
         ViewNoDoubleClickListener.expungeStaleEntries()

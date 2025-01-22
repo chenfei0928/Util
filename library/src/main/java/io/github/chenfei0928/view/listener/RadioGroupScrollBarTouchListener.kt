@@ -16,13 +16,12 @@ class RadioGroupScrollBarTouchListener(
 ) : View.OnTouchListener {
 
     override fun onTouch(v: View, event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_DOWN) {
+        return if (event.action == MotionEvent.ACTION_DOWN) {
             // 判断点击坐标是否在最右侧一列宽度中，如果是则为滑动指示器，消费整个滑动事件
             // 此处如返回false，后续事件将不会回调
             val firstChild = viewGroup.getChildAt(0)
-            return event.x < firstChild.right && event.x > firstChild.left
-        }
-        if (event.action == MotionEvent.ACTION_MOVE) {
+            event.x < firstChild.right && event.x > firstChild.left
+        } else if (event.action == MotionEvent.ACTION_MOVE) {
             // 处理滑动事件
             val y = event.y
             viewGroup.forEach { child ->
@@ -33,8 +32,9 @@ class RadioGroupScrollBarTouchListener(
                     child.performClick()
                 }
             }
-            return true
+            true
+        } else {
+            false
         }
-        return false
     }
 }

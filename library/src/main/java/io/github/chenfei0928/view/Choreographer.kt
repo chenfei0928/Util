@@ -8,6 +8,4 @@ import android.view.Choreographer
  */
 inline fun Choreographer.postFrameCallbackDelayed(
     delayMillis: Long, crossinline block: (Long) -> Unit
-) {
-    postFrameCallbackDelayed({ block(it) }, delayMillis)
-}
+) = postFrameCallbackDelayed({ block(it) }, delayMillis)

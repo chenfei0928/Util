@@ -38,6 +38,7 @@ internal class WebViewFileChooseLighterFragment : Fragment() {
         }
         val intent = fileChooserParams.createIntent()
         try {
+            @Suppress("DEPRECATION")
             startActivityForResult(intent, REQUEST_CODE)
         } catch (e: ActivityNotFoundException) {
             ToastUtil.showShort(context, "打开文件选择器失败")
@@ -53,6 +54,7 @@ internal class WebViewFileChooseLighterFragment : Fragment() {
         }
     }
 
+    @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // 通知回调

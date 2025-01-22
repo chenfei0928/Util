@@ -1,5 +1,6 @@
 package io.github.chenfei0928.util.glide
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -92,6 +93,7 @@ class GravityCropTransformation(
         }
     }
 
+    @SuppressLint("RtlHardcoded")
     private fun getLeft(targetWidth: Int, scaledWidth: Float): Float {
         return when (gravity and Gravity.HORIZONTAL_GRAVITY_MASK) {
             Gravity.LEFT -> 0f
@@ -131,7 +133,7 @@ class GravityCropTransformation(
             append(", gravity=")
             append(gravity)
             append(':')
-            Companion.toString(this, gravity)
+            toString(this, gravity)
         }
     }
 
@@ -149,6 +151,8 @@ class GravityCropTransformation(
          * 参考自 [Gravity.toString]
          * @hide
          */
+        @SuppressLint("RtlHardcoded")
+        @Suppress("CyclomaticComplexMethod")
         fun toString(result: StringBuilder, @GravityInt gravity: Int) {
             if (gravity and Gravity.FILL == Gravity.FILL) {
                 result.append("FILL").append(' ')

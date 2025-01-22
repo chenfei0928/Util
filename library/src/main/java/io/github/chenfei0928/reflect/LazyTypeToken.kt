@@ -1,6 +1,7 @@
 package io.github.chenfei0928.reflect
 
 import io.github.chenfei0928.annotation.KeepAllowObfuscation
+import io.github.chenfei0928.annotation.WithChildInObfuscation
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
@@ -12,6 +13,7 @@ import java.lang.reflect.Type
  * @author chenf()
  * @date 2025-01-15 15:10
  */
+@WithChildInObfuscation
 @KeepAllowObfuscation
 abstract class LazyTypeToken<T> : () -> Type, Lazy<Type> {
     @Volatile
@@ -29,6 +31,6 @@ abstract class LazyTypeToken<T> : () -> Type, Lazy<Type> {
     final override val value: Type
         get() = invoke()
 
-    override fun isInitialized(): Boolean =
+    final override fun isInitialized(): Boolean =
         type != null
 }

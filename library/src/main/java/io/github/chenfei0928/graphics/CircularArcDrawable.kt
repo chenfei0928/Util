@@ -1,5 +1,6 @@
 package io.github.chenfei0928.graphics
 
+import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
@@ -21,7 +22,7 @@ class CircularArcDrawable : PaintDrawable() {
     private val oval = RectF()
 
     @GravityInt
-    var gravity = Gravity.LEFT
+    var gravity = Gravity.START
         set(value) {
             field = value
             resetR()
@@ -57,6 +58,7 @@ class CircularArcDrawable : PaintDrawable() {
         canvas.drawOval(oval, paint)
     }
 
+    @SuppressLint("RtlHardcoded")
     private fun resetR() {
         radius = when (gravity) {
             Gravity.LEFT -> {
@@ -77,6 +79,7 @@ class CircularArcDrawable : PaintDrawable() {
         }
     }
 
+    @SuppressLint("RtlHardcoded")
     private fun resetOvalBounds() {
         val bounds = bounds
         val width = bounds.width()

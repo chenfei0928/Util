@@ -76,12 +76,14 @@ fun <T> Fragment.findParentByType(clazz: Class<T>): T? {
     }
     // 检查宿主和Activity是否能处理该回调
     val host = host
-    if (clazz.isInstance(host)) {
-        return clazz.cast(host)
+    return if (clazz.isInstance(host)) {
+        clazz.cast(host)
+    } else {
+        val activity = activity
+        if (clazz.isInstance(activity)) {
+            clazz.cast(activity)
+        } else {
+            null
+        }
     }
-    val activity = activity
-    if (clazz.isInstance(activity)) {
-        return clazz.cast(activity)
-    }
-    return null
 }
