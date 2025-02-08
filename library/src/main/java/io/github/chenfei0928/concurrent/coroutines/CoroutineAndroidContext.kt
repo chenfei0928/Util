@@ -39,6 +39,14 @@ private constructor(
         host?.staticTag ?: fragmentHost?.staticTag ?: androidContext.staticTag
     }
 
+    override val tag: String by lazy {
+        tagOrNull ?: run {
+            if (host?.javaClass?.name?.startsWith("android") == false) {
+                host
+            } else fragmentHost ?: androidContext
+        }.javaClass.simpleName
+    }
+
     companion object {
         private val classTagMap = ArrayMap<Class<*>, String?>()
 
@@ -61,11 +69,13 @@ private constructor(
         }
 
         private fun newInstanceImpl(host: Any?, node: Any?): CoroutineAndroidContext {
-            return if (node is LifecycleOwner && FragmentViewLifecycleAccessor.isInstance(node)) {
+            return if (node is LifecycleOwner
+                && FragmentViewLifecycleAccessor.isViewLifecycleOwner(node)
+            ) {
                 // 使用fragment的viewLifecycle创建协程实例，通过该方式获取其fragment
                 val fragment = FragmentViewLifecycleAccessor.getFragmentByViewLifecycleOwner(node)
                 CoroutineAndroidContextImpl(
-                    node,
+                    host,
                     fragment.activity ?: fragment.requireContext(),
                     fragment
                 )
@@ -77,22 +87,22 @@ private constructor(
                     )
                 }
                 is Dialog -> {
-                    CoroutineAndroidContextImpl(node, node.context, null)
+                    CoroutineAndroidContextImpl(host, node.context, null)
                 }
                 is AndroidViewModel -> {
-                    CoroutineAndroidContextImpl(node, node.getApplication(), null)
+                    CoroutineAndroidContextImpl(host, node.getApplication(), null)
                 }
                 is Fragment -> {
-                    CoroutineAndroidContextImpl(node, node.activity ?: node.requireContext(), node)
+                    CoroutineAndroidContextImpl(host, node.activity ?: node.requireContext(), node)
                 }
                 is Activity -> {
-                    CoroutineAndroidContextImpl(node, node, null)
+                    CoroutineAndroidContextImpl(host, node, null)
                 }
                 is Context -> {
-                    CoroutineAndroidContextImpl(node, node, null)
+                    CoroutineAndroidContextImpl(host, node, null)
                 }
                 else -> {
-                    CoroutineAndroidContextImpl(node, ContextProvider.context, null)
+                    CoroutineAndroidContextImpl(host, ContextProvider.context, null)
                 }
             }
         }
@@ -119,6 +129,8 @@ interface CoroutineAndroidContext : CoroutineContext.Element {
      * 获取当前协程作用域所绑定上下文的 TAG 字段值
      */
     val tagOrNull: String?
+
+    val tag: String
 
     override fun toString(): String
 

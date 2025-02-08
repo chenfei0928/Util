@@ -34,7 +34,7 @@ object ProcessUtil {
     @JvmStatic
     fun getProcessName(context: Context): String {
         return processName.get() ?: processName.updateAndGetCompat {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            it ?: if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 Process.myProcessName()
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 Application.getProcessName()

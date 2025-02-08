@@ -61,19 +61,13 @@ abstract class AbsWrapperAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val headerCreator = headerViews[viewType]
-        if (headerCreator != null) {
-            return headerCreator.createViewHolder(parent)
-        }
-        val footerCreator = footerViews[viewType]
-        if (footerCreator != null) {
-            return footerCreator.createViewHolder(parent)
-        }
-        return when (viewType) {
-            ITEM_TYPE_EMPTY -> empty.createViewHolder(parent)
-            ITEM_TYPE_LOAD_MORE -> loadMore.createViewHolder(parent)
-            else -> innerAdapter.onCreateViewHolder(parent, viewType)
-        }
+        return headerViews[viewType]?.createViewHolder(parent)
+            ?: footerViews[viewType]?.createViewHolder(parent)
+            ?: when (viewType) {
+                ITEM_TYPE_EMPTY -> empty.createViewHolder(parent)
+                ITEM_TYPE_LOAD_MORE -> loadMore.createViewHolder(parent)
+                else -> innerAdapter.onCreateViewHolder(parent, viewType)
+            }
     }
 
     override fun onBindViewHolder(

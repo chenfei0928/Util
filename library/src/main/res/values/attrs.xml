@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <declare-styleable name="ExtendedFloatingActionLayout">
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <declare-styleable name="ExtendedFloatingActionLayout" tools:ignore="ResourceName">
         <!-- Elevation for the ExtendedFloatingActionButton. -->
         <attr name="elevation" />
         <!-- Motion spec for show animation. This should be a MotionSpec resource. -->
@@ -15,36 +15,33 @@
         <attr name="collapsedSize" format="dimension" />
     </declare-styleable>
 
-    <declare-styleable name="ExtendedFloatingActionLayout_Behavior_Layout">
+    <declare-styleable name="ExtendedFloatingActionLayout_Behavior_Layout" tools:ignore="ResourceName">
         <!-- Whether the extended FAB should automatically hide when there is no space for it. -->
         <attr name="behavior_autoHide" />
         <!-- Whether the extended FAB should automatically shrink when there is no space for it. -->
         <attr name="behavior_autoShrink" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="IconFontView">
+    <declare-styleable name="IconFontView" tools:ignore="ResourceName">
         <attr name="fontAsset" format="string" />
         <attr name="android:font" />
         <attr name="android:textColor" />
         <attr name="android:text" />
     </declare-styleable>
 
-    <declare-styleable name="MarqueeTextView">
-        <attr name="mtv_scrollInterval" format="integer" />
-        <attr name="mtv_scrollFirstDelay" format="integer" />
-        <attr name="mtv_scrollMode">
-            <enum name="mode_forever" value="100" />
-            <enum name="mode_once" value="101" />
+    <declare-styleable name="OutlineClipImageView" tools:ignore="ResourceName">
+        <attr name="olciv_outlineType" format="enum">
+            <!-- Default, background drawable-driven outline. -->
+            <enum name="background" value="0" />
+            <!-- No outline provider. -->
+            <enum name="none" value="1" />
+            <enum name="oval" value="2" />
+            <enum name="cornerRadius" value="3" />
         </attr>
-    </declare-styleable>
-
-    <declare-styleable name="OutlineClipImageView">
-        <attr name="olciv_clipToBackground" format="boolean" />
-        <attr name="olciv_oval" format="boolean" />
         <attr name="olciv_cornerRadius" format="dimension" />
     </declare-styleable>
 
-    <declare-styleable name="BorderImageView">
+    <declare-styleable name="BorderImageView" tools:ignore="ResourceName">
         <attr name="biv_borderWidth" format="dimension" />
         <attr name="biv_borderColor" format="color" />
     </declare-styleable>

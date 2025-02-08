@@ -73,12 +73,12 @@ fun Intent.zipExtras(): Intent {
     bundle.keySet().forEach {
         removeExtra(it)
     }
-    putExtra("zipped", zipped)
+    putExtra(ZIPPED_EXTRA_KEY, zipped)
     return this
 }
 
 fun Intent.unzipExtras(classLoader: ClassLoader = ContextProvider::class.java.classLoader!!): Bundle {
-    val zipped = getByteArrayExtra("zipped")
+    val zipped = getByteArrayExtra(ZIPPED_EXTRA_KEY)
         ?: return Bundle.EMPTY
     val unzipped = GZIPInputStream(ByteArrayInputStream(zipped)).use {
         it.readBytes()
@@ -87,3 +87,5 @@ fun Intent.unzipExtras(classLoader: ClassLoader = ContextProvider::class.java.cl
         this.classLoader = classLoader
     }
 }
+
+private const val ZIPPED_EXTRA_KEY = "zipped"

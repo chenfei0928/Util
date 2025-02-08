@@ -46,7 +46,7 @@ class GsonSerializer<T : Any>(
     }
 
     override fun copy(obj: T): T {
-        return typeAdapter.fromJson(typeAdapter.toJson(obj))
+        return typeAdapter.fromJsonTree(typeAdapter.toJsonTree(obj))
     }
 
     companion object {

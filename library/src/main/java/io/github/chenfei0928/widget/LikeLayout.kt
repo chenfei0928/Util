@@ -18,7 +18,7 @@ import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import io.github.chenfei0928.animation.BezierEvaluator
-import java.util.Random
+import kotlin.random.Random
 
 /**
  * [来源博客](https://blog.csdn.net/u010302765/article/details/70843831)
@@ -27,7 +27,6 @@ class LikeLayout
 @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
-    private val random = Random()
     private var params: LayoutParams = LayoutParams(
         LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
     ).apply {
@@ -101,7 +100,7 @@ class LikeLayout
         }
         valueAnim.setTarget(iv)
         valueAnim.duration = 3000
-        valueAnim.interpolator = interpolates[random.nextInt(4)]
+        valueAnim.interpolator = interpolates.random()
         return valueAnim
     }
 
@@ -116,16 +115,16 @@ class LikeLayout
             ),
             // p1
             PointF(
-                random.nextInt(mWidth).toFloat(),
-                (random.nextInt(mHeight / 2) + mHeight / 2 + iv.drawable.intrinsicHeight).toFloat()
+                Random.nextInt(mWidth).toFloat(),
+                (Random.nextInt(mHeight / 2) + mHeight / 2 + iv.drawable.intrinsicHeight).toFloat()
             ),
             // p2
             PointF(
-                random.nextInt(mWidth).toFloat(),
-                random.nextInt(mHeight / 2).toFloat()
+                Random.nextInt(mWidth).toFloat(),
+                Random.nextInt(mHeight / 2).toFloat()
             ),
             // p3
-            PointF(random.nextInt(mWidth).toFloat(), 0f),
+            PointF(Random.nextInt(mWidth).toFloat(), 0f),
         )
     }
 }

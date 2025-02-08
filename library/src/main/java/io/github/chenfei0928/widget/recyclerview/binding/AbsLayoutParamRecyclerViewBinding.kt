@@ -64,6 +64,7 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
         return LayoutParams() as LP
     }
 
+    //<editor-fold desc="继承并标注废弃的父类方法" defaultstatus="collapsed">
     @Deprecated(
         level = DeprecationLevel.HIDDEN,
         replaceWith = ReplaceWith(expression = "addListItems(position, data)"),
@@ -73,6 +74,17 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
         val layoutParams = generateDefaultLayoutParams()
         addListItems(position, data) { _, _ -> layoutParams }
     }
+
+    @Deprecated(level = DeprecationLevel.HIDDEN, message = "使用带布局参数的接口来添加")
+    final override fun addSingleItem(position: Int, item: Any) {
+        addSingleItem(position, item, generateDefaultLayoutParams())
+    }
+
+    @Deprecated(level = DeprecationLevel.HIDDEN, message = "使用[removeLast(Boolean)]移除")
+    override fun removeLast(): Any {
+        return removeLast(false)
+    }
+    //</editor-fold>
 
     /**
      * 追加整个集合，使用一致的边距与span配置
@@ -89,11 +101,6 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
         }
     }
 
-    @Deprecated(level = DeprecationLevel.HIDDEN, message = "使用带布局参数的接口来添加")
-    final override fun addSingleItem(position: Int, item: Any) {
-        addSingleItem(position, item, generateDefaultLayoutParams())
-    }
-
     /**
      * 添加单个的条目，非视频或金句列表
      *
@@ -106,11 +113,6 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
         super.addSingleItem(position, item)
         // 记录边距、span
         layoutParamsRecord[item] = layoutParams
-    }
-
-    @Deprecated(level = DeprecationLevel.HIDDEN, message = "使用[removeLast(Boolean)]移除")
-    override fun removeLast(): Any {
-        return removeLast(false)
     }
 
     /**

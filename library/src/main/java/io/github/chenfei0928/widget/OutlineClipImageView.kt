@@ -6,7 +6,6 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.res.use
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.view.OutlineType
-import kotlin.math.max
 
 /**
  * 通过outline实现对ImageView进行圆角、圆形显示的支持，只支持5.0及以上系统。
@@ -33,31 +32,28 @@ open class OutlineClipImageView
         outlineProvider = context.obtainStyledAttributes(
             attrs, R.styleable.OutlineClipImageView, defStyleAttr, 0
         ).use { a ->
-            when {
-                a.getBoolean(R.styleable.OutlineClipImageView_olciv_clipToBackground, false) -> {
-                    // 根据背景Drawable
-                    OutlineType.Background
-                }
-                a.getBoolean(R.styleable.OutlineClipImageView_olciv_oval, false) -> {
-                    // 圆形
-                    OutlineType.Oval
-                }
-                else -> when (val cornerRadius = max(
-                    MIN_RADIUS,
-                    a.getDimension(
+            when (val enum = a.getInt(R.styleable.OutlineClipImageView_olciv_outlineType, 1)) {
+                OUTLINE_TYPE_BACKGROUND -> OutlineType.Background
+                OUTLINE_TYPE_NONE -> null
+                OUTLINE_TYPE_OVAL -> OutlineType.Oval
+                OUTLINE_TYPE_CORNER_RADIUS -> {
+                    // 圆角
+                    val radius = a.getDimension(
                         R.styleable.OutlineClipImageView_olciv_cornerRadius, DEFAULT_RADIUS
                     )
-                )) {
-                    // 圆角
-                    MIN_RADIUS -> null
-                    else -> OutlineType.SameCornerRadius(cornerRadius)
+                    if (radius < MIN_RADIUS) null else OutlineType.SameCornerRadius(radius)
                 }
+                else -> throw IllegalArgumentException("不支持的 outlineType：$enum")
             }
         }
         clipToOutline = true
     }
 
     companion object {
+        private const val OUTLINE_TYPE_BACKGROUND = 0
+        private const val OUTLINE_TYPE_NONE = 1
+        private const val OUTLINE_TYPE_OVAL = 2
+        private const val OUTLINE_TYPE_CORNER_RADIUS = 3
         private const val MIN_RADIUS = 0f
         const val DEFAULT_RADIUS = MIN_RADIUS
     }

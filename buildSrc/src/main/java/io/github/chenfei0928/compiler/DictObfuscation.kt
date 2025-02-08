@@ -12,7 +12,7 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.task
 import java.util.Locale
-import java.util.Random
+import kotlin.random.Random
 
 /**
  * 应用自定义混淆规则，生成混淆字典
@@ -68,7 +68,7 @@ private abstract class GenObfuscationDictTask : DefaultTask() {
             return
         }
 
-        val r = Random()
+        val r = Random
         val start = r.nextInt(1000) + 0x0100
         val end = start + 0x4000
         val chars = (start..end)

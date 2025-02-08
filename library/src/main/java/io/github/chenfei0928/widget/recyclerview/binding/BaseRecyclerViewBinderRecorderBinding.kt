@@ -16,6 +16,7 @@ abstract class BaseRecyclerViewBinderRecorderBinding(
     contentView, list
 ) {
 
+    //<editor-fold desc="继承并标注废弃的父类方法" defaultstatus="collapsed">
     @Deprecated(
         level = DeprecationLevel.HIDDEN,
         replaceWith = ReplaceWith("generateTypedDefaultLayoutParams()"),
@@ -23,10 +24,6 @@ abstract class BaseRecyclerViewBinderRecorderBinding(
     )
     override fun generateDefaultLayoutParams(): LayoutParams<*> {
         return generateTypedDefaultLayoutParams<Any>()
-    }
-
-    protected inline fun <T> generateTypedDefaultLayoutParams(block: LayoutParams<T>.() -> Unit = {}): LayoutParams<T> {
-        return LayoutParams<T>(null).apply(block)
     }
 
     @Deprecated(
@@ -49,6 +46,11 @@ abstract class BaseRecyclerViewBinderRecorderBinding(
     )
     override fun addSingleItem(position: Int, item: Any, layoutParams: LayoutParams<*>) {
         super.addSingleItem(position, item, layoutParams)
+    }
+    //</editor-fold>
+
+    protected inline fun <T> generateTypedDefaultLayoutParams(block: LayoutParams<T>.() -> Unit = {}): LayoutParams<T> {
+        return LayoutParams<T>(null).apply(block)
     }
 
     protected open fun <E : Any> addTypedListItems(

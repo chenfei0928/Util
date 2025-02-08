@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import androidx.collection.ArraySet
 import androidx.preference.PreferenceDataStore
+import com.bumptech.glide.util.Util
 import com.google.common.reflect.GoogleTypes
 import com.google.protobuf.Descriptors
 import com.google.protobuf.enumClass
@@ -112,6 +113,18 @@ sealed interface PreferenceType {
         ): C = enums.mapTo(createCollection(enums.size)) { forName(it.name) }
 
         protected abstract fun createCollection(size: Int): C
+
+        override fun equals(other: Any?): Boolean {
+            return if (this.javaClass != other?.javaClass) {
+                false
+            } else if (other is BaseEnumNameStringCollection<*, *>) {
+                this.eClass == other.eClass && this.values.contentEquals(other.values)
+            } else false
+        }
+
+        override fun hashCode(): Int {
+            return Util.hashCode(eClass.hashCode(), values.contentHashCode())
+        }
 
         override fun toString(): String =
             "BaseEnumNameStringCollection(eClass=$eClass)"

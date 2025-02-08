@@ -206,7 +206,11 @@ open class BaseLogWebViewClient : WebViewClientCompat() {
     companion object {
         private const val TAG = "KW_BaseLogWebViewClient"
 
-        // release 下由于混淆规则，该参数会被认为永远为false，即不会输出debug日志
+        /**
+         * release 下如果想忽略日志输出，将参数会设置为为false，即不会输出debug日志。
+         * 同时也可以添加以下混淆规则：
+         * `-assumevalues class io.github.chenfei0928.webkit.BaseLogWebViewClient$Companion { boolean getDebugLog() return false; }`
+         */
         var debugLog = false
     }
 }

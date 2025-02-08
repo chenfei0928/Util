@@ -16,8 +16,9 @@ class InfiniteList<E>(
 
     override fun get(index: Int): E = list[index % list.size]
 
-    val centerPosition: Int = list.size.let { size ->
-        if (size == 0) 0
-        else Int.MAX_VALUE / size / 2 * size
-    }
+    val centerPosition: Int
+        get() = list.size.let { size ->
+            if (size == 0) 0
+            else Int.MAX_VALUE / size / 2 * size
+        }
 }

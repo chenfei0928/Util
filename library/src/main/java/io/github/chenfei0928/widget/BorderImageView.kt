@@ -70,6 +70,8 @@ class BorderImageView
         if (borderWidth <= 0) {
             return
         }
+        val provider = outlineProvider as? OutlineType
+            ?: return
         @Suppress("kotlin:S6518")
         tmpRectF.set(
             paddingLeft.toFloat() + borderWidth / 2,
@@ -77,8 +79,7 @@ class BorderImageView
             width - paddingRight.toFloat() - borderWidth / 2,
             height - paddingBottom.toFloat() - borderWidth / 2
         )
-        val provider = outlineProvider as? OutlineType
-        provider?.drawBorder(this, canvas, borderPaint, tmpRectF)
+        provider.drawBorder(this, canvas, borderPaint, tmpRectF)
     }
 
     companion object {

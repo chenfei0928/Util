@@ -61,11 +61,7 @@ abstract class BasePreferenceDataStore<T : Any>(
             // 将field的Enum转换为preference的字符串
             (get(data) as Enum<*>).name as V
         }
-        is PreferenceType.EnumNameStringCollection<*> -> {
-            // 将field的Enum集合转换为preference的字符串Set
-            val enums = get(data) as Collection<Enum<*>>
-            enums.mapTo(ArraySet(enums.size)) { it.name } as V
-        }
+        is PreferenceType.EnumNameStringCollection<*>,
         is PreferenceType.BaseEnumNameStringCollection<*, *> -> {
             // 将field的Enum集合转换为preference的字符串Set
             val enums = get(data) as Collection<Enum<*>>

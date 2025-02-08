@@ -35,7 +35,7 @@ class KtxsJsonSerializer<T : Any>(
     }
 
     override fun copy(obj: T): T {
-        return json.decodeFromString(deserializer, json.encodeToString(serializer, obj))
+        return json.decodeFromJsonElement(deserializer, json.encodeToJsonElement(serializer, obj))
     }
 
     companion object {

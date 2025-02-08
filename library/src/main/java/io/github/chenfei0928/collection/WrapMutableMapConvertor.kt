@@ -29,7 +29,7 @@ interface WrapMutableMapConvertor {
             override fun <KA : HashCodeWrapper<K>> KA.toWK(): K = ref
 
             class HashCodeWrapper<T>(val ref: T) {
-                override fun equals(other: Any?): Boolean = ref == other
+                override fun equals(other: Any?): Boolean = ref === other
                 override fun hashCode(): Int = System.identityHashCode(ref)
                 override fun toString(): String = ref.toString()
             }

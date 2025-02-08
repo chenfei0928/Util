@@ -115,10 +115,7 @@ class IconFontView
             MapCache.Basic<Context, MapCache<String, Typeface>> { context ->
                 // 其key内存占用可以忽略，主要是value需要weakRef
                 MapCache.WeakValue(ArrayMap()) { key ->
-                    Typeface.createFromAsset(
-                        context.assets,
-                        key
-                    )
+                    Typeface.createFromAsset(context.assets, key)
                 }
             }
     }

@@ -13,7 +13,7 @@
 }
 
 ## release下移除debug日志，参考protobuf lite配置
--assumevalues class io.github.chenfei0928.webkit.BaseLogWebViewClient$Companion { boolean getDebugLog() return false; }
+#-assumevalues class io.github.chenfei0928.webkit.BaseLogWebViewClient$Companion { boolean getDebugLog() return false; }
 -assumevalues class io.github.chenfei0928.webkit.BaseWebViewClient$Companion { boolean getIgnoreSslError() return false; }
 
 ## 保留类但允许混淆

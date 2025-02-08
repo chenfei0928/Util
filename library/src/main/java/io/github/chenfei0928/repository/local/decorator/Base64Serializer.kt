@@ -34,6 +34,7 @@ private constructor(
     override fun write(outputStream: OutputStream, obj: T) {
         Base64OutputStream(outputStream, base64Flag).use {
             serializer.write(it, obj)
+            it.flush()
         }
     }
 

@@ -48,7 +48,7 @@ abstract class BaseEnvironmentTwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>(
      * View与切环境变化的监听
      */
     private val VH.onEnvironmentChanged: Array<Any> by ViewHolderTagValDelegate(
-        R.id.onPropertyChanged
+        R.id.cf0928util_onPropertyChanged
     ) { holder ->
         if (environments.isEmpty()) {
             emptyArray()

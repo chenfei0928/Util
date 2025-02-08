@@ -23,7 +23,8 @@ import java.io.File
  */
 open class BaseWebViewClient(
     private val context: Context,
-    private val progressBar: ProgressBar? = null
+    private val progressBar: ProgressBar? = null,
+    private val alwaysRejectSslError: Boolean = true,
 ) : BaseLogWebViewClient() {
 
     /**
@@ -33,6 +34,9 @@ open class BaseWebViewClient(
      */
     override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError?) {
         super.onReceivedSslError(view, handler, error)
+        if (alwaysRejectSslError) {
+            handler.cancel()
+        }
         // 如果debug情况下忽略了证书错误，直接允许
         @SuppressLint("WebViewClientOnReceivedSslError")
         if (ignoreSslError) {
@@ -127,7 +131,9 @@ open class BaseWebViewClient(
     companion object {
         private const val TAG = "KW_BaseWebViewClient"
 
-        // release 下由于混淆规则，该参数会被认为永远为false，即不会忽略ssl错误
+        /**
+         * release 下由于混淆规则，该参数会被认为永远为false，即不会忽略ssl错误
+         */
         var ignoreSslError = false
     }
 }

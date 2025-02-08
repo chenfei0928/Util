@@ -30,10 +30,8 @@ fun SpannableStringBuilder.appendDrawable(
     drawable: Drawable, verticalAlignment: Int = DynamicDrawableSpan.ALIGN_BASELINE
 ) = append("\uFFFC", ImageSpan(drawable, verticalAlignment))
 
-/**
- * [java.text.DontCareFieldPosition]
- */
-private val fieldPosition = FieldPosition(0)
-
-fun StringBuffer.appendFormat(format: Format, data: Any) =
-    format.format(data, this, fieldPosition)
+fun StringBuffer.appendFormat(
+    format: Format,
+    data: Any,
+    fieldPosition: FieldPosition = FieldPosition(0)
+) = format.format(data, this, fieldPosition)

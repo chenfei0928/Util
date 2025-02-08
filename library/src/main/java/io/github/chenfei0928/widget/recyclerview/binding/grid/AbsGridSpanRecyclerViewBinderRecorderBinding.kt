@@ -25,6 +25,7 @@ abstract class AbsGridSpanRecyclerViewBinderRecorderBinding
     contentView, spanCount, list
 ) {
 
+    //<editor-fold desc="继承并标注废弃的父类方法" defaultstatus="collapsed">
     @Deprecated(
         level = DeprecationLevel.HIDDEN,
         replaceWith = ReplaceWith("generateTypedDefaultLayoutParams()"),
@@ -34,27 +35,6 @@ abstract class AbsGridSpanRecyclerViewBinderRecorderBinding
         return generateTypedDefaultLayoutParams<Any>()
     }
 
-    protected fun <T> generateTypedDefaultLayoutParams(): LP {
-        @Suppress("UNCHECKED_CAST")
-        return LayoutParams<T>(spanCount, NONE, null) as LP
-    }
-
-    protected inline fun <T> generateTypedDefaultLayoutParams(block: LP.() -> Unit): LP {
-        return generateTypedDefaultLayoutParams<T>().apply(block)
-    }
-
-    /**
-     * 注册一个类型bean应对多种渲染样式binder。
-     * 其将允许bean在使用有[LayoutParams]参数的[addListItems]或[addSingleItem]方法，通过
-     * 传入的[LayoutParams.binderClazz]来指定由哪个binder来渲染自身。
-     */
-    protected fun <T> MultiTypeAdapter.registerWithTypeRecorderMap(
-        type: Class<T>, binders: Array<ItemViewDelegate<T, *>>
-    ) {
-        @Suppress("UNCHECKED_CAST") val layoutParamsRecord =
-            layoutParamsRecord as Map<T, LayoutParams<T>>
-        registerWithTypeRecorderMap(type, binders, layoutParamsRecord)
-    }
 
     @Deprecated(
         level = DeprecationLevel.HIDDEN,
@@ -78,6 +58,29 @@ abstract class AbsGridSpanRecyclerViewBinderRecorderBinding
     )
     override fun addSingleItem(position: Int, item: Any, layoutParams: LP) {
         super.addSingleItem(position, item, layoutParams)
+    }
+    //</editor-fold>
+
+    protected fun <T> generateTypedDefaultLayoutParams(): LP {
+        @Suppress("UNCHECKED_CAST")
+        return LayoutParams<T>(spanCount, NONE, null) as LP
+    }
+
+    protected inline fun <T> generateTypedDefaultLayoutParams(block: LP.() -> Unit): LP {
+        return generateTypedDefaultLayoutParams<T>().apply(block)
+    }
+
+    /**
+     * 注册一个类型bean应对多种渲染样式binder。
+     * 其将允许bean在使用有[LayoutParams]参数的[addListItems]或[addSingleItem]方法，通过
+     * 传入的[LayoutParams.binderClazz]来指定由哪个binder来渲染自身。
+     */
+    protected fun <T> MultiTypeAdapter.registerWithTypeRecorderMap(
+        type: Class<T>, binders: Array<ItemViewDelegate<T, *>>
+    ) {
+        @Suppress("UNCHECKED_CAST") val layoutParamsRecord =
+            layoutParamsRecord as Map<T, LayoutParams<T>>
+        registerWithTypeRecorderMap(type, binders, layoutParamsRecord)
     }
 
     protected open fun <E : Any> addTypedListItems(

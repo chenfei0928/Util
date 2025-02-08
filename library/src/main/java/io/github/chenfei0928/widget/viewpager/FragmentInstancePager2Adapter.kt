@@ -39,15 +39,13 @@ class FragmentInstancePager2Adapter
     }
 
     override fun <T : Fragment> removeByType(clazz: Class<T>) {
-        if (pagerList is FragmentInstancePagerListImpl) {
-            pagerList.list.forEachReversedWithIndex { index, e ->
-                if (e.clazz == clazz) {
-                    pagerList.list.removeAt(index)
-                    notifyItemRemoved(index)
-                }
-            }
-        } else {
+        if (pagerList !is FragmentInstancePagerListImpl) {
             pagerList.removeByType(clazz)
+        } else pagerList.list.forEachReversedWithIndex { index, e ->
+            if (e.clazz == clazz) {
+                pagerList.list.removeAt(index)
+                notifyItemRemoved(index)
+            }
         }
     }
 }

@@ -86,7 +86,7 @@ abstract class LocalFileStorage0<T : Any>(
         } else {
             // 从缓存中读取，缓存中没有值时从磁盘文件反序列化
             cachedValue.get() ?: cachedValue.updateAndGetCompat {
-                loadFromLocalFile()
+                it ?: loadFromLocalFile()
             }
         }
     }

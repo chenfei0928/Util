@@ -1,8 +1,8 @@
 package io.github.chenfei0928.os
 
 import android.os.Debug
-import io.github.chenfei0928.annotation.NoSideEffects
 import androidx.annotation.Size
+import io.github.chenfei0928.annotation.NoSideEffects
 import io.github.chenfei0928.text.appendFormat
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.util.NonnullPools
@@ -14,7 +14,8 @@ import java.text.DecimalFormat
  * @date 2020-05-15 13:36
  */
 object Debug {
-    const val msInNs = 1_000_000
+    // 毫秒内有多少纳秒
+    const val MILLIS_IN_NANOS = 1_000_000
     private val logCountTimeFormat =
         NonnullPools.SimplePool<Pair<DecimalFormat, DecimalFormat>>(1) {
             DecimalFormat(",###") to DecimalFormat(",###.###")
@@ -71,7 +72,7 @@ object Debug {
         msg: String,
         timeUsed: Long
     ): Unit = logCountTimeFormat.use { format ->
-        if (timeUsed < msInNs) {
+        if (timeUsed < MILLIS_IN_NANOS) {
             // 在一毫秒以内，展示为纳秒
             Log.v(tag, StringBuffer().apply {
                 append(msg)
@@ -84,7 +85,7 @@ object Debug {
             Log.v(tag, StringBuffer().apply {
                 append(msg)
                 append(", countTime: ")
-                appendFormat(format.second, timeUsed / msInNs.toFloat())
+                appendFormat(format.second, timeUsed / MILLIS_IN_NANOS.toFloat())
                 append(" ms.")
             }.toString())
         }

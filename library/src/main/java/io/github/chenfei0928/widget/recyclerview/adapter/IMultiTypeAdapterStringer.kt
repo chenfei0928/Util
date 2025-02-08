@@ -19,7 +19,7 @@ interface IMultiTypeAdapterStringer {
         initialCapacity: Int = 0,
         types: Types = MutableTypes(initialCapacity),
     ) : MultiTypeAdapter(items, initialCapacity, types), IMultiTypeAdapterStringer {
-        override var binding: Any = Any()
+        override var binding: Any = Unit
 
         override fun toString(): String {
             return super.toString() + ", binding:" + binding

@@ -21,7 +21,7 @@ internal object FragmentViewLifecycleAccessor : FragmentManager.FragmentLifecycl
             isAccessible = true
         }
 
-    fun isInstance(target: Any?): Boolean = target is FragmentViewLifecycleOwner
+    fun isViewLifecycleOwner(target: Any?): Boolean = target is FragmentViewLifecycleOwner
 
     fun getFragmentByViewLifecycleOwner(fragmentLifecycleOwner: LifecycleOwner): Fragment {
         fragmentLifecycleOwner as FragmentViewLifecycleOwner

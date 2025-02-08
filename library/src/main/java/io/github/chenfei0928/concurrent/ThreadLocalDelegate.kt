@@ -14,9 +14,7 @@ class ThreadLocalDelegate<T>(
     private val map = ConcurrentHashMap<Thread, T>()
 
     override operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        return map.getOrPut(Thread.currentThread()) {
-            initializer()
-        }
+        return map.getOrPut(Thread.currentThread(), initializer)
     }
 
     override operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
