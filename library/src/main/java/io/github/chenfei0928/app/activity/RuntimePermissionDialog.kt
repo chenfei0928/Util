@@ -25,8 +25,8 @@ fun Activity.onShowPermissionRationale(msg: CharSequence, request: PermissionReq
         .Builder(this)
         .setCancelable(false)
         .setMessage(msg)
-        .setPositiveButton(R.string.permission_allow) { _, _ -> request.proceed() }
-        .setNegativeButton(R.string.permission_deny) { _, _ -> request.cancel() }
+        .setPositiveButton(R.string.cf0928util_permission_allow) { _, _ -> request.proceed() }
+        .setNegativeButton(R.string.cf0928util_permission_deny) { _, _ -> request.cancel() }
         .show()
 }
 
@@ -52,8 +52,8 @@ fun Activity.onPermissionDenied(
         .setTitle(android.R.string.dialog_alert_title)
         .setMessage(msg)
         .setCancelable(false)
-        .setPositiveButton(R.string.permission_allow, onPositiveAction)
-        .setNegativeButton(R.string.permission_deny, onNegativeAction)
+        .setPositiveButton(R.string.cf0928util_permission_allow, onPositiveAction)
+        .setNegativeButton(R.string.cf0928util_permission_deny, onNegativeAction)
         .show()
 }
 

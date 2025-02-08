@@ -73,8 +73,7 @@ object WebViewSettingsUtil {
             return
         }
         val appContext = context.applicationContext
-        isLowRamDevice = context.getSystemService<ActivityManager>()
-            ?.isLowRamDevice ?: false
+        isLowRamDevice = context.getSystemService<ActivityManager>()?.isLowRamDevice == true
         // 当前的webView提供者
         if (WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROCESS)) {
             val multiProcessEnabled = WebViewCompat.isMultiProcessEnabled()
@@ -159,12 +158,12 @@ object WebViewSettingsUtil {
         } catch (e: Throwable) {
             // 因为其他原因加载WebView失败（如安装了错误abi版本的WebView内核）
             Log.w(TAG, "installWebView: webView 创建失败", e)
-            ToastUtil.showShort(placeHolder.context, R.string.webViewLoadFailed)
+            ToastUtil.showShort(placeHolder.context, R.string.cf0928util_webViewLoadFailed)
             return null
         }
         // 检查是否创建成功
         return if (webView == null) {
-            ToastUtil.showShort(placeHolder.context, R.string.webViewLoadFailed)
+            ToastUtil.showShort(placeHolder.context, R.string.cf0928util_webViewLoadFailed)
             null
         } else webView.apply {
             // 更新其id，以兼容相对布局/约束布局依赖viewId布局ui的父View

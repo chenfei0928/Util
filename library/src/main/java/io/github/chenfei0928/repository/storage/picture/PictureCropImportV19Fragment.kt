@@ -11,6 +11,7 @@ import io.github.chenfei0928.app.result.registerAllActivityResultLauncher
 import io.github.chenfei0928.app.result.registerForActivityResultDelegate
 import io.github.chenfei0928.content.FileProviderUtil
 import io.github.chenfei0928.io.FileUtil
+import io.github.chenfei0928.util.R
 
 /**
  * 提供图片选择、并裁剪的导入
@@ -52,7 +53,9 @@ internal class PictureCropImportV19Fragment : AbsCropImportV19Fragment() {
             intent.action = Intent.ACTION_OPEN_DOCUMENT
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "image/*"
-            return Intent.createChooser(intent, "选择要导入的文件")
+            return Intent.createChooser(
+                intent, context.getString(R.string.cf0928util_toast_extStrong_chooseImportFile)
+            )
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Uri? {

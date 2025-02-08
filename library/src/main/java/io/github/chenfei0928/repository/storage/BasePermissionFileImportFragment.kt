@@ -47,7 +47,7 @@ abstract class BasePermissionFileImportFragment<T>(
     private fun showRationaleForPermission(request: PermissionRequest) {
         requireActivity().onShowPermissionRationale(
             getString(
-                R.string.permissionRationale, permissionName
+                R.string.cf0928util_permissionRationale, permissionName
             ), request
         )
     }
@@ -56,7 +56,7 @@ abstract class BasePermissionFileImportFragment<T>(
      * 当权限被拒绝
      */
     private fun onPermissionDenied() {
-        requireActivity().onPermissionDenied(getString(R.string.permissionDenied, permissionName),
+        requireActivity().onPermissionDenied(getString(R.string.cf0928util_permissionDenied, permissionName),
             { _, _ -> removeSelf(null) },
             { _, _ -> removeSelf(null) })
     }
@@ -67,7 +67,7 @@ abstract class BasePermissionFileImportFragment<T>(
     private fun onPermissionNeverAskAgain() {
         requireActivity().onPermissionNeverAskAgain(
             getString(
-                R.string.permissionNeverAskAgain, permissionName
+                R.string.cf0928util_permissionNeverAskAgain, permissionName
             )
         ) { _, _ ->
             removeSelf(null)

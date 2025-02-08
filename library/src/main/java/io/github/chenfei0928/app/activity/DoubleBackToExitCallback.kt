@@ -22,7 +22,7 @@ class DoubleBackToExitCallback(
     private val doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout()
 
     override fun handleOnBackPressed() {
-        ToastUtil.showShort(context, R.string.main_doubleBackToExit)
+        ToastUtil.showShort(context, R.string.cf0928util_doubleBackToExit)
         isEnabled = false
         handler.postDelayed(doubleTapTimeout * 7L) {
             isEnabled = true

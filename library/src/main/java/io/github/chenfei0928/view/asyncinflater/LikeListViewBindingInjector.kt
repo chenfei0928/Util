@@ -74,5 +74,5 @@ object LikeListViewBindingInjector {
     }
 
     private var View.viewHolderTag: ViewBinding
-            by ViewTagDelegate(R.id.viewTag_viewHolder)
+            by ViewTagDelegate(R.id.cf0928util_viewTag_viewHolder)
 }

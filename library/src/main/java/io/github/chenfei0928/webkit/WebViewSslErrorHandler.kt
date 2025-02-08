@@ -6,6 +6,7 @@ import android.net.http.SslError
 import android.webkit.SslErrorHandler
 import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toUri
+import io.github.chenfei0928.util.R
 
 /**
  * WebView SSL证书验证错误处理器
@@ -16,6 +17,7 @@ import androidx.core.net.toUri
 internal class WebViewSslErrorHandler(
     private val context: Context
 ) {
+    // 网站域名到其是否忽略证书校验信息和处理器的映射
     private val sslErrorHandlerOpinion = mutableMapOf<String?, Opinion>()
 
     fun emit(handler: SslErrorHandler, error: SslError?) {
@@ -37,8 +39,8 @@ internal class WebViewSslErrorHandler(
 
         private var dialog: Dialog? = AlertDialog
             .Builder(context)
-            .setMessage("ssl证书验证失败")
-            .setPositiveButton("继续") { _, _ -> onProcessResult(true) }
+            .setMessage(R.string.cf0928util_sslError_message)
+            .setPositiveButton(R.string.cf0928util_sslError_ignoreAngGoOn) { _, _ -> onProcessResult(true) }
             .setNegativeButton(android.R.string.cancel) { _, _ -> onProcessResult(false) }
             .setOnCancelListener { onProcessResult(false) }
             .create()

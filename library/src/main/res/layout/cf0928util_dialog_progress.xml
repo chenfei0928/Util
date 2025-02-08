@@ -23,10 +23,10 @@
         android:layout_height="match_parent"
         android:baselineAligned="false"
         android:orientation="horizontal"
-        android:paddingBottom="18dp"
-        android:paddingEnd="?attr/dialogPreferredPadding"
         android:paddingStart="?attr/dialogPreferredPadding"
-        android:paddingTop="18dp">
+        android:paddingTop="18dp"
+        android:paddingEnd="?attr/dialogPreferredPadding"
+        android:paddingBottom="18dp">
 
         <ProgressBar
             android:id="@android:id/progress"
@@ -37,10 +37,10 @@
             android:max="10000" />
 
         <TextView
-            android:id="@+id/message"
+            android:id="@android:id/message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="@string/loading" />
+            android:text="@string/cf0928util_loading" />
     </LinearLayout>
 </FrameLayout>

@@ -26,7 +26,7 @@ abstract class BaseLazyInitFragment : BaseFragment() {
         isDestroyed = false
         this.lazyLoadSavedInstanceState = savedInstanceState
         return FrameLayout(requireContext()).apply {
-            id = R.id.lazyInitPlaceHolder
+            id = R.id.cf0928util_lazyInitPlaceHolder
         }
     }
 

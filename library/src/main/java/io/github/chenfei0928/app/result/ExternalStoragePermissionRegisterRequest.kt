@@ -44,6 +44,6 @@ inline fun ActivityResultCaller.registerForExternalStoragePermission(
     permissions = arrayOf(
         Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
     ),
-    permissionName = { getString(R.string.permissionName_sdcard) },
+    permissionName = { getString(R.string.cf0928util_permissionName_sdcard) },
     callback = callback
 )

@@ -1,20 +1,26 @@
 <resources>
-    <string name="app_name">library</string>
+    <string name="cf0928util_doubleBackToExit">双击退出</string>
+    <string name="cf0928util_dialog_confirm_title">确认？</string>
+    <string name="cf0928util_loading">loading&#8230;</string>
+    <string name="cf0928util_webViewLoadFailed">WebView加载失败,请卸载 \'应用管理\' 中的 \'Android System WebView\' 重试</string>
 
-    <string name="main_doubleBackToExit">双击退出</string>
-    <string name="dialog_confirm_title">确认？</string>
-    <string name="loading">loading&#8230;</string>
-    <string name="webViewLoadFailed">WebView加载失败,请卸载 \'应用管理\' 中的 \'Android System WebView\' 重试</string>
+    <string name="cf0928util_permissionRationale">该功能需要%1$s权限</string>
+    <string name="cf0928util_permissionDenied">%1$s权限被拒绝，请允许权限后才能继续</string>
+    <string name="cf0928util_permissionNeverAskAgain">%1$s权限被拒绝，请允许权限后才能继续</string>
 
-    <string name="permissionRationale">该功能需要%1$s权限</string>
-    <string name="permissionDenied">%1$s权限被拒绝，请允许权限后才能继续</string>
-    <string name="permissionNeverAskAgain">%1$s权限被拒绝，请允许权限后才能继续</string>
+    <string name="cf0928util_permissionName_sdcard">扩展卡</string>
+    <string name="cf0928util_permissionName_camera">相机</string>
 
-    <string name="permissionName_sdcard">扩展卡</string>
+    <string name="cf0928util_toast_extStrong_chooseImportFile">选择要导入的文件</string>
+    <string name="cf0928util_toast_extStrong_fileImporting">文件导入中&#8230;</string>
+    <string name="cf0928util_toast_extStrong_saved">已保存到本地</string>
+    <string name="cf0928util_toast_extStrong_failed">保存到本地失败</string>
 
-    <string name="toast_extStrong_saved">已保存到本地</string>
-    <string name="toast_extStrong_failed">保存到本地失败</string>
+    <string name="cf0928util_permission_allow">允许并继续</string>
+    <string name="cf0928util_permission_deny">拒绝</string>
 
-    <string name="permission_allow">允许并继续</string>
-    <string name="permission_deny">拒绝</string>
+    <string name="cf0928util_sslError_message">Ssl证书验证失败</string>
+    <string name="cf0928util_sslError_ignoreAngGoOn">忽略错误并继续</string>
+
+    <string name="cf0928util_fileChoose_openFailed">打开文件选择器失败</string>
 </resources>

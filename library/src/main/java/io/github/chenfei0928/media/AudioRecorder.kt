@@ -47,10 +47,10 @@ constructor(
             // 准备并开始录音
             recorder.prepare()
             recorder.start()
-            Log.i(TAG, "开始录音...")
+            Log.i(TAG, "开始录音 startRecord...")
             true
         } catch (e: IOException) {
-            Log.e(TAG, "准备失败", e)
+            Log.e(TAG, "准备失败 prepare failed", e)
             false
         }
     }
@@ -59,7 +59,7 @@ constructor(
         recorder.stop()
         recorder.reset()
         recorder.release()
-        Log.i(TAG, "停止录音")
+        Log.i(TAG, "停止录音 stopRecord")
     }
 
     /**

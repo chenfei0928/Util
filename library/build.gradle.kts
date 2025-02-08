@@ -3,7 +3,6 @@ import io.github.chenfei0928.DepsAndroidx
 import io.github.chenfei0928.android.applyLibrary
 import io.github.chenfei0928.android.applyTest
 import io.github.chenfei0928.compiler.applyKotlin
-import io.github.chenfei0928.data.applyProtobuf
 import me.omico.age.dsl.withKotlinAndroidMavenPublication
 
 plugins {
@@ -22,6 +21,7 @@ withKotlinAndroidMavenPublication(
 
 android {
     namespace = "io.github.chenfei0928.util"
+    resourcePrefix = "cf0928util_"
 
     defaultConfig {
         minSdk = 21

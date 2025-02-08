@@ -9,6 +9,7 @@ import android.provider.MediaStore
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import io.github.chenfei0928.os.getParcelableCompat
+import io.github.chenfei0928.util.R
 
 /**
  * 提供拍照、并裁剪的导入
@@ -64,7 +65,9 @@ internal class TakePhotoCropImportV19Fragment : AbsCropImportV19Fragment() {
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             intent.putExtra(MediaStore.EXTRA_OUTPUT, outputPictureUri)
             grantUriPermission(context, intent, outputPictureUri)
-            return Intent.createChooser(intent, "选择要导入的文件")
+            return Intent.createChooser(
+                intent, context.getString(R.string.cf0928util_toast_extStrong_chooseImportFile)
+            )
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Uri? {

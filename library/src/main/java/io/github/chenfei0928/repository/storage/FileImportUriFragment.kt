@@ -11,6 +11,7 @@ import androidx.annotation.UiThread
 import io.github.chenfei0928.app.result.registerAllActivityResultLauncher
 import io.github.chenfei0928.app.result.registerForActivityResultDelegate
 import io.github.chenfei0928.os.safeHandler
+import io.github.chenfei0928.util.R
 
 /**
  * 文件导入处理，返回文件的uri，可能需要使用[Context.getContentResolver]来读取
@@ -26,7 +27,7 @@ open class FileImportUriFragment : BasePermissionFileImportFragment<Uri>(
     // 5.0以上才支持SAF框架
     override val permissionMaxSdkVersion: Int = Build.VERSION_CODES.LOLLIPOP
     override val permissionName: String
-        get() = "存储卡"
+        get() = getString(R.string.cf0928util_permissionName_sdcard)
 
     private val fileUriImportLauncher by registerForActivityResultDelegate {
         registerForActivityResult(FileUriImportContract()) { removeSelf(it) }
@@ -70,7 +71,9 @@ open class FileImportUriFragment : BasePermissionFileImportFragment<Uri>(
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = input
             }
-            return Intent.createChooser(intent, "选择要导入的文件")
+            return Intent.createChooser(
+                intent, context.getString(R.string.cf0928util_toast_extStrong_chooseImportFile)
+            )
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Uri? {

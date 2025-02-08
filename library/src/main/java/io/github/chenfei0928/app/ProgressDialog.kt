@@ -29,7 +29,7 @@ open class ProgressDialog(
     private var mProgress: ProgressBar? = null
     private var mMessageView: TextView? = null
 
-    private var mMessage: CharSequence? = context.getString(R.string.loading)
+    private var mMessage: CharSequence? = context.getString(R.string.cf0928util_loading)
 
     var isIndeterminate: Boolean = false
         /**
@@ -142,14 +142,14 @@ open class ProgressDialog(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (mProgressStyle == STYLE_HORIZONTAL) {
-            setContentView(R.layout.alert_progress_dialog)
+            setContentView(R.layout.cf0928util_alert_progress_dialog)
             mProgressNumber = findViewById(R.id.progress_number)
             mProgressPercent = findViewById(R.id.progress_percent)
         } else {
-            setContentView(R.layout.dialog_progress)
+            setContentView(R.layout.cf0928util_dialog_progress)
         }
         mProgress = findViewById(android.R.id.progress)
-        mMessageView = findViewById(R.id.message)
+        mMessageView = findViewById(android.R.id.message)
 
         if (max > 0) {
             max = max

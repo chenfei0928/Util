@@ -85,7 +85,7 @@ inline fun ActivityResultCaller.registerForSimplePermission(
         override fun onDenied() {
             context().run {
                 onPermissionDenied(
-                    getString(R.string.permissionDenied, permissionName()),
+                    getString(R.string.cf0928util_permissionDenied, permissionName()),
                     { _, _ -> registerForPermission!!.launch(null) },
                     { _, _ -> callback(false) })
             }
@@ -94,7 +94,7 @@ inline fun ActivityResultCaller.registerForSimplePermission(
         override fun onNeverAskAgain() {
             context().run {
                 onPermissionNeverAskAgain(
-                    getString(R.string.permissionNeverAskAgain, permissionName())
+                    getString(R.string.cf0928util_permissionNeverAskAgain, permissionName())
                 ) { _, _ ->
                     callback(false)
                 }
@@ -114,7 +114,7 @@ inline fun ActivityResultCaller.registerForSimplePermission(
         override fun onRationale(request: PermissionRequest) {
             context().run {
                 onShowPermissionRationale(
-                    getString(R.string.permissionRationale, permissionName()), request
+                    getString(R.string.cf0928util_permissionRationale, permissionName()), request
                 )
             }
         }

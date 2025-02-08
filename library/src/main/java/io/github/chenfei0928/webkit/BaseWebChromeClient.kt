@@ -48,7 +48,7 @@ open class BaseWebChromeClient(
             ConsoleMessage.MessageLevel.DEBUG -> Log.d(TAG, msg)
             null -> Log.d(TAG, msg)
         }
-        // 返回true，不再需要webview内部处理
+        // 返回true，不再需要WebView内部处理
         return true
     }
 
@@ -77,7 +77,7 @@ open class BaseWebChromeClient(
         result: JsResult
     ): Boolean {
         AlertDialog.Builder(view.context)
-            .setTitle(R.string.dialog_confirm_title)
+            .setTitle(R.string.cf0928util_dialog_confirm_title)
             .setMessage(message)
             .setPositiveButton(android.R.string.ok) { _, _ -> result.confirm() }
             .setNegativeButton(android.R.string.cancel) { _, _ -> result.cancel() }

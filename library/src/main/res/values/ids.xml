@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item name="onPropertyChanged" type="id" />
-    <item name="toolbar" type="id" />
-    <item name="glide_id" type="id" />
-    <item name="lazyInitPlaceHolder" type="id" />
-    <item name="viewTag_viewHolder" type="id" />
-    <item name="viewTag_injectorClassName" type="id" />
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <item name="cf0928util_onPropertyChanged" type="id" />
+    <item name="toolbar" type="id" tools:ignore="ResourceName" />
+    <item name="cf0928util_lazyInitPlaceHolder" type="id"  />
+    <item name="cf0928util_viewTag_viewHolder" type="id" />
+    <item name="cf0928util_viewTag_injectorClassName" type="id" />
 </resources>

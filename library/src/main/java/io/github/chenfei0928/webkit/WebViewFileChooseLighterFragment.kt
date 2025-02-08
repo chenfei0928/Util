@@ -10,6 +10,7 @@ import android.webkit.WebChromeClient
 import androidx.fragment.app.Fragment
 import io.github.chenfei0928.app.fragment.removeSelf
 import io.github.chenfei0928.util.Log
+import io.github.chenfei0928.util.R
 import io.github.chenfei0928.widget.ToastUtil
 
 /**
@@ -41,9 +42,9 @@ internal class WebViewFileChooseLighterFragment : Fragment() {
             @Suppress("DEPRECATION")
             startActivityForResult(intent, REQUEST_CODE)
         } catch (e: ActivityNotFoundException) {
-            ToastUtil.showShort(context, "打开文件选择器失败")
+            ToastUtil.showShort(context, R.string.cf0928util_fileChoose_openFailed)
             Log.w(TAG, run {
-                "启动文件选择器失败：title: ${fileChooserParams.title}, " +
+                "启动文件选择器失败，Launch file choose failed：title: ${fileChooserParams.title}, " +
                         "filenameHint:  ${fileChooserParams.filenameHint}, " +
                         "acceptTypes: ${fileChooserParams.acceptTypes?.contentToString()}, " +
                         "isCaptureEnabled: ${fileChooserParams.isCaptureEnabled}, " +

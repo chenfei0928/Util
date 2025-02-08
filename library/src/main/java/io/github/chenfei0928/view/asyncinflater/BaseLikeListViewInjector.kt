@@ -115,7 +115,7 @@ object BaseLikeListViewInjector {
     }
 
     internal var View.viewHolderTag: RecyclerView.ViewHolder
-            by ViewTagDelegate(R.id.viewTag_viewHolder)
+            by ViewTagDelegate(R.id.cf0928util_viewTag_viewHolder)
     internal var View.injectorClassNameTag: String
-            by ViewTagDelegate(R.id.viewTag_injectorClassName)
+            by ViewTagDelegate(R.id.cf0928util_viewTag_injectorClassName)
 }

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Build
 import io.github.chenfei0928.repository.storage.BaseFileImportFragment
 import io.github.chenfei0928.repository.storage.BasePermissionFileImportParentFragment
+import io.github.chenfei0928.util.R
 
 /**
  * 请求权限的裁图相册文件导入
@@ -20,7 +21,7 @@ internal class PictureImportPermissionFragment : BasePermissionFileImportParentF
     override val permissionMaxSdkVersion: Int
         get() = Build.VERSION_CODES.LOLLIPOP
     override val permissionName: String
-        get() = "存储卡"
+        get() = getString(R.string.cf0928util_permissionName_sdcard)
 
     override fun createFragment(): BaseFileImportFragment<Uri> {
         return PictureCropImportV19Fragment().also {

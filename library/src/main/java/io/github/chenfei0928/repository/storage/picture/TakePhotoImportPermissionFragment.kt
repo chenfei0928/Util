@@ -4,6 +4,7 @@ import android.Manifest
 import android.net.Uri
 import io.github.chenfei0928.repository.storage.BaseFileImportFragment
 import io.github.chenfei0928.repository.storage.BasePermissionFileImportParentFragment
+import io.github.chenfei0928.util.R
 
 /**
  * 请求权限的相机裁图文件导入
@@ -15,7 +16,7 @@ internal class TakePhotoImportPermissionFragment : BasePermissionFileImportParen
     requestPermission = arrayOf(Manifest.permission.CAMERA)
 ) {
     override val permissionName: String
-        get() = "相机"
+        get() = getString(R.string.cf0928util_permissionName_camera)
 
     override fun createFragment(): BaseFileImportFragment<Uri> {
         return TakePhotoCropImportV19Fragment().also {

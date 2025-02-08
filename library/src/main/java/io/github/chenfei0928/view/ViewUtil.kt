@@ -8,7 +8,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewParent
 import androidx.annotation.ColorInt
-import androidx.appcompat.R
 import androidx.core.content.res.use
 
 /**
@@ -23,7 +22,7 @@ object ViewUtil {
         // 由于Service没有主题，只能获取ApplicationInfo中的主题id，并根据其获取主题色
         return context.obtainStyledAttributes(
             context.applicationInfo.theme,
-            intArrayOf(R.attr.colorPrimary)
+            intArrayOf(android.R.attr.colorPrimary)
         ).use {
             it.getColor(0, Color.BLACK)
         }

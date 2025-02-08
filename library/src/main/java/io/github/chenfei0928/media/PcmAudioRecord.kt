@@ -104,7 +104,7 @@ constructor(
         // 平方和除以数据总长度，得到音量大小。
         val mean = sum / size.toDouble()
         val volume = 10 * log10(mean)
-        Log.d(TAG, "分贝值:$volume")
+        Log.d(TAG, "分贝值 decibel: $volume")
         volumeCallback(volume)
     }
 
@@ -120,7 +120,7 @@ constructor(
         // 平方和除以数据总长度，得到音量大小。
         val mean = sum / size.toDouble()
         val volume = 10 * log10(mean)
-        Log.d(TAG, "分贝值:$volume")
+        Log.d(TAG, "分贝值 decibel: $volume")
         volumeCallback(volume)
     }
 

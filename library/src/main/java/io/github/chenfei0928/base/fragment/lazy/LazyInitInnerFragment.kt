@@ -29,7 +29,7 @@ open class LazyInitInnerFragment<F : Fragment>(
         if (!isInflated) {
             childFragmentManager
                 .beginTransaction()
-                .add(R.id.lazyInitPlaceHolder, fragment, FRAGMENT_TAG)
+                .add(R.id.cf0928util_lazyInitPlaceHolder, fragment, FRAGMENT_TAG)
                 .commitNowAllowingStateLoss()
         }
     }

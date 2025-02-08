@@ -5,12 +5,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.UiThread
+import androidx.fragment.app.commit
 import io.github.chenfei0928.app.ProgressDialog
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.concurrent.coroutines.showWithContext
 import io.github.chenfei0928.content.PictureUriUtil
 import io.github.chenfei0928.io.FileUtil
 import io.github.chenfei0928.os.safeHandler
+import io.github.chenfei0928.util.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -30,7 +32,7 @@ class FileImportFileFragment : BasePermissionFileImportFragment<File>(
     // Android10之后只允许使用SAF访问文件，不再需要扩展卡权限
     override val permissionMaxSdkVersion: Int = Build.VERSION_CODES.Q
     override val permissionName: String
-        get() = "存储卡"
+        get() = getString(R.string.cf0928util_permissionName_sdcard)
 
     @UiThread
     override fun launchFileChooseImpl() {
@@ -50,10 +52,9 @@ class FileImportFileFragment : BasePermissionFileImportFragment<File>(
             copyAsFileToRemoveSelf(uri)
         }
         // 添加implFragment
-        childFragmentManager
-            .beginTransaction()
-            .add(implFragment, "implFragment")
-            .commit()
+        childFragmentManager.commit {
+            add(implFragment, "implFragment")
+        }
     }
 
     private fun copyAsFileToRemoveSelf(uri: Uri?) {
@@ -71,7 +72,7 @@ class FileImportFileFragment : BasePermissionFileImportFragment<File>(
                 coroutineScope.launch {
                     val tmpFile = ProgressDialog(context).apply {
                         // 显示进度提示
-                        setMessage("文件导入中...")
+                        setMessage(this@FileImportFileFragment.getString(R.string.cf0928util_toast_extStrong_fileImporting))
                         setCanceledOnTouchOutside(false)
                         setCancelable(false)
                         // 在io线程中复制文件
