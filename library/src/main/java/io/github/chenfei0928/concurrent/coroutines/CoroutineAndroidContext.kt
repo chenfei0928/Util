@@ -3,6 +3,7 @@ package io.github.chenfei0928.concurrent.coroutines
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.util.Log
 import android.view.View
 import androidx.collection.ArrayMap
 import androidx.fragment.app.Fragment
@@ -13,7 +14,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.base.ContextProvider
 import io.github.chenfei0928.content.findActivity
+import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.view.findParentFragment
+import java.lang.reflect.Modifier
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
@@ -25,50 +28,89 @@ import kotlin.coroutines.CoroutineContext
  */
 internal class CoroutineAndroidContextImpl
 private constructor(
-    private val host: Any?,
+    private val host: Any,
     override val androidContext: Context,
     override val fragmentHost: Fragment?,
 ) : CoroutineAndroidContext, AbstractCoroutineContextElement(CoroutineAndroidContext) {
 
     override fun toString(): String {
         @Suppress("MaxLineLength")
-        return "CoroutineAndroidContextImpl(host=$host, androidContext=$androidContext, fragmentHost=$fragmentHost, tagOrNull=$tagOrNull)"
-    }
-
-    override val tagOrNull: String? by lazy {
-        host?.staticTag ?: fragmentHost?.staticTag ?: androidContext.staticTag
+        return "CoroutineAndroidContextImpl(host=$host, androidContext=$androidContext, fragmentHost=$fragmentHost, tag=$tag)"
     }
 
     override val tag: String by lazy {
-        tagOrNull ?: run {
-            if (host?.javaClass?.name?.startsWith("android") == false) {
-                host
-            } else fragmentHost ?: androidContext
-        }.javaClass.simpleName
+        // 过滤掉来自操作系统的 host，如 FragmentViewLifecycleOwner 或任何操作系统的 View
+        val hostIfSelf = host.takeIf {
+            !it.javaClass.name.startsWith("android.") && !it.javaClass.name.startsWith("androidx.")
+        }
+        hostIfSelf?.getStaticTag(true)
+            ?: fragmentHost?.getStaticTag()
+            ?: androidContext.getStaticTag()
+            ?: run { hostIfSelf ?: fragmentHost ?: androidContext }.javaClass.simpleName
     }
 
     companion object {
+        private const val TAG = "CoroutineAndroidContext"
         private val classTagMap = ArrayMap<Class<*>, String?>()
 
-        private val Any?.staticTag: String?
-            get() = this?.javaClass?.let {
-                classTagMap.getOrPut(it) {
-                    try {
-                        it.getDeclaredField("TAG").run {
-                            isAccessible = true
-                            get(null) as? String
-                        }
-                    } catch (_: ReflectiveOperationException) {
-                        null
-                    }
+        fun Any.getStaticTag(
+            tryOuterClass: Boolean = false
+        ): String? = this.javaClass.let { jClass ->
+            classTagMap.getOrPut(jClass) {
+                if (tryOuterClass) {
+                    findTagWithOuter(jClass, this)
+                } else {
+                    findTag(jClass, this)
                 }
             }
+        }
 
-        fun newInstance(host: Any?): CoroutineAndroidContext {
+        @Suppress("ReturnCount")
+        private fun findTagWithOuter(jClass: Class<*>, instance: Any?): String? {
+            val tag = findTag(jClass, instance)
+            if (tag != null) {
+                return tag
+            }
+            // 如果这个类没有tag字段，向外寻找它的外部类的tag
+            val declaringClass = jClass.declaringClass
+            return if (declaringClass != null) {
+                findTagWithOuter(declaringClass, null)
+            } else {
+                val fileClass = try {
+                    Class.forName(jClass.name + "Kt", false, jClass.classLoader)
+                } catch (_: ClassNotFoundException) {
+                    return null
+                }
+                // 如果已经通过获取外部类到达了最外层的类，尝试获取在Kotlin文件中直接定义的字段
+                val fileTag = findTag(fileClass)
+                Log.w(TAG, run {
+                    "findTagWithOuter: TAG 字段应定义到类内部，而非文件中：$jClass"
+                })
+                fileTag
+            }
+        }
+
+        private fun findTag(jClass: Class<*>, instance: Any? = null): String? = try {
+            jClass.getDeclaredField("TAG").run {
+                isAccessible = true
+                if (Modifier.STATIC in modifiers) {
+                    get(null) as? String
+                } else {
+                    Log.w(TAG, run {
+                        "findTag: TAG 字段应定义为 static，或 Kotlin 中单例类内部、普通类伴生对象中，并修饰为 const val：$this"
+                    })
+                    get(instance) as? String
+                }
+            }
+        } catch (_: ReflectiveOperationException) {
+            null
+        }
+
+        fun newInstance(host: Any): CoroutineAndroidContext {
             return newInstanceImpl(host, host)
         }
 
-        private fun newInstanceImpl(host: Any?, node: Any?): CoroutineAndroidContext {
+        private fun newInstanceImpl(host: Any, node: Any?): CoroutineAndroidContext {
             return if (node is LifecycleOwner
                 && FragmentViewLifecycleAccessor.isViewLifecycleOwner(node)
             ) {
@@ -126,10 +168,10 @@ interface CoroutineAndroidContext : CoroutineContext.Element {
     val fragmentHost: Fragment?
 
     /**
-     * 获取当前协程作用域所绑定上下文的 TAG 字段值
+     * 获取当前协程作用域所绑定宿主的 TAG 字段值。
+     * 可能会获取到 View、Fragment、Activity 的 TAG。
+     * 获取时会基于反射，可能会受到混淆影响
      */
-    val tagOrNull: String?
-
     val tag: String
 
     override fun toString(): String
