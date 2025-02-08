@@ -14,6 +14,7 @@ class SortedListList<E>(
         get() = impl.size()
 
     override fun get(index: Int): E {
+        @Suppress("kotlin:S6518")
         return impl.get(index)
     }
 

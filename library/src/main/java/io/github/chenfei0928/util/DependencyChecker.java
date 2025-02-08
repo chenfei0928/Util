@@ -35,6 +35,7 @@ import androidx.concurrent.futures.ListenableFutureKt;
  * @author chenf()
  * @date 2024-11-29 14:16
  */
+@SuppressWarnings({"java:S1854", "java:S1481"})
 public enum DependencyChecker {
     /**
      * 判断Material依赖是否被引入了，调用一下它的方法避免class引用被编译器优化掉

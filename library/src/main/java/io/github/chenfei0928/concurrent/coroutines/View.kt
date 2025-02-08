@@ -19,6 +19,7 @@ private val viewOwnerCoroutineScopeCache: MutableMap<View, ViewCoroutineScope> =
  * @date 2020-10-19 17:01
  */
 val View.attachedCoroutineScope: CoroutineScope
+    @Suppress("MagicNumber")
     get() = viewOwnerCoroutineScopeCache.getOrPut(this) {
         ViewCoroutineScope(this).init()
     } + CoroutineStackTraceRecordContextImpl(4)

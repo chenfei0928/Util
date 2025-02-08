@@ -70,7 +70,7 @@ suspend inline fun <D : Dialog, R> D.showWithContext(
     return@coroutineScope try {
         if (context == EmptyCoroutineContext) {
             block(this@showWithContext)
-        } else withContext(context) {
+        } else @Suppress("kotlin:S6311") withContext(context) {
             block(this@showWithContext)
         }
     } finally {

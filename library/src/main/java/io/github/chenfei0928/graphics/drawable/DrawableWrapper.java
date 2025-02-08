@@ -102,6 +102,7 @@ public class DrawableWrapper extends Drawable implements Drawable.Callback {
     }
 
     @Override
+    @SuppressWarnings("java:S1874")
     public int getOpacity() {
         return mDrawable.getOpacity();
     }

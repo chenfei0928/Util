@@ -36,7 +36,7 @@ class ProtobufMessageField<T : Message, V>(
     override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE, this)
     override fun invoke(): PreferenceType = PreferenceType.forType(fieldDescriptor)
 
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "kotlin:S6531")
     override fun get(
         data: T
     ): V = if (fieldDescriptor.type != Descriptors.FieldDescriptor.Type.ENUM) {
@@ -64,7 +64,6 @@ class ProtobufMessageField<T : Message, V>(
             is PreferenceType.Native,
             is PreferenceType.EnumNameString<*>,
             is PreferenceType.NoSupportPreferenceDataStore -> {
-                @Suppress("UseRequire")
                 throw IllegalArgumentException("Protobuf 枚举字段 $fieldDescriptor 与vType信息 $vType 类型不匹配")
             }
         }

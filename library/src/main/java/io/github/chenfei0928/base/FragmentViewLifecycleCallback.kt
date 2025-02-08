@@ -40,6 +40,7 @@ internal class FragmentViewLifecycleCallback : FragmentManager.FragmentLifecycle
         notifyStateUpdate(f, State.Created)
     }
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onFragmentActivityCreated(
         fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?
     ) {

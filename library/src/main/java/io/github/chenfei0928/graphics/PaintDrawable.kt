@@ -30,7 +30,7 @@ abstract class PaintDrawable : Drawable() {
         paint.colorFilter = colorFilter
     }
 
-    @Deprecated("This method is no longer used in graphics optimizations")
+    @Suppress("kotlin:S1133", "OVERRIDE_DEPRECATION")
     override fun getOpacity(): Int =
         PixelFormat.TRANSLUCENT
 }

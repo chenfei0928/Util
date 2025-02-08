@@ -58,6 +58,7 @@ abstract class BaseJsBridgeFragment : Fragment() {
         )
 
         @JvmStatic
+        @Suppress("LongParameterList")
         protected fun <F : BaseJsBridgeFragment> createBridgeHandler(
             host: FragmentHost,
             jsBridge: BridgeWebView,

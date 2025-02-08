@@ -38,6 +38,7 @@ class MapKeyValueList(
         throw IndexOutOfBoundsException("size is $size but index is $index $this")
     }
 
+    @Suppress("ReturnCount")
     override fun indexOf(element: Any?): Int {
         var index = 0
         map.forEach { (k, v) ->

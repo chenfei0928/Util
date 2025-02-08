@@ -152,7 +152,7 @@ class GravityCropTransformation(
          * @hide
          */
         @SuppressLint("RtlHardcoded")
-        @Suppress("CyclomaticComplexMethod")
+        @Suppress("CyclomaticComplexMethod", "kotlin:S3776")
         fun toString(result: StringBuilder, @GravityInt gravity: Int) {
             if (gravity and Gravity.FILL == Gravity.FILL) {
                 result.append("FILL").append(' ')

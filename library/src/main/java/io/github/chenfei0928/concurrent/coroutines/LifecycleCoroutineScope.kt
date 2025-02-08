@@ -48,6 +48,7 @@ object : ReadOnlyProperty<LifecycleOwner, CoroutineScope> {
         }
 
     override fun getValue(thisRef: LifecycleOwner, property: KProperty<*>): CoroutineScope {
+        @Suppress("MagicNumber")
         return delegate.getValue(thisRef, property) + CoroutineStackTraceRecordContextImpl(5)
     }
 }

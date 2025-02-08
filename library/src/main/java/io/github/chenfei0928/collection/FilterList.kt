@@ -4,6 +4,7 @@ package io.github.chenfei0928.collection
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-12-03 14:42
  */
+@Suppress("TooManyFunctions")
 class FilterList<E>
 /**
  *
@@ -98,6 +99,7 @@ constructor(
             private var next: E? = null
             private var pre: E? = null
 
+            @Suppress("ReturnCount")
             override fun hasPrevious(): Boolean {
                 if (pre != null) {
                     return true
@@ -126,6 +128,7 @@ constructor(
                 return indexOf(pre)
             }
 
+            @Suppress("ReturnCount")
             override fun hasNext(): Boolean {
                 if (next != null) {
                     return true
@@ -155,10 +158,12 @@ constructor(
     }
 
     override fun set(index: Int, element: E): E {
+        @Suppress("kotlin:S6518")
         return list.set(toRealIndex(index, false), element)
     }
 
     fun replace(currentElement: E, newElement: E): E {
+        @Suppress("kotlin:S6518")
         return list.set(list.indexOf(currentElement), newElement)
     }
 

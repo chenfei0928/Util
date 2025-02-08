@@ -1,5 +1,6 @@
 package io.github.chenfei0928.widget
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -20,6 +21,7 @@ class DisPagerView
         return allowScroll && super.onInterceptTouchEvent(event)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(ev: MotionEvent): Boolean {
         return allowScroll && super.onTouchEvent(ev)
     }

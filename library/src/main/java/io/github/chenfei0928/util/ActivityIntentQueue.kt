@@ -35,7 +35,9 @@ class ActivityIntentQueue : Fragment() {
         postDelayedPendingTaskOrRemoveSelf()
     }
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        @Suppress("DEPRECATION")
         super.onActivityResult(requestCode, resultCode, data)
         pendingTaskQueue.find {
             it is Task.IntentTask && it.requestCode == requestCode
@@ -142,6 +144,7 @@ class ActivityIntentQueue : Fragment() {
             internal val requestCode: Int = Random.nextInt() and FRAGMENT_REQUEST_CODE_MASK
 
             override fun fire(queue: ActivityIntentQueue): Boolean {
+                @Suppress("DEPRECATION")
                 queue.startActivityForResult(intent, requestCode)
                 return false
             }

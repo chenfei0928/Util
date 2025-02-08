@@ -125,7 +125,7 @@ class ViewDrawable(
         return (view.alpha * 255).toInt()
     }
 
-    @Deprecated("This method is no longer used in graphics optimizations")
+    @Suppress("kotlin:S1133", "OVERRIDE_DEPRECATION")
     override fun getOpacity(): Int {
         return PixelFormat.TRANSLUCENT
     }

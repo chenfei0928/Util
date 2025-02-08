@@ -22,10 +22,6 @@ open class NestedScrollingWebView
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : NestedWebView(context, attrs, defStyleAttr) {
 
-    private fun dumpMessage(message: String) {
-        Log.i(TAG, "dumpMessage message=$message")
-    }
-
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
             val viewParent = findViewParentIfNeeds(this)
@@ -35,7 +31,9 @@ open class NestedScrollingWebView
     }
 
     override fun onOverScrolled(scrollX: Int, scrollY: Int, clampedX: Boolean, clampedY: Boolean) {
-        dumpMessage("onOverScrolled scrollX=$scrollX;scrollY=$scrollY;clampedX=$clampedX;clampedY=$clampedY")
+        Log.i(TAG, run {
+            "onOverScrolled scrollX=$scrollX;scrollY=$scrollY;clampedX=$clampedX;clampedY=$clampedY"
+        })
         if (clampedX) {
             val viewParent = findViewParentIfNeeds(this)
             viewParent?.requestDisallowInterceptTouchEvent(false)

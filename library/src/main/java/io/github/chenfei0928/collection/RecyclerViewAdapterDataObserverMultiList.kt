@@ -84,6 +84,7 @@ open class RecyclerViewAdapterDataObserverMultiList<E>(
     }
 
     override fun set(index: Int, element: E): E {
+        @Suppress("kotlin:S6518")
         return list.set(index, element).apply {
             adapterDataObserver?.onItemRangeChanged(index, 1, null)
         }

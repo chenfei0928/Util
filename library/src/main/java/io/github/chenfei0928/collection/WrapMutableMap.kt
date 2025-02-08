@@ -335,6 +335,7 @@ open class WrapMutableMap<WK, K, WV, V>(
         }
     }
 
+    @Suppress("NestedBlockDepth")
     override fun equals(other: Any?): Boolean {
         if (other == this)
             return true

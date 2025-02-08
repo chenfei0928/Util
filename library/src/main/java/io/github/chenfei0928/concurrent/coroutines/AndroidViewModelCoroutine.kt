@@ -18,6 +18,7 @@ private const val SCOPE_KEY = "androidx.lifecycle.UncaughtHandlerCoroutineScope.
  * [androidx.lifecycle.viewModelScope]
  */
 val AndroidViewModel.coroutineScope: CoroutineScope
+    @Suppress("MagicNumber")
     get() {
         val scope: CoroutineScope? = this.getCloseable(SCOPE_KEY)
         if (scope != null) {

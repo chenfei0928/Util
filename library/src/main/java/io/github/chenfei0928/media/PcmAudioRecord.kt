@@ -125,7 +125,7 @@ constructor(
     }
 
     /**
-     * 音量回调，可能会是 NaN 或 Infinite
+     * 音量回调，可能会是 [Double.POSITIVE_INFINITY] 或 [Double.NaN]
      */
     var volumeCallback: ((volume: Double) -> Unit)? = null
 

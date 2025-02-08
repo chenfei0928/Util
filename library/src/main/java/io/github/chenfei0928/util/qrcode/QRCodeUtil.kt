@@ -55,6 +55,7 @@ object QRCodeUtil {
     }
 
     @JvmStatic
+    @Suppress("NestedBlockDepth")
     fun createQRBitmap(
         content: String?, @Px widthPix: Int, @Px heightPix: Int
     ): Bitmap? = if (content.isNullOrBlank() || widthPix == 0 || heightPix == 0) {
@@ -78,6 +79,7 @@ object QRCodeUtil {
         // 两个for循环是图片横列扫描的结果
         for (y in 0 until bitMatrix.height) {
             for (x in 0 until bitMatrix.width) {
+                @Suppress("kotlin:S6518")
                 if (bitMatrix.get(x, y)) {
                     pixels[y * bitMatrix.width + x] = Color.BLACK
                 } else {
@@ -98,6 +100,7 @@ object QRCodeUtil {
     /**
      * 在二维码中间添加Logo图案
      */
+    @Suppress("ReturnCount")
     private fun addLogo(src: Bitmap?, logo: Bitmap?): Bitmap? {
         if (src == null) {
             return null

@@ -34,6 +34,7 @@ fun RecyclerView.smoothMoveToPosition(position: Int) {
 /**
  * 查询列表可见区域范围
  */
+@Suppress("NestedBlockDepth")
 fun RecyclerView.findVisibleRange(): IntRange = when (val lm = layoutManager) {
     null -> {
         throw IllegalArgumentException("no layoutManger")
