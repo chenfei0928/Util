@@ -1,11 +1,14 @@
 package io.github.chenfei0928.content.sp.saver.delegate
 
 import android.content.SharedPreferences
+import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 
-class LongDelegate(
+class LongDelegate<SpSaver : AbsSpSaver<SpSaver>>(
     key: String? = null, defaultValue: Long = 0L,
-) : AbsSpAccessDefaultValueDelegate<Long>(key, PreferenceType.Native.LONG, defaultValue) {
+) : AbsSpAccessDefaultValueDelegate<SpSaver, Long>(
+    key, PreferenceType.Native.LONG, defaultValue
+) {
     override fun getValueImpl(sp: SharedPreferences, key: String): Long =
         sp.getLong(key, defaultValue)
 

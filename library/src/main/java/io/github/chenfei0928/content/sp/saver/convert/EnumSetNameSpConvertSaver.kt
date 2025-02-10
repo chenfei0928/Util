@@ -5,12 +5,12 @@ import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.delegate.StringSetDelegate
 
-class EnumSetNameSpConvertSaver<E : Enum<E>>(
+class EnumSetNameSpConvertSaver<SpSaver: AbsSpSaver<SpSaver>, E : Enum<E>>(
     eClass: Class<E>,
     private val enumValues: Array<E>,
-    saver: AbsSpSaver.AbsSpDelegate<Set<String>?>,
+    saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Set<String>?>,
     private val nameNotFoundDefaultValue: E? = null,
-) : SpConvertSaver<Set<String>?, Set<E>?>(saver, EnumNameStringSet(eClass, enumValues)) {
+) : SpConvertSaver<SpSaver, Set<String>?, Set<E>?>(saver, EnumNameStringSet(eClass, enumValues)) {
 
     constructor(
         eClass: Class<E>,

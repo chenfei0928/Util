@@ -9,10 +9,10 @@ import io.github.chenfei0928.repository.local.decorator.Base64Serializer.Compani
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
-class LocalSerializerSpConvertSaver<T : Any>(
+class LocalSerializerSpConvertSaver<SpSaver : AbsSpSaver<SpSaver>, T : Any>(
     serializer: LocalSerializer<T>,
-    saver: AbsSpSaver.AbsSpDelegate<String?>,
-) : SpConvertSaver<String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
+    saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, String?>,
+) : SpConvertSaver<SpSaver, String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
 
     constructor(
         serializer: LocalSerializer<T>,

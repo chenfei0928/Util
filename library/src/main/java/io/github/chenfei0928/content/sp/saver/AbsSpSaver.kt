@@ -17,14 +17,18 @@ abstract class AbsSpSaver<SpSaver : AbsSpSaver<SpSaver>> : SpCommit {
     protected abstract val editor: SharedPreferences.Editor
 
     //<editor-fold desc="字段委托" defaultstatus="collapsed">
-    abstract class AbsSpDelegate<T>(
+    interface AbsSpDelegate<SpSaver : AbsSpSaver<SpSaver>, T> : ReadWriteProperty<SpSaver, T> {
         // 被序列化后的数据的类型
-        val spValueType: PreferenceType,
-    ) : ReadWriteProperty<AbsSpSaver<*>, T> {
+        val spValueType: PreferenceType
+        fun obtainDefaultKey(property: KProperty<*>): String
+    }
 
-        abstract fun obtainDefaultKey(property: KProperty<*>): String
+    abstract class AbsSpDelegateImpl<SpSaver : AbsSpSaver<SpSaver>, T>(
+        // 被序列化后的数据的类型
+        override val spValueType: PreferenceType,
+    ) : AbsSpDelegate<SpSaver, T> {
 
-        final override fun getValue(thisRef: AbsSpSaver<*>, property: KProperty<*>): T {
+        final override fun getValue(thisRef: SpSaver, property: KProperty<*>): T {
             val key = obtainDefaultKey(property)
             // 允许子类处理key不存在时返回默认值
             return getValue(thisRef.sp, key)
@@ -32,7 +36,7 @@ abstract class AbsSpSaver<SpSaver : AbsSpSaver<SpSaver>> : SpCommit {
 
         internal abstract fun getValue(sp: SharedPreferences, key: String): T
 
-        final override fun setValue(thisRef: AbsSpSaver<*>, property: KProperty<*>, value: T) {
+        final override fun setValue(thisRef: SpSaver, property: KProperty<*>, value: T) {
             val key = obtainDefaultKey(property)
             val editor = thisRef.editor
             // put null时直接remove掉key，交由子类处理时均是nonnull

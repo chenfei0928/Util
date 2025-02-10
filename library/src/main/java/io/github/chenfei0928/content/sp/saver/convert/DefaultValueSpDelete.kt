@@ -10,9 +10,9 @@ import kotlin.reflect.KProperty
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-12 16:39
  */
-abstract class DefaultValueSpDelete<T : Any>(
-    internal val saver: AbsSpSaver.AbsSpDelegate<T?>,
-) : AbsSpSaver.AbsSpDelegate<T>(saver.spValueType) {
+abstract class DefaultValueSpDelete<SpSaver : AbsSpSaver<SpSaver>, T : Any>(
+    internal val saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, T?>,
+) : AbsSpSaver.AbsSpDelegateImpl<SpSaver, T>(saver.spValueType) {
     abstract val defaultValue: T
 
     final override fun obtainDefaultKey(property: KProperty<*>): String {
@@ -32,16 +32,18 @@ abstract class DefaultValueSpDelete<T : Any>(
     }
 
     companion object {
-        fun <T : Any> AbsSpSaver.AbsSpDelegate<T?>.defaultValue(
+        fun <SpSaver : AbsSpSaver<SpSaver>, T : Any> AbsSpSaver.AbsSpDelegateImpl<SpSaver, T?>.defaultValue(
             defaultValue: T
-        ): DefaultValueSpDelete<T> = object : DefaultValueSpDelete<T>(this@defaultValue) {
-            override val defaultValue: T = defaultValue
-        }
+        ): DefaultValueSpDelete<SpSaver, T> =
+            object : DefaultValueSpDelete<SpSaver, T>(this@defaultValue) {
+                override val defaultValue: T = defaultValue
+            }
 
-        inline fun <T : Any> AbsSpSaver.AbsSpDelegate<T?>.defaultValue(
+        inline fun <SpSaver : AbsSpSaver<SpSaver>, T : Any> AbsSpSaver.AbsSpDelegateImpl<SpSaver, T?>.defaultValue(
             crossinline defaultValue: () -> T
-        ): DefaultValueSpDelete<T> = object : DefaultValueSpDelete<T>(this@defaultValue) {
-            override val defaultValue: T = defaultValue()
-        }
+        ): DefaultValueSpDelete<SpSaver, T> =
+            object : DefaultValueSpDelete<SpSaver, T>(this@defaultValue) {
+                override val defaultValue: T = defaultValue()
+            }
     }
 }

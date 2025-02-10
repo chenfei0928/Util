@@ -13,11 +13,11 @@ import kotlin.reflect.KProperty
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-08-06 15:51
  */
-sealed class AbsSpAccessDefaultValueDelegate<T>(
+sealed class AbsSpAccessDefaultValueDelegate<SpSaver : AbsSpSaver<SpSaver>, T>(
     internal val key: String?,
     spValueType: PreferenceType.Native,
     protected val defaultValue: T,
-) : AbsSpSaver.AbsSpDelegate<T>(spValueType) {
+) : AbsSpSaver.AbsSpDelegateImpl<SpSaver, T>(spValueType) {
 
     final override fun obtainDefaultKey(property: KProperty<*>): String =
         key ?: property.name

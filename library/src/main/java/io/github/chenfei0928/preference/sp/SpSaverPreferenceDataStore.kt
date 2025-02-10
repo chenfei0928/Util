@@ -67,7 +67,7 @@ constructor(
      * 根据 [property] 查询对应的委托，如果查找不到则通过反射获取其委托
      */
     @Suppress("UNCHECKED_CAST")
-    internal fun <V> getDelegateByProperty(property: KProperty<V>): AbsSpSaver.AbsSpDelegate<V> {
+    internal fun <V> getDelegateByProperty(property: KProperty<V>): AbsSpSaver.AbsSpDelegate<SpSaver, V> {
         return findFieldOrNullByProperty(property)?.outDelegate ?: run {
             Log.w(TAG, buildString {
                 append("getDelegateByProperty: getDelegate by reflect, because ")
@@ -88,10 +88,10 @@ constructor(
                 else -> throw IllegalArgumentException("not support KProperty2 or other Property: $property")
             }
             // 判断该字段的委托
-            require(delegate0 is AbsSpSaver.AbsSpDelegate<*>) {
+            require(delegate0 is AbsSpSaver.AbsSpDelegate<*, *>) {
                 "Property($property) must is delegate subclass as AbsSpSaver.AbsSpDelegate0: $delegate0"
             }
-            delegate0 as AbsSpSaver.AbsSpDelegate<V>
+            delegate0 as AbsSpSaver.AbsSpDelegate<SpSaver, V>
         }
     }
 

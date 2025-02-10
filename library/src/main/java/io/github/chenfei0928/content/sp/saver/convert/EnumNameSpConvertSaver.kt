@@ -4,12 +4,12 @@ import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 
-class EnumNameSpConvertSaver<E : Enum<E>>(
+class EnumNameSpConvertSaver<SpSaver : AbsSpSaver<SpSaver>, E : Enum<E>>(
     eClass: Class<E>,
     private val enumValues: Array<E>,
-    saver: AbsSpSaver.AbsSpDelegate<String?>,
+    saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, String?>,
     private val nameNotFoundDefaultValue: E? = null,
-) : SpConvertSaver<String?, E?>(saver, PreferenceType.EnumNameString(eClass, enumValues)) {
+) : SpConvertSaver<SpSaver, String?, E?>(saver, PreferenceType.EnumNameString(eClass, enumValues)) {
 
     constructor(
         eClass: Class<E>,

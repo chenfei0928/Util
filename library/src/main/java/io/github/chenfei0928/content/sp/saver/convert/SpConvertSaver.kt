@@ -11,10 +11,10 @@ import kotlin.reflect.KProperty
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-09-03 13:38
  */
-abstract class SpConvertSaver<SpValueType, FieldType>(
-    internal val saver: AbsSpSaver.AbsSpDelegate<SpValueType>,
+abstract class SpConvertSaver<SpSaver : AbsSpSaver<SpSaver>, SpValueType, FieldType>(
+    internal val saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, SpValueType>,
     spValueType: PreferenceType = saver.spValueType,
-) : AbsSpSaver.AbsSpDelegate<FieldType?>(spValueType) {
+) : AbsSpSaver.AbsSpDelegateImpl<SpSaver, FieldType?>(spValueType) {
     @Volatile
     private var cacheValue: Pair<SpValueType, FieldType>? = null
 

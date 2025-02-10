@@ -1,11 +1,14 @@
 package io.github.chenfei0928.content.sp.saver.delegate
 
 import android.content.SharedPreferences
+import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 
-class StringSetDelegate(
+class StringSetDelegate<SpSaver : AbsSpSaver<SpSaver>>(
     key: String? = null,
-) : AbsSpAccessDefaultValueDelegate<Set<String>?>(key, PreferenceType.Native.STRING_SET, null) {
+) : AbsSpAccessDefaultValueDelegate<SpSaver, Set<String>?>(
+    key, PreferenceType.Native.STRING_SET, null
+) {
     override fun getValueImpl(sp: SharedPreferences, key: String): Set<String>? =
         sp.getStringSet(key, null)
 

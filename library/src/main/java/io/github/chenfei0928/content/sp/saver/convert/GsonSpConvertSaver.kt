@@ -7,11 +7,11 @@ import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 import java.lang.reflect.Type
 
-class GsonSpConvertSaver<T>(
-    saver: AbsSpSaver.AbsSpDelegate<String?>,
+class GsonSpConvertSaver<SpSaver : AbsSpSaver<SpSaver>, T>(
+    saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, String?>,
     private val gson: Gson = io.github.chenfei0928.json.gson.gson,
     private val type: TypeToken<T>,
-) : SpConvertSaver<String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
+) : SpConvertSaver<SpSaver, String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
 
     @Suppress("UNCHECKED_CAST")
     constructor(
@@ -24,8 +24,8 @@ class GsonSpConvertSaver<T>(
     override fun onSave(value: T & Any): String = gson.toJson(value)
 
     companion object {
-        inline operator fun <reified T> invoke(
+        inline operator fun <SpSaver : AbsSpSaver<SpSaver>, reified T> invoke(
             key: String? = null
-        ) = GsonSpConvertSaver<T>(StringDelegate(key), type = object : TypeToken<T>() {})
+        ) = GsonSpConvertSaver<SpSaver, T>(StringDelegate(key), type = object : TypeToken<T>() {})
     }
 }

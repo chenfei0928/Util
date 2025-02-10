@@ -9,12 +9,12 @@ import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 
-class KtxsJsonSpConvertSaver<T>(
-    saver: AbsSpSaver.AbsSpDelegate<String?>,
+class KtxsJsonSpConvertSaver<SpSaver : AbsSpSaver<SpSaver>, T>(
+    saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, String?>,
     private val json: Json,
     private val serializer: SerializationStrategy<T>,
     private val deserializer: DeserializationStrategy<T>,
-) : SpConvertSaver<String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
+) : SpConvertSaver<SpSaver, String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
 
     constructor(
         key: String? = null,
@@ -26,9 +26,9 @@ class KtxsJsonSpConvertSaver<T>(
     override fun onSave(value: T & Any): String = json.encodeToString(serializer, value)
 
     companion object {
-        inline operator fun <reified T> invoke(
+        inline operator fun <SpSaver : AbsSpSaver<SpSaver>, reified T> invoke(
             key: String? = null, json: Json = Json,
-        ) = KtxsJsonSpConvertSaver<T>(
+        ) = KtxsJsonSpConvertSaver<SpSaver, T>(
             key, json, json.serializersModule.serializer<T>(),
         )
     }
