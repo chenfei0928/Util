@@ -7,7 +7,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.lifecycle.EventLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -36,12 +38,17 @@ inline fun <D> D.launchWithShow(
     }
     parentLifecycleOwner.lifecycle.addObserver(callback)
     // 此处不需要附加context，removeObserver需要在主线程上执行
-    coroutineScope.launch {
+    val job = coroutineScope.launch {
         try {
             block(this@launchWithShow)
         } finally {
             parentLifecycleOwner.lifecycle.removeObserver(callback)
             dismiss()
+        }
+    }
+    setOnCancelListener {
+        if (job.isActive) {
+            job.cancel()
         }
     }
     show()
@@ -64,7 +71,12 @@ suspend inline fun <D : Dialog, R> D.showWithContext(
     show()
     val cancelSelfJob = onCancellation {
         if (isShowing) {
-            cancel()
+            this@showWithContext.cancel()
+        }
+    }
+    setOnCancelListener {
+        if (isActive) {
+            this.cancel()
         }
     }
     return@coroutineScope try {
@@ -74,8 +86,8 @@ suspend inline fun <D : Dialog, R> D.showWithContext(
             block(this@showWithContext)
         }
     } finally {
-        dismiss()
         cancelSelfJob.cancel()
+        dismiss()
     }
 }
 

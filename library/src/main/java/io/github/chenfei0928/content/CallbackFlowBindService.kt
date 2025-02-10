@@ -18,7 +18,7 @@ internal abstract class CallbackFlowBindService<T>(
     context: Context,
     intent: Intent,
     flag: Int,
-) : BaseServiceConnection(context, intent, flag), suspend (ProducerScope<T?>) -> Unit {
+) : BaseServiceConnection.Base(context, intent, flag), suspend (ProducerScope<T?>) -> Unit {
     private lateinit var producerScope: ProducerScope<T?>
     override val tag: String
         get() = producerScope.coroutineContext[CoroutineAndroidContext]?.tag ?: super.tag

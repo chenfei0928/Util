@@ -17,7 +17,7 @@ internal abstract class SuspendCancellableCoroutineBindService<T>(
     context: Context,
     intent: Intent,
     flag: Int,
-) : BaseServiceConnection(context, intent, flag), (CancellableContinuation<T>) -> Unit,
+) : BaseServiceConnection.Base(context, intent, flag), (CancellableContinuation<T>) -> Unit,
     ContinuationOnServiceConnected<T> {
     private lateinit var continuation: CancellableContinuation<T>
     override val tag: String

@@ -11,10 +11,13 @@ import android.content.ContextWrapper
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
+import androidx.lifecycle.LifecycleOwner
+import io.github.chenfei0928.lifecycle.isAlive
 
 fun Context.checkIsDestroyed(): Boolean {
     return when (this) {
         is Activity -> isDestroyed
+        is LifecycleOwner -> !lifecycle.isAlive
         is Application -> false
         is ContextWrapper -> baseContext.checkIsDestroyed()
         else -> false

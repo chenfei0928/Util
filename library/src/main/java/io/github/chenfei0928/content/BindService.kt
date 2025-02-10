@@ -32,7 +32,7 @@ inline fun <T> Context.bindServiceLiveData(
     intent: Intent,
     flag: Int,
     crossinline onServiceConnectedTransform: OnServiceConnected<T>
-): LiveData<T> = object : ServiceConnectionLiveData<T>(this, intent, flag, true) {
+): LiveData<T> = object : BaseServiceConnection.LiveData<T>(this, intent, flag, true) {
     override fun onServiceConnectedTransform(
         name: ComponentName, service: IBinder
     ): T = onServiceConnectedTransform(name, service)
@@ -43,7 +43,7 @@ inline fun <T> Context.bindServiceLiveData(
     intent: Intent,
     flag: Int,
     crossinline onServiceConnectedTransform: OnServiceConnected<T>
-): LiveData<T> = object : ServiceConnectionLiveData<T>(this, intent, flag, false) {
+): LiveData<T> = object : BaseServiceConnection.LiveData<T>(this, intent, flag, false) {
     override fun onServiceConnectedTransform(
         name: ComponentName, service: IBinder
     ): T = onServiceConnectedTransform(name, service)
