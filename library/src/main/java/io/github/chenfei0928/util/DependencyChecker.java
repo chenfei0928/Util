@@ -150,6 +150,18 @@ public enum DependencyChecker {
                 return false;
             }
         }
+    },
+    MMKV {
+        @Override
+        protected boolean initValue() {
+            try {
+                // mmkv库大概率不存在，使用方案2加载
+                Class.forName("com.tencent.mmkv.MMKV");
+                return true;
+            } catch (ClassNotFoundException ignore) {
+                return false;
+            }
+        }
     };
 
     private Boolean value = null;

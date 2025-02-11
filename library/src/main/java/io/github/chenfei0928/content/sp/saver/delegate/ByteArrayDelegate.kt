@@ -11,6 +11,7 @@ import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete.Compa
  */
 class ByteArrayDelegate<SpSaver : AbsSpSaver<SpSaver, Sp, Sp>, Sp : MMKV>(
     key: String? = null,
+    private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Sp, ByteArray?>(
     key, PreferenceType.NoSupportPreferenceDataStore, null
 ) {
@@ -19,7 +20,11 @@ class ByteArrayDelegate<SpSaver : AbsSpSaver<SpSaver, Sp, Sp>, Sp : MMKV>(
     }
 
     override fun putValue(editor: Sp, key: String, value: ByteArray) {
-        editor.putBytes(key, value)
+        if (expireDurationInSecond == MMKV.ExpireNever) {
+            editor.putBytes(key, value)
+        } else {
+            editor.putBytes(key, value, expireDurationInSecond)
+        }
     }
 
     companion object {

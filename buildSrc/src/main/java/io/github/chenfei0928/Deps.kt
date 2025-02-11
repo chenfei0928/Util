@@ -255,7 +255,7 @@ object Deps {
         val apacheCommonLang3 = "org.apache.commons:commons-lang3:3.13.0"
 
         // https://github.com/Tencent/MMKV/blob/master/README_CN.md
-        val mmkv = "com.tencent:mmkv:2.0.2"
+        val mmkv = "com.tencent:mmkv:1.3.12"
 
         // dagger2，依赖注入
         // https://github.com/google/dagger
