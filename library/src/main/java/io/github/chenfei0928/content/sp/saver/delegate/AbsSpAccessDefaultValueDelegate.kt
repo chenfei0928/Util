@@ -13,16 +13,20 @@ import kotlin.reflect.KProperty
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-08-06 15:51
  */
-sealed class AbsSpAccessDefaultValueDelegate<SpSaver : AbsSpSaver<SpSaver>, T>(
+sealed class AbsSpAccessDefaultValueDelegate<SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+        Sp : SharedPreferences,
+        Ed : SharedPreferences.Editor,
+        T>
+constructor(
     internal val key: String?,
-    spValueType: PreferenceType.Native,
+    spValueType: PreferenceType,
     protected val defaultValue: T,
-) : AbsSpSaver.AbsSpDelegateImpl<SpSaver, T>(spValueType) {
+) : AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T>(spValueType) {
 
     final override fun obtainDefaultKey(property: KProperty<*>): String =
         key ?: property.name
 
-    final override fun getValue(sp: SharedPreferences, key: String): T {
+    final override fun getValue(sp: Sp, key: String): T {
         return if (sp.contains(key)) {
             getValueImpl(sp, key)
         } else {
@@ -30,5 +34,5 @@ sealed class AbsSpAccessDefaultValueDelegate<SpSaver : AbsSpSaver<SpSaver>, T>(
         }
     }
 
-    protected abstract fun getValueImpl(sp: SharedPreferences, key: String): T
+    protected abstract fun getValueImpl(sp: Sp, key: String): T
 }

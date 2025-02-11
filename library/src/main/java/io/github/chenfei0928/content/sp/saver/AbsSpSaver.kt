@@ -2,6 +2,7 @@ package io.github.chenfei0928.content.sp.saver
 
 import android.content.SharedPreferences
 import io.github.chenfei0928.preference.sp.SpSaverPreferenceDataStore
+import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -12,18 +13,24 @@ import kotlin.reflect.KProperty
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-07-15 15:34
  */
-abstract class AbsSpSaver<SpSaver : AbsSpSaver<SpSaver>> : SpCommit {
-    protected abstract val sp: SharedPreferences
-    protected abstract val editor: SharedPreferences.Editor
+abstract class AbsSpSaver
+<SpSaver : AbsSpSaver<SpSaver, Sp, Ed>, Sp : SharedPreferences, Ed : SharedPreferences.Editor>
+    : SpCommit {
+    protected abstract val sp: Sp
+    protected abstract val editor: Ed
 
     //<editor-fold desc="字段委托" defaultstatus="collapsed">
-    interface AbsSpDelegate<SpSaver : AbsSpSaver<SpSaver>, T> : ReadWriteProperty<SpSaver, T> {
+    interface AbsSpDelegate<SpSaver : AbsSpSaver<SpSaver, *, *>, T> :
+        ReadWriteProperty<SpSaver, T> {
         // 被序列化后的数据的类型
         val spValueType: PreferenceType
         fun obtainDefaultKey(property: KProperty<*>): String
     }
 
-    abstract class AbsSpDelegateImpl<SpSaver : AbsSpSaver<SpSaver>, T>(
+    abstract class AbsSpDelegateImpl<SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+            Sp : SharedPreferences,
+            Ed : SharedPreferences.Editor,
+            T>(
         // 被序列化后的数据的类型
         override val spValueType: PreferenceType,
     ) : AbsSpDelegate<SpSaver, T> {
@@ -34,7 +41,7 @@ abstract class AbsSpSaver<SpSaver : AbsSpSaver<SpSaver>> : SpCommit {
             return getValue(thisRef.sp, key)
         }
 
-        internal abstract fun getValue(sp: SharedPreferences, key: String): T
+        internal abstract fun getValue(sp: Sp, key: String): T
 
         final override fun setValue(thisRef: SpSaver, property: KProperty<*>, value: T) {
             val key = obtainDefaultKey(property)
@@ -47,9 +54,7 @@ abstract class AbsSpSaver<SpSaver : AbsSpSaver<SpSaver>> : SpCommit {
             }
         }
 
-        internal abstract fun putValue(
-            editor: SharedPreferences.Editor, key: String, value: T & Any
-        )
+        internal abstract fun putValue(editor: Ed, key: String, value: T & Any)
     }
     //</editor-fold>
 
@@ -60,9 +65,14 @@ abstract class AbsSpSaver<SpSaver : AbsSpSaver<SpSaver>> : SpCommit {
 
     override fun toString(): String = dataStore.toPropertyString()
 
+    inline fun <T> dataStore(
+        block: () -> AbsSpDelegateImpl<SpSaver, Sp, Ed, T>
+    ): PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, T>> =
+        DataStoreDelegateStoreProvider(block())
+
     companion object {
         @JvmStatic
-        protected inline fun AbsSpSaver<*>.edit(
+        protected inline fun AbsSpSaver<*, *, *>.edit(
             commit: Boolean = false, action: SharedPreferences.Editor.() -> Unit
         ) {
             val editor = editor
@@ -74,6 +84,6 @@ abstract class AbsSpSaver<SpSaver : AbsSpSaver<SpSaver>> : SpCommit {
             }
         }
 
-        fun getSp(spSaver: AbsSpSaver<*>): SharedPreferences = spSaver.sp
+        fun getSp(spSaver: AbsSpSaver<*, *, *>): SharedPreferences = spSaver.sp
     }
 }

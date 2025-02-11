@@ -24,7 +24,7 @@ import kotlin.reflect.jvm.isAccessible
  * @date 2022-04-24 10:42
  */
 @Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
-class SpSaverPreferenceDataStore<SpSaver : AbsSpSaver<SpSaver>>
+class SpSaverPreferenceDataStore<SpSaver : AbsSpSaver<SpSaver, *, *>>
 constructor(
     internal val saver: SpSaver,
     fieldAccessor: SpSaverFieldAccessor<SpSaver> = SpSaverFieldAccessor.Impl(saver),

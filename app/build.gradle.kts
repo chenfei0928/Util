@@ -22,6 +22,7 @@ android {
     defaultConfig {
         applicationId = "io.github.chenfei0928.util"
         versionName = "1.0"
+        minSdk = 23
     }
 
     buildFeatures {
@@ -57,4 +58,5 @@ dependencies {
 //    }
     implementation(projects.library)
     implementation(Deps.lib.google.gson)
+    implementation(Deps.lib.mmkv)
 }

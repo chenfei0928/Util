@@ -11,7 +11,7 @@ import java.util.WeakHashMap
  * @date 2020-08-18 19:24
  */
 internal class SpSaverAutoApply(
-    spSaver: AbsSpSaver<*>
+    spSaver: AbsSpSaver<*, *, *>
 ) {
     private val spApplyTask = Runnable { spSaver.apply() }
 

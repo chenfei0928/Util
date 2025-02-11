@@ -1,5 +1,6 @@
 package io.github.chenfei0928.content.sp.saver.convert
 
+import android.content.SharedPreferences
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
@@ -9,12 +10,19 @@ import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 
-class KtxsJsonSpConvertSaver<SpSaver : AbsSpSaver<SpSaver>, T>(
-    saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, String?>,
+class KtxsJsonSpConvert<
+        SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+        Sp : SharedPreferences,
+        Ed : SharedPreferences.Editor,
+        T>
+constructor(
+    saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, String?>,
     private val json: Json,
     private val serializer: SerializationStrategy<T>,
     private val deserializer: DeserializationStrategy<T>,
-) : SpConvertSaver<SpSaver, String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
+) : SpConvert<SpSaver, Sp, Ed, String?, T?>(
+    saver, PreferenceType.NoSupportPreferenceDataStore
+) {
 
     constructor(
         key: String? = null,
@@ -26,9 +34,12 @@ class KtxsJsonSpConvertSaver<SpSaver : AbsSpSaver<SpSaver>, T>(
     override fun onSave(value: T & Any): String = json.encodeToString(serializer, value)
 
     companion object {
-        inline operator fun <SpSaver : AbsSpSaver<SpSaver>, reified T> invoke(
+        inline operator fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+                Sp : SharedPreferences,
+                Ed : SharedPreferences.Editor,
+                reified T> invoke(
             key: String? = null, json: Json = Json,
-        ) = KtxsJsonSpConvertSaver<SpSaver, T>(
+        ) = KtxsJsonSpConvert<SpSaver, Sp, Ed, T>(
             key, json, json.serializersModule.serializer<T>(),
         )
     }

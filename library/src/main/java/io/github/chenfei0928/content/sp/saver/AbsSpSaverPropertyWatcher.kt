@@ -7,7 +7,7 @@ import io.github.chenfei0928.content.sp.registerOnSharedPreferenceChangeListener
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 
-internal inline fun <SpSaver : AbsSpSaver<SpSaver>> SpSaver.internalRegisterOnSharedPreferenceChangeListener(
+internal inline fun <SpSaver : AbsSpSaver<SpSaver, *, *>> SpSaver.internalRegisterOnSharedPreferenceChangeListener(
     owner: LifecycleOwner, filterKey: String, crossinline listener: () -> Unit,
 ) {
     listener()
@@ -24,7 +24,7 @@ internal inline fun <SpSaver : AbsSpSaver<SpSaver>> SpSaver.internalRegisterOnSh
  * @param property 要监听的字段（用于错误日志反馈和获取该字段sp存储的key）
  * @param listener 该字段变化的监听器（该sp存储的值发生变化时会触发回调，传入的值根据传入的[property]获取而非直接通过sp获取值）
  */
-fun <SpSaver : AbsSpSaver<SpSaver>, V> SpSaver.registerOnSpPropertyChangeListener(
+fun <SpSaver : AbsSpSaver<SpSaver, *, *>, V> SpSaver.registerOnSpPropertyChangeListener(
     owner: LifecycleOwner, property: KProperty0<V>, listener: (V) -> Unit,
 ): Unit = internalRegisterOnSharedPreferenceChangeListener(
     owner, dataStore.getSpKeyByProperty(property)
@@ -37,7 +37,7 @@ fun <SpSaver : AbsSpSaver<SpSaver>, V> SpSaver.registerOnSpPropertyChangeListene
  * @param property 要监听的字段（用于错误日志反馈和获取该字段sp存储的key）
  * @param listener 该字段变化的监听器（该sp存储的值发生变化时会触发回调，传入的值根据传入的[property]获取而非直接通过sp获取值）
  */
-fun <SpSaver : AbsSpSaver<SpSaver>, V> SpSaver.registerOnSpPropertyChangeListener(
+fun <SpSaver : AbsSpSaver<SpSaver, *, *>, V> SpSaver.registerOnSpPropertyChangeListener(
     owner: LifecycleOwner, property: KProperty1<SpSaver, V>, listener: (V) -> Unit,
 ): Unit = internalRegisterOnSharedPreferenceChangeListener(
     owner, dataStore.getSpKeyByProperty(property)
@@ -48,7 +48,7 @@ fun <SpSaver : AbsSpSaver<SpSaver>, V> SpSaver.registerOnSpPropertyChangeListene
  *
  * @param property 需要监听的属性字段
  */
-fun <SpSaver : AbsSpSaver<SpSaver>, V> SpSaver.toLiveData(
+fun <SpSaver : AbsSpSaver<SpSaver, *, *>, V> SpSaver.toLiveData(
     property: KProperty0<V>,
 ): LiveData<V> = object : LifecycleBindOnSharedPreferenceChangeListener.SpValueLiveData<V>(
     AbsSpSaver.getSp(this@toLiveData), dataStore.getSpKeyByProperty(property)
@@ -61,7 +61,7 @@ fun <SpSaver : AbsSpSaver<SpSaver>, V> SpSaver.toLiveData(
  *
  * @param property 需要监听的属性字段
  */
-fun <SpSaver : AbsSpSaver<SpSaver>, V> SpSaver.toLiveData(
+fun <SpSaver : AbsSpSaver<SpSaver, *, *>, V> SpSaver.toLiveData(
     property: KProperty1<SpSaver, V>,
 ): LiveData<V> = object : LifecycleBindOnSharedPreferenceChangeListener.SpValueLiveData<V>(
     AbsSpSaver.getSp(this@toLiveData), dataStore.getSpKeyByProperty(property)

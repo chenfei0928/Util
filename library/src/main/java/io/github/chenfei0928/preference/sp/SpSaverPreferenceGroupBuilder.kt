@@ -22,7 +22,7 @@ import kotlin.reflect.KProperty1
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-26 15:02
  */
-class SpSaverPreferenceGroupBuilder<SpSaver : AbsSpSaver<SpSaver>>(
+class SpSaverPreferenceGroupBuilder<SpSaver : AbsSpSaver<SpSaver, *, *>>(
     context: Context,
     private val spSaverDataStore: SpSaverPreferenceDataStore<SpSaver>,
     preferenceGroup: PreferenceGroup,
@@ -46,7 +46,7 @@ class SpSaverPreferenceGroupBuilder<SpSaver : AbsSpSaver<SpSaver>>(
     }
 
     companion object {
-        inline fun <SpSaver : AbsSpSaver<SpSaver>> PreferenceFragmentCompat.buildPreferenceScreen(
+        inline fun <SpSaver : AbsSpSaver<SpSaver, *, *>> PreferenceFragmentCompat.buildPreferenceScreen(
             dataStore: SpSaverPreferenceDataStore<SpSaver>,
             builder: SpSaverPreferenceGroupBuilder<SpSaver>.() -> Unit
         ): PreferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).also {

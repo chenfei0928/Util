@@ -83,7 +83,7 @@ interface LifecycleBindOnSharedPreferenceChangeListener
         }
 
         companion object {
-            inline operator fun <SpSaver : AbsSpSaver<SpSaver>, R> invoke(
+            inline operator fun <SpSaver : AbsSpSaver<SpSaver, *, *>, R> invoke(
                 spSaver: SpSaver, filterKey: String, crossinline getter: () -> R
             ): LiveData<R> = object : SpValueLiveData<R>(AbsSpSaver.getSp(spSaver), filterKey) {
                 override fun valueGetter(): R = getter()

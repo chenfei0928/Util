@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicReference
  */
 open class BaseSpSaver<SpSaver : BaseSpSaver<SpSaver>>(
     final override val sp: SharedPreferences,
-) : AbsSpSaver<SpSaver>() {
+) : AbsSpSaver<SpSaver, SharedPreferences, SharedPreferences.Editor>() {
     private var spAutoApply: SpSaverAutoApply? = null
 
     constructor(

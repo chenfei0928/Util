@@ -85,4 +85,5 @@ dependencies {
     compileOnly(Deps.widget.jsBridge)
     compileOnly(Deps.kotlin.json)
     compileOnly(Deps.kotlin.protobuf)
+    compileOnly(Deps.lib.mmkv)
 }

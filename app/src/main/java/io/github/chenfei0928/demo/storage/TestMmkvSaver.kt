@@ -1,7 +1,6 @@
 package io.github.chenfei0928.demo.storage
 
-import android.content.Context
-import io.github.chenfei0928.content.sp.saver.BaseSpSaver
+import io.github.chenfei0928.content.sp.saver.BaseMmkvSaver
 import io.github.chenfei0928.content.sp.saver.convert.EnumNameSpConvert
 import io.github.chenfei0928.content.sp.saver.convert.EnumSetNameSpConvert
 import io.github.chenfei0928.content.sp.saver.convert.IntArraySpConvert
@@ -21,8 +20,10 @@ import io.github.chenfei0928.repository.local.serializer.ProtobufSerializer
  * @author chenf()
  * @date 2024-12-20 11:35
  */
-class TestSpSaver(context: Context) : BaseSpSaver<TestSpSaver>(context, "test") {
-    var int: Int by dataStore { IntDelegate() }
+object TestMmkvSaver : BaseMmkvSaver<TestMmkvSaver>("test") {
+    var int: Int by dataStore {
+        IntDelegate()
+    }
     var long: Long by dataStore { LongDelegate() }
     var float: Float by dataStore { FloatDelegate() }
     var boolean: Boolean by dataStore { BooleanDelegate() }
@@ -43,6 +44,8 @@ class TestSpSaver(context: Context) : BaseSpSaver<TestSpSaver>(context, "test") 
         IntArraySpConvert.nonnull()
     }
     var test: Test by dataStore {
-        LocalSerializerSpConvert.nonnullForSp(ProtobufSerializer(), Test.getDefaultInstance())
+        LocalSerializerSpConvert.nonnullForMmkv(
+            ProtobufSerializer(), Test.getDefaultInstance()
+        )
     }
 }

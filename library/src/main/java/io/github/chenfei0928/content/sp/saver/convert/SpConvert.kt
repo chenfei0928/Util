@@ -11,10 +11,16 @@ import kotlin.reflect.KProperty
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-09-03 13:38
  */
-abstract class SpConvertSaver<SpSaver : AbsSpSaver<SpSaver>, SpValueType, FieldType>(
-    internal val saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, SpValueType>,
+abstract class SpConvert<
+        SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+        Sp : SharedPreferences,
+        Ed : SharedPreferences.Editor,
+        SpValueType,
+        FieldType>
+constructor(
+    internal val saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, SpValueType>,
     spValueType: PreferenceType = saver.spValueType,
-) : AbsSpSaver.AbsSpDelegateImpl<SpSaver, FieldType?>(spValueType) {
+) : AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, FieldType?>(spValueType) {
     @Volatile
     private var cacheValue: Pair<SpValueType, FieldType>? = null
 
@@ -23,7 +29,7 @@ abstract class SpConvertSaver<SpSaver : AbsSpSaver<SpSaver>, SpValueType, FieldT
     }
 
     @Synchronized
-    final override fun getValue(sp: SharedPreferences, key: String): FieldType? {
+    final override fun getValue(sp: Sp, key: String): FieldType? {
         return saver.getValue(sp, key)?.let {
             val cacheValue = cacheValue
             return if (cacheValue != null && cacheValue.first == it) {
@@ -36,9 +42,7 @@ abstract class SpConvertSaver<SpSaver : AbsSpSaver<SpSaver>, SpValueType, FieldT
         }
     }
 
-    final override fun putValue(
-        editor: SharedPreferences.Editor, key: String, value: FieldType & Any
-    ) {
+    final override fun putValue(editor: Ed, key: String, value: FieldType & Any) {
         val t = onSave(value)
         cacheValue = t to value
         saver.putValue(editor, key, t)

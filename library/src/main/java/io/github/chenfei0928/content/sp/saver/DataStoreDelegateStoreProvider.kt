@@ -1,5 +1,6 @@
 package io.github.chenfei0928.content.sp.saver
 
+import android.content.SharedPreferences
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -8,7 +9,11 @@ import kotlin.reflect.KProperty
  * @author chenf()
  * @date 2024-12-23 11:33
  */
-class DataStoreDelegateStoreProvider<SpSaver : AbsSpSaver<SpSaver>, V>(
+class DataStoreDelegateStoreProvider<SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+        Sp : SharedPreferences,
+        Ed : SharedPreferences.Editor,
+        V>
+constructor(
     private val delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>
 ) : PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, V>> {
 
@@ -21,8 +26,11 @@ class DataStoreDelegateStoreProvider<SpSaver : AbsSpSaver<SpSaver>, V>(
     }
 
     companion object {
-        fun <SpSaver : AbsSpSaver<SpSaver>, V> AbsSpSaver.AbsSpDelegate<SpSaver, V>.dataStore():
-                DataStoreDelegateStoreProvider<SpSaver, V> =
+        fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+                Sp : SharedPreferences,
+                Ed : SharedPreferences.Editor,
+                V> AbsSpSaver.AbsSpDelegate<SpSaver, V>.dataStore():
+                DataStoreDelegateStoreProvider<SpSaver, Sp, Ed, V> =
             DataStoreDelegateStoreProvider(this)
     }
 }

@@ -1,5 +1,6 @@
 package io.github.chenfei0928.content.sp.saver.convert
 
+import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
@@ -7,11 +8,18 @@ import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 import java.lang.reflect.Type
 
-class GsonSpConvertSaver<SpSaver : AbsSpSaver<SpSaver>, T>(
-    saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, String?>,
+class GsonSpConvert<
+        SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+        Sp : SharedPreferences,
+        Ed : SharedPreferences.Editor,
+        T>
+constructor(
+    saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, String?>,
     private val gson: Gson = io.github.chenfei0928.json.gson.gson,
     private val type: TypeToken<T>,
-) : SpConvertSaver<SpSaver, String?, T?>(saver, PreferenceType.NoSupportPreferenceDataStore) {
+) : SpConvert<SpSaver, Sp, Ed, String?, T?>(
+    saver, PreferenceType.NoSupportPreferenceDataStore
+) {
 
     @Suppress("UNCHECKED_CAST")
     constructor(
@@ -24,8 +32,13 @@ class GsonSpConvertSaver<SpSaver : AbsSpSaver<SpSaver>, T>(
     override fun onSave(value: T & Any): String = gson.toJson(value)
 
     companion object {
-        inline operator fun <SpSaver : AbsSpSaver<SpSaver>, reified T> invoke(
+        inline operator fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+                Sp : SharedPreferences,
+                Ed : SharedPreferences.Editor,
+                reified T> invoke(
             key: String? = null
-        ) = GsonSpConvertSaver<SpSaver, T>(StringDelegate(key), type = object : TypeToken<T>() {})
+        ) = GsonSpConvert<SpSaver, Sp, Ed, T>(
+            saver = StringDelegate(key), type = object : TypeToken<T>() {}
+        )
     }
 }
