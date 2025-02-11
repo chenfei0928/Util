@@ -40,17 +40,17 @@ constructor(
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
                 T : Any> nonnullForSp(
-            serializer: LocalSerializer<T>, defaultValue: T, key: String? = null
+            serializer: LocalSerializer<T>, key: String? = null
         ): AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T> =
             LocalSerializerSpConvert<SpSaver, Sp, Ed, T>(
                 serializer, Base64StringConvert(key)
-            ).defaultValue(defaultValue)
+            ).defaultValue(serializer.defaultValue)
 
         fun <SpSaver : AbsSpSaver<SpSaver, Sp, Sp>, Sp : MMKV, T : Any> nonnullForMmkv(
-            serializer: LocalSerializer<T>, defaultValue: T, key: String? = null
+            serializer: LocalSerializer<T>, key: String? = null
         ): AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Sp, T> =
             LocalSerializerSpConvert<SpSaver, Sp, Sp, T>(
                 serializer, ByteArrayDelegate<SpSaver, Sp>(key)
-            ).defaultValue(defaultValue)
+            ).defaultValue(serializer.defaultValue)
     }
 }

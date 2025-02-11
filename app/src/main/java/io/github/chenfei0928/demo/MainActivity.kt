@@ -16,6 +16,7 @@ import androidx.datastore.dataStore
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.google.protobuf.ProtobufParceler
+import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.app.fragment.ArgumentDelegate
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argBoolean
 import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argInt
@@ -34,6 +35,7 @@ import io.github.chenfei0928.demo.storage.JsonDataStorePreferenceFragment
 import io.github.chenfei0928.demo.storage.JsonLocalFileStorage
 import io.github.chenfei0928.demo.storage.JsonLocalFileStorage0.Companion.jsonLocalStorage0
 import io.github.chenfei0928.demo.storage.JsonLocalFileStoragePreferenceFragment
+import io.github.chenfei0928.demo.storage.MmkvSaverPreferenceFragment
 import io.github.chenfei0928.demo.storage.PreferenceActivity
 import io.github.chenfei0928.demo.storage.SpSaverPreferenceFragment
 import io.github.chenfei0928.demo.storage.TestPreferenceFragment
@@ -59,6 +61,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        MMKV.initialize(this)
 
         val binding = setContentViewBinding<ActivityMainBinding>(
             R.layout.activity_main, ActivityMainBinding::bind
@@ -71,6 +74,7 @@ class MainActivity : ComponentActivity() {
         binding.btnPreference.setNoDoubleOnClickListener {
             val items = arrayOf(
                 "spSaver" to SpSaverPreferenceFragment::class.java,
+                "mmkvSaver" to MmkvSaverPreferenceFragment::class.java,
                 "protobufDataStore" to TestPreferenceFragment::class.java,
                 "jsonDataStore" to JsonDataStorePreferenceFragment::class.java,
                 "jsonLocalFileStorage" to JsonLocalFileStoragePreferenceFragment.StorageFragment::class.java,

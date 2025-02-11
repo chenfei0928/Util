@@ -18,6 +18,7 @@ abstract class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
 
     override fun getSpAll(): Map<String, *> {
         return dataStore.spSaverPropertyDelegateFields.associate {
+            @Suppress("UNCHECKED_CAST")
             it.pdsKey to it.get(this as SpSaver)
         }
     }

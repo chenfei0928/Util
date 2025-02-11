@@ -20,10 +20,8 @@ import io.github.chenfei0928.repository.local.serializer.ProtobufSerializer
  * @author chenf()
  * @date 2024-12-20 11:35
  */
-object TestMmkvSaver : BaseMmkvSaver<TestMmkvSaver>("test") {
-    var int: Int by dataStore {
-        IntDelegate()
-    }
+class TestMmkvSaver : BaseMmkvSaver<TestMmkvSaver>("test") {
+    var int: Int by dataStore { IntDelegate() }
     var long: Long by dataStore { LongDelegate() }
     var float: Float by dataStore { FloatDelegate() }
     var boolean: Boolean by dataStore { BooleanDelegate() }
@@ -44,8 +42,6 @@ object TestMmkvSaver : BaseMmkvSaver<TestMmkvSaver>("test") {
         IntArraySpConvert.nonnull()
     }
     var test: Test by dataStore {
-        LocalSerializerSpConvert.nonnullForMmkv(
-            ProtobufSerializer(), Test.getDefaultInstance()
-        )
+        LocalSerializerSpConvert.nonnullForMmkv(ProtobufSerializer())
     }
 }
