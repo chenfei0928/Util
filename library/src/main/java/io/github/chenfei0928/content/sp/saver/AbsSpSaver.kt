@@ -65,6 +65,10 @@ abstract class AbsSpSaver
 
     override fun toString(): String = dataStore.toPropertyString()
 
+    /**
+     * 为解决委托字段声明后缓存的编译器类型检查无法进行类型推导问题，
+     * 添加此方法用于让使用处可以只构建委托，由此方法进行缓存
+     */
     inline fun <T> dataStore(
         block: () -> AbsSpDelegateImpl<SpSaver, Sp, Ed, T>
     ): PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, T>> =
@@ -72,8 +76,8 @@ abstract class AbsSpSaver
 
     companion object {
         @JvmStatic
-        protected inline fun AbsSpSaver<*, *, *>.edit(
-            commit: Boolean = false, action: SharedPreferences.Editor.() -> Unit
+        protected inline fun <Ed : SharedPreferences.Editor> AbsSpSaver<*, *, Ed>.edit(
+            commit: Boolean = false, action: Ed.() -> Unit
         ) {
             val editor = editor
             action(editor)
@@ -84,6 +88,6 @@ abstract class AbsSpSaver
             }
         }
 
-        fun getSp(spSaver: AbsSpSaver<*, *, *>): SharedPreferences = spSaver.sp
+        fun <Sp : SharedPreferences> getSp(spSaver: AbsSpSaver<*, Sp, *>): Sp = spSaver.sp
     }
 }

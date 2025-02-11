@@ -8,7 +8,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
-import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 
 /**
  * 宿主生命周期联动取消监听的sp变更监听器
@@ -80,14 +79,6 @@ interface LifecycleBindOnSharedPreferenceChangeListener
         final override fun onInactive() {
             super.onInactive()
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-        }
-
-        companion object {
-            inline operator fun <SpSaver : AbsSpSaver<SpSaver, *, *>, R> invoke(
-                spSaver: SpSaver, filterKey: String, crossinline getter: () -> R
-            ): LiveData<R> = object : SpValueLiveData<R>(AbsSpSaver.getSp(spSaver), filterKey) {
-                override fun valueGetter(): R = getter()
-            }
         }
     }
 }

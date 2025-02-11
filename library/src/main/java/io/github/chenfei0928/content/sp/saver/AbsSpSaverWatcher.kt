@@ -26,7 +26,7 @@ private const val TAG = "KW_AbsSpSaverWatcher"
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-08-05 16:12
  */
-fun <SpSaver : AbsSpSaver<SpSaver, *, *>> SpSaver.registerOnSpPropertyChangeListener(
+fun <SpSaver : BaseSpSaver<SpSaver>> SpSaver.registerOnSpPropertyChangeListener(
     owner: LifecycleOwner,
     @MainThread callback: (kProperty: KProperty<*>) -> Unit,
 ) {

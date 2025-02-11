@@ -9,7 +9,8 @@ import kotlin.reflect.KProperty
  * @author chenf()
  * @date 2024-12-23 11:33
  */
-class DataStoreDelegateStoreProvider<SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+class DataStoreDelegateStoreProvider<
+        SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
         Sp : SharedPreferences,
         Ed : SharedPreferences.Editor,
         V>
