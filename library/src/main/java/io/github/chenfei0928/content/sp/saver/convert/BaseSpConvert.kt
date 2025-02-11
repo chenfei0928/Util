@@ -11,7 +11,7 @@ import kotlin.reflect.KProperty
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-09-03 13:38
  */
-abstract class SpConvert<
+abstract class BaseSpConvert<
         SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
         Sp : SharedPreferences,
         Ed : SharedPreferences.Editor,

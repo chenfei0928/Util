@@ -10,7 +10,7 @@ import com.google.common.reflect.GoogleTypes
 import com.google.protobuf.Descriptors
 import com.google.protobuf.enumClass
 import io.github.chenfei0928.content.sp.saver.PreferenceType.Native
-import io.github.chenfei0928.content.sp.saver.convert.SpConvert
+import io.github.chenfei0928.content.sp.saver.convert.BaseSpConvert
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 import io.github.chenfei0928.preference.base.FieldAccessor.Field
@@ -249,7 +249,7 @@ sealed interface PreferenceType {
 
     /**
      * 其它平台未原生支持的复杂类型，在当前类的各个 forType 中均不会返回该类型，
-     * 仅用作 [SpConvert] 的子类中使用
+     * 仅用作 [BaseSpConvert] 的子类中使用
      */
     data object NoSupportPreferenceDataStore : PreferenceType
 

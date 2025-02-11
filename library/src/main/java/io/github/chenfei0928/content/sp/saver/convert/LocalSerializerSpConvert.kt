@@ -18,7 +18,7 @@ class LocalSerializerSpConvert<
 constructor(
     private val serializer: LocalSerializer<T>,
     saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, ByteArray?>,
-) : SpConvert<SpSaver, Sp, Ed, ByteArray?, T?>(
+) : BaseSpConvert<SpSaver, Sp, Ed, ByteArray?, T?>(
     saver, PreferenceType.NoSupportPreferenceDataStore
 ) {
 

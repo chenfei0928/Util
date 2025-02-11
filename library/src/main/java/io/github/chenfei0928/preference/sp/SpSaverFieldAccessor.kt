@@ -5,7 +5,7 @@ import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete
 import io.github.chenfei0928.content.sp.saver.convert.EnumNameSpConvert
 import io.github.chenfei0928.content.sp.saver.convert.EnumSetNameSpConvert
-import io.github.chenfei0928.content.sp.saver.convert.SpConvert
+import io.github.chenfei0928.content.sp.saver.convert.BaseSpConvert
 import io.github.chenfei0928.content.sp.saver.delegate.AbsSpAccessDefaultValueDelegate
 import io.github.chenfei0928.preference.base.FieldAccessor
 import kotlin.reflect.KMutableProperty0
@@ -106,7 +106,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
 
         //<editor-fold desc="没传入委托、vType复合类型，需要查找委托信息中的 spAccessDelegate" defaultstatus=“collapsed">
         /**
-         * 对于使用了 [SpConvert] 委托但又不是 [EnumNameSpConvert]
+         * 对于使用了 [BaseSpConvert] 委托但又不是 [EnumNameSpConvert]
          * 或 [EnumSetNameSpConvert] 字段使用的字段
          *
          * @param V 值类型
@@ -154,9 +154,9 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
                                 spAccessDelegate =
                                     spAccessDelegate.saver as AbsSpSaver.AbsSpDelegate<SpSaver, *>
                             }
-                            is SpConvert<SpSaver, *, *, *, *> -> {
+                            is BaseSpConvert<SpSaver, *, *, *, *> -> {
                                 @Suppress("UNCHECKED_CAST")
-                                spAccessDelegate as SpConvert<SpSaver, *, *, Any, Any?>
+                                spAccessDelegate as BaseSpConvert<SpSaver, *, *, Any, Any?>
                                 // 转换器装饰器，将其解装饰，并处理默认值
                                 defaultValue = defaultValue?.let { spAccessDelegate.onSave(it) }
                                 spAccessDelegate = spAccessDelegate.saver

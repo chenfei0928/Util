@@ -17,7 +17,7 @@ constructor(
     private val enumValues: Array<E>,
     saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, Set<String>?>,
     private val nameNotFoundDefaultValue: E? = null,
-) : SpConvert<SpSaver, Sp, Ed, Set<String>?, Set<E>?>(
+) : BaseSpConvert<SpSaver, Sp, Ed, Set<String>?, Set<E>?>(
     saver,
     EnumNameStringSet(eClass, enumValues)
 ) {

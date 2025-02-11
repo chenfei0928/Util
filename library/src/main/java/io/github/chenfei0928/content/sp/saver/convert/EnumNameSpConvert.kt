@@ -16,7 +16,7 @@ constructor(
     private val enumValues: Array<E>,
     saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, String?>,
     private val nameNotFoundDefaultValue: E? = null,
-) : SpConvert<SpSaver, Sp, Ed, String?, E?>(
+) : BaseSpConvert<SpSaver, Sp, Ed, String?, E?>(
     saver, PreferenceType.EnumNameString(eClass, enumValues)
 ) {
 
@@ -31,9 +31,7 @@ constructor(
         return enumValues.find { value == it.name } ?: nameNotFoundDefaultValue
     }
 
-    override fun onSave(value: E): String {
-        return value.name
-    }
+    override fun onSave(value: E): String = value.name
 
     companion object {
         inline operator fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,

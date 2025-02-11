@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
+import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete.Companion.defaultLazyValue
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 import java.lang.reflect.Type
 
@@ -17,7 +18,7 @@ constructor(
     saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, String?>,
     private val gson: Gson = io.github.chenfei0928.json.gson.gson,
     private val type: TypeToken<T>,
-) : SpConvert<SpSaver, Sp, Ed, String?, T?>(
+) : BaseSpConvert<SpSaver, Sp, Ed, String?, T?>(
     saver, PreferenceType.NoSupportPreferenceDataStore
 ) {
 
@@ -40,5 +41,15 @@ constructor(
         ) = GsonSpConvert<SpSaver, Sp, Ed, T>(
             saver = StringDelegate(key), type = object : TypeToken<T>() {}
         )
+
+        inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+                Sp : SharedPreferences,
+                Ed : SharedPreferences.Editor,
+                reified T> nonnull(
+            key: String? = null, noinline defaultValue: () -> T & Any
+        ): AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T & Any> =
+            GsonSpConvert<SpSaver, Sp, Ed, T>(
+                saver = StringDelegate(key), type = object : TypeToken<T>() {}
+            ).defaultLazyValue(defaultValue)
     }
 }

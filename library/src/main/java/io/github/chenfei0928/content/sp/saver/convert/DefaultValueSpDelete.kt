@@ -14,17 +14,17 @@ abstract class DefaultValueSpDelete<
         SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
         Sp : SharedPreferences,
         Ed : SharedPreferences.Editor,
-        T : Any>
+        T>
 constructor(
     internal val saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T?>,
-) : AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T>(saver.spValueType) {
-    abstract val defaultValue: T
+) : AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T & Any>(saver.spValueType) {
+    abstract val defaultValue: T & Any
 
     final override fun obtainDefaultKey(property: KProperty<*>): String {
         return saver.obtainDefaultKey(property)
     }
 
-    final override fun getValue(sp: Sp, key: String): T {
+    final override fun getValue(sp: Sp, key: String): T & Any {
         return if (sp.contains(key)) {
             saver.getValue(sp, key) ?: defaultValue
         } else {
@@ -32,7 +32,7 @@ constructor(
         }
     }
 
-    final override fun putValue(editor: Ed, key: String, value: T) {
+    final override fun putValue(editor: Ed, key: String, value: T & Any) {
         saver.putValue(editor, key, value)
     }
 
@@ -40,23 +40,23 @@ constructor(
         fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
-                T : Any>
+                T>
                 AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T?>.defaultValue(
-            defaultValue: T
+            defaultValue: T & Any
         ): DefaultValueSpDelete<SpSaver, Sp, Ed, T> =
             object : DefaultValueSpDelete<SpSaver, Sp, Ed, T>(this@defaultValue) {
-                override val defaultValue: T = defaultValue
+                override val defaultValue: T & Any = defaultValue
             }
 
-        inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+        fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
-                T : Any>
+                T>
                 AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T?>.defaultLazyValue(
-            crossinline defaultValue: () -> T
+            defaultValue: () -> T & Any
         ): DefaultValueSpDelete<SpSaver, Sp, Ed, T> =
             object : DefaultValueSpDelete<SpSaver, Sp, Ed, T>(this@defaultLazyValue) {
-                override val defaultValue: T = defaultValue()
+                override val defaultValue: T & Any by lazy(defaultValue)
             }
     }
 }

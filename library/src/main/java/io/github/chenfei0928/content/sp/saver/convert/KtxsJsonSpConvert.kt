@@ -3,6 +3,7 @@ package io.github.chenfei0928.content.sp.saver.convert
 import android.content.SharedPreferences
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
+import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete.Companion.defaultLazyValue
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.KSerializer
@@ -20,7 +21,7 @@ constructor(
     private val json: Json,
     private val serializer: SerializationStrategy<T>,
     private val deserializer: DeserializationStrategy<T>,
-) : SpConvert<SpSaver, Sp, Ed, String?, T?>(
+) : BaseSpConvert<SpSaver, Sp, Ed, String?, T?>(
     saver, PreferenceType.NoSupportPreferenceDataStore
 ) {
 
@@ -42,5 +43,15 @@ constructor(
         ) = KtxsJsonSpConvert<SpSaver, Sp, Ed, T>(
             key, json, json.serializersModule.serializer<T>(),
         )
+
+        inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+                Sp : SharedPreferences,
+                Ed : SharedPreferences.Editor,
+                reified T> nonnull(
+            key: String? = null, json: Json = Json, noinline defaultValue: () -> T & Any
+        ): AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T & Any> =
+            KtxsJsonSpConvert<SpSaver, Sp, Ed, T>(
+                key, json, json.serializersModule.serializer<T>(),
+            ).defaultLazyValue(defaultValue)
     }
 }

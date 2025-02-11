@@ -13,7 +13,7 @@ class IntArraySpConvert<
         Ed : SharedPreferences.Editor>
 constructor(
     saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, String?>,
-) : SpConvert<SpSaver, Sp, Ed, String?, IntArray>(
+) : BaseSpConvert<SpSaver, Sp, Ed, String?, IntArray>(
     saver, PreferenceType.NoSupportPreferenceDataStore
 ) {
 

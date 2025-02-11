@@ -20,7 +20,7 @@ import kotlin.random.Random
  * @date 2024-12-20 11:42
  */
 class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
-    private val spSaver by lazy { TestMmkvSaver() }
+    private val spSaver by lazy { TestMmkvSaver }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -58,22 +58,27 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
                 title = "enumList"
                 bindEnum<JsonBean.JsonEnum> { it.name }
             }
-            // 以下方式可以达到引用sp中结构体类型的字段，但不建议，sp存储大量数据时性能较低
-            checkBoxPreference(spSaver.dataStore.property(
-                object : FieldAccessor.Field<TestMmkvSaver, Boolean> {
-                    override val pdsKey: String = "json_boolean"
-                    override val vType: PreferenceType = PreferenceType.Native.BOOLEAN
-                    override fun get(data: TestMmkvSaver): Boolean = data.json?.boolean == true
-                    override fun set(data: TestMmkvSaver, value: Boolean): TestMmkvSaver {
-                        val json = data.json ?: JsonBean.InnerJsonBean()
-                        json.boolean = value
-                        data.json = json
-                        return data
-                    }
+            // 以下方式可以达到引用sp中结构体类型的字段
+            val innerField = if ("json_boolean" in spSaver.dataStore.properties) {
+                "json_boolean"
+            } else {
+                spSaver.dataStore.property(
+                    object : FieldAccessor.Field<TestMmkvSaver, Boolean> {
+                        override val pdsKey: String = "json_boolean"
+                        override val vType: PreferenceType = PreferenceType.Native.BOOLEAN
+                        override fun get(data: TestMmkvSaver): Boolean = data.json?.boolean == true
+                        override fun set(data: TestMmkvSaver, value: Boolean): TestMmkvSaver {
+                            val json = data.json ?: JsonBean.InnerJsonBean()
+                            json.boolean = value
+                            data.json = json
+                            return data
+                        }
 
-                    override fun toString(): String = "field($pdsKey $vType)"
-                }
-            ).pdsKey) {
+                        override fun toString(): String = "field($pdsKey $vType)"
+                    }
+                ).pdsKey
+            }
+            checkBoxPreference(innerField) {
                 title = "json_boolean"
             }
         }

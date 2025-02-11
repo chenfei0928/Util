@@ -15,17 +15,12 @@ class Base64StringConvert<
         Ed : SharedPreferences.Editor>
 constructor(
     saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, String?>,
-) : SpConvert<SpSaver, Sp, Ed, String?, ByteArray>(
+) : BaseSpConvert<SpSaver, Sp, Ed, String?, ByteArray>(
     saver, PreferenceType.NoSupportPreferenceDataStore
 ) {
 
     constructor(key: String? = null) : this(StringDelegate<SpSaver, Sp, Ed>(key))
 
-    override fun onRead(value: String): ByteArray {
-        return value.toByteArray()
-    }
-
-    override fun onSave(value: ByteArray): String {
-        return String(value)
-    }
+    override fun onRead(value: String): ByteArray = value.toByteArray()
+    override fun onSave(value: ByteArray): String = String(value)
 }
