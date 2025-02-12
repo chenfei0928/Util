@@ -26,7 +26,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
         property: KProperty<V>,
         vType: PreferenceType,
         delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>? = null
-    ): FieldAccessor.Field<SpSaver, V>
+    ): Field<SpSaver, V>
 
     /**
      * [SpSaver] 的字段信息接口
@@ -49,7 +49,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
             property: KProperty<V>,
             vType: PreferenceType,
             delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>?
-        ): FieldAccessor.Field<SpSaver, V> = when {
+        ): Field<SpSaver, V> = when {
             delegate == null || vType is PreferenceType.NoSupportPreferenceDataStore -> {
                 // 没传入委托、vType复合类型，需要查找委托信息中的 spAccessDelegate
                 property(SpSaverPropertyDelegateField.fromProperty(spSaver, property, delegate))
@@ -143,7 +143,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
                     spSaver: SpSaver,
                     property: KProperty<V>,
                     delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>?
-                ): FieldAccessor.Field<SpSaver, V> {
+                ): Field<SpSaver, V> {
                     // vType复合类型或没传入委托，需要查找委托信息中的 spAccessDelegate
                     val delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V> = delegate
                         ?: spSaver.dataStore.getDelegateByProperty(property)
@@ -187,7 +187,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
                         property = property,
                         observable = observable,
                         defaultValue = defaultValue,
-                    ) as FieldAccessor.Field<SpSaver, V>
+                    ) as Field<SpSaver, V>
                 }
             }
         }

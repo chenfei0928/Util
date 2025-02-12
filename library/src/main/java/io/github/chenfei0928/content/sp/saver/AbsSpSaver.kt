@@ -1,6 +1,7 @@
 package io.github.chenfei0928.content.sp.saver
 
 import android.content.SharedPreferences
+import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor
 import io.github.chenfei0928.preference.sp.SpSaverPreferenceDataStore
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
@@ -76,7 +77,7 @@ constructor(
     ): PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, T>> =
         DataStoreDelegateStoreProvider(enableFieldObservable, block())
 
-    internal open fun onPropertyAdded(property: KProperty<*>) {
+    internal open fun onPropertyAdded(field: SpSaverFieldAccessor.Field<SpSaver, *>) {
         // noop
     }
 

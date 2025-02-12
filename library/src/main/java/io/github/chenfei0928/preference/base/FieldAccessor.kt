@@ -26,9 +26,7 @@ interface FieldAccessor<T> {
      * @param V 值类型
      * @param field 字段说明
      */
-    fun <V> property(
-        field: Field<T, V>
-    ): Field<T, V>
+    fun <V, F : Field<T, V>> property(field: F): F
 
     fun <T1, V> property(
         outerField: Field<T, T1>,
@@ -79,7 +77,7 @@ interface FieldAccessor<T> {
          * @param V 值类型
          * @param field 字段说明
          */
-        override fun <V> property(field: Field<T, V>): Field<T, V> = field.also {
+        override fun <V, F : Field<T, V>> property(field: F): F = field.also {
             val name = field.pdsKey
             require(name !in properties) {
                 "field name:$name is contain properties:${properties.keys.joinToString()}"

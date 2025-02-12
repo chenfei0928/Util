@@ -52,14 +52,13 @@ abstract class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
     }
 
     //<editor-fold desc="提供监听字段值变更支持，使用要设置 enableFieldObservable 为 true" defaultstatus="collapsed">
-    override fun onPropertyAdded(property: KProperty<*>) {
-        super.onPropertyAdded(property)
+    override fun onPropertyAdded(field: SpSaverFieldAccessor.Field<SpSaver, *>) {
+        super.onPropertyAdded(field)
         if (!enableFieldObservable) {
             return
         }
-        val field = dataStore.findFieldOrNullByProperty(property)
-        check(field != null) { "没有找到目标 field ：$property in ${dataStore.properties}" }
-        val observable = field.observable ?: return
+        val observable = field.observable
+            ?: return
         privateAnyPropertySetCallback.addSource(observable) {
             val callbackValue = field to it
             privateAnyPropertySetCallback.forEach { it(callbackValue) }

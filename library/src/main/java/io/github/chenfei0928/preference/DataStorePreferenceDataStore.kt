@@ -31,7 +31,6 @@ import kotlin.reflect.KMutableProperty1
  * @author chenf()
  * @date 2024-08-13 18:18
  */
-@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class DataStorePreferenceDataStore<T : Any>(
     private val coroutineScope: CoroutineScope,
     private val dataStore: DataStore<T>,

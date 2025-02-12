@@ -23,7 +23,6 @@ import kotlin.reflect.jvm.isAccessible
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-04-24 10:42
  */
-@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class SpSaverPreferenceDataStore<SpSaver : AbsSpSaver<SpSaver, *, *>>
 constructor(
     internal val saver: SpSaver,

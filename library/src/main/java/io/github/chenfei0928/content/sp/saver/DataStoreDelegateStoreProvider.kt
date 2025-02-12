@@ -25,9 +25,11 @@ constructor(
     ): ReadWriteProperty<SpSaver, V> {
         val delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V> = if (enableFieldObservable)
             SpValueObservable(delegate) else delegate
+
         @Suppress("UNCHECKED_CAST")
-        thisRef.dataStore.property(property as KProperty<V>, delegate.spValueType, delegate)
-        thisRef.onPropertyAdded(property)
+        val field =
+            thisRef.dataStore.property(property as KProperty<V>, delegate.spValueType, delegate)
+        thisRef.onPropertyAdded(field)
         return delegate
     }
 
