@@ -2,8 +2,8 @@ package io.github.chenfei0928.content.sp.saver
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import io.github.chenfei0928.content.sp.LifecycleBindOnSharedPreferenceChangeListener
 import io.github.chenfei0928.content.sp.registerOnSharedPreferenceChangeListener
+import io.github.chenfei0928.content.sp.toLiveData
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 
@@ -50,11 +50,9 @@ fun <SpSaver : BaseSpSaver<SpSaver>, V> SpSaver.registerOnSpPropertyChangeListen
  */
 fun <SpSaver : BaseSpSaver<SpSaver>, V> SpSaver.toLiveData(
     property: KProperty0<V>,
-): LiveData<V> = object : LifecycleBindOnSharedPreferenceChangeListener.SpValueLiveData<V>(
-    AbsSpSaver.getSp(this@toLiveData), dataStore.getSpKeyByProperty(property)
-) {
-    override fun valueGetter(): V = property.get()
-}
+): LiveData<V> = AbsSpSaver.getSp(this@toLiveData).toLiveData(
+    dataStore.getSpKeyByProperty(property)
+) { property.get() }
 
 /**
  * 监听sp属性变化转换，并为liveData使用
@@ -63,8 +61,6 @@ fun <SpSaver : BaseSpSaver<SpSaver>, V> SpSaver.toLiveData(
  */
 fun <SpSaver : BaseSpSaver<SpSaver>, V> SpSaver.toLiveData(
     property: KProperty1<SpSaver, V>,
-): LiveData<V> = object : LifecycleBindOnSharedPreferenceChangeListener.SpValueLiveData<V>(
-    AbsSpSaver.getSp(this@toLiveData), dataStore.getSpKeyByProperty(property)
-) {
-    override fun valueGetter(): V = property.get(this@toLiveData)
-}
+): LiveData<V> = AbsSpSaver.getSp(this@toLiveData).toLiveData(
+    dataStore.getSpKeyByProperty(property)
+) { property.get(this@toLiveData) }

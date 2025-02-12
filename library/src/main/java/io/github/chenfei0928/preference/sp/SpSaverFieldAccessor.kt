@@ -2,10 +2,11 @@ package io.github.chenfei0928.preference.sp
 
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
+import io.github.chenfei0928.content.sp.saver.convert.BaseSpConvert
 import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete
 import io.github.chenfei0928.content.sp.saver.convert.EnumNameSpConvert
 import io.github.chenfei0928.content.sp.saver.convert.EnumSetNameSpConvert
-import io.github.chenfei0928.content.sp.saver.convert.BaseSpConvert
+import io.github.chenfei0928.content.sp.saver.convert.SpValueObservable
 import io.github.chenfei0928.content.sp.saver.delegate.AbsSpAccessDefaultValueDelegate
 import io.github.chenfei0928.preference.base.FieldAccessor
 import kotlin.reflect.KMutableProperty0
@@ -37,6 +38,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
             get() = property.name
         val property: KProperty<V>
         val outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>
+        val observable: SpValueObservable<SpSaver, V>?
     }
 
     class Impl<SpSaver : AbsSpSaver<SpSaver, *, *>>(
@@ -74,6 +76,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
             override val outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>,
             override val vType: PreferenceType,
         ) : Field<SpSaver, V> {
+            override val observable: SpValueObservable<SpSaver, V>? = findObservable(outDelegate)
             override fun get(data: SpSaver): V = property.get()
             override fun set(data: SpSaver, value: V): SpSaver = data.apply { property.set(value) }
             override fun toString(): String = "SpDelegateField0($pdsKey:$vType)"
@@ -84,6 +87,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
             override val outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>,
             override val vType: PreferenceType,
         ) : Field<SpSaver, V> {
+            override val observable: SpValueObservable<SpSaver, V>? = findObservable(outDelegate)
             override fun get(data: SpSaver): V = property.get(data)
             override fun set(data: SpSaver, value: V): SpSaver =
                 data.apply { property.set(data, value) }
@@ -96,6 +100,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
             override val outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>,
             override val vType: PreferenceType,
         ) : Field<SpSaver, V> {
+            override val observable: SpValueObservable<SpSaver, V>? = findObservable(outDelegate)
             override fun get(data: SpSaver): V = outDelegate.getValue(data, property)
             override fun set(data: SpSaver, value: V): SpSaver =
                 data.apply { outDelegate.setValue(data, property, value) }
@@ -119,6 +124,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
             override val outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V?>,
             private val spAccessDelegate: AbsSpAccessDefaultValueDelegate<SpSaver, *, *, V?>,
             override val property: KProperty<V>,
+            override val observable: SpValueObservable<SpSaver, V?>?,
             private val defaultValue: V?,
         ) : Field<SpSaver, V?> {
             override val pdsKey: String = property.name
@@ -142,11 +148,19 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
                     val delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V> = delegate
                         ?: spSaver.dataStore.getDelegateByProperty(property)
                     val outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V> = delegate
+                    var observable: SpValueObservable<SpSaver, Any?>? = null
                     var spAccessDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, *> = delegate
                     var defaultValue: Any? = null
                     // 查找 spAccessDelegate 为sp原生值访问委托
                     while (spAccessDelegate !is AbsSpAccessDefaultValueDelegate<SpSaver, *, *, *>) {
                         when (spAccessDelegate) {
+                            is SpValueObservable<*, *> -> {
+                                @Suppress("UNCHECKED_CAST")
+                                observable = spAccessDelegate as SpValueObservable<SpSaver, Any?>
+                                @Suppress("UNCHECKED_CAST")
+                                spAccessDelegate =
+                                    spAccessDelegate.saver as AbsSpSaver.AbsSpDelegate<SpSaver, *>
+                            }
                             is DefaultValueSpDelete<*, *, *, *> -> {
                                 // 默认值一般是作为最后的装饰，会最先触发，其默认值要保存下来
                                 defaultValue = spAccessDelegate.defaultValue
@@ -168,10 +182,11 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
                     }
                     @Suppress("UNCHECKED_CAST")
                     return SpSaverPropertyDelegateField<SpSaver, Any?>(
-                        outDelegate as AbsSpSaver.AbsSpDelegate<SpSaver, Any?>,
-                        spAccessDelegate as AbsSpAccessDefaultValueDelegate<SpSaver, *, *, Any?>,
-                        property,
-                        defaultValue
+                        outDelegate = outDelegate as AbsSpSaver.AbsSpDelegate<SpSaver, Any?>,
+                        spAccessDelegate = spAccessDelegate as AbsSpAccessDefaultValueDelegate<SpSaver, *, *, Any?>,
+                        property = property,
+                        observable = observable,
+                        defaultValue = defaultValue,
                     ) as FieldAccessor.Field<SpSaver, V>
                 }
             }
@@ -183,5 +198,27 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
         inline fun <SpSaver : AbsSpSaver<SpSaver, *, *>, reified V> SpSaverFieldAccessor<SpSaver>.property(
             property0: KMutableProperty0<V>
         ): FieldAccessor.Field<SpSaver, V> = property(property0, PreferenceType.forType<V>())
+
+        internal fun <SpSaver : AbsSpSaver<SpSaver, *, *>, V> findObservable(
+            outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>
+        ): SpValueObservable<SpSaver, V>? {
+            var delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>? = outDelegate
+            while (delegate != null && delegate !is SpValueObservable) {
+                delegate = when (delegate) {
+                    is DefaultValueSpDelete<*, *, *, *> -> {
+                        // 默认值一般是作为最后的装饰，会最先触发，其默认值要保存下来
+                        @Suppress("UNCHECKED_CAST")
+                        delegate.saver as AbsSpSaver.AbsSpDelegate<SpSaver, V>
+                    }
+                    is BaseSpConvert<SpSaver, *, *, *, *> -> {
+                        // 转换器装饰器
+                        @Suppress("UNCHECKED_CAST")
+                        delegate.saver as AbsSpSaver.AbsSpDelegate<SpSaver, V>
+                    }
+                    else -> null
+                }
+            }
+            return delegate
+        }
     }
 }

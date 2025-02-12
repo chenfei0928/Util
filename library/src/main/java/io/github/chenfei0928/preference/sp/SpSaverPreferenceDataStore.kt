@@ -32,7 +32,7 @@ constructor(
     SpSaverFieldAccessor<SpSaver> by fieldAccessor {
 
     //<editor-fold desc="根据 KProperty 获取Field、委托、字段名" defaultstatus="collapsed">
-    internal val spSaverPropertyDelegateFields: List<SpSaverFieldAccessor.Field<SpSaver, out Any?>>
+    internal inline val spSaverPropertyDelegateFields: List<SpSaverFieldAccessor.Field<SpSaver, out Any?>>
         get() = properties.values.mapNotNull {
             if (it is SpSaverFieldAccessor.Field) {
                 it

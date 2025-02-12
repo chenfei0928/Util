@@ -1,13 +1,12 @@
 package io.github.chenfei0928.content.sp
 
 import android.content.SharedPreferences
+import android.os.Looper
 import androidx.annotation.ReturnThis
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import io.github.chenfei0928.concurrent.ExecutorUtil
-import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
 
 /**
  * 宿主生命周期联动取消监听的sp变更监听器
@@ -63,8 +62,10 @@ interface LifecycleBindOnSharedPreferenceChangeListener
     ) : LiveData<R>(), LifecycleBindOnSharedPreferenceChangeListener {
 
         final override fun onChangedOrClear(sharedPreferences: SharedPreferences, key: String?) {
-            ExecutorUtil.runOnUiThread {
+            if (Looper.getMainLooper() == Looper.myLooper()) {
                 value = valueGetter()
+            } else {
+                postValue(valueGetter())
             }
         }
 

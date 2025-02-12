@@ -8,6 +8,7 @@ import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.demo.bean.Test
+import io.github.chenfei0928.lang.toStr
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.os.safeHandler
 import io.github.chenfei0928.preference.base.FieldAccessor
@@ -24,19 +25,29 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        spSaver.anyPropertySetCallback.observe(viewLifecycleOwner) {
+            Log.v(TAG, buildString {
+                append("onCreate: mmkvSaver anyPropertySetCallback ")
+                append(it)
+                append(' ')
+                append(it.second?.toStr())
+            })
+        }
+        spSaver.getPropertyObservable(TestMmkvSaver::int).observe(viewLifecycleOwner) {
+            Log.v(TAG, "onCreate: mmkvSaver int newValue is $it")
+        }
         safeHandler.postDelayed(100L) {
             Log.i(TAG, "onViewCreated: set obj, before is $spSaver")
             spSaver.intArray = intArrayOf(Random.nextInt(), Random.nextInt())
             spSaver.json = JsonBean.InnerJsonBean(Random.nextBoolean())
             spSaver.test = Test.newBuilder().setInt(Random.nextInt()).build()
-            spSaver.apply()
-            Log.i(TAG, "onViewCreated: set obj, before is $spSaver")
+            Log.i(TAG, "onViewCreated: set obj, after is $spSaver")
         }
     }
 
     override fun onCreatePreferences(
         savedInstanceState: Bundle?, rootKey: String?
-    ) = Debug.countTime(TAG, "spSaver") {
+    ) = Debug.countTime(TAG, "mmkvSaver onCreatePreferences") {
         preferenceManager.preferenceDataStore = spSaver.dataStore
         Log.i(TAG, "onCreatePreferences: buildPreferenceScreen")
         preferenceScreen = buildPreferenceScreen<TestMmkvSaver>(spSaver.dataStore) {

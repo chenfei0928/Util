@@ -1,6 +1,7 @@
 package io.github.chenfei0928.content.sp.saver
 
 import android.content.SharedPreferences
+import io.github.chenfei0928.content.sp.saver.convert.SpValueObservable
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -15,14 +16,18 @@ class DataStoreDelegateStoreProvider<
         Ed : SharedPreferences.Editor,
         V>
 constructor(
+    private val enableFieldObservable: Boolean,
     private val delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>
 ) : PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, V>> {
 
     override fun provideDelegate(
         thisRef: SpSaver, property: KProperty<*>
     ): ReadWriteProperty<SpSaver, V> {
+        val delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V> = if (enableFieldObservable)
+            SpValueObservable(delegate) else delegate
         @Suppress("UNCHECKED_CAST")
         thisRef.dataStore.property(property as KProperty<V>, delegate.spValueType, delegate)
+        thisRef.onPropertyAdded(property)
         return delegate
     }
 
@@ -30,8 +35,9 @@ constructor(
         fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
-                V> AbsSpSaver.AbsSpDelegate<SpSaver, V>.dataStore():
-                DataStoreDelegateStoreProvider<SpSaver, Sp, Ed, V> =
-            DataStoreDelegateStoreProvider(this)
+                V> AbsSpSaver.AbsSpDelegate<SpSaver, V>.dataStore(
+            enableFieldObservable: Boolean
+        ): DataStoreDelegateStoreProvider<SpSaver, Sp, Ed, V> =
+            DataStoreDelegateStoreProvider(enableFieldObservable, this)
     }
 }

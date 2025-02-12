@@ -48,6 +48,7 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
             spSaver.json = JsonBean.InnerJsonBean(Random.nextBoolean())
             spSaver.test = Test.newBuilder().setInt(Random.nextInt()).build()
             spSaver.apply()
+            Log.i(TAG, "onViewCreated: set obj, after is $spSaver")
         }
     }
 

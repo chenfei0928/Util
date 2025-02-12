@@ -3,6 +3,7 @@ package io.github.chenfei0928.content.sp
 import android.content.SharedPreferences
 import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 
 /**
  * 注册一个监听器以监听sp值变更，其可以监听生命周期变化以自动取消
@@ -21,3 +22,14 @@ inline fun SharedPreferences.registerOnSharedPreferenceChangeListener(
         override fun onChangedOrClear(sharedPreferences: SharedPreferences, key: String?) =
             callback(sharedPreferences, key)
     }.bind(owner)
+
+/**
+ * 监听sp属性变化转换，并为liveData使用
+ */
+inline fun <T> SharedPreferences.toLiveData(
+    filterKey: String? = null, crossinline valueGetter: (SharedPreferences) -> T
+): LiveData<T> = object : LifecycleBindOnSharedPreferenceChangeListener.SpValueLiveData<T>(
+    this, filterKey
+) {
+    override fun valueGetter(): T = valueGetter(this@toLiveData)
+}

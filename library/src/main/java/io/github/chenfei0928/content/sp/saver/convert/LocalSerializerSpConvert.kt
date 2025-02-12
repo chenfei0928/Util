@@ -47,10 +47,12 @@ constructor(
             ).defaultValue(serializer.defaultValue)
 
         fun <SpSaver : AbsSpSaver<SpSaver, Sp, Sp>, Sp : MMKV, T : Any> nonnullForMmkv(
-            serializer: LocalSerializer<T>, key: String? = null
+            serializer: LocalSerializer<T>,
+            key: String? = null,
+            expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Sp, T> =
             LocalSerializerSpConvert<SpSaver, Sp, Sp, T>(
-                serializer, ByteArrayDelegate<SpSaver, Sp>(key)
+                serializer, ByteArrayDelegate<SpSaver, Sp>(key, expireDurationInSecond)
             ).defaultValue(serializer.defaultValue)
     }
 }

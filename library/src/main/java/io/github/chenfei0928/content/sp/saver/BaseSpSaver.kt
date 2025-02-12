@@ -13,11 +13,11 @@ import java.util.concurrent.atomic.AtomicReference
  */
 open class BaseSpSaver<SpSaver : BaseSpSaver<SpSaver>>(
     final override val sp: SharedPreferences,
-) : AbsSpSaver<SpSaver, SharedPreferences, SharedPreferences.Editor>() {
+) : AbsSpSaver<SpSaver, SharedPreferences, SharedPreferences.Editor>(false) {
     private var spAutoApply: SpSaverAutoApply? = null
 
     constructor(
-        context: Context, name: String, mode: Int = Context.MODE_PRIVATE
+        context: Context, name: String, mode: Int = Context.MODE_PRIVATE,
     ) : this(context.getSharedPreferences(name, mode))
 
     private val editorAtomicReference = AtomicReference<SharedPreferences.Editor?>()

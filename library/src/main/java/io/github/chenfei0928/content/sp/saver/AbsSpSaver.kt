@@ -15,7 +15,9 @@ import kotlin.reflect.KProperty
  */
 abstract class AbsSpSaver
 <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>, Sp : SharedPreferences, Ed : SharedPreferences.Editor>
-    : SpCommit {
+constructor(
+    protected val enableFieldObservable: Boolean
+) : SpCommit {
     protected abstract val sp: Sp
     protected abstract val editor: Ed
 
@@ -69,10 +71,14 @@ abstract class AbsSpSaver
      * 为解决委托字段声明后缓存的编译器类型检查无法进行类型推导问题，
      * 添加此方法用于让使用处可以只构建委托，由此方法进行缓存
      */
-    inline fun <T> dataStore(
+    protected inline fun <T> dataStore(
         block: () -> AbsSpDelegateImpl<SpSaver, Sp, Ed, T>
     ): PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, T>> =
-        DataStoreDelegateStoreProvider(block())
+        DataStoreDelegateStoreProvider(enableFieldObservable, block())
+
+    internal open fun onPropertyAdded(property: KProperty<*>) {
+        // noop
+    }
 
     companion object {
         @JvmStatic
