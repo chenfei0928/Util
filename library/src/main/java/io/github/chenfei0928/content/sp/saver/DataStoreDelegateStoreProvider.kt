@@ -17,13 +17,13 @@ class DataStoreDelegateStoreProvider<
         V>
 constructor(
     private val enableFieldObservable: Boolean,
-    private val delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>
+    private val delegate: AbsSpSaver.Delegate<SpSaver, V>
 ) : PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, V>> {
 
     override fun provideDelegate(
         thisRef: SpSaver, property: KProperty<*>
     ): ReadWriteProperty<SpSaver, V> {
-        val delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V> = if (enableFieldObservable)
+        val delegate: AbsSpSaver.Delegate<SpSaver, V> = if (enableFieldObservable)
             SpValueObservable(delegate) else delegate
 
         @Suppress("UNCHECKED_CAST")
@@ -37,7 +37,7 @@ constructor(
         fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
-                V> AbsSpSaver.AbsSpDelegate<SpSaver, V>.dataStore(
+                V> AbsSpSaver.Delegate<SpSaver, V>.dataStore(
             enableFieldObservable: Boolean
         ): DataStoreDelegateStoreProvider<SpSaver, Sp, Ed, V> =
             DataStoreDelegateStoreProvider(enableFieldObservable, this)

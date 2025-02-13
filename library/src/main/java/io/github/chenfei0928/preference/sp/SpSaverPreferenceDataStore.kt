@@ -66,10 +66,10 @@ constructor(
      * 根据 [property] 查询对应的委托，如果查找不到则通过反射获取其委托
      */
     @Suppress("UNCHECKED_CAST")
-    internal fun <V> getDelegateByProperty(property: KProperty<V>): AbsSpSaver.AbsSpDelegate<SpSaver, V> {
+    internal fun <V> getDelegateByReflect(property: KProperty<V>): AbsSpSaver.Delegate<SpSaver, V> {
         return findFieldOrNullByProperty(property)?.outDelegate ?: run {
-            Log.w(TAG, buildString {
-                append("getDelegateByProperty: getDelegate by reflect, because ")
+            Log.d(TAG, buildString {
+                append("getDelegateByProperty: getDelegate fallback to kotlin reflect call, maybe slow, because ")
                 append(property)
                 append(" not found in ")
                 properties.keys.joinTo(this)
@@ -87,10 +87,10 @@ constructor(
                 else -> throw IllegalArgumentException("not support KProperty2 or other Property: $property")
             }
             // 判断该字段的委托
-            require(delegate0 is AbsSpSaver.AbsSpDelegate<*, *>) {
-                "Property($property) must is delegate subclass as AbsSpSaver.AbsSpDelegate0: $delegate0"
+            require(delegate0 is AbsSpSaver.Delegate<*, *>) {
+                "Property($property) must is delegate subclass as AbsSpSaver.Delegate: $delegate0"
             }
-            delegate0 as AbsSpSaver.AbsSpDelegate<SpSaver, V>
+            delegate0 as AbsSpSaver.Delegate<SpSaver, V>
         }
     }
 
@@ -111,7 +111,7 @@ constructor(
      * 查询指定 [property] 在持久化后的 spKey，用于向 [android.content.SharedPreferences] 注册监听的回调时使用
      */
     internal fun <V> getSpKeyByProperty(property: KProperty<V>): String =
-        getDelegateByProperty(property).obtainDefaultKey(property)
+        getDelegateByReflect(property).obtainDefaultKey(property)
 
     internal fun toPropertyString(): String =
         saver.toStringRef(spSaverPropertyDelegateFields.mapToArray { it.property })

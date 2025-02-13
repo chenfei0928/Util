@@ -1,6 +1,8 @@
 package io.github.chenfei0928.preference.sp
 
+import android.util.Log
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
+import io.github.chenfei0928.content.sp.saver.BaseMmkvSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.convert.BaseSpConvert
 import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete
@@ -9,6 +11,7 @@ import io.github.chenfei0928.content.sp.saver.convert.EnumSetNameSpConvert
 import io.github.chenfei0928.content.sp.saver.convert.SpValueObservable
 import io.github.chenfei0928.content.sp.saver.delegate.AbsSpAccessDefaultValueDelegate
 import io.github.chenfei0928.preference.base.FieldAccessor
+import io.github.chenfei0928.util.DependencyChecker
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty
@@ -25,7 +28,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
     fun <V> property(
         property: KProperty<V>,
         vType: PreferenceType,
-        delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>? = null
+        delegate: AbsSpSaver.Delegate<SpSaver, V>? = null
     ): Field<SpSaver, V>
 
     /**
@@ -37,7 +40,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
         override val pdsKey: String
             get() = property.name
         val property: KProperty<V>
-        val outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>
+        val outDelegate: AbsSpSaver.Delegate<SpSaver, V>
         val observable: SpValueObservable<SpSaver, V>?
     }
 
@@ -48,10 +51,29 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
         override fun <V> property(
             property: KProperty<V>,
             vType: PreferenceType,
-            delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>?
+            delegate: AbsSpSaver.Delegate<SpSaver, V>?
+        ): Field<SpSaver, V> = propertyImpl(
+            property, vType, delegate ?: spSaver.dataStore.getDelegateByReflect(property)
+        )
+
+        private fun <V> propertyImpl(
+            property: KProperty<V>,
+            vType: PreferenceType,
+            delegate: AbsSpSaver.Delegate<SpSaver, V>?
         ): Field<SpSaver, V> = when {
             delegate == null || vType is PreferenceType.NoSupportPreferenceDataStore -> {
                 // 没传入委托、vType复合类型，需要查找委托信息中的 spAccessDelegate
+                if (DependencyChecker.MMKV() && spSaver is BaseMmkvSaver<*>) {
+                    Log.d(TAG, run {
+                        "property: no 'delegate' param or 'vType' is PreferenceType.NoSupportPreferenceDataStore, " +
+                                "fallback find spAccessDelegate in delegate to R/W property, " +
+                                "maybe loss change observable in preference.\n" +
+                                "没有传入委托或复合类型，" +
+                                "通过查找委托中的 spAccessDelegate 进行读写该 property，" +
+                                "可能会丢失修改 preference 时 MMKV 的字段读写监听：\n" +
+                                vType + ' ' + property
+                    })
+                }
                 property(SpSaverPropertyDelegateField.fromProperty(spSaver, property, delegate))
             }
             property is KMutableProperty0 -> {
@@ -73,7 +95,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
         //<editor-fold desc="传入了委托对象和vType" defaultstatus="collapsed">
         private class SpDelegateField0<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
             override val property: KMutableProperty0<V>,
-            override val outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>,
+            override val outDelegate: AbsSpSaver.Delegate<SpSaver, V>,
             override val vType: PreferenceType,
         ) : Field<SpSaver, V> {
             override val observable: SpValueObservable<SpSaver, V>? = findObservable(outDelegate)
@@ -84,7 +106,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
 
         private class SpDelegateField1<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
             override val property: KMutableProperty1<SpSaver, V>,
-            override val outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>,
+            override val outDelegate: AbsSpSaver.Delegate<SpSaver, V>,
             override val vType: PreferenceType,
         ) : Field<SpSaver, V> {
             override val observable: SpValueObservable<SpSaver, V>? = findObservable(outDelegate)
@@ -97,7 +119,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
 
         private class ReadOnlySpDelegateField<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
             override val property: KProperty<V>,
-            override val outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>,
+            override val outDelegate: AbsSpSaver.Delegate<SpSaver, V>,
             override val vType: PreferenceType,
         ) : Field<SpSaver, V> {
             override val observable: SpValueObservable<SpSaver, V>? = findObservable(outDelegate)
@@ -121,7 +143,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
          * @property defaultValue 默认值（如果设置了[DefaultValueSpDelete]）
          */
         private class SpSaverPropertyDelegateField<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
-            override val outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V?>,
+            override val outDelegate: AbsSpSaver.Delegate<SpSaver, V?>,
             private val spAccessDelegate: AbsSpAccessDefaultValueDelegate<SpSaver, *, *, V?>,
             override val property: KProperty<V>,
             override val observable: SpValueObservable<SpSaver, V?>?,
@@ -142,47 +164,43 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
                 fun <SpSaver : AbsSpSaver<SpSaver, *, *>, V> fromProperty(
                     spSaver: SpSaver,
                     property: KProperty<V>,
-                    delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>?
+                    delegate: AbsSpSaver.Delegate<SpSaver, V>?
                 ): Field<SpSaver, V> {
                     // vType复合类型或没传入委托，需要查找委托信息中的 spAccessDelegate
-                    val delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V> = delegate
-                        ?: spSaver.dataStore.getDelegateByProperty(property)
-                    val outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V> = delegate
+                    val delegate: AbsSpSaver.Delegate<SpSaver, V> = delegate
+                        ?: spSaver.dataStore.getDelegateByReflect(property)
+                    val outDelegate: AbsSpSaver.Delegate<SpSaver, V> = delegate
                     var observable: SpValueObservable<SpSaver, Any?>? = null
-                    var spAccessDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, *> = delegate
+                    var spAccessDelegate: AbsSpSaver.Delegate<SpSaver, *> = delegate
                     var defaultValue: Any? = null
                     // 查找 spAccessDelegate 为sp原生值访问委托
                     while (spAccessDelegate !is AbsSpAccessDefaultValueDelegate<SpSaver, *, *, *>) {
-                        when (spAccessDelegate) {
-                            is SpValueObservable<*, *> -> {
-                                @Suppress("UNCHECKED_CAST")
-                                observable = spAccessDelegate as SpValueObservable<SpSaver, Any?>
-                                @Suppress("UNCHECKED_CAST")
-                                spAccessDelegate =
-                                    spAccessDelegate.saver as AbsSpSaver.AbsSpDelegate<SpSaver, *>
-                            }
-                            is DefaultValueSpDelete<*, *, *, *> -> {
-                                // 默认值一般是作为最后的装饰，会最先触发，其默认值要保存下来
-                                defaultValue = spAccessDelegate.defaultValue
-                                @Suppress("UNCHECKED_CAST")
-                                spAccessDelegate =
-                                    spAccessDelegate.saver as AbsSpSaver.AbsSpDelegate<SpSaver, *>
-                            }
-                            is BaseSpConvert<SpSaver, *, *, *, *> -> {
-                                @Suppress("UNCHECKED_CAST")
-                                spAccessDelegate as BaseSpConvert<SpSaver, *, *, Any, Any?>
-                                // 转换器装饰器，将其解装饰，并处理默认值
-                                defaultValue = defaultValue?.let { spAccessDelegate.onSave(it) }
-                                spAccessDelegate = spAccessDelegate.saver
-                            }
-                            else -> throw IllegalArgumentException(
-                                "不支持的委托类型: ${spAccessDelegate.javaClass} $spAccessDelegate"
-                            )
+                        // 字段属性变化订阅器，只关注最外层订阅器
+                        if (spAccessDelegate is SpValueObservable<SpSaver, *> && observable == null) {
+                            @Suppress("UNCHECKED_CAST")
+                            observable = spAccessDelegate as SpValueObservable<SpSaver, Any?>
                         }
+                        // 默认值一般是作为最后的装饰，会最先触发，其默认值要保存下来，但中间还可能有其他的默认值修饰，要忽略中间的默认值
+                        if (spAccessDelegate is AbsSpSaver.DefaultValue<*> && defaultValue == null) {
+                            defaultValue = spAccessDelegate.defaultValue
+                        }
+                        if (spAccessDelegate is BaseSpConvert<SpSaver, *, *, *, *>) {
+                            @Suppress("UNCHECKED_CAST")
+                            spAccessDelegate as BaseSpConvert<SpSaver, *, *, Any, Any?>
+                            // 转换器装饰器，理默认值
+                            defaultValue = defaultValue?.let { spAccessDelegate.onSave(it) }
+                        }
+                        if (spAccessDelegate is AbsSpSaver.Decorate<*, *>) {
+                            @Suppress("UNCHECKED_CAST")
+                            spAccessDelegate =
+                                spAccessDelegate.saver as AbsSpSaver.Delegate<SpSaver, *>
+                        } else @Suppress("UseRequire") throw IllegalArgumentException(
+                            "不支持的委托类型: ${spAccessDelegate.javaClass} $spAccessDelegate"
+                        )
                     }
                     @Suppress("UNCHECKED_CAST")
                     return SpSaverPropertyDelegateField<SpSaver, Any?>(
-                        outDelegate = outDelegate as AbsSpSaver.AbsSpDelegate<SpSaver, Any?>,
+                        outDelegate = outDelegate as AbsSpSaver.Delegate<SpSaver, Any?>,
                         spAccessDelegate = spAccessDelegate as AbsSpAccessDefaultValueDelegate<SpSaver, *, *, Any?>,
                         property = property,
                         observable = observable,
@@ -195,25 +213,21 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
     }
 
     companion object {
+        private const val TAG = "SpSaverFieldAccessor"
+
         inline fun <SpSaver : AbsSpSaver<SpSaver, *, *>, reified V> SpSaverFieldAccessor<SpSaver>.property(
             property0: KMutableProperty0<V>
         ): FieldAccessor.Field<SpSaver, V> = property(property0, PreferenceType.forType<V>())
 
         internal fun <SpSaver : AbsSpSaver<SpSaver, *, *>, V> findObservable(
-            outDelegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>
+            outDelegate: AbsSpSaver.Delegate<SpSaver, V>
         ): SpValueObservable<SpSaver, V>? {
-            var delegate: AbsSpSaver.AbsSpDelegate<SpSaver, V>? = outDelegate
+            var delegate: AbsSpSaver.Delegate<SpSaver, V>? = outDelegate
             while (delegate != null && delegate !is SpValueObservable) {
                 delegate = when (delegate) {
-                    is DefaultValueSpDelete<*, *, *, *> -> {
-                        // 默认值一般是作为最后的装饰，会最先触发，其默认值要保存下来
+                    is AbsSpSaver.Decorate<*, *> -> {
                         @Suppress("UNCHECKED_CAST")
-                        delegate.saver as AbsSpSaver.AbsSpDelegate<SpSaver, V>
-                    }
-                    is BaseSpConvert<SpSaver, *, *, *, *> -> {
-                        // 转换器装饰器
-                        @Suppress("UNCHECKED_CAST")
-                        delegate.saver as AbsSpSaver.AbsSpDelegate<SpSaver, V>
+                        delegate.saver as AbsSpSaver.Delegate<SpSaver, V>
                     }
                     else -> null
                 }

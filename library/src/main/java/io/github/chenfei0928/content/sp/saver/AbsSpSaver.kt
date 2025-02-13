@@ -23,41 +23,28 @@ constructor(
     protected abstract val editor: Ed
 
     //<editor-fold desc="字段委托" defaultstatus="collapsed">
-    interface AbsSpDelegate<SpSaver : AbsSpSaver<SpSaver, *, *>, T> :
-        ReadWriteProperty<SpSaver, T> {
+    interface Delegate<SpSaver : AbsSpSaver<SpSaver, *, *>, T> : ReadWriteProperty<SpSaver, T> {
         // 被序列化后的数据的类型
         val spValueType: PreferenceType
         fun obtainDefaultKey(property: KProperty<*>): String
     }
 
-    abstract class AbsSpDelegateImpl<SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+    interface Decorate<SpSaver : AbsSpSaver<SpSaver, *, *>, T> {
+        val saver: Delegate<SpSaver, T>
+    }
+
+    interface DefaultValue<T> {
+        val defaultValue: T
+    }
+
+    interface AbsSpDelegate<SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
             Sp : SharedPreferences,
             Ed : SharedPreferences.Editor,
-            T>(
-        // 被序列化后的数据的类型
-        override val spValueType: PreferenceType,
-    ) : AbsSpDelegate<SpSaver, T> {
-
-        final override fun getValue(thisRef: SpSaver, property: KProperty<*>): T {
-            val key = obtainDefaultKey(property)
-            // 允许子类处理key不存在时返回默认值
-            return getValue(thisRef.sp, key)
-        }
-
-        internal abstract fun getValue(sp: Sp, key: String): T
-
-        final override fun setValue(thisRef: SpSaver, property: KProperty<*>, value: T) {
-            val key = obtainDefaultKey(property)
-            val editor = thisRef.editor
-            // put null时直接remove掉key，交由子类处理时均是nonnull
-            if (value == null) {
-                editor.remove(key)
-            } else {
-                putValue(editor, key, value)
-            }
-        }
-
-        internal abstract fun putValue(editor: Ed, key: String, value: T & Any)
+            T> : Delegate<SpSaver, T> {
+        val SpSaver.sp: Sp
+            get() = this.sp
+        val SpSaver.editor: Ed
+            get() = this.editor
     }
     //</editor-fold>
 
@@ -73,7 +60,7 @@ constructor(
      * 添加此方法用于让使用处可以只构建委托，由此方法进行缓存
      */
     protected inline fun <T> dataStore(
-        block: () -> AbsSpDelegateImpl<SpSaver, Sp, Ed, T>
+        block: () -> Delegate<SpSaver, T>
     ): PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, T>> =
         DataStoreDelegateStoreProvider(enableFieldObservable, block())
 

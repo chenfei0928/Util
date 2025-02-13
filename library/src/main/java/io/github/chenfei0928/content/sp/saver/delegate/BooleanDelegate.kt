@@ -1,6 +1,7 @@
 package io.github.chenfei0928.content.sp.saver.delegate
 
 import android.content.SharedPreferences
+import androidx.annotation.IntRange
 import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
@@ -10,9 +11,10 @@ class BooleanDelegate<
         SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
         Sp : SharedPreferences,
         Ed : SharedPreferences.Editor>
-constructor(
-    key: String? = null, defaultValue: Boolean = false,
-    private val expireDurationInSecond: Int = MMKV.ExpireNever,
+private constructor(
+    key: String? = null,
+    defaultValue: Boolean = false,
+    @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Boolean>(
     key, PreferenceType.Native.BOOLEAN, defaultValue
 ) {
@@ -24,6 +26,26 @@ constructor(
             editor.putBoolean(key, value)
         } else {
             editor.putBoolean(key, value, expireDurationInSecond)
+        }
+    }
+
+    companion object {
+        private var defaultInstance: BooleanDelegate<*, *, *>? = null
+
+        operator fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+                Sp : SharedPreferences,
+                Ed : SharedPreferences.Editor> invoke(
+            key: String? = null,
+            defaultValue: Boolean = false,
+            @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
+        ): BooleanDelegate<SpSaver, Sp, Ed> {
+            return if (!key.isNullOrEmpty() || defaultValue != false || expireDurationInSecond > 0) {
+                BooleanDelegate<SpSaver, Sp, Ed>(key, defaultValue, expireDurationInSecond)
+            } else {
+                @Suppress("UNCHECKED_CAST")
+                defaultInstance as? BooleanDelegate<SpSaver, Sp, Ed>
+                    ?: BooleanDelegate<SpSaver, Sp, Ed>().also { defaultInstance = it }
+            }
         }
     }
 }

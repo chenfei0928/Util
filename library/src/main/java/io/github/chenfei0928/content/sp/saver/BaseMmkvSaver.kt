@@ -70,9 +70,9 @@ abstract class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
         val field = dataStore.findFieldOrNullByProperty(property)
         return if (field != null) {
             field.observable
-                ?: SpSaverFieldAccessor.findObservable(dataStore.getDelegateByProperty(property))
+                ?: SpSaverFieldAccessor.findObservable(dataStore.getDelegateByReflect(property))
         } else {
-            SpSaverFieldAccessor.findObservable(dataStore.getDelegateByProperty(property))
+            SpSaverFieldAccessor.findObservable(dataStore.getDelegateByReflect(property))
         } ?: throw IllegalArgumentException(
             "没有找到 SpValueObservable，已经为它包装了 dataStore ？$property"
         )

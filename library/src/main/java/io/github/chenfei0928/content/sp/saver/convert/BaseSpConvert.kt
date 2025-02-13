@@ -18,9 +18,10 @@ abstract class BaseSpConvert<
         SpValueType,
         FieldType>
 constructor(
-    internal val saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, SpValueType>,
-    spValueType: PreferenceType = saver.spValueType,
-) : AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, FieldType?>(spValueType) {
+    final override val saver: AbsSpSaver.Delegate<SpSaver, SpValueType>,
+    final override val spValueType: PreferenceType,
+) : AbsSpSaver.AbsSpDelegate<SpSaver, Sp, Ed, FieldType?>,
+    AbsSpSaver.Decorate<SpSaver, SpValueType> {
     @Volatile
     private var cacheValue: Pair<SpValueType, FieldType>? = null
 
@@ -29,8 +30,8 @@ constructor(
     }
 
     @Synchronized
-    final override fun getValue(sp: Sp, key: String): FieldType? {
-        return saver.getValue(sp, key)?.let {
+    override fun getValue(thisRef: SpSaver, property: KProperty<*>): FieldType? {
+        return saver.getValue(thisRef, property)?.let {
             val cacheValue = cacheValue
             return if (cacheValue != null && cacheValue.first == it) {
                 cacheValue.second
@@ -39,13 +40,21 @@ constructor(
                 this.cacheValue = it to t
                 t
             }
-        }
+        } ?: if (this is AbsSpSaver.DefaultValue<*>) {
+            @Suppress("UNCHECKED_CAST")
+            defaultValue as FieldType
+        } else null
     }
 
-    final override fun putValue(editor: Ed, key: String, value: FieldType & Any) {
-        val t = onSave(value)
-        cacheValue = t to value
-        saver.putValue(editor, key, t)
+    override fun setValue(thisRef: SpSaver, property: KProperty<*>, value: FieldType?) {
+        if (value == null) {
+            val key = saver.obtainDefaultKey(property)
+            thisRef.editor.remove(key)
+        } else {
+            val t = onSave(value)
+            cacheValue = t to value
+            saver.setValue(thisRef, property, t)
+        }
     }
 
     abstract fun onRead(value: SpValueType & Any): FieldType

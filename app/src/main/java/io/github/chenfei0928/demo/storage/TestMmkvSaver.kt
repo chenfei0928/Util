@@ -31,7 +31,7 @@ object TestMmkvSaver : BaseMmkvSaver<TestMmkvSaver>("test", enableFieldObservabl
         EnumNameSpConvert.nonnull(JsonBean.JsonEnum.DEFAULT)
     }
     var enums: Set<JsonBean.JsonEnum> by dataStore {
-        EnumSetNameSpConvert.nonnull()
+        EnumSetNameSpConvert.nonnull(JsonBean.JsonEnum.DEFAULT)
     }
 
     // 下面三个是结构体类型，不支持作为 preferenceDataStore

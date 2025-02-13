@@ -1,9 +1,9 @@
 package io.github.chenfei0928.content.sp.saver.convert
 
 import android.content.SharedPreferences
+import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
-import io.github.chenfei0928.content.sp.saver.convert.DefaultValueSpDelete.Companion.defaultValue
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 
 class EnumNameSpConvert<
@@ -14,21 +14,24 @@ class EnumNameSpConvert<
 constructor(
     eClass: Class<E>,
     private val enumValues: Array<E>,
-    saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, String?>,
-    private val nameNotFoundDefaultValue: E? = null,
+    saver: AbsSpSaver.Delegate<SpSaver, String?>,
+    override val defaultValue: E? = null,
 ) : BaseSpConvert<SpSaver, Sp, Ed, String?, E?>(
     saver, PreferenceType.EnumNameString(eClass, enumValues)
-) {
+), AbsSpSaver.DefaultValue<E?> {
 
     constructor(
         eClass: Class<E>,
         enumValues: Array<E> = eClass.enumConstants as Array<E>,
         key: String? = null,
-        nameNotFoundDefaultValue: E? = null,
-    ) : this(eClass, enumValues, StringDelegate(key), nameNotFoundDefaultValue)
+        expireDurationInSecond: Int = MMKV.ExpireNever,
+        defaultValue: E? = null,
+    ) : this(
+        eClass, enumValues, StringDelegate(key, expireDurationInSecond), defaultValue
+    )
 
     override fun onRead(value: String): E? {
-        return enumValues.find { value == it.name } ?: nameNotFoundDefaultValue
+        return enumValues.find { value == it.name } ?: defaultValue
     }
 
     override fun onSave(value: E): String = value.name
@@ -38,17 +41,30 @@ constructor(
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
                 reified E : Enum<E>> invoke(
-            key: String? = null
-        ) = EnumNameSpConvert<SpSaver, Sp, Ed, E>(E::class.java, enumValues<E>(), key)
+            key: String? = null, expireDurationInSecond: Int = MMKV.ExpireNever,
+        ): AbsSpSaver.Delegate<SpSaver, E?> = EnumNameSpConvert<SpSaver, Sp, Ed, E>(
+            eClass = E::class.java,
+            enumValues = enumValues<E>(),
+            key = key,
+            expireDurationInSecond = expireDurationInSecond,
+        )
 
         inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
                 reified E : Enum<E>> nonnull(
-            defaultValue: E, key: String? = null
-        ): AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, E> =
-            EnumNameSpConvert<SpSaver, Sp, Ed, E>(
-                E::class.java, enumValues<E>(), key
-            ).defaultValue(defaultValue)
+            defaultValue: E,
+            key: String? = null,
+            expireDurationInSecond: Int = MMKV.ExpireNever,
+        ): AbsSpSaver.Delegate<SpSaver, E> {
+            @Suppress("UNCHECKED_CAST")
+            return EnumNameSpConvert<SpSaver, Sp, Ed, E>(
+                eClass = E::class.java,
+                enumValues = enumValues<E>(),
+                key = key,
+                expireDurationInSecond = expireDurationInSecond,
+                defaultValue = defaultValue,
+            ) as AbsSpSaver.Delegate<SpSaver, E>
+        }
     }
 }

@@ -2,6 +2,7 @@ package io.github.chenfei0928.content.sp.saver.convert
 
 import android.content.SharedPreferences
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
+import io.github.chenfei0928.content.sp.saver.PreferenceType
 import kotlin.reflect.KProperty
 
 /**
@@ -15,25 +16,25 @@ abstract class DefaultValueSpDelete<
         Sp : SharedPreferences,
         Ed : SharedPreferences.Editor,
         T>
-constructor(
-    internal val saver: AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T?>,
-) : AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T & Any>(saver.spValueType) {
-    abstract val defaultValue: T & Any
+private constructor(
+    final override val saver: AbsSpSaver.Delegate<SpSaver, T?>,
+) : AbsSpSaver.AbsSpDelegate<SpSaver, Sp, Ed, T & Any>,
+    AbsSpSaver.DefaultValue<T & Any>,
+    AbsSpSaver.Decorate<SpSaver, T?> {
+    final override val spValueType: PreferenceType = saver.spValueType
+    final override fun obtainDefaultKey(property: KProperty<*>): String =
+        saver.obtainDefaultKey(property)
 
-    final override fun obtainDefaultKey(property: KProperty<*>): String {
-        return saver.obtainDefaultKey(property)
-    }
-
-    final override fun getValue(sp: Sp, key: String): T & Any {
-        return if (sp.contains(key)) {
-            saver.getValue(sp, key) ?: defaultValue
+    override fun getValue(thisRef: SpSaver, property: KProperty<*>): T & Any {
+        return if (thisRef.sp.contains(saver.obtainDefaultKey(property))) {
+            saver.getValue(thisRef, property) ?: defaultValue
         } else {
             defaultValue
         }
     }
 
-    final override fun putValue(editor: Ed, key: String, value: T & Any) {
-        saver.putValue(editor, key, value)
+    override fun setValue(thisRef: SpSaver, property: KProperty<*>, value: T & Any) {
+        saver.setValue(thisRef, property, value)
     }
 
     companion object {
@@ -41,7 +42,7 @@ constructor(
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
                 T>
-                AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T?>.defaultValue(
+                AbsSpSaver.Delegate<SpSaver, T?>.defaultValue(
             defaultValue: T & Any
         ): DefaultValueSpDelete<SpSaver, Sp, Ed, T> =
             object : DefaultValueSpDelete<SpSaver, Sp, Ed, T>(this@defaultValue) {
@@ -52,11 +53,11 @@ constructor(
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
                 T>
-                AbsSpSaver.AbsSpDelegateImpl<SpSaver, Sp, Ed, T?>.defaultLazyValue(
+                AbsSpSaver.Delegate<SpSaver, T?>.defaultLazyValue(
             defaultValue: () -> T & Any
         ): DefaultValueSpDelete<SpSaver, Sp, Ed, T> =
             object : DefaultValueSpDelete<SpSaver, Sp, Ed, T>(this@defaultLazyValue) {
-                override val defaultValue: T & Any by lazy(defaultValue)
+                override val defaultValue: T & Any by lazy(LazyThreadSafetyMode.NONE, defaultValue)
             }
     }
 }
