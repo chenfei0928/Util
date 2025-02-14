@@ -13,22 +13,22 @@ open class LocalSerializerSpConvert<
         SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
         Sp : SharedPreferences,
         Ed : SharedPreferences.Editor,
-        T : Any>
+        V : Any>
 private constructor(
-    private val serializer: LocalSerializer<T>,
+    private val serializer: LocalSerializer<V>,
     saver: AbsSpSaver.Delegate<SpSaver, ByteArray?>,
-) : BaseSpConvert<SpSaver, Sp, Ed, ByteArray?, T>(
+) : BaseSpConvert<SpSaver, Sp, Ed, ByteArray?, V>(
     saver, PreferenceType.NoSupportPreferenceDataStore
-), AbsSpSaver.DefaultValue<T> {
-    override val defaultValue: T = serializer.defaultValue
+), AbsSpSaver.DefaultValue<V> {
+    override val defaultValue: V = serializer.defaultValue
 
-    override fun onRead(value: ByteArray): T {
+    override fun onRead(value: ByteArray): V {
         return ByteArrayInputStream(value).use {
             serializer.read(it)
         }
     }
 
-    override fun onSave(value: T): ByteArray {
+    override fun onSave(value: V): ByteArray {
         return ByteArrayOutputStream().use { byteArrayOutputStream ->
             serializer.write(byteArrayOutputStream, value)
             byteArrayOutputStream.toByteArray()
@@ -40,19 +40,19 @@ private constructor(
         fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
-                T : Any> nonnullForSp(
-            serializer: LocalSerializer<T>, key: String? = null
-        ): AbsSpSaver.Delegate<SpSaver, T> = LocalSerializerSpConvert<SpSaver, Sp, Ed, T>(
+                V : Any> nonnullForSp(
+            serializer: LocalSerializer<V>, key: String? = null
+        ): AbsSpSaver.Delegate<SpSaver, V> = LocalSerializerSpConvert<SpSaver, Sp, Ed, V>(
             serializer, Base64StringConvert<SpSaver, Sp, Ed>(key)
-        ) as AbsSpSaver.Delegate<SpSaver, T>
+        ) as AbsSpSaver.Delegate<SpSaver, V>
 
         @Suppress("UNCHECKED_CAST")
-        fun <SpSaver : AbsSpSaver<SpSaver, Sp, Sp>, Sp : MMKV, T : Any> nonnullForMmkv(
-            serializer: LocalSerializer<T>,
+        fun <SpSaver : AbsSpSaver<SpSaver, Sp, Sp>, Sp : MMKV, V : Any> nonnullForMmkv(
+            serializer: LocalSerializer<V>,
             key: String? = null,
             expireDurationInSecond: Int = MMKV.ExpireNever,
-        ): AbsSpSaver.Delegate<SpSaver, T> = LocalSerializerSpConvert<SpSaver, Sp, Sp, T>(
+        ): AbsSpSaver.Delegate<SpSaver, V> = LocalSerializerSpConvert<SpSaver, Sp, Sp, V>(
             serializer, ByteArrayDelegate<SpSaver, Sp>(key, expireDurationInSecond)
-        ) as AbsSpSaver.Delegate<SpSaver, T>
+        ) as AbsSpSaver.Delegate<SpSaver, V>
     }
 }

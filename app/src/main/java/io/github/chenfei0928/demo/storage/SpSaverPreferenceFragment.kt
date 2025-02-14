@@ -77,9 +77,12 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
                 bindEnum<JsonBean.JsonEnum> { it.name }
             }
             // 以下方式可以达到引用sp中结构体类型的字段，但不建议，sp存储大量数据时性能较低
+            // 且会丢失值更新缓存，除非在实现时添加接口 FieldAccessor.SpLocalStorageKey
             checkBoxPreference(spSaver.dataStore.property(
-                object : FieldAccessor.Field<TestSpSaver, Boolean> {
+                object : FieldAccessor.Field<TestSpSaver, Boolean>,
+                    FieldAccessor.SpLocalStorageKey {
                     override val pdsKey: String = "json_boolean"
+                    override val localStorageKey: String = "json"
                     override val vType: PreferenceType = PreferenceType.Native.BOOLEAN
                     override fun get(data: TestSpSaver): Boolean = data.json?.boolean == true
                     override fun set(data: TestSpSaver, value: Boolean): TestSpSaver {

@@ -10,15 +10,28 @@ import kotlin.reflect.KProperty
  * @author chenf()
  * @date 2025-02-11 17:22
  */
-class SpValueObservable<SpSaver : AbsSpSaver<SpSaver, *, *>, T>(
-    override val saver: AbsSpSaver.Delegate<SpSaver, T>,
-) : LiveListeners<(T) -> Unit>(), AbsSpSaver.Delegate<SpSaver, T> by saver,
-    AbsSpSaver.Decorate<SpSaver, T> {
+class SpValueObservable<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
+    override val saver: AbsSpSaver.Delegate<SpSaver, V>,
+) : LiveListeners<(V) -> Unit>(), AbsSpSaver.Delegate<SpSaver, V> by saver,
+    AbsSpSaver.Decorate<SpSaver, V> {
 
-    override fun setValue(thisRef: SpSaver, property: KProperty<*>, value: T) {
+    override fun setValue(thisRef: SpSaver, property: KProperty<*>, value: V) {
         saver.setValue(thisRef, property, value)
         if (hasActiveObserver()) {
             forEach { it(value) }
         }
+    }
+
+    fun onLocalStorageChange(thisRef: SpSaver, property: KProperty<*>) {
+        if (hasActiveObserver()) {
+            val value = getValue(thisRef, property)
+            forEach { it(value) }
+        }
+    }
+
+    companion object {
+        fun <SpSaver : AbsSpSaver<SpSaver, *, *>, V> find(
+            outDelegate: AbsSpSaver.Delegate<SpSaver, V>
+        ): SpValueObservable<SpSaver, V>? = AbsSpSaver.Decorate.findByType(outDelegate)
     }
 }

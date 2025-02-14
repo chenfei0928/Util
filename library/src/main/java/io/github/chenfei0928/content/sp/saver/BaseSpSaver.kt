@@ -40,10 +40,6 @@ open class BaseSpSaver<SpSaver : BaseSpSaver<SpSaver>>(
 
     final override fun getSpAll(): Map<String, *> = sp.all
 
-    final override fun clear() {
-        editor.clear()
-    }
-
     @Synchronized
     final override fun commit(): Boolean {
         val editor = editorAtomicReference.get()

@@ -1,6 +1,7 @@
 package io.github.chenfei0928.preference.base
 
 import androidx.collection.ArrayMap
+import androidx.preference.PreferenceDataStore
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 
@@ -13,6 +14,9 @@ import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 interface FieldAccessor<T> {
 
     //<editor-fold desc="快速访问字段扩展" defaultstatus="collapsed">
+    /**
+     * 该访问器所包含的所有field，其中不仅会包含 [T] 的 property，还可能会包含某个结构体字段的二阶字段
+     */
     val properties: Map<String, Field<T, *>>
 
     /**
@@ -44,7 +48,7 @@ interface FieldAccessor<T> {
 
     interface Field<T, V> {
         /**
-         * 用于在 [androidx.preference.PreferenceDataStore] 中存取所使用的 key，
+         * 用于在 [PreferenceDataStore] 中存取所使用的 key，
          * 同时会设置给 [androidx.preference.Preference.getKey]，不要求与持久化后保存的结构体或Map字典的key相同
          */
         val pdsKey: String
@@ -57,6 +61,31 @@ interface FieldAccessor<T> {
         fun set(data: T, value: V): T
 
         override fun toString(): String
+    }
+
+    interface SpLocalStorageKey {
+        /**
+         * 该字段在本地持久化存储所使用的key
+         */
+        val localStorageKey: String
+    }
+
+    interface FieldWrapper<F : Field<T, *>, T, V> : Field<T, V> {
+        val localField: F
+
+        companion object {
+            inline fun <reified F, T, V> findByType(field: Field<T, *>): F? {
+                var field: Any? = field
+                while (field != null && field !is F) {
+                    field = if (field is FieldWrapper<*, *, *>) {
+                        field.localField
+                    } else {
+                        null
+                    }
+                }
+                return field
+            }
+        }
     }
 
     open class Impl<T : Any>(
@@ -88,14 +117,14 @@ interface FieldAccessor<T> {
         override fun <T1, V> property(
             outerField: Field<T, T1>,
             innerField: Field<T1, V>,
-        ): Field<T, V> = FieldWrapper(outerField, innerField).let(::property)
+        ): Field<T, V> = FieldWrapperImpl(outerField, innerField).let(::property)
 
         override fun <T1, T2, V> property(
             property0: Field<T, T1>,
             property1: Field<T1, T2>,
             property2: Field<T2, V>,
-        ): Field<T, V> = FieldWrapper(
-            FieldWrapper(property0, property1), property2
+        ): Field<T, V> = FieldWrapperImpl(
+            FieldWrapperImpl(property0, property1), property2
         ).let(::property)
 
         /**
@@ -104,18 +133,18 @@ interface FieldAccessor<T> {
          * @param T 宿主类类型
          * @param T1 中间宿主类类型
          * @param V 字段类型
-         * @property outerField 外部字段到中间宿主类型字段的访问方法
-         * @property innerField 中间宿主的子字段的访问方法
+         * @property localField 外部字段到中间宿主类型字段的访问方法
+         * @property propertyField 中间宿主的子字段的访问方法
          */
-        private class FieldWrapper<T, T1, V>(
-            private val outerField: Field<T, T1>,
-            private val innerField: Field<T1, V>,
-        ) : Field<T, V> {
-            override val pdsKey: String = outerField.pdsKey + "_" + innerField.pdsKey
-            override val vType: PreferenceType = innerField.vType
-            override fun get(data: T): V = innerField.get(outerField.get(data))
+        private class FieldWrapperImpl<T, T1, V>(
+            override val localField: Field<T, T1>,
+            private val propertyField: Field<T1, V>,
+        ) : Field<T, V>, FieldWrapper<Field<T, T1>, T, V> {
+            override val pdsKey: String = localField.pdsKey + "_" + propertyField.pdsKey
+            override val vType: PreferenceType = propertyField.vType
+            override fun get(data: T): V = propertyField.get(localField.get(data))
             override fun set(data: T, value: V): T =
-                outerField.set(data, innerField.set(outerField.get(data), value))
+                localField.set(data, propertyField.set(localField.get(data), value))
 
             override fun toString(): String = "FieldWrapper($pdsKey:$vType)"
         }
@@ -128,8 +157,8 @@ interface FieldAccessor<T> {
         //</editor-fold>
 
         internal class ReadCacheField<T : Any, V>(
-            val field: Field<T, V>
-        ) : Field<T, V> by field {
+            override val localField: Field<T, V>
+        ) : Field<T, V> by localField, FieldWrapper<Field<T, V>, T, V> {
             private var dataValuePairCache: Pair<T, V>? = null
 
             override fun get(data: T): V {
@@ -137,16 +166,20 @@ interface FieldAccessor<T> {
                 return if (cachePair?.first === data) {
                     cachePair.second
                 } else {
-                    val value = field.get(data)
+                    val value = localField.get(data)
                     this.dataValuePairCache = data to value
                     value
                 }
             }
 
             override fun set(data: T, value: V): T {
-                val newData = field.set(data, value)
+                val newData = localField.set(data, value)
                 dataValuePairCache = newData to value
                 return newData
+            }
+
+            fun invalidCache() {
+                dataValuePairCache = null
             }
         }
     }
@@ -158,7 +191,7 @@ interface FieldAccessor<T> {
          *
          * @param T 宿主类类型
          * @param V 字段类型
-         * @param name 字段名称
+         * @param name 用于[PreferenceDataStore]中访问的字段名称
          * @param getter 访问器
          * @param setter 修改器
          */
@@ -173,7 +206,7 @@ interface FieldAccessor<T> {
          *
          * @param T 宿主类类型
          * @param V 字段类型
-         * @param name 字段名称
+         * @param name 用于[PreferenceDataStore]中访问的字段名称
          * @param getter 访问器
          * @param setter 修改器
          */

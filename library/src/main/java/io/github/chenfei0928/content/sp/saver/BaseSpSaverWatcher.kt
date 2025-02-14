@@ -44,7 +44,7 @@ fun <SpSaver : BaseSpSaver<SpSaver>> SpSaver.registerOnSpPropertyChangeListener(
             val property = spSaver.dataStore
                 .spSaverPropertyDelegateFields
                 .find {
-                    it.outDelegate.obtainDefaultKey(it.property) == key
+                    it.outDelegate.getLocalStorageKey(it.property) == key
                 }
                 ?.property
             // 找得到属性，回调通知该字段被更改

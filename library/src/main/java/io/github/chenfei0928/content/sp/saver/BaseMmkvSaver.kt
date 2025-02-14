@@ -1,6 +1,7 @@
 package io.github.chenfei0928.content.sp.saver
 
 import com.tencent.mmkv.MMKV
+import io.github.chenfei0928.content.sp.saver.convert.SpValueObservable
 import io.github.chenfei0928.lifecycle.ILiveListener
 import io.github.chenfei0928.lifecycle.MediatorLiveListeners
 import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor
@@ -14,7 +15,7 @@ import kotlin.reflect.KProperty
  * @author chenf()
  * @date 2025-02-10 17:53
  */
-abstract class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
+open class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
     mmkv: MMKV,
     enableFieldObservable: Boolean = false
 ) : AbsSpSaver<SpSaver, MMKV, MMKV>(enableFieldObservable) {
@@ -39,8 +40,17 @@ abstract class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
         }
     }
 
-    override fun clear() {
-        editor.clear()
+    override fun onFieldValueRemoved(field: SpSaverFieldAccessor.Field<SpSaver, *>) {
+        super.onFieldValueRemoved(field)
+        if (!enableFieldObservable)
+            return
+        field.observable?.onLocalStorageChange(this as SpSaver, field.property)
+        privateAnyPropertySetCallback.run {
+            if (hasActiveObserver()) {
+                val callbackValue = field to null
+                forEach { it(callbackValue) }
+            }
+        }
     }
 
     override fun commit(): Boolean {
@@ -66,16 +76,16 @@ abstract class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
     }
 
     fun <V> getPropertyObservable(property: KProperty<V>): ILiveListener<(V) -> Unit> {
-        require(enableFieldObservable) { "使用 getPropertyObservable 要设置 enableFieldObservable 为 true" }
-        val field = dataStore.findFieldOrNullByProperty(property)
-        return if (field != null) {
-            field.observable
-                ?: SpSaverFieldAccessor.findObservable(dataStore.getDelegateByReflect(property))
-        } else {
-            SpSaverFieldAccessor.findObservable(dataStore.getDelegateByReflect(property))
-        } ?: throw IllegalArgumentException(
-            "没有找到 SpValueObservable，已经为它包装了 dataStore ？$property"
-        )
+        require(enableFieldObservable) {
+            "to use getPropertyObservable, you must set enableFieldObservable to true.\n" +
+                    "使用 getPropertyObservable 要设置 enableFieldObservable 为 true"
+        }
+        return dataStore.findFieldOrNullByProperty(property)
+            ?.observable
+            ?: SpValueObservable.find(dataStore.getDelegateByReflect(property))
+            ?: throw IllegalArgumentException(
+                "没有找到 SpValueObservable，已经为它包装了 dataStore ？$property"
+            )
     }
 
     private val privateAnyPropertySetCallback
@@ -84,7 +94,10 @@ abstract class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
 
     val anyPropertySetCallback: ILiveListener<(Pair<SpSaverFieldAccessor.Field<SpSaver, *>, *>) -> Unit>
         get() {
-            require(enableFieldObservable) { "使用 anyPropertySetCallback 要设置 enableFieldObservable 为 true" }
+            require(enableFieldObservable) {
+                "to use anyPropertySetCallback, you must set enableFieldObservable to true.\n" +
+                        "使用 anyPropertySetCallback 要设置 enableFieldObservable 为 true"
+            }
             return privateAnyPropertySetCallback
         }
     //</editor-fold>

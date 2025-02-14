@@ -2,7 +2,6 @@ package io.github.chenfei0928.content.sp.saver.delegate
 
 import android.content.SharedPreferences
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
-import io.github.chenfei0928.content.sp.saver.AbsSpSaver.Companion.getSp
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import kotlin.reflect.KProperty
 
@@ -17,37 +16,35 @@ import kotlin.reflect.KProperty
 sealed class AbsSpAccessDefaultValueDelegate<SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
         Sp : SharedPreferences,
         Ed : SharedPreferences.Editor,
-        T>
+        V>
 constructor(
     private val key: String?,
     final override val spValueType: PreferenceType,
-    final override val defaultValue: T,
-) : AbsSpSaver.AbsSpDelegate<SpSaver, Sp, Ed, T>, AbsSpSaver.DefaultValue<T> {
-    final override fun obtainDefaultKey(property: KProperty<*>): String =
+    final override val defaultValue: V,
+) : AbsSpSaver.AbsSpDelegate<SpSaver, Sp, Ed, V>, AbsSpSaver.DefaultValue<V> {
+    final override fun getLocalStorageKey(property: KProperty<*>): String =
         key ?: property.name
 
-    final override fun getValue(thisRef: SpSaver, property: KProperty<*>): T {
-        val sp = getSp(thisRef)
-        val key = obtainDefaultKey(property)
+    final override fun getValue(thisRef: SpSaver, property: KProperty<*>): V {
         // 允许子类处理key不存在时返回默认值
-        return if (sp.contains(key)) {
-            getValueImpl(sp, key)
+        return if (property in thisRef) {
+            getValueImpl(thisRef.sp, getLocalStorageKey(property))
         } else {
             defaultValue
         }
     }
 
-    final override fun setValue(thisRef: SpSaver, property: KProperty<*>, value: T) {
-        val key = obtainDefaultKey(property)
+    final override fun setValue(thisRef: SpSaver, property: KProperty<*>, value: V) {
+        val key = getLocalStorageKey(property)
         val editor = thisRef.editor
         // put null时直接remove掉key，交由子类处理时均是nonnull
         if (value == null) {
             editor.remove(key)
         } else {
-            putValue(editor, key, value)
+            putValue(thisRef.editor, key, value)
         }
     }
 
-    protected abstract fun getValueImpl(sp: Sp, key: String): T & Any
-    protected abstract fun putValue(editor: Ed, key: String, value: T & Any)
+    protected abstract fun getValueImpl(sp: Sp, key: String): V & Any
+    protected abstract fun putValue(editor: Ed, key: String, value: V & Any)
 }

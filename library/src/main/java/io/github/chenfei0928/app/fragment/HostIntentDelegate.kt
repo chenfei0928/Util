@@ -21,12 +21,12 @@ import kotlin.reflect.KProperty
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2024-11-12 11:04
  */
-class HostIntentDelegate<T>(
-    private val supportType: BundleSupportType<T>,
+class HostIntentDelegate<V>(
+    private val supportType: BundleSupportType<V>,
     private val name: String? = null,
-    private val defaultValue: T? = null,
-) : ReadOnlyCacheDelegate<Fragment, T>() {
-    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): T {
+    private val defaultValue: V? = null,
+) : ReadOnlyCacheDelegate<Fragment, V>() {
+    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): V {
         return thisRef.requireActivity().intent.run {
             setExtrasClassLoader(thisRef.requireActivity().classLoader)
             supportType.getValue(this, property, name ?: property.name, defaultValue)
@@ -34,27 +34,27 @@ class HostIntentDelegate<T>(
     }
 
     companion object {
-        inline operator fun <reified T> invoke(
-            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: T? = null
-        ): ReadOnlyProperty<Fragment, T> = HostIntentDelegate(
+        inline operator fun <reified V> invoke(
+            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: V? = null
+        ): ReadOnlyProperty<Fragment, V> = HostIntentDelegate(
             BundleSupportType.AutoFind.findByType(isMarkedNullable), name, defaultValue
         )
 
-        operator fun <T> invoke(
-            parceler: Parceler<T?>,
+        operator fun <V> invoke(
+            parceler: Parceler<V?>,
             isMarkedNullable: Boolean = false,
             name: String? = null,
-            defaultValue: T? = null
-        ): ReadOnlyProperty<Fragment, T> = HostIntentDelegate(
+            defaultValue: V? = null
+        ): ReadOnlyProperty<Fragment, V> = HostIntentDelegate(
             BundleSupportType.ParcelerType(parceler, isMarkedNullable), name, defaultValue
         )
 
-        inline operator fun <reified T : MessageLite> invoke(
+        inline operator fun <reified V : MessageLite> invoke(
             isMarkedNullable: Boolean = false, name: String? = null,
-        ): ReadOnlyProperty<Fragment, T> = HostIntentDelegate(
-            BundleSupportType.ProtoBufType<T>(isMarkedNullable),
+        ): ReadOnlyProperty<Fragment, V> = HostIntentDelegate(
+            BundleSupportType.ProtoBufType<V>(isMarkedNullable),
             name,
-            if (isMarkedNullable) null else T::class.java.protobufDefaultInstance
+            if (isMarkedNullable) null else V::class.java.protobufDefaultInstance
         )
 
         fun Fragment.intentInt(name: String? = null): ReadOnlyProperty<Fragment, Int> =
@@ -69,22 +69,22 @@ class HostIntentDelegate<T>(
         fun Fragment.intentStringNull(name: String? = null): ReadOnlyProperty<Fragment, String?> =
             HostIntentDelegate(BundleSupportType.StringType(true), name)
 
-        inline fun <reified T : Parcelable> Fragment.intentParcelable(
+        inline fun <reified V : Parcelable> Fragment.intentParcelable(
             name: String? = null
-        ): ReadOnlyProperty<Fragment, T> = HostIntentDelegate(
-            BundleSupportType.ParcelableType(T::class.java, false), name
+        ): ReadOnlyProperty<Fragment, V> = HostIntentDelegate(
+            BundleSupportType.ParcelableType(V::class.java, false), name
         )
 
-        inline fun <reified T : Parcelable> Fragment.intentParcelableNull(
+        inline fun <reified V : Parcelable> Fragment.intentParcelableNull(
             name: String? = null
-        ): ReadOnlyProperty<Fragment, T?> = HostIntentDelegate(
-            BundleSupportType.ParcelableType(T::class.java, true), name
+        ): ReadOnlyProperty<Fragment, V?> = HostIntentDelegate(
+            BundleSupportType.ParcelableType(V::class.java, true), name
         )
 
-        inline fun <reified T : Parcelable> Fragment.intentParcelableList(
+        inline fun <reified V : Parcelable> Fragment.intentParcelableList(
             name: String? = null
-        ): ReadOnlyProperty<Fragment, List<T>> = HostIntentDelegate(
-            BundleSupportType.ListParcelableType(T::class.java, false), name
+        ): ReadOnlyProperty<Fragment, List<V>> = HostIntentDelegate(
+            BundleSupportType.ListParcelableType(V::class.java, false), name
         )
     }
 }

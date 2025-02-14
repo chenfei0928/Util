@@ -33,15 +33,8 @@ constructor(
     //<editor-fold desc="根据 KProperty 获取Field、委托、字段名" defaultstatus="collapsed">
     internal inline val spSaverPropertyDelegateFields: List<SpSaverFieldAccessor.Field<SpSaver, out Any?>>
         get() = properties.values.mapNotNull {
-            if (it is SpSaverFieldAccessor.Field) {
-                it
-            } else if (it is FieldAccessor.Impl.ReadCacheField
-                && it.field is SpSaverFieldAccessor.Field
-            ) {
-                it.field
-            } else {
-                null
-            }
+            FieldAccessor.FieldWrapper
+                .findByType<SpSaverFieldAccessor.Field<SpSaver, Any>, SpSaver, Any>(it)
         }
 
     /**
@@ -102,8 +95,8 @@ constructor(
      * [io.github.chenfei0928.content.sp.saver.DataStoreDelegateStoreProvider.dataStore] 来存储该委托信息，
      * 或调用任意 [property] 方法来获取并存储委托，如果没有存储将会返回 null ，该方法不会产生反射或其它长耗时调用
      */
-    internal fun findPdsKeyByPropertyOrThrow(property: KProperty<*>): String {
-        return findFieldOrNullByProperty(property)?.pdsKey
+    internal fun <V> findFieldByPropertyOrThrow(property: KProperty<V>): SpSaverFieldAccessor.Field<SpSaver, V> {
+        return findFieldOrNullByProperty<V>(property)
             ?: throw IllegalArgumentException("Not registered property: $property in ${properties.keys.joinToString()}")
     }
 
@@ -111,11 +104,27 @@ constructor(
      * 查询指定 [property] 在持久化后的 spKey，用于向 [android.content.SharedPreferences] 注册监听的回调时使用
      */
     internal fun <V> getSpKeyByProperty(property: KProperty<V>): String =
-        getDelegateByReflect(property).obtainDefaultKey(property)
+        getDelegateByReflect(property).getLocalStorageKey(property)
 
-    internal fun toPropertyString(): String =
+    internal fun toSpSaverPropertyString(): String =
         saver.toStringRef(spSaverPropertyDelegateFields.mapToArray { it.property })
     //</editor-fold>
+
+    /**
+     * 通知一个字段被变更，并返回受影响的field的key
+     */
+    internal fun onPropertyChange(localStorageKey: String): Collection<String> {
+        return properties.mapNotNull {
+            val spSaverField = FieldAccessor.FieldWrapper
+                .findByType<FieldAccessor.SpLocalStorageKey, SpSaver, Any>(it.value)
+            if (spSaverField?.localStorageKey == localStorageKey) {
+                // 此处无需更新 FieldAccessor.Impl.ReadCacheField ，sp的fieldAccessor不开启readCache
+                it.key
+            } else {
+                null
+            }
+        }
+    }
 
     override fun <V> FieldAccessor.Field<SpSaver, V>.set(value: V) {
         setValue(saver, value)

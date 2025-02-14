@@ -21,12 +21,12 @@ import kotlin.reflect.KProperty
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-07-23 15:46
  */
-class IntentDelegate<T>(
-    private val supportType: BundleSupportType<T>,
+class IntentDelegate<V>(
+    private val supportType: BundleSupportType<V>,
     private val name: String? = null,
-    private val defaultValue: T? = null,
-) : ReadOnlyCacheDelegate<Activity, T>() {
-    override fun getValueImpl(thisRef: Activity, property: KProperty<*>): T {
+    private val defaultValue: V? = null,
+) : ReadOnlyCacheDelegate<Activity, V>() {
+    override fun getValueImpl(thisRef: Activity, property: KProperty<*>): V {
         return thisRef.intent.run {
             setExtrasClassLoader(thisRef.classLoader)
             supportType.getValue(this, property, name ?: property.name, defaultValue)
@@ -34,27 +34,27 @@ class IntentDelegate<T>(
     }
 
     companion object {
-        inline operator fun <reified T> invoke(
-            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: T? = null
-        ): ReadOnlyProperty<Activity, T> = IntentDelegate(
+        inline operator fun <reified V> invoke(
+            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: V? = null
+        ): ReadOnlyProperty<Activity, V> = IntentDelegate(
             BundleSupportType.AutoFind.findByType(isMarkedNullable), name, defaultValue
         )
 
-        operator fun <T> invoke(
-            parceler: Parceler<T?>,
+        operator fun <V> invoke(
+            parceler: Parceler<V?>,
             isMarkedNullable: Boolean = false,
             name: String? = null,
-            defaultValue: T? = null
-        ): ReadOnlyProperty<Activity, T> = IntentDelegate(
+            defaultValue: V? = null
+        ): ReadOnlyProperty<Activity, V> = IntentDelegate(
             BundleSupportType.ParcelerType(parceler, isMarkedNullable), name, defaultValue
         )
 
-        inline operator fun <reified T : MessageLite> invoke(
+        inline operator fun <reified V : MessageLite> invoke(
             isMarkedNullable: Boolean = false, name: String? = null,
-        ): ReadOnlyProperty<Activity, T> = IntentDelegate(
-            BundleSupportType.ProtoBufType<T>(isMarkedNullable),
+        ): ReadOnlyProperty<Activity, V> = IntentDelegate(
+            BundleSupportType.ProtoBufType<V>(isMarkedNullable),
             name,
-            if (isMarkedNullable) null else T::class.java.protobufDefaultInstance
+            if (isMarkedNullable) null else V::class.java.protobufDefaultInstance
         )
 
         fun Activity.intentInt(name: String? = null): ReadOnlyProperty<Activity, Int> =
@@ -69,10 +69,10 @@ class IntentDelegate<T>(
         fun Activity.intentStringNull(name: String? = null): ReadOnlyProperty<Activity, String?> =
             IntentDelegate(BundleSupportType.StringType(true), name)
 
-        inline fun <reified T : Parcelable> Activity.intentParcelable(
+        inline fun <reified V : Parcelable> Activity.intentParcelable(
             name: String? = null
-        ): ReadOnlyProperty<Activity, T> = IntentDelegate(
-            BundleSupportType.ParcelableType(T::class.java, false), name
+        ): ReadOnlyProperty<Activity, V> = IntentDelegate(
+            BundleSupportType.ParcelableType(V::class.java, false), name
         )
 
         inline fun <reified T : Parcelable> Activity.intentParcelableNull(
@@ -81,10 +81,10 @@ class IntentDelegate<T>(
             BundleSupportType.ParcelableType(T::class.java, true), name
         )
 
-        inline fun <reified T : Parcelable> Activity.intentParcelableList(
+        inline fun <reified V : Parcelable> Activity.intentParcelableList(
             name: String? = null
-        ): ReadOnlyProperty<Activity, List<T>> = IntentDelegate(
-            BundleSupportType.ListParcelableType(T::class.java, false), name
+        ): ReadOnlyProperty<Activity, List<V>> = IntentDelegate(
+            BundleSupportType.ListParcelableType(V::class.java, false), name
         )
     }
 }

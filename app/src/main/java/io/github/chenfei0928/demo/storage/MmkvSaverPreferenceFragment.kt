@@ -69,13 +69,15 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
                 title = "enumList"
                 bindEnum<JsonBean.JsonEnum> { it.name }
             }
-            // 以下方式可以达到引用sp中结构体类型的字段
+            // 以下方式可以达到引用sp中结构体类型的字段，但会丢失值更新缓存，除非在实现时添加接口 FieldAccessor.SpLocalStorageKey
             val innerField = if ("json_boolean" in spSaver.dataStore.properties) {
                 "json_boolean"
             } else {
                 spSaver.dataStore.property(
-                    object : FieldAccessor.Field<TestMmkvSaver, Boolean> {
+                    object : FieldAccessor.Field<TestMmkvSaver, Boolean>,
+                        FieldAccessor.SpLocalStorageKey {
                         override val pdsKey: String = "json_boolean"
+                        override val localStorageKey: String = "json"
                         override val vType: PreferenceType = PreferenceType.Native.BOOLEAN
                         override fun get(data: TestMmkvSaver): Boolean = data.json?.boolean == true
                         override fun set(data: TestMmkvSaver, value: Boolean): TestMmkvSaver {

@@ -12,18 +12,18 @@ import kotlin.reflect.KProperty
  * @author chenf()
  * @date 2024-12-03 17:50
  */
-open class ReadCacheDelegate<Host, T>(
-    protected open val delegate: ReadOnlyProperty<Host, T>
-) : ReadOnlyProperty<Host, T> {
+open class ReadCacheDelegate<Host, V>(
+    protected open val delegate: ReadOnlyProperty<Host, V>
+) : ReadOnlyProperty<Host, V> {
     protected var value: Any? = UNINITIALIZED_VALUE
 
     @Suppress("UNCHECKED_CAST")
-    final override fun getValue(thisRef: Host, property: KProperty<*>): T {
+    final override fun getValue(thisRef: Host, property: KProperty<*>): V {
         if (value !is UNINITIALIZED_VALUE) {
-            return value as T
+            return value as V
         }
         value = delegate.getValue(thisRef, property)
-        return value as T
+        return value as V
     }
 
     class Writable<Host, T>(
@@ -40,14 +40,14 @@ open class ReadCacheDelegate<Host, T>(
         private val cache = WeakHashMap<Any, ArrayMap<String, Any>>()
 
         @Suppress("UNCHECKED_CAST")
-        fun <Host, T> ReadOnlyProperty<Host, T>.getCacheOrValue(
+        fun <Host, V> ReadOnlyProperty<Host, V>.getCacheOrValue(
             thisRef: Host, property: KProperty<*>
-        ): T = cache.getOrPut(thisRef, ::ArrayMap).getContainOrPut(property.name) {
+        ): V = cache.getOrPut(thisRef, ::ArrayMap).getContainOrPut(property.name) {
             getValue(thisRef, property)
-        } as T
+        } as V
 
-        fun <Host, T> ReadWriteProperty<Host, T>.setValueAndCache(
-            thisRef: Host, property: KProperty<*>, value: T
+        fun <Host, V> ReadWriteProperty<Host, V>.setValueAndCache(
+            thisRef: Host, property: KProperty<*>, value: V
         ) {
             cache.getOrPut(thisRef, ::ArrayMap)[property.name] = value
             setValue(thisRef, property, value)

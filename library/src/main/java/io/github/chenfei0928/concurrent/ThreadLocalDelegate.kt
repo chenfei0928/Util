@@ -8,16 +8,16 @@ import kotlin.reflect.KProperty
  * @author chenf()
  * @date 2024-12-10 18:23
  */
-class ThreadLocalDelegate<T>(
-    private val initializer: () -> T
-) : ReadWriteProperty<Any?, T> {
-    private val map = ConcurrentHashMap<Thread, T>()
+class ThreadLocalDelegate<V>(
+    private val initializer: () -> V
+) : ReadWriteProperty<Any?, V> {
+    private val map = ConcurrentHashMap<Thread, V>()
 
-    override operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
+    override operator fun getValue(thisRef: Any?, property: KProperty<*>): V {
         return map.getOrPut(Thread.currentThread(), initializer)
     }
 
-    override operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+    override operator fun setValue(thisRef: Any?, property: KProperty<*>, value: V) {
         map[Thread.currentThread()] = value
     }
 }

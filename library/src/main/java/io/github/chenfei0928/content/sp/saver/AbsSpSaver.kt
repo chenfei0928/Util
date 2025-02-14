@@ -23,24 +23,39 @@ constructor(
     protected abstract val editor: Ed
 
     //<editor-fold desc="字段委托" defaultstatus="collapsed">
-    interface Delegate<SpSaver : AbsSpSaver<SpSaver, *, *>, T> : ReadWriteProperty<SpSaver, T> {
+    interface Delegate<SpSaver : AbsSpSaver<SpSaver, *, *>, V> : ReadWriteProperty<SpSaver, V> {
         // 被序列化后的数据的类型
         val spValueType: PreferenceType
-        fun obtainDefaultKey(property: KProperty<*>): String
+        fun getLocalStorageKey(property: KProperty<*>): String
     }
 
-    interface Decorate<SpSaver : AbsSpSaver<SpSaver, *, *>, T> {
-        val saver: Delegate<SpSaver, T>
+    interface Decorate<SpSaver : AbsSpSaver<SpSaver, *, *>, V> {
+        val saver: Delegate<SpSaver, V>
+
+        companion object {
+            inline fun <reified D : Delegate<SpSaver, V>, SpSaver : AbsSpSaver<SpSaver, *, *>, V> findByType(
+                outDelegate: Delegate<SpSaver, V>
+            ): D? {
+                var delegate: Delegate<SpSaver, V>? = outDelegate
+                while (delegate != null && delegate !is D) {
+                    delegate = if (delegate is Decorate<*, *>) {
+                        @Suppress("UNCHECKED_CAST")
+                        delegate.saver as Delegate<SpSaver, V>
+                    } else null
+                }
+                return delegate
+            }
+        }
     }
 
-    interface DefaultValue<T> {
-        val defaultValue: T
+    interface DefaultValue<V> {
+        val defaultValue: V
     }
 
     interface AbsSpDelegate<SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
             Sp : SharedPreferences,
             Ed : SharedPreferences.Editor,
-            T> : Delegate<SpSaver, T> {
+            V> : Delegate<SpSaver, V> {
         val SpSaver.sp: Sp
             get() = this.sp
         val SpSaver.editor: Ed
@@ -53,15 +68,42 @@ constructor(
         SpSaverPreferenceDataStore<SpSaver>(this as SpSaver)
     }
 
-    override fun toString(): String = dataStore.toPropertyString()
+    //<editor-fold desc="提供通用SpCommit的默认实现" defaultstatus="collapsed">
+    override fun contains(key: String): Boolean = sp.contains(key)
+    override fun contains(property: KProperty<*>): Boolean =
+        sp.contains(dataStore.findFieldByPropertyOrThrow(property).localStorageKey)
+
+    final override fun remove(key: String) {
+        editor.remove(key)
+        // 查找存储值为该key的字段，为了避免找到二次field，使用pdsKey查找
+        dataStore.spSaverPropertyDelegateFields.find { it.pdsKey == key }
+            ?.let(::onFieldValueRemoved)
+    }
+
+    final override fun remove(property: KProperty<*>) {
+        val field = dataStore.findFieldByPropertyOrThrow(property)
+        editor.remove(field.localStorageKey)
+        onFieldValueRemoved(field)
+    }
+
+    protected open fun onFieldValueRemoved(field: SpSaverFieldAccessor.Field<SpSaver, *>) {
+        // noop
+    }
+
+    override fun clear() {
+        editor.clear()
+    }
+
+    override fun toString(): String = dataStore.toSpSaverPropertyString()
+    //</editor-fold>
 
     /**
      * 为解决委托字段声明后缓存的编译器类型检查无法进行类型推导问题，
      * 添加此方法用于让使用处可以只构建委托，由此方法进行缓存
      */
-    protected inline fun <T> dataStore(
-        block: () -> Delegate<SpSaver, T>
-    ): PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, T>> =
+    protected inline fun <V> dataStore(
+        block: () -> Delegate<SpSaver, V>
+    ): PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, V>> =
         DataStoreDelegateStoreProvider(enableFieldObservable, block())
 
     internal open fun onPropertyAdded(field: SpSaverFieldAccessor.Field<SpSaver, *>) {

@@ -12,72 +12,72 @@ abstract class GsonSpConvert<
         SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
         Sp : SharedPreferences,
         Ed : SharedPreferences.Editor,
-        T>
+        V>
 constructor(
     saver: AbsSpSaver.Delegate<SpSaver, String?>,
     private val gson: Gson = io.github.chenfei0928.json.gson.gson,
-    private val type: TypeToken<T>,
-) : BaseSpConvert<SpSaver, Sp, Ed, String?, T?>(
+    private val type: TypeToken<V>,
+) : BaseSpConvert<SpSaver, Sp, Ed, String?, V?>(
     saver, PreferenceType.NoSupportPreferenceDataStore
-), AbsSpSaver.DefaultValue<T?> {
+), AbsSpSaver.DefaultValue<V?> {
 
-    override fun onRead(value: String): T & Any = gson.fromJson<T & Any>(value, type)
-    override fun onSave(value: T & Any): String = gson.toJson(value)
+    override fun onRead(value: String): V & Any = gson.fromJson<V & Any>(value, type)
+    override fun onSave(value: V & Any): String = gson.toJson(value)
 
     class ValueDefaultValue<SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
             Sp : SharedPreferences,
             Ed : SharedPreferences.Editor,
-            T>
+            V>
     constructor(
         saver: AbsSpSaver.Delegate<SpSaver, String?>,
         gson: Gson = io.github.chenfei0928.json.gson.gson,
-        type: TypeToken<T>,
-        override val defaultValue: T? = null,
-    ) : GsonSpConvert<SpSaver, Sp, Ed, T>(saver, gson, type)
+        type: TypeToken<V>,
+        override val defaultValue: V? = null,
+    ) : GsonSpConvert<SpSaver, Sp, Ed, V>(saver, gson, type)
 
     companion object {
         inline operator fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
-                reified T> invoke(
+                reified V> invoke(
             key: String? = null,
             expireDurationInSecond: Int = MMKV.ExpireNever,
-        ): AbsSpSaver.Delegate<SpSaver, T?> = ValueDefaultValue<SpSaver, Sp, Ed, T>(
+        ): AbsSpSaver.Delegate<SpSaver, V?> = ValueDefaultValue<SpSaver, Sp, Ed, V>(
             saver = StringDelegate(key, expireDurationInSecond),
-            type = object : TypeToken<T>() {}
+            type = object : TypeToken<V>() {}
         )
 
         inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
-                reified T> nonnullByBlock(
+                reified V> nonnullByBlock(
             key: String? = null,
             expireDurationInSecond: Int = MMKV.ExpireNever,
-            noinline defaultValue: () -> T & Any
-        ): AbsSpSaver.Delegate<SpSaver, T & Any> {
+            noinline defaultValue: () -> V & Any
+        ): AbsSpSaver.Delegate<SpSaver, V & Any> {
             @Suppress("UNCHECKED_CAST")
-            return object : GsonSpConvert<SpSaver, Sp, Ed, T>(
+            return object : GsonSpConvert<SpSaver, Sp, Ed, V>(
                 saver = StringDelegate(key, expireDurationInSecond),
-                type = object : TypeToken<T>() {}
-            ), AbsSpSaver.DefaultValue<T & Any> {
-                override val defaultValue: T & Any by lazy(defaultValue)
-            } as AbsSpSaver.Delegate<SpSaver, T & Any>
+                type = object : TypeToken<V>() {}
+            ), AbsSpSaver.DefaultValue<V & Any> {
+                override val defaultValue: V & Any by lazy(defaultValue)
+            } as AbsSpSaver.Delegate<SpSaver, V & Any>
         }
 
         inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
-                reified T> nonnull(
+                reified V> nonnull(
             key: String? = null,
             expireDurationInSecond: Int = MMKV.ExpireNever,
-            defaultValue: T & Any
-        ): AbsSpSaver.Delegate<SpSaver, T & Any> {
+            defaultValue: V & Any
+        ): AbsSpSaver.Delegate<SpSaver, V & Any> {
             @Suppress("UNCHECKED_CAST")
-            return ValueDefaultValue<SpSaver, Sp, Ed, T>(
+            return ValueDefaultValue<SpSaver, Sp, Ed, V>(
                 saver = StringDelegate(key, expireDurationInSecond),
-                type = object : TypeToken<T>() {},
+                type = object : TypeToken<V>() {},
                 defaultValue = defaultValue,
-            ) as AbsSpSaver.Delegate<SpSaver, T & Any>
+            ) as AbsSpSaver.Delegate<SpSaver, V & Any>
         }
     }
 }

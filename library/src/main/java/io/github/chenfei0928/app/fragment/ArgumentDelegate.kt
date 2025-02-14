@@ -21,19 +21,19 @@ import kotlin.reflect.KProperty
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-07-23 15:46
  */
-class ArgumentDelegate<T>(
-    private val supportType: BundleSupportType<T>,
+class ArgumentDelegate<V>(
+    private val supportType: BundleSupportType<V>,
     private val name: String? = null,
-    private val defaultValue: T? = null,
-) : ReadOnlyCacheDelegate<Fragment, T>(), ReadWriteProperty<Fragment, T> {
-    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): T {
+    private val defaultValue: V? = null,
+) : ReadOnlyCacheDelegate<Fragment, V>(), ReadWriteProperty<Fragment, V> {
+    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): V {
         return thisRef.requireArguments().run {
             classLoader = thisRef.javaClass.classLoader
             supportType.getValue(this, property, name ?: property.name, defaultValue)
         }
     }
 
-    override fun setValue(thisRef: Fragment, property: KProperty<*>, value: T) {
+    override fun setValue(thisRef: Fragment, property: KProperty<*>, value: V) {
         this.value = value
         thisRef.applyArgumentBundle {
             supportType.putNullable(this, property, name ?: property.name, value)
@@ -41,27 +41,27 @@ class ArgumentDelegate<T>(
     }
 
     companion object {
-        inline operator fun <reified T> invoke(
-            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: T? = null
-        ): ReadWriteProperty<Fragment, T> = ArgumentDelegate(
+        inline operator fun <reified V> invoke(
+            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: V? = null
+        ): ReadWriteProperty<Fragment, V> = ArgumentDelegate(
             BundleSupportType.AutoFind.findByType(isMarkedNullable), name, defaultValue
         )
 
-        operator fun <T> invoke(
-            parceler: Parceler<T?>,
+        operator fun <V> invoke(
+            parceler: Parceler<V?>,
             isMarkedNullable: Boolean = false,
             name: String? = null,
-            defaultValue: T? = null
-        ): ReadWriteProperty<Fragment, T> = ArgumentDelegate<T>(
+            defaultValue: V? = null
+        ): ReadWriteProperty<Fragment, V> = ArgumentDelegate<V>(
             BundleSupportType.ParcelerType(parceler, isMarkedNullable), name, defaultValue
         )
 
-        inline operator fun <reified T : MessageLite> invoke(
+        inline operator fun <reified V : MessageLite> invoke(
             isMarkedNullable: Boolean = false, name: String? = null,
-        ): ReadWriteProperty<Fragment, T> = ArgumentDelegate(
-            BundleSupportType.ProtoBufType<T>(isMarkedNullable),
+        ): ReadWriteProperty<Fragment, V> = ArgumentDelegate(
+            BundleSupportType.ProtoBufType<V>(isMarkedNullable),
             name,
-            if (isMarkedNullable) null else T::class.java.protobufDefaultInstance
+            if (isMarkedNullable) null else V::class.java.protobufDefaultInstance
         )
 
         fun Fragment.argInt(name: String? = null): ReadWriteProperty<Fragment, Int> =
@@ -77,23 +77,23 @@ class ArgumentDelegate<T>(
         fun Fragment.argStringNull(name: String? = null): ReadWriteProperty<Fragment, String?> =
             ArgumentDelegate(BundleSupportType.StringType(true) as BundleSupportType<String?>, name)
 
-        inline fun <reified T : Parcelable> Fragment.argParcelable(
+        inline fun <reified V : Parcelable> Fragment.argParcelable(
             name: String? = null
-        ): ReadWriteProperty<Fragment, T> = ArgumentDelegate(
-            BundleSupportType.ParcelableType(T::class.java, false), name
+        ): ReadWriteProperty<Fragment, V> = ArgumentDelegate(
+            BundleSupportType.ParcelableType(V::class.java, false), name
         )
 
         @Suppress("UNCHECKED_CAST")
-        inline fun <reified T : Parcelable> Fragment.argParcelableNull(
+        inline fun <reified V : Parcelable> Fragment.argParcelableNull(
             name: String? = null
-        ): ReadWriteProperty<Fragment, T?> = ArgumentDelegate<T?>(
-            BundleSupportType.ParcelableType(T::class.java, true) as BundleSupportType<T?>, name
+        ): ReadWriteProperty<Fragment, V?> = ArgumentDelegate<V?>(
+            BundleSupportType.ParcelableType(V::class.java, true) as BundleSupportType<V?>, name
         )
 
-        inline fun <reified T : Parcelable> Fragment.argParcelableList(
+        inline fun <reified V : Parcelable> Fragment.argParcelableList(
             name: String? = null
-        ): ReadWriteProperty<Fragment, List<T>> = ArgumentDelegate(
-            BundleSupportType.ListParcelableType(T::class.java, false), name
+        ): ReadWriteProperty<Fragment, List<V>> = ArgumentDelegate(
+            BundleSupportType.ListParcelableType(V::class.java, false), name
         )
     }
 }
