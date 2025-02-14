@@ -45,11 +45,15 @@ open class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
         if (!enableFieldObservable)
             return
         field.observable?.onLocalStorageChange(this as SpSaver, field.property)
-        privateAnyPropertySetCallback.run {
-            if (hasActiveObserver()) {
-                val callbackValue = field to null
-                forEach { it(callbackValue) }
-            }
+    }
+
+    override fun clear() {
+        super.clear()
+        if (!enableFieldObservable) {
+            return
+        }
+        dataStore.spSaverPropertyDelegateFields.forEach { field ->
+            field.observable?.onLocalStorageChange(this as SpSaver, field.property)
         }
     }
 
