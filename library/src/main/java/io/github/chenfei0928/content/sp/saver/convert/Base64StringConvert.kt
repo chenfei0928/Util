@@ -1,6 +1,7 @@
 package io.github.chenfei0928.content.sp.saver.convert
 
 import android.content.SharedPreferences
+import androidx.annotation.IntRange
 import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
@@ -20,11 +21,6 @@ constructor(
     saver, PreferenceType.NoSupportPreferenceDataStore
 ) {
 
-    private constructor(
-        key: String? = null,
-        expireDurationInSecond: Int = MMKV.ExpireNever,
-    ) : this(StringDelegate<SpSaver, Sp, Ed>(key, expireDurationInSecond))
-
     override fun onRead(value: String): ByteArray = value.toByteArray()
     override fun onSave(value: ByteArray): String = String(value)
 
@@ -34,13 +30,17 @@ constructor(
         operator fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor> invoke(
-            key: String? = null, expireDurationInSecond: Int = MMKV.ExpireNever,
+            key: String? = null,
+            @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, ByteArray?> {
-            @Suppress("UNCHECKED_CAST")
-            return if (!key.isNullOrEmpty() || expireDurationInSecond > 0)
-                Base64StringConvert<SpSaver, Sp, Ed>(key, expireDurationInSecond)
-            else defaultInstance as? Base64StringConvert<SpSaver, Sp, Ed>
-                ?: Base64StringConvert<SpSaver, Sp, Ed>().also { defaultInstance = it }
+            return if (!key.isNullOrEmpty() || expireDurationInSecond > 0) {
+                Base64StringConvert<SpSaver, Sp, Ed>(StringDelegate(key, expireDurationInSecond))
+            } else {
+                @Suppress("UNCHECKED_CAST")
+                defaultInstance as? Base64StringConvert<SpSaver, Sp, Ed>
+            } ?: Base64StringConvert<SpSaver, Sp, Ed>(
+                StringDelegate(key, expireDurationInSecond)
+            ).also { defaultInstance = it }
         }
     }
 }

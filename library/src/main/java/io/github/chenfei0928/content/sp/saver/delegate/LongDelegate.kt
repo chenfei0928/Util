@@ -44,8 +44,7 @@ private constructor(
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? LongDelegate<SpSaver, Sp, Ed>
-                    ?: LongDelegate<SpSaver, Sp, Ed>().also { defaultInstance = it }
-            }
+            } ?: LongDelegate<SpSaver, Sp, Ed>().also { defaultInstance = it }
         }
     }
 }

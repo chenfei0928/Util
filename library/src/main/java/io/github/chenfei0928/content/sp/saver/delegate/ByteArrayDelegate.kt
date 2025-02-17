@@ -12,8 +12,8 @@ import io.github.chenfei0928.content.sp.saver.PreferenceType
 class ByteArrayDelegate<SpSaver : AbsSpSaver<SpSaver, Sp, Sp>, Sp : MMKV>
 private constructor(
     key: String? = null,
-    @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
     defaultValue: ByteArray? = null,
+    @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Sp, ByteArray?>(
     key, PreferenceType.NoSupportPreferenceDataStore, defaultValue
 ) {
@@ -40,10 +40,10 @@ private constructor(
         ): AbsSpSaver.Delegate<SpSaver, ByteArray> {
             @Suppress("UNCHECKED_CAST")
             return if (!key.isNullOrEmpty() || defaultValue.isNotEmpty() || expireDurationInSecond > 0) {
-                ByteArrayDelegate<SpSaver, Sp>(key, expireDurationInSecond, defaultValue)
+                ByteArrayDelegate<SpSaver, Sp>(key, defaultValue, expireDurationInSecond)
             } else {
                 defaultNonnullInstance ?: ByteArrayDelegate<SpSaver, Sp>(
-                    key, expireDurationInSecond, defaultValue
+                    key, defaultValue, expireDurationInSecond,
                 ).also { defaultNonnullInstance = it }
             } as AbsSpSaver.Delegate<SpSaver, ByteArray>
         }
@@ -53,12 +53,11 @@ private constructor(
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, ByteArray?> {
             return if (!key.isNullOrEmpty() || expireDurationInSecond > 0) {
-                ByteArrayDelegate<SpSaver, Sp>(key, expireDurationInSecond)
+                ByteArrayDelegate<SpSaver, Sp>(key, null, expireDurationInSecond)
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? ByteArrayDelegate<SpSaver, Sp>
-                    ?: ByteArrayDelegate<SpSaver, Sp>().also { defaultInstance = it }
-            }
+            } ?: ByteArrayDelegate<SpSaver, Sp>().also { defaultInstance = it }
         }
     }
 }

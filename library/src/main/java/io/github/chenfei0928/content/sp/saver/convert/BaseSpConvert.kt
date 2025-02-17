@@ -9,6 +9,14 @@ import kotlin.reflect.KProperty
 /**
  * sp存储转换器，用于将sp不支持的数据结构转换为sp支持的数据结构
  *
+ * 实现受限于 Kotlin 语法的约束，[getValue] 必须要返回 nullable。子类如果有遇到返回类型为 nonnull 的情况，
+ * 则需要创建工厂方法并返回值类型设置为 [AbsSpSaver.Delegate] 并将泛型设置为 nonnull，
+ * 在这其中可能会需要进行 `@Suppress("UNCHECKED_CAST")`。
+ *
+ * 子类可能会创建一些以 invoke 为名的工厂方法，这些工厂方法的返回值类型与类的类型一致，不允许返回 nonnull；
+ * 如果是 reified inline 方法是为了减少传入T类型，此时需要保留其使用的原始构造器；
+ * 如果是非 inline 方法是为了隐藏原始构造器，此时需要移除原始构造器；
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-09-03 13:38
  */

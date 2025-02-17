@@ -14,9 +14,9 @@ class StringSetDelegate<
         Ed : SharedPreferences.Editor>
 private constructor(
     key: String? = null,
-    @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
-    defaultValue: Set<String?>? = null,
     private val defaultEntry: String? = null,
+    defaultValue: Set<String?>? = null,
+    @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Set<String?>?>(
     key, PreferenceType.Native.STRING_SET, defaultValue
 ) {
@@ -53,11 +53,11 @@ private constructor(
                 || expireDurationInSecond > 0
             ) {
                 StringSetDelegate<SpSaver, Sp, Ed>(
-                    key, expireDurationInSecond, defaultValue, defaultEntry
+                    key, defaultEntry, defaultValue, expireDurationInSecond,
                 )
             } else {
                 defaultNonnullInstance ?: StringSetDelegate<SpSaver, Sp, Ed>(
-                    key, expireDurationInSecond, defaultValue, defaultEntry
+                    key, defaultEntry, defaultValue, expireDurationInSecond,
                 ).also { defaultNonnullInstance = it }
             } as AbsSpSaver.Delegate<SpSaver, Set<String>>
         }
@@ -69,12 +69,11 @@ private constructor(
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, Set<String?>?> {
             return if (!key.isNullOrEmpty() || expireDurationInSecond > 0) {
-                StringSetDelegate<SpSaver, Sp, Ed>(key, expireDurationInSecond)
+                StringSetDelegate<SpSaver, Sp, Ed>(key, null, null, expireDurationInSecond)
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? StringSetDelegate<SpSaver, Sp, Ed>
-                    ?: StringSetDelegate<SpSaver, Sp, Ed>().also { defaultInstance = it }
-            }
+            } ?: StringSetDelegate<SpSaver, Sp, Ed>().also { defaultInstance = it }
         }
     }
 }

@@ -44,8 +44,7 @@ private constructor(
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? FloatDelegate<SpSaver, Sp, Ed>
-                    ?: FloatDelegate<SpSaver, Sp, Ed>().also { defaultInstance = it }
-            }
+            } ?: FloatDelegate<SpSaver, Sp, Ed>().also { defaultInstance = it }
         }
     }
 }

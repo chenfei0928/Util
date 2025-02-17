@@ -13,8 +13,8 @@ open class StringDelegate<
         Ed : SharedPreferences.Editor>
 private constructor(
     key: String? = null,
+    defaultValue: String? = null,
     @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
-    defaultValue: String? = null
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, String?>(
     key, PreferenceType.Native.STRING, defaultValue
 ) {
@@ -42,10 +42,10 @@ private constructor(
         ): AbsSpSaver.Delegate<SpSaver, String> {
             @Suppress("UNCHECKED_CAST")
             return if (!key.isNullOrEmpty() || defaultValue.isNotEmpty() || expireDurationInSecond > 0) {
-                StringDelegate<SpSaver, Sp, Ed>(key, expireDurationInSecond, defaultValue)
+                StringDelegate<SpSaver, Sp, Ed>(key, defaultValue, expireDurationInSecond)
             } else {
                 defaultNonnullInstance ?: StringDelegate<SpSaver, Sp, Ed>(
-                    key, expireDurationInSecond, defaultValue
+                    key, defaultValue, expireDurationInSecond,
                 ).also { defaultNonnullInstance = it }
             } as AbsSpSaver.Delegate<SpSaver, String>
         }
@@ -57,12 +57,11 @@ private constructor(
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, String?> {
             return if (!key.isNullOrEmpty() || expireDurationInSecond > 0) {
-                StringDelegate<SpSaver, Sp, Ed>(key, expireDurationInSecond)
+                StringDelegate<SpSaver, Sp, Ed>(key, null, expireDurationInSecond)
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? StringDelegate<SpSaver, Sp, Ed>
-                    ?: StringDelegate<SpSaver, Sp, Ed>().also { defaultInstance = it }
-            }
+            } ?: StringDelegate<SpSaver, Sp, Ed>().also { defaultInstance = it }
         }
     }
 }

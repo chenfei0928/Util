@@ -1,6 +1,7 @@
 package io.github.chenfei0928.content.sp.saver.convert
 
 import android.content.SharedPreferences
+import androidx.annotation.IntRange
 import androidx.collection.ArraySet
 import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
@@ -14,10 +15,10 @@ class EnumSetNameSpConvert<
         E : Enum<E>>
 constructor(
     eClass: Class<E>,
-    private val nameNotFoundDefaultValue: E,
+    private val nameNotFoundDefaultValue: E? = null,
     private val enumValues: Array<E>,
     saver: AbsSpSaver.Delegate<SpSaver, Set<String?>?>,
-    override val defaultValue: Set<E>? = null,
+    override val defaultValue: Set<E>?,
 ) : BaseSpConvert<SpSaver, Sp, Ed, Set<String?>?, Set<E?>?>(
     saver, EnumNameStringSet(eClass, enumValues)
 ), AbsSpSaver.DefaultValue<Set<E?>?> {
@@ -27,14 +28,14 @@ constructor(
         nameNotFoundDefaultValue: E,
         enumValues: Array<E> = eClass.enumConstants as Array<E>,
         key: String? = null,
-        expireDurationInSecond: Int = MMKV.ExpireNever,
+        @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         defaultValue: Set<E>? = null,
     ) : this(
-        eClass,
-        nameNotFoundDefaultValue,
-        enumValues,
-        StringSetDelegate(key, expireDurationInSecond),
-        defaultValue
+        eClass = eClass,
+        nameNotFoundDefaultValue = nameNotFoundDefaultValue,
+        enumValues = enumValues,
+        saver = StringSetDelegate(key, expireDurationInSecond),
+        defaultValue = defaultValue
     )
 
     override fun onRead(value: Set<String?>): Set<E?> {
@@ -58,16 +59,16 @@ constructor(
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
                 reified E : Enum<E>> invoke(
-            nameNotFoundDefaultValue: E,
+            nameNotFoundDefaultValue: E? = null,
             key: String? = null,
-            expireDurationInSecond: Int = MMKV.ExpireNever,
+            @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, Set<E?>?> {
             return EnumSetNameSpConvert<SpSaver, Sp, Ed, E>(
-                E::class.java,
-                nameNotFoundDefaultValue,
-                enumValues<E>(),
-                key,
-                expireDurationInSecond
+                eClass = E::class.java,
+                nameNotFoundDefaultValue = nameNotFoundDefaultValue,
+                enumValues = enumValues<E>(),
+                saver = StringSetDelegate(key, expireDurationInSecond),
+                defaultValue = null,
             )
         }
 
@@ -78,16 +79,15 @@ constructor(
             nameNotFoundDefaultValue: E,
             defaultValue: Set<E> = emptySet(),
             key: String? = null,
-            expireDurationInSecond: Int = MMKV.ExpireNever,
+            @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, Set<E>> {
             @Suppress("UNCHECKED_CAST")
             return EnumSetNameSpConvert<SpSaver, Sp, Ed, E>(
-                E::class.java,
-                nameNotFoundDefaultValue,
-                enumValues<E>(),
-                key,
-                expireDurationInSecond,
-                defaultValue
+                eClass = E::class.java,
+                nameNotFoundDefaultValue = nameNotFoundDefaultValue,
+                enumValues = enumValues<E>(),
+                saver = StringSetDelegate(key, expireDurationInSecond),
+                defaultValue = defaultValue
             ) as AbsSpSaver.Delegate<SpSaver, Set<E>>
         }
     }

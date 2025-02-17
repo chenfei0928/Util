@@ -1,6 +1,7 @@
 package io.github.chenfei0928.content.sp.saver.convert
 
 import android.content.SharedPreferences
+import androidx.annotation.IntRange
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.tencent.mmkv.MMKV
@@ -13,7 +14,7 @@ abstract class GsonSpConvert<
         Sp : SharedPreferences,
         Ed : SharedPreferences.Editor,
         V>
-constructor(
+protected constructor(
     saver: AbsSpSaver.Delegate<SpSaver, String?>,
     private val gson: Gson = io.github.chenfei0928.json.gson.gson,
     private val type: TypeToken<V>,
@@ -41,7 +42,7 @@ constructor(
                 Ed : SharedPreferences.Editor,
                 reified V> invoke(
             key: String? = null,
-            expireDurationInSecond: Int = MMKV.ExpireNever,
+            @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, V?> = ValueDefaultValue<SpSaver, Sp, Ed, V>(
             saver = StringDelegate(key, expireDurationInSecond),
             type = object : TypeToken<V>() {}
@@ -52,7 +53,7 @@ constructor(
                 Ed : SharedPreferences.Editor,
                 reified V> nonnullByBlock(
             key: String? = null,
-            expireDurationInSecond: Int = MMKV.ExpireNever,
+            @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
             noinline defaultValue: () -> V & Any
         ): AbsSpSaver.Delegate<SpSaver, V & Any> {
             @Suppress("UNCHECKED_CAST")
@@ -69,7 +70,7 @@ constructor(
                 Ed : SharedPreferences.Editor,
                 reified V> nonnull(
             key: String? = null,
-            expireDurationInSecond: Int = MMKV.ExpireNever,
+            @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
             defaultValue: V & Any
         ): AbsSpSaver.Delegate<SpSaver, V & Any> {
             @Suppress("UNCHECKED_CAST")
