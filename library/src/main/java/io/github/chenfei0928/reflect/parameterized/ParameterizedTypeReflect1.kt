@@ -197,7 +197,7 @@ class ParameterizedTypeReflect1<Parent>(
             @Suppress("SpreadOperator")
             GoogleTypes.newParameterizedTypeWithOwner(
                 typeImplOnParent.ownerType,
-                typeImplOnParent.rawType,
+                typeImplOnParent.rawType as Class<*>,
                 *typeImplOnParent.actualTypeArguments.mapToArray {
                     getType(currentNode, it)
                 }

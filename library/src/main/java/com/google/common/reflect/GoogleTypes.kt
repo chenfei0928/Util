@@ -15,13 +15,13 @@ import com.google.gson.internal.`$Gson$Types` as GsonTypes
  */
 object GoogleTypes {
     fun newParameterizedTypeWithOwner(
-        ownerType: Type?, rawType: Type, vararg typeArguments: Type
+        ownerType: Type?, rawType: Class<*>, vararg typeArguments: Type
     ): ParameterizedType = when {
         DependencyChecker.GSON() -> GsonTypes.newParameterizedTypeWithOwner(
             ownerType, rawType, *typeArguments
         )
         DependencyChecker.GUAVA() -> Types.newParameterizedTypeWithOwner(
-            ownerType, rawType as Class<*>, *typeArguments
+            ownerType, rawType, *typeArguments
         )
         else -> throw IllegalArgumentException("没有引入依赖库")
     }

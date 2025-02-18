@@ -9,7 +9,7 @@ object Deps {
     object kotlin {
 
         // https://github.com/Kotlin/kotlinx-datetime
-        val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.1"
+        val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.2"
 
         // https://github.com/fengzhizi715/Lifecycle-Coroutines-Extension
         val coroutinesExt = "com.safframework.lifecycle:lifecycle-coroutine-ext:1.2.1"
@@ -19,10 +19,11 @@ object Deps {
         val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0"
         val protobuf = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.8.0"
 
-        val ktor_version = "3.0.3"
 
         // Ktor
         // https://ktor.io/docs/client-create-multiplatform-application.html#ktor-dependencies
+        val ktor_version = "3.1.0"
+
         val ktorClientCore = "io.ktor:ktor-client-core:$ktor_version"
         val ktorClientOkhttp = "io.ktor:ktor-client-okhttp:$ktor_version"
         val ktorClientDarwin = "io.ktor:ktor-client-darwin:$ktor_version"
@@ -105,7 +106,7 @@ object Deps {
 
         // https://github.com/socketio/socket.io-client-java
         // 使用时要 exclude group: 'org.json', module: 'json'
-        val ioSocket = "io.socket:socket.io-client:2.1.1"
+        val ioSocket = "io.socket:socket.io-client:2.1.2"
 
         // https://github.com/square/picasso
         val picasso = "com.squareup.picasso:picasso:2.8"
@@ -124,7 +125,9 @@ object Deps {
     //<editor-fold defaultstate="collapsed" desc="Glide 图片加载库">
     object glide {
         // https://github.com/bumptech/glide
-        private const val glideVer = "4.16.0"
+//        private const val glideVer = "4.16.0"
+        private const val glideVer = "5.0.0-rc01"
+
         val core = "com.github.bumptech.glide:glide:$glideVer"
         val apt = "com.github.bumptech.glide:compiler:$glideVer"
         val ksp = "com.github.bumptech.glide:ksp:$glideVer"
@@ -136,7 +139,7 @@ object Deps {
         val okhttp3 = "com.github.bumptech.glide:okhttp3-integration:$glideVer@aar"
 
         // https://github.com/zjupure/GlideWebpDecoder
-        val webpDecoder = "com.zlc.glide:webpdecoder:2.0.$glideVer"
+        val webpDecoder = "com.zlc.glide:webpdecoder:2.6.$glideVer"
 
         // https://github.com/florent37/GlidePalette
         val glidePalette = "com.github.florent37:glidepalette:2.1.2"
@@ -170,12 +173,12 @@ object Deps {
         val floatView = "com.imuxuan:floatingview:1.6"
 
         // https://github.com/square/okio
-        val okio = "com.squareup.okio:okio:3.5.0"
+        val okio = "com.squareup.okio:okio:3.10.2"
 
         // protobuf 序列化框架
         object protobuf {
             // https://github.com/grpc/grpc-java
-            const val grpcVersion = "1.69.0"
+            const val grpcVersion = "1.70.0"
 
             // https://github.com/grpc/grpc-kotlin
             const val grpcKotlinVersion = "1.4.1"
@@ -225,14 +228,14 @@ object Deps {
         // JetBrains Java Annotations
         // 提供标示正则表达式等给ide提示代码字段用途的说明
         // https://mvnrepository.com/artifact/org.jetbrains/annotations
-        val ideAnnotation = "org.jetbrains:annotations:21.0.1"
+        val ideAnnotation = "org.jetbrains:annotations:26.0.2"
 
         // https://github.com/unicode-org/icu-demos/tree/main/icu4jweb
         // https://mvnrepository.com/artifact/com.ibm.icu/icu4j
         val icu4j = "com.ibm.icu:icu4j:71.1"
 
         // https://github.com/luben/zstd-jni
-        val zstdCompression = "com.github.luben:zstd-jni:1.5.5-5@aar"
+        val zstdCompression = "com.github.luben:zstd-jni:1.5.6-9@aar"
 
         // Google工具类
         object google {
@@ -240,7 +243,7 @@ object Deps {
             val guavaAndroid = "com.google.guava:guava:33.4.0-android"
 
             // https://github.com/google/gson
-            val gson = "com.google.code.gson:gson:2.11.0"
+            val gson = "com.google.code.gson:gson:2.12.1"
 
             // https://github.com/zxing/zxing
             // https://repo1.maven.org/maven2/com/google/zxing/core/
@@ -252,10 +255,11 @@ object Deps {
         }
 
         // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-        val apacheCommonLang3 = "org.apache.commons:commons-lang3:3.13.0"
+        val apacheCommonLang3 = "org.apache.commons:commons-lang3:3.17.0"
 
         // https://github.com/Tencent/MMKV/blob/master/README_CN.md
-        val mmkv = "com.tencent:mmkv:1.3.12"
+//        val mmkv = "com.tencent:mmkv:1.3.12"
+        val mmkv = "com.tencent:mmkv:2.1.0"
 
         // dagger2，依赖注入
         // https://github.com/google/dagger
@@ -457,8 +461,8 @@ object Deps {
         val numberProgressBar = "com.daimajia.numberprogressbar:library:1.4@aar"
 
         // https://github.com/airbnb/lottie-android
-        val lottie = "com.airbnb.android:lottie:6.5.2"
-        val lottieCompose = "com.airbnb.android:lottie-compose:6.5.2"
+        val lottie = "com.airbnb.android:lottie:6.6.2"
+        val lottieCompose = "com.airbnb.android:lottie-compose:6.6.2"
 
         // https://github.com/akexorcist/Android-RoundCornerProgressBar
         val roundCornerProgressBar = "com.akexorcist:round-corner-progress-bar:2.2.1"

@@ -15,7 +15,7 @@ dependencies {
     val kotlinVersion = "2.1.10"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "8.8.0"
+    val agpVersion = "8.8.1"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
     implementation(kotlin("reflect", kotlinVersion))
@@ -26,10 +26,10 @@ dependencies {
     // https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.compose
     implementation("org.jetbrains.kotlin:compose-compiler-gradle-plugin:$kotlinVersion")
     // https://github.com/Kotlin/kotlinx-atomicfu
-    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.26.1")
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.27.0")
     // Kotlin Symbol Processing 符号处理器编译器插件，需伴随Kotlin版本一同升级
     // https://github.com/google/ksp
-    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.29")
+    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.30")
     implementation(gradleApi())
 
     implementation(localGroovy())
@@ -82,7 +82,7 @@ dependencies {
 //    implementation("com.tencent.bugly:symtabfileuploader:2.2.1")
     // 腾讯补丁包工具
     // https://github.com/Tencent/tinker
-    implementation("com.tencent.tinker:tinker-patch-gradle-plugin:1.9.14.27")
+    implementation("com.tencent.tinker:tinker-patch-gradle-plugin:1.9.15.1")
     implementation("com.tencent.tinker:tinker-patch-lib:1.9.14.26.3") {
         exclude(group = "com.google.guava")
     }

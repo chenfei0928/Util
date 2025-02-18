@@ -55,7 +55,7 @@ fun Project.applyJetpackCompose(
 
     dependencies {
         // https://developer.android.com/jetpack/compose/bom/bom-mapping
-        val composeBom = platform("androidx.compose:compose-bom:2024.09.03")
+        val composeBom = platform("androidx.compose:compose-bom:2025.02.00")
         implementation(composeBom)
         androidTestImplementation(composeBom)
 

@@ -13,7 +13,6 @@ import androidx.core.os.BundleCompat
 import com.google.protobuf.MessageLite
 import com.google.protobuf.Parser
 import com.google.protobuf.ProtobufListParceler
-import com.google.protobuf.ProtobufListParserParser
 import com.google.protobuf.protobufParserForType
 import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.lang.contains
@@ -1208,7 +1207,7 @@ abstract class BundleSupportType<T>(
      * 如果[parser] 不为null，则无效
      */
     class ListProtoBufType<T : MessageLite>(
-        private val parser: Parser<T>?,
+        parser: Parser<T>?,
         private val writeClassName: Boolean,
         isMarkedNullable: Boolean? = false
     ) : ParcelerType<List<T?>>(isMarkedNullable) {
@@ -1220,28 +1219,21 @@ abstract class BundleSupportType<T>(
         )
 
         private val parceler: Parceler<List<T?>?>? = if (parser != null) {
-            ProtobufListParserParser(parser)
+            ProtobufListParceler(parser)
+        } else if (writeClassName) {
+            @Suppress("UNCHECKED_CAST", "kotlin:S6531")
+            ProtobufListParceler.Instance as Parceler<List<T?>?>
         } else null
 
-        override fun getParceler(property: KProperty<*>): Parceler<List<T?>?> =
-            parceler ?: if (writeClassName) {
-                @Suppress("UNCHECKED_CAST")
-                ProtobufListParceler as Parceler<List<T?>?>
-            } else {
+        override fun getParceler(property: KProperty<*>): Parceler<List<T?>?> {
+            return parceler ?: run {
                 val parser: Parser<T> = property.returnType.argument0TypeJClass<T>()
                     .protobufParserForType
                     ?: throw IllegalArgumentException(
                         "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
                     )
-                ProtobufListParserParser(parser)
+                ProtobufListParceler(parser)
             }
-
-        private fun parseData(
-            property: KProperty<*>, data: ByteArray?
-        ): List<T?>? = if (data == null) {
-            null
-        } else ParcelUtil.unmarshall(data) {
-            getParceler(property).create(it)
         }
 
         override fun nonnullValue(property: KProperty<*>): List<T?> = emptyList()

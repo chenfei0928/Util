@@ -4,49 +4,67 @@ import android.os.Parcel
 import android.os.Parcelable.Creator
 import androidx.collection.LruCache
 import kotlinx.parcelize.Parceler
+import kotlinx.parcelize.TypeParceler
 
 /**
- * 使Protobuf对象支持Parcelable的序列化支持
- * 通过写入并读取实例类名，并进一步通过[parserCache]获取[Parser]解析器
- * ```
- *   @TypeParceler<InitReply.SandboxVersion?, ProtobufParceler.Instance>()
- *   val remoteSandboxVersion: InitReply.SandboxVersion?,
- * ```
+ * 使 `Protobuf` 对象支持Parcelable的序列化支持
  *
+ * 根据 [parser] 是否传入，进行序列化时的行为可能会不同：
+ * - 传入了 [parser] 时：在序列化时不会写入类型信息
+ * - 没有传入 [parser] 时：会写入类型（但连续的多个相同类型的元素时只有第一次会写入类型信息）
+ *
+ * ```
+ * // 不会写入类型信息
+ * @TypeParceler<ProtoBean?, ProtoBeanParceler>()
+ * val protoBean: ProtoBean?,
+ * // 会写入类型信息
+ * @TypeParceler<ProtoBean?, ProtobufListParceler.Instance>()
+ * val protoBean: ProtoBean?,
+ *
+ * object ProtoBeanParceler : ProtobufListParserParser<ProtoBean?>(ProtoBean.parser())
+ * ```
  * [Docs](https://developer.android.com/kotlin/parcelize?hl=zh-cn)
  *
- * 使用反射获取类并进一步获取解析器[Parser]，提供默认实例[ProtobufParceler.Instance]可以直接使用
+ * 此类设置为open，以让使用处创建单例类才能被添加到[TypeParceler]注解中使用
  *
  * [Parceler.newArray]不需要重写，由编译器直接在[Creator.createFromParcel]中生成
+ *
+ * [Docs](https://developer.android.com/kotlin/parcelize?hl=zh-cn)
  *
  * @param MessageType
  * @constructor Create empty Base protobuf parceler
  */
-class ProtobufParceler<MessageType : MessageLite>(
-    cacheSize: Int = 10
-) : Parceler<MessageType?> {
-    private val parserCache = object : LruCache<String, Parser<MessageType>>(cacheSize) {
-        @Suppress("UNCHECKED_CAST")
-        override fun create(key: String): Parser<MessageType> {
-            val messageType = Class.forName(key) as Class<MessageType>
-            return messageType.protobufParserForType!!
+open class ProtobufParceler<MessageType : MessageLite>(
+    private val parser: Parser<MessageType>? = null,
+    cacheSize: Int = 10,
+) : LruCache<String, Parser<MessageType>>(cacheSize), Parceler<MessageType?> {
+
+    override fun create(parcel: Parcel): MessageType? {
+        return if (parser != null) {
+            parcel.createByteArray()?.let(parser::parseFrom)
+        } else {
+            val className = parcel.readString()
+                ?: return null
+            val parser = this[className]!!
+            parcel.createByteArray().let(parser::parseFrom)
         }
     }
 
-    override fun create(parcel: Parcel): MessageType? {
-        val className = parcel.readString()
-            ?: return null
-        val parser = parserCache[className]!!
-        return parcel.createByteArray().let(parser::parseFrom)
-    }
-
     override fun MessageType?.write(parcel: Parcel, flags: Int) {
-        if (this == null) {
+        if (parser != null) {
+            parcel.writeByteArray(this?.toByteArray())
+        } else if (this == null) {
             parcel.writeString(null)
         } else {
             parcel.writeString(this.javaClass.name)
             parcel.writeByteArray(this.toByteArray())
         }
+    }
+
+    override fun create(key: String): Parser<MessageType> {
+        @Suppress("UNCHECKED_CAST")
+        val messageType = Class.forName(key) as Class<MessageType>
+        return messageType.protobufParserForType!!
     }
 
     companion object Instance : Parceler<MessageLite?> by ProtobufParceler()

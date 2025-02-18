@@ -1,5 +1,6 @@
 import io.github.chenfei0928.Deps
 import io.github.chenfei0928.DepsAndroidx
+import io.github.chenfei0928.Env
 import io.github.chenfei0928.android.applyLibrary
 import io.github.chenfei0928.android.applyTest
 import io.github.chenfei0928.compiler.applyKotlin
@@ -25,10 +26,12 @@ android {
 
     defaultConfig {
         minSdk = 21
+
+        buildConfigField("String", "vcsCommitId", "\"${Env.vcsCommitId}\"")
     }
 
     buildFeatures {
-        buildConfig = false
+        buildConfig = true
         viewBinding = true
     }
 

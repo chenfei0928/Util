@@ -115,7 +115,9 @@ fun Project.applyKotlin(
     }
 
     dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinPluginVersion")
+        // stdlib 有jdk7和jdk8版本
+        val jdkVersion = if (Contract.androidSdkToJdkVersion(Contract.minSdkVersion) >= 8) 8 else 7
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk$jdkVersion:$kotlinPluginVersion")
         implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinPluginVersion")
         // Parcelable序列化支持
         implementation("org.jetbrains.kotlin:kotlin-parcelize-runtime:$kotlinPluginVersion")

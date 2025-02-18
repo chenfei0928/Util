@@ -58,4 +58,18 @@ object Contract {
 
     const val flavorDimensions_campaignName = "campaignName"
     //</editor-fold>
+
+    // Android 版本与jdk对应关系
+    // https://developer.android.com/build/jdks?hl=zh-cn#compileSdk
+    // https://blog.csdn.net/j086924/article/details/122866386
+    internal fun androidSdkToJdkVersion(androidSdk: Int): Int {
+        return when (androidSdk) {
+            in 1..20 -> 6
+            in 21..23 -> 7
+            in 24..30 -> 8
+            in 31..33 -> 11
+            in 34..Int.MAX_VALUE -> 17
+            else -> throw IllegalArgumentException("不支持的 androidSdk 版本: $androidSdk")
+        }
+    }
 }
