@@ -38,6 +38,10 @@ private constructor(
         }
     }
 
+    override fun toString(): String {
+        return "Base64Serializer(serializer=$serializer)"
+    }
+
     companion object {
         /**
          * 数据Base64化修饰器

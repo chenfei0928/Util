@@ -22,4 +22,8 @@ fun <T : Any> LocalSerializer<T>.toDatastore() = object : Serializer<T> {
     override suspend fun writeTo(t: T, output: OutputStream) {
         this@toDatastore.write(output, t)
     }
+
+    override fun toString(): String {
+        return "LocalDatastoreSerializer(this=${this@toDatastore})"
+    }
 }

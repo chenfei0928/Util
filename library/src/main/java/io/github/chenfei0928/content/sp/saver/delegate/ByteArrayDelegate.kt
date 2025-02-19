@@ -15,7 +15,7 @@ private constructor(
     defaultValue: ByteArray? = null,
     @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Sp, ByteArray?>(
-    key, PreferenceType.NoSupportPreferenceDataStore, defaultValue
+    key, spValueType, defaultValue
 ) {
     override fun getValueImpl(sp: Sp, key: String): ByteArray {
         return sp.getBytes(key, defaultValue)
@@ -30,6 +30,7 @@ private constructor(
     }
 
     companion object {
+        internal val spValueType = PreferenceType.Struct<ByteArray>(ByteArray::class.java)
         private var defaultInstance: ByteArrayDelegate<*, *>? = null
         private var defaultNonnullInstance: ByteArrayDelegate<*, *>? = null
 

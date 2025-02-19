@@ -49,6 +49,10 @@ class GsonSerializer<T : Any>(
         return typeAdapter.fromJsonTree(typeAdapter.toJsonTree(obj))
     }
 
+    override fun toString(): String {
+        return "GsonSerializer(typeAdapter=$typeAdapter)"
+    }
+
     companion object {
         /**
          * 快速创建序列化工具实例，避免重复键入类型

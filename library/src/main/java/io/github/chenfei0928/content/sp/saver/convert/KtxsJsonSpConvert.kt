@@ -13,65 +13,144 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import java.lang.reflect.Type
+import kotlin.reflect.KType
+import kotlin.reflect.jvm.javaType
 
 class KtxsJsonSpConvert<
         SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
         Sp : SharedPreferences,
         Ed : SharedPreferences.Editor,
-        V>
-constructor(
-    saver: AbsSpSaver.Delegate<SpSaver, String?>,
-    private val json: Json,
-    private val serializer: SerializationStrategy<V>,
-    private val deserializer: DeserializationStrategy<V>,
-) : BaseSpConvert<SpSaver, Sp, Ed, String?, V?>(
-    saver, PreferenceType.NoSupportPreferenceDataStore
-) {
+        V : Any> : BaseSpConvert<SpSaver, Sp, Ed, String?, V?> {
+    private val json: Json
+    private val serializer: SerializationStrategy<V>
+    private val deserializer: DeserializationStrategy<V>
 
     constructor(
+        saver: AbsSpSaver.Delegate<SpSaver, String?>,
+        json: Json = Json,
+        serializer: SerializationStrategy<V>,
+        deserializer: DeserializationStrategy<V>,
+        spValueType: PreferenceType.Struct<V?>,
+    ) : super(saver, spValueType) {
+        this.json = json
+        this.serializer = serializer
+        this.deserializer = deserializer
+    }
+
+    constructor(
+        serializer: KSerializer<V>,
+        spValueType: PreferenceType.Struct<V?>,
         key: String? = null,
         @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         json: Json = Json,
-        serializer: KSerializer<V>,
-    ) : this(StringDelegate(key, expireDurationInSecond), json, serializer, serializer)
+    ) : super(StringDelegate(key, expireDurationInSecond), spValueType) {
+        this.json = json
+        this.serializer = serializer
+        this.deserializer = serializer
+    }
 
-    override fun onRead(value: String): V & Any = json.decodeFromString(deserializer, value)!!
-    override fun onSave(value: V & Any): String = json.encodeToString(serializer, value)
+    constructor(
+        kType: KType,
+        key: String? = null,
+        @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
+        json: Json = Json,
+    ) : super(
+        StringDelegate(key, expireDurationInSecond),
+        PreferenceType.Struct<V?>(kType.javaType)
+    ) {
+        val serializer = json.serializersModule.serializer(kType) as KSerializer<V>
+        this.json = json
+        this.serializer = serializer
+        this.deserializer = serializer
+    }
 
+    constructor(
+        type: Type,
+        key: String? = null,
+        @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
+        json: Json = Json,
+    ) : super(
+        StringDelegate(key, expireDurationInSecond),
+        PreferenceType.Struct<V?>(type)
+    ) {
+        val serializer = json.serializersModule.serializer(type) as KSerializer<V>
+        this.json = json
+        this.serializer = serializer
+        this.deserializer = serializer
+    }
+
+    override fun onRead(value: String): V = json.decodeFromString(deserializer, value)
+    override fun onSave(value: V): String = json.encodeToString(serializer, value)
+
+    /**
+     * 提供 inline 获取 [V] 类型的工厂构造器，但以下构造器中的 `json.serializersModule.serializer<V>()` 会有一些时间消耗。
+     * 建议使用带 `KSerializer<V>` 的构造器
+     *
+     * @constructor Create empty Companion
+     */
     companion object {
         inline operator fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
-                reified V> invoke(
+                reified V : Any> invoke(
             key: String? = null,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
             json: Json = Json,
         ): AbsSpSaver.Delegate<SpSaver, V?> = KtxsJsonSpConvert<SpSaver, Sp, Ed, V>(
-            key, expireDurationInSecond, json, json.serializersModule.serializer<V>(),
+            key = key,
+            expireDurationInSecond = expireDurationInSecond,
+            json = json,
+            serializer = json.serializersModule.serializer<V>(),
+            spValueType = PreferenceType.Struct<V?>()
+        )
+
+        inline operator fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+                Sp : SharedPreferences,
+                Ed : SharedPreferences.Editor,
+                reified V : Any> invoke(
+            serializer: KSerializer<V>,
+            key: String? = null,
+            @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
+            json: Json = Json,
+        ): AbsSpSaver.Delegate<SpSaver, V?> = KtxsJsonSpConvert<SpSaver, Sp, Ed, V>(
+            key = key,
+            expireDurationInSecond = expireDurationInSecond,
+            json = json,
+            serializer = serializer,
+            spValueType = PreferenceType.Struct<V?>()
         )
 
         inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
-                reified V> nonnullByBlock(
+                reified V : Any> nonnullByBlock(
             key: String? = null,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
             json: Json = Json,
-            noinline defaultValue: () -> V & Any
-        ): AbsSpSaver.Delegate<SpSaver, V & Any> = KtxsJsonSpConvert<SpSaver, Sp, Ed, V>(
-            key, expireDurationInSecond, json, json.serializersModule.serializer<V>(),
+            noinline defaultValue: () -> V
+        ): AbsSpSaver.Delegate<SpSaver, V> = KtxsJsonSpConvert<SpSaver, Sp, Ed, V>(
+            key = key,
+            expireDurationInSecond = expireDurationInSecond,
+            json = json,
+            serializer = json.serializersModule.serializer<V>(),
+            spValueType = PreferenceType.Struct<V?>()
         ).defaultLazyValue(defaultValue)
 
         inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
-                reified V> nonnull(
+                reified V : Any> nonnull(
             key: String? = null,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
             json: Json = Json,
-            defaultValue: V & Any
-        ): AbsSpSaver.Delegate<SpSaver, V & Any> = KtxsJsonSpConvert<SpSaver, Sp, Ed, V>(
-            key, expireDurationInSecond, json, json.serializersModule.serializer<V>(),
+            defaultValue: V
+        ): AbsSpSaver.Delegate<SpSaver, V> = KtxsJsonSpConvert<SpSaver, Sp, Ed, V>(
+            key = key,
+            expireDurationInSecond = expireDurationInSecond,
+            json = json,
+            serializer = json.serializersModule.serializer<V>(),
+            spValueType = PreferenceType.Struct<V?>()
         ).defaultValue(defaultValue)
     }
 }

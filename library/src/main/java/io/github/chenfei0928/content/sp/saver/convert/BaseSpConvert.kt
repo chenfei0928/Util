@@ -1,9 +1,11 @@
 package io.github.chenfei0928.content.sp.saver.convert
 
 import android.content.SharedPreferences
+import android.util.Log
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.lang.deepEquals
+import io.github.chenfei0928.lang.toStr
 import kotlin.reflect.KProperty
 
 /**
@@ -42,12 +44,24 @@ constructor(
     override fun getValue(thisRef: SpSaver, property: KProperty<*>): FieldType? {
         return saver.getValue(thisRef, property)?.let {
             val cacheValue = cacheValue
-            return if (cacheValue != null && cacheValue.first.deepEquals(it)) {
+            @Suppress("TooGenericExceptionCaught")
+            if (cacheValue != null && cacheValue.first.deepEquals(it)) {
                 cacheValue.second
-            } else {
+            } else try {
                 val t = onRead(it)
                 this.cacheValue = it to t
                 t
+            } catch (e: Exception) {
+                Log.e(TAG, buildString {
+                    append("getValue: convert ")
+                    append(property)
+                    appendLine(" failed")
+                    append("in ")
+                    appendLine(this@BaseSpConvert)
+                    append("origin is ")
+                    append(it.toStr())
+                }, e)
+                null
             }
         } ?: if (this is AbsSpSaver.DefaultValue<*>) {
             @Suppress("UNCHECKED_CAST")
@@ -67,4 +81,12 @@ constructor(
 
     abstract fun onRead(value: SpValueType & Any): FieldType
     abstract fun onSave(value: FieldType & Any): SpValueType & Any
+
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}(saver=$saver, spValueType=$spValueType)"
+    }
+
+    companion object {
+        private const val TAG = "BaseSpConvert"
+    }
 }

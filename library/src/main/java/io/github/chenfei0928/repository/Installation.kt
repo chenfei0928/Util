@@ -21,7 +21,7 @@ import java.util.concurrent.TimeoutException
  * @date 2024-08-01 14:15
  */
 object Installation : LocalFileStorage<String>(
-    StringSerializer(), "INSTALLATION", false, true
+    StringSerializer, "INSTALLATION", false, true
 ) {
     private const val TAG = "KW_Installation"
 

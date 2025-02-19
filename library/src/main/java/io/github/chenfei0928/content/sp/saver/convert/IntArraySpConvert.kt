@@ -16,7 +16,7 @@ private constructor(
     saver: AbsSpSaver.Delegate<SpSaver, String?>,
     override val defaultValue: IntArray?,
 ) : BaseSpConvert<SpSaver, Sp, Ed, String?, IntArray>(
-    saver, PreferenceType.NoSupportPreferenceDataStore
+    saver, spValueType
 ), AbsSpSaver.DefaultValue<IntArray?> {
 
     override fun onRead(value: String): IntArray =
@@ -27,6 +27,7 @@ private constructor(
     }
 
     companion object {
+        private val spValueType = PreferenceType.Struct<IntArray?>(IntArray::class.java)
         private var defaultInstance: IntArraySpConvert<*, *, *>? = null
         private var defaultNonnullInstance: IntArraySpConvert<*, *, *>? = null
 

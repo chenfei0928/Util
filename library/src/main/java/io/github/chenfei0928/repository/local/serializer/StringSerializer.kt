@@ -10,7 +10,7 @@ import java.io.OutputStream
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-08-20 16:28
  */
-class StringSerializer : LocalSerializer<String> {
+object StringSerializer : LocalSerializer<String> {
     override val defaultValue: String = ""
 
     override fun write(outputStream: OutputStream, obj: String) {
@@ -23,5 +23,9 @@ class StringSerializer : LocalSerializer<String> {
 
     override fun copy(obj: String): String {
         return obj
+    }
+
+    override fun toString(): String {
+        return "StringSerializer"
     }
 }

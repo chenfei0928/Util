@@ -44,6 +44,10 @@ class ProtobufSerializer<MessageType : MessageLite>(
         return obj.toBuilder().build() as MessageType
     }
 
+    override fun toString(): String {
+        return "ProtobufSerializer<${defaultValue.javaClass.name}>"
+    }
+
     companion object {
         inline operator fun <reified T : MessageLite> invoke(): LocalSerializer<T> =
             ProtobufSerializer(T::class.java)

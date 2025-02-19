@@ -14,6 +14,7 @@ import io.github.chenfei0928.content.sp.saver.convert.BaseSpConvert
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.preference.DataStorePreferenceDataStore
 import io.github.chenfei0928.preference.base.FieldAccessor.Field
+import io.github.chenfei0928.reflect.LazyTypeToken
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.isSubtypeOf
 import io.github.chenfei0928.reflect.jvmErasureClassOrNull
@@ -251,7 +252,20 @@ sealed interface PreferenceType {
      * 其它平台未原生支持的复杂类型，在当前类的各个 forType 中均不会返回该类型，
      * 仅用作 [BaseSpConvert] 的子类中使用
      */
-    data object NoSupportPreferenceDataStore : PreferenceType
+    open class Struct<T> : LazyTypeToken<T>, PreferenceType {
+        protected constructor() : super()
+        constructor(type: Type) : super(type)
+
+        override fun toString(): String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            "Struct<${value.typeName}>"
+        } else {
+            "Struct<$value>"
+        }
+
+        companion object {
+            inline operator fun <reified T> invoke() = object : Struct<T>() {}
+        }
+    }
 
     companion object {
         private const val TAG = "PreferenceType"

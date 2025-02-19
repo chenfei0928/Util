@@ -63,7 +63,7 @@ class ProtobufMessageField<T : Message, V>(
             }
             is PreferenceType.Native,
             is PreferenceType.EnumNameString<*>,
-            is PreferenceType.NoSupportPreferenceDataStore -> {
+            is PreferenceType.Struct<*> -> {
                 throw IllegalArgumentException("Protobuf 枚举字段 $fieldDescriptor 与vType信息 $vType 类型不匹配")
             }
         }

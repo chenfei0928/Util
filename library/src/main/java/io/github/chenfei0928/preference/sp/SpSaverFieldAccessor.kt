@@ -69,7 +69,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
             vType: PreferenceType,
             delegate: AbsSpSaver.Delegate<SpSaver, V>?
         ): Field<SpSaver, V> = when {
-            delegate == null || vType is PreferenceType.NoSupportPreferenceDataStore -> {
+            delegate == null || vType is PreferenceType.Struct<*> -> {
                 // 没传入委托、vType复合类型，需要查找委托信息中的 spAccessDelegate
                 if (DependencyChecker.MMKV() && spSaver is BaseMmkvSaver<*>) {
                     Log.d(TAG, run {

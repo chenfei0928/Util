@@ -47,4 +47,8 @@ constructor(
 
     protected abstract fun getValueImpl(sp: Sp, key: String): V & Any
     protected abstract fun putValue(editor: Ed, key: String, value: V & Any)
+
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}(key=$key, defaultValue=$defaultValue)"
+    }
 }

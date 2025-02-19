@@ -3,6 +3,7 @@ package io.github.chenfei0928.content.sp.saver.convert
 import android.content.SharedPreferences
 import androidx.annotation.IntRange
 import com.google.gson.Gson
+import com.google.gson.TypeAdapter
 import com.google.gson.reflect.TypeToken
 import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
@@ -16,14 +17,19 @@ abstract class GsonSpConvert<
         V>
 protected constructor(
     saver: AbsSpSaver.Delegate<SpSaver, String?>,
-    private val gson: Gson = io.github.chenfei0928.json.gson.gson,
-    private val type: TypeToken<V>,
+    gson: Gson = io.github.chenfei0928.json.gson.gson,
+    type: TypeToken<V>,
 ) : BaseSpConvert<SpSaver, Sp, Ed, String?, V?>(
-    saver, PreferenceType.NoSupportPreferenceDataStore
+    saver, PreferenceType.Struct<V?>(type.type)
 ), AbsSpSaver.DefaultValue<V?> {
+    private val typeAdapter: TypeAdapter<V> = gson.getAdapter(type) as TypeAdapter<V>
 
-    override fun onRead(value: String): V & Any = gson.fromJson<V & Any>(value, type)
-    override fun onSave(value: V & Any): String = gson.toJson(value)
+    override fun onRead(value: String): V & Any = typeAdapter.fromJson(value)!!
+    override fun onSave(value: V & Any): String = typeAdapter.toJson(value)
+
+    override fun toString(): String {
+        return "GsonSpConvert(saver=$saver, typeAdapter=$typeAdapter)"
+    }
 
     class ValueDefaultValue<SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
             Sp : SharedPreferences,

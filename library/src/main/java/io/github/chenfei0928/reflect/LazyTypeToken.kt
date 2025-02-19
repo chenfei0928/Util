@@ -1,5 +1,6 @@
 package io.github.chenfei0928.reflect
 
+import android.os.Build
 import io.github.chenfei0928.annotation.KeepAllowObfuscation
 import io.github.chenfei0928.annotation.WithChildInObfuscation
 import java.lang.reflect.ParameterizedType
@@ -15,9 +16,15 @@ import java.lang.reflect.Type
  */
 @WithChildInObfuscation
 @KeepAllowObfuscation
-abstract class LazyTypeToken<T> : () -> Type, Lazy<Type> {
+open class LazyTypeToken<T> : () -> Type, Lazy<Type> {
     @Volatile
     private var type: Type? = null
+
+    protected constructor()
+
+    constructor(type: Type) {
+        this.type = type
+    }
 
     final override fun invoke(): Type = this.type ?: synchronized(this) {
         this.type ?: run {
@@ -33,4 +40,16 @@ abstract class LazyTypeToken<T> : () -> Type, Lazy<Type> {
 
     final override fun isInitialized(): Boolean =
         type != null
+
+    override fun toString(): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            "LazyTypeToken<${value.typeName}>"
+        } else {
+            "LazyTypeToken<$value>"
+        }
+    }
+
+    companion object {
+        inline operator fun <reified T> invoke() = object : LazyTypeToken<T>() {}
+    }
 }

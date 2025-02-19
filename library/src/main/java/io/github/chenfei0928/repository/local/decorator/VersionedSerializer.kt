@@ -40,6 +40,10 @@ private constructor(
         return serializer.write(outputStream, obj)
     }
 
+    override fun toString(): String {
+        return "VersionedSerializer(serializer=$serializer)"
+    }
+
     companion object {
         fun <T : Any> LocalSerializer<T>.versioned(
             versionCodeInt: Long

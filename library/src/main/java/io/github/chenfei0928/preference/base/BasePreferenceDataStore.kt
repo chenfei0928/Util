@@ -45,7 +45,7 @@ abstract class BasePreferenceDataStore<T : Any>(
             // preference原生支持的类型，直接设置
             set(it, value)
         }
-        is PreferenceType.NoSupportPreferenceDataStore -> throw IllegalArgumentException(
+        is PreferenceType.Struct<*> -> throw IllegalArgumentException(
             "Not support type: $this"
         )
     }
@@ -71,7 +71,7 @@ abstract class BasePreferenceDataStore<T : Any>(
             // preference原生支持的类型，直接返回
             get(data)
         }
-        is PreferenceType.NoSupportPreferenceDataStore -> throw IllegalArgumentException(
+        is PreferenceType.Struct<*> -> throw IllegalArgumentException(
             "Not support type: $this"
         )
     }

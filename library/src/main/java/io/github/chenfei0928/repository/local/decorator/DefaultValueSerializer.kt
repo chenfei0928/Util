@@ -14,6 +14,10 @@ private constructor(
     override val defaultValue: T
 ) : LocalSerializer<T> by serializer {
 
+    override fun toString(): String {
+        return "DefaultValueSerializer(serializer=$serializer)"
+    }
+
     companion object {
         /**
          * 修改默认值的序列化

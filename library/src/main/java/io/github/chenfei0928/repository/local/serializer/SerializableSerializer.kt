@@ -32,4 +32,8 @@ class SerializableSerializer<T : Serializable>(
             it.readObject() as T
         }
     }
+
+    override fun toString(): String {
+        return "SerializableSerializer<${defaultValue.javaClass.name}>"
+    }
 }

@@ -37,6 +37,10 @@ private constructor(
         saver.setValue(thisRef, property, value)
     }
 
+    override fun toString(): String {
+        return "DefaultValueSpDelete(saver=$saver)"
+    }
+
     companion object {
         fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,

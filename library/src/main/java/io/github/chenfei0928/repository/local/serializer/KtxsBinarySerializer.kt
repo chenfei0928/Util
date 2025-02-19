@@ -37,6 +37,10 @@ class KtxsBinarySerializer<T : Any>(
         return format.decodeFromByteArray(deserializer, format.encodeToByteArray(serializer, obj))
     }
 
+    override fun toString(): String {
+        return "KtxsBinarySerializer<${defaultValue.javaClass.name}>(format=$format)"
+    }
+
     companion object {
         inline operator fun <reified T : Any> invoke(
             defaultValue: T,

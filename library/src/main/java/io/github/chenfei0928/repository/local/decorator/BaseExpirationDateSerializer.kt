@@ -38,4 +38,8 @@ abstract class BaseExpirationDateSerializer<T : Any>(
     }
 
     protected abstract fun check(localSavedTimeMillis: Long): Boolean
+
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}(serializer=$serializer)"
+    }
 }

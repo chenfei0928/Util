@@ -12,9 +12,10 @@ import java.io.ByteArrayOutputStream
 
 /**
  * 使用 [LocalSerializer] 来进行序列化保存的 [BaseSpConvert]，
- * 但由于 [BaseSpConvert] 的实现受限于Kotlin语法的约束必须要返回
+ * 但由于 [BaseSpConvert] 的实现受限于Kotlin语法的约束必须要返回 nullable，
+ * 使用工厂方法构建实例而非构造器
  */
-open class LocalSerializerSpConvert<
+class LocalSerializerSpConvert<
         SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
         Sp : SharedPreferences,
         Ed : SharedPreferences.Editor,
@@ -23,7 +24,7 @@ private constructor(
     private val serializer: LocalSerializer<V>,
     saver: AbsSpSaver.Delegate<SpSaver, ByteArray?>,
 ) : BaseSpConvert<SpSaver, Sp, Ed, ByteArray?, V>(
-    saver, PreferenceType.NoSupportPreferenceDataStore
+    saver, PreferenceType.Struct<V>(serializer.defaultValue.javaClass)
 ), AbsSpSaver.DefaultValue<V> {
     override val defaultValue: V = serializer.defaultValue
 
@@ -38,6 +39,10 @@ private constructor(
             serializer.write(byteArrayOutputStream, value)
             byteArrayOutputStream.toByteArray()
         }
+    }
+
+    override fun toString(): String {
+        return "LocalSerializerSpConvert(saver=$saver, serializer=$serializer)"
     }
 
     companion object {

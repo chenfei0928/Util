@@ -12,7 +12,8 @@ import kotlin.reflect.KProperty
  */
 class SpValueObservable<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
     override val saver: AbsSpSaver.Delegate<SpSaver, V>,
-) : LiveListeners<(V) -> Unit>(), AbsSpSaver.Delegate<SpSaver, V> by saver,
+) : LiveListeners<(V) -> Unit>(),
+    AbsSpSaver.Delegate<SpSaver, V> by saver,
     AbsSpSaver.Decorate<SpSaver, V> {
 
     override fun setValue(thisRef: SpSaver, property: KProperty<*>, value: V) {
@@ -27,6 +28,10 @@ class SpValueObservable<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
             val value = getValue(thisRef, property)
             forEach { it(value) }
         }
+    }
+
+    override fun toString(): String {
+        return "SpValueObservable(saver=$saver)"
     }
 
     companion object {

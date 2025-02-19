@@ -36,6 +36,10 @@ private constructor(
         }
     }
 
+    override fun toString(): String {
+        return "GZipSerializer(serializer=$serializer)"
+    }
+
     companion object {
         /**
          * 对数据进行GZip压缩

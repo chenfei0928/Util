@@ -8,7 +8,7 @@ import java.io.OutputStream
 /**
  * 用于 [ByteArray] 的序列化和反序列化
  */
-class ByteArraySerializer : LocalSerializer<ByteArray> {
+object ByteArraySerializer : LocalSerializer<ByteArray> {
     override val defaultValue: ByteArray = byteArrayOf()
 
     @Throws(IOException::class)
@@ -24,5 +24,9 @@ class ByteArraySerializer : LocalSerializer<ByteArray> {
 
     override fun copy(obj: ByteArray): ByteArray {
         return obj.copyOf()
+    }
+
+    override fun toString(): String {
+        return "ByteArraySerializer"
     }
 }

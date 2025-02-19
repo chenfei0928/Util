@@ -37,6 +37,10 @@ class KtxsStringSerializer<T : Any>(
         return format.decodeFromString(deserializer, format.encodeToString(serializer, obj))
     }
 
+    override fun toString(): String {
+        return "KtxsStringSerializer<${defaultValue.javaClass.name}>(format=$format)"
+    }
+
     companion object {
         inline operator fun <reified T : Any> invoke(
             defaultValue: T, json: Json = Json,
