@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.NetworkInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
@@ -33,16 +34,9 @@ object NetWorkUtil {
      */
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     fun isNetWorkAvailable(context: Context): Boolean {
-        val connMgr = context.getSystemService<ConnectivityManager>()
-            ?: return false
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            val netInfo = connMgr.activeNetworkInfo
-            netInfo != null && netInfo.isAvailable
-        } else {
-            val capabilities = connMgr.getNetworkCapabilities(connMgr.activeNetwork)
-                ?: return false
-            capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_FOREGROUND)
-        }
+        return isXxxAvailable(
+            context, NetworkCapabilities.NET_CAPABILITY_FOREGROUND, NetworkInfo::isAvailable
+        )
     }
 
     /**
@@ -50,15 +44,8 @@ object NetWorkUtil {
      */
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     fun isWifiAvailable(context: Context): Boolean {
-        val connMgr = context.getSystemService<ConnectivityManager>()
-            ?: return false
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            val netInfo = connMgr.activeNetworkInfo
-            netInfo != null && netInfo.type == ConnectivityManager.TYPE_WIFI
-        } else {
-            val capabilities = connMgr.getNetworkCapabilities(connMgr.activeNetwork)
-                ?: return false
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+        return isXxxAvailable(context, NetworkCapabilities.TRANSPORT_WIFI) {
+            type == ConnectivityManager.TYPE_WIFI
         }
     }
 
@@ -67,15 +54,25 @@ object NetWorkUtil {
      */
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     fun isMobileAvailable(context: Context): Boolean {
+        return isXxxAvailable(context, NetworkCapabilities.TRANSPORT_CELLULAR) {
+            type == ConnectivityManager.TYPE_MOBILE
+        }
+    }
+
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
+    private inline fun isXxxAvailable(
+        context: Context,
+        transportAfterM: Int,
+        blockBeforeM: NetworkInfo.() -> Boolean,
+    ): Boolean {
         val connMgr = context.getSystemService<ConnectivityManager>()
             ?: return false
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             val netInfo = connMgr.activeNetworkInfo
-            netInfo != null && netInfo.type == ConnectivityManager.TYPE_MOBILE
+            netInfo != null && blockBeforeM(netInfo)
         } else {
-            val capabilities = connMgr.getNetworkCapabilities(connMgr.activeNetwork)
-                ?: return false
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+            connMgr.getNetworkCapabilities(connMgr.activeNetwork)
+                ?.hasTransport(transportAfterM) == true
         }
     }
 

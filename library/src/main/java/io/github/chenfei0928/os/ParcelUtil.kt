@@ -5,6 +5,8 @@ import android.os.Parcelable
 
 /**
  * [Github仓库文件](https://github.com/fengzhizi715/SAF/blob/master/saf-cache/src/main/java/com/safframework/cache/ParcelableUtils.java)
+ * 基于它，并有所扩展
+ *
  * Created by Tony Shen on 2017/6/20.
  */
 object ParcelUtil {

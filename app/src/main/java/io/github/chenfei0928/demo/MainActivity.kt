@@ -38,6 +38,7 @@ import io.github.chenfei0928.demo.storage.JsonLocalFileStoragePreferenceFragment
 import io.github.chenfei0928.demo.storage.MmkvSaverPreferenceFragment
 import io.github.chenfei0928.demo.storage.PreferenceActivity
 import io.github.chenfei0928.demo.storage.SpSaverPreferenceFragment
+import io.github.chenfei0928.demo.storage.TestMmkvSaver
 import io.github.chenfei0928.demo.storage.TestPreferenceFragment
 import io.github.chenfei0928.demo.storage.TestSpSaver
 import io.github.chenfei0928.lang.toString0
@@ -89,8 +90,11 @@ class MainActivity : ComponentActivity() {
                 .show()
         }
         binding.btnPreload.setNoDoubleOnClickListener {
-            Debug.countTime(TAG, "preload testSpSaver") {
+            Debug.traceAndTime(TAG, "preload TestSpSaver") {
                 TestSpSaver(this)
+            }
+            Debug.traceAndTime(TAG, "preload TestMmkvSaver") {
+                TestMmkvSaver.javaClass
             }
             Debug.countTime(TAG, "preload JsonLocalFileStorage") {
                 JsonLocalFileStorage.storage(this).get()
@@ -103,9 +107,6 @@ class MainActivity : ComponentActivity() {
             }
             Debug.countTime(TAG, "preload testDataStore") {
                 testDataStore
-            }
-            Debug.countTime(TAG, "preload TestSpSaver") {
-                TestSpSaver(this)
             }
             coroutineScope.launch {
                 Debug.countTime(TAG, "jsonDataStore first") {
@@ -144,7 +145,7 @@ class MainActivity : ComponentActivity() {
                 BundleSupportType.ProtoBufType(Test::class.java, false)
             }
             // Frag 类加载时会初始化其委托属性的 KProperty 信息实例，会消耗一些时间
-            val f = Debug.countTime(TAG, "f") {
+            val f = Debug.traceAndTime(TAG, "f") {
                 Frag().apply {
                     a = 1
                     b = "asd"

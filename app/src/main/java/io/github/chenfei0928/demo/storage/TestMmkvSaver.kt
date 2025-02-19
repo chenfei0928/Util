@@ -36,7 +36,7 @@ object TestMmkvSaver : BaseMmkvSaver<TestMmkvSaver>("test", enableFieldObservabl
 
     // 下面三个是结构体类型，不支持作为 preferenceDataStore
     var json: JsonBean.InnerJsonBean? by dataStore {
-        KtxsJsonSpConvert()
+        KtxsJsonSpConvert(JsonBean.InnerJsonBean.serializer())
     }
     var intArray: IntArray by dataStore {
         IntArraySpConvert.nonnull()

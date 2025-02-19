@@ -24,11 +24,18 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
 
     /**
      * 使用[property]与[delegate]注册一个字段，如果 [delegate] 为 null 则向 [SpSaver] 查询或反射获取
+     *
+     * @param findSpAccessorDelegateIfStructAndHasDelegate 当 [vType] 是 [PreferenceType.Struct]
+     * 且 [delegate] 不为 `null` 时，查找 spAccessor 委托信息。
+     * 如果这个字段不用于 Preference 显示（较少会有需要 Preference 显示的结构体数据，因为它的内容需要符合特定格式），
+     * 传入 `false` 以减少方法执行时间消耗。
+     * @param delegate 服务该 [property] 属性的委托对象
      */
     fun <V> property(
         property: KProperty<V>,
         vType: PreferenceType,
-        delegate: AbsSpSaver.Delegate<SpSaver, V>? = null
+        findSpAccessorDelegateIfStructAndHasDelegate: Boolean = true,
+        delegate: AbsSpSaver.Delegate<SpSaver, V>? = null,
     ): Field<SpSaver, V>
 
     /**
@@ -59,17 +66,20 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
         override fun <V> property(
             property: KProperty<V>,
             vType: PreferenceType,
-            delegate: AbsSpSaver.Delegate<SpSaver, V>?
+            findSpAccessorDelegateIfStructAndHasDelegate: Boolean,
+            delegate: AbsSpSaver.Delegate<SpSaver, V>?,
         ): Field<SpSaver, V> = propertyImpl(
-            property, vType, delegate ?: spSaver.dataStore.getDelegateByReflect(property)
+            property, vType, findSpAccessorDelegateIfStructAndHasDelegate,
+            delegate ?: spSaver.dataStore.getDelegateByReflect(property),
         )
 
         private fun <V> propertyImpl(
             property: KProperty<V>,
             vType: PreferenceType,
-            delegate: AbsSpSaver.Delegate<SpSaver, V>?
+            findSpAccessorDelegateIfStructAndHasDelegate: Boolean,
+            delegate: AbsSpSaver.Delegate<SpSaver, V>?,
         ): Field<SpSaver, V> = when {
-            delegate == null || vType is PreferenceType.Struct<*> -> {
+            delegate == null || (vType is PreferenceType.Struct<*> && findSpAccessorDelegateIfStructAndHasDelegate) -> {
                 // 没传入委托、vType复合类型，需要查找委托信息中的 spAccessDelegate
                 if (DependencyChecker.MMKV() && spSaver is BaseMmkvSaver<*>) {
                     Log.d(TAG, run {
@@ -79,7 +89,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
                                 "没有传入委托或复合类型，" +
                                 "通过查找委托中的 spAccessDelegate 进行读写该 property，" +
                                 "可能会丢失修改 preference 时 MMKV 的字段读写监听：\n" +
-                                vType + ' ' + property
+                                property.name + ' ' + vType
                     })
                 }
                 property(SpSaverPropertyDelegateField.fromProperty(spSaver, property, delegate))

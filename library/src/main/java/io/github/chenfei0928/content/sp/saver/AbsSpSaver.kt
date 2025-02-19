@@ -102,9 +102,12 @@ constructor(
      * 添加此方法用于让使用处可以只构建委托，由此方法进行缓存
      */
     protected inline fun <V> dataStore(
+        findSpAccessorDelegateIfStruct: Boolean = false,
         block: () -> Delegate<SpSaver, V>
     ): PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, V>> =
-        DataStoreDelegateStoreProvider(enableFieldObservable, block())
+        DataStoreDelegateStoreProvider(
+            enableFieldObservable, findSpAccessorDelegateIfStruct, block()
+        )
 
     internal open fun onPropertyAdded(field: SpSaverFieldAccessor.Field<SpSaver, *>) {
         // noop

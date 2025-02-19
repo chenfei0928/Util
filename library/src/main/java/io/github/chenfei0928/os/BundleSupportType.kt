@@ -1467,7 +1467,10 @@ abstract class BundleSupportType<T>(
                 @field:Volatile
                 final override var kType: KType
                     field : KType? = null
+                    @Suppress("RedundantVisibilityModifier")
                     private set
+                    // 不知道这里为何它会显示无需 ?: 逻辑，前方语句是有可能返回null的
+                    @Suppress("kotlin:S6619")
                     get() = field ?: synchronized(this) {
                         field ?: run {
                             val type = kType()
@@ -1492,7 +1495,8 @@ abstract class BundleSupportType<T>(
                 }
             }
 
-            @Suppress("UNCHECKED_CAST")
+            // 不知道这里为何它会显示无需 ?: 逻辑，前方语句是有可能返回null的
+            @Suppress("UNCHECKED_CAST", "kotlin:S6619")
             internal fun <T> tClass(): Class<T> =
                 (jClass ?: jType?.jvmErasureClassOrNull<Any>() ?: kType.jvmErasure.java) as Class<T>
 
