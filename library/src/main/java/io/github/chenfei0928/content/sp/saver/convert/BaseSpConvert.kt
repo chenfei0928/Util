@@ -83,7 +83,7 @@ constructor(
     protected abstract fun onRead(value: SpValueType & Any): FieldType & Any
 
     // onSave 方法需要在 SpSaverFieldAccessor 中访问，需要定义为public
-    abstract fun onSave(value: FieldType & Any): SpValueType & Any
+    /* internal or protected */ abstract fun onSave(value: FieldType & Any): SpValueType & Any
 
     override fun toString(): String =
         "${this.javaClass.simpleName}(saver=$saver, spValueType=$spValueType)"

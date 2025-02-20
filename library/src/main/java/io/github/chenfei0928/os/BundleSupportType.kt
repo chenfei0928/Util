@@ -17,9 +17,9 @@ import com.google.protobuf.protobufParserForType
 import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.lang.toByteArray
+import io.github.chenfei0928.reflect.LazyTypeToken
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.jvmErasureClassOrNull
-import io.github.chenfei0928.reflect.lazyJTypeOf
 import io.github.chenfei0928.util.DependencyChecker
 import kotlinx.parcelize.Parceler
 import java.io.ByteArrayInputStream
@@ -1453,8 +1453,11 @@ abstract class BundleSupportType<T>(
             protected abstract val jType: Type?
             internal abstract val isMarkedNullable: Boolean
 
-            class ByKProperty(property: KProperty<*>) : TypeInfo(null) {
-                override val kType: KType by lazy(LazyThreadSafetyMode.NONE, property::returnType)
+            class ByKProperty(
+                private val property: KProperty<*>
+            ) : TypeInfo(null) {
+                override val kType: KType
+                    get() = property.returnType
                 override val jType: Type? = null
                 override val isMarkedNullable: Boolean = kType.isMarkedNullable
             }
@@ -1490,7 +1493,7 @@ abstract class BundleSupportType<T>(
                         isMarkedNullable: Boolean?
                     ) = object : ByInline(T::class.java, isMarkedNullable) {
                         override fun kType(): KType = typeOf<T>()
-                        override val jType: Type by lazyJTypeOf<T>()
+                        override val jType: Type by LazyTypeToken<T>()
                     }
                 }
             }

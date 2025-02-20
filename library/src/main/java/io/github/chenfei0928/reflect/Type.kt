@@ -9,8 +9,7 @@ import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
 import java.lang.reflect.WildcardType
 
-inline fun <reified T> jTypeOf(): Type = lazyJTypeOf<T>()()
-inline fun <reified T> lazyJTypeOf(): LazyTypeToken<T> = object : LazyTypeToken<T>() {}
+inline fun <reified T> jTypeOf(): Type = LazyTypeToken<T>()()
 
 inline fun <reified T> Type.jvmErasureClassOrNull(): Class<out T>? =
     jvmErasureClassOrNull(T::class.java)

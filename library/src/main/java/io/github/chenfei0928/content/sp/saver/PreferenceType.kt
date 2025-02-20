@@ -18,7 +18,6 @@ import io.github.chenfei0928.reflect.LazyTypeToken
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.isSubtypeOf
 import io.github.chenfei0928.reflect.jvmErasureClassOrNull
-import io.github.chenfei0928.reflect.lazyJTypeOf
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -63,7 +62,7 @@ sealed interface PreferenceType {
 
         companion object {
             inline fun <reified T> forType(): Native =
-                forType(T::class.java, lazyJTypeOf<T>())
+                forType(T::class.java, LazyTypeToken<T>())
 
             fun forTypeOrNull(tClass: Class<*>, tTypeProvider: () -> Type): Native? {
                 return entries.find { it.type == tClass || it.primitiveType == tClass }
@@ -281,7 +280,7 @@ sealed interface PreferenceType {
      * 仅用作 [BaseSpConvert] 的子类中使用
      */
     open class Struct<T> : LazyTypeToken<T>, PreferenceType {
-        protected constructor() : super()
+        protected constructor(actualTypeIndex: Int) : super(actualTypeIndex)
         constructor(type: Type) : super(type)
 
         override fun toString(): String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -291,7 +290,7 @@ sealed interface PreferenceType {
         }
 
         companion object {
-            inline operator fun <reified T> invoke() = object : Struct<T>() {}
+            inline operator fun <reified T> invoke() = object : Struct<T>(0) {}
         }
     }
 
@@ -310,7 +309,7 @@ sealed interface PreferenceType {
         }
 
         inline fun <reified T> forType(): PreferenceType =
-            forType(tClass = T::class.java, lazyJTypeOf<T>())
+            forType(tClass = T::class.java, LazyTypeToken<T>())
 
         /**
          * 用于给 [kotlin.reflect.KProperty] 的场景中获取其类型信息
