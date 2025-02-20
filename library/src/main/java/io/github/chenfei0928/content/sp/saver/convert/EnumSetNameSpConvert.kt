@@ -14,33 +14,30 @@ class EnumSetNameSpConvert<
         Ed : SharedPreferences.Editor,
         E : Enum<E>>
 constructor(
-    eClass: Class<E>,
-    private val nameNotFoundDefaultValue: E? = null,
-    private val enumValues: Array<E>,
     saver: AbsSpSaver.Delegate<SpSaver, Set<String?>?>,
+    override val spValueType: PreferenceType.BaseEnumNameStringCollection<E, out Set<E>>,
+    private val nameNotFoundDefaultValue: E? = null,
     override val defaultValue: Set<E>?,
-) : BaseSpConvert<SpSaver, Sp, Ed, Set<String?>?, Set<E?>?>(
-    saver, EnumNameStringSet(eClass, enumValues)
-), AbsSpSaver.DefaultValue<Set<E?>?> {
+) : BaseSpConvert<SpSaver, Sp, Ed, Set<String?>?, Set<E?>?>(saver),
+    AbsSpSaver.DefaultValue<Set<E?>?> {
 
     constructor(
         eClass: Class<E>,
-        nameNotFoundDefaultValue: E,
+        nameNotFoundDefaultValue: E?,
         enumValues: Array<E> = eClass.enumConstants as Array<E>,
         key: String? = null,
         @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         defaultValue: Set<E>? = null,
     ) : this(
-        eClass = eClass,
-        nameNotFoundDefaultValue = nameNotFoundDefaultValue,
-        enumValues = enumValues,
         saver = StringSetDelegate(key, expireDurationInSecond),
+        spValueType = EnumNameStringSet(eClass, enumValues),
+        nameNotFoundDefaultValue = nameNotFoundDefaultValue,
         defaultValue = defaultValue
     )
 
     override fun onRead(value: Set<String?>): Set<E?> {
         return value.mapNotNullTo(ArraySet(value.size)) { item ->
-            enumValues.find { enum -> item == enum.name } ?: nameNotFoundDefaultValue
+            spValueType.forNameOrNull(item, nameNotFoundDefaultValue)
         }
     }
 
@@ -48,10 +45,18 @@ constructor(
         return value.mapTo(ArraySet(value.size)) { it?.name }
     }
 
-    private class EnumNameStringSet<E : Enum<E>>(
+    class EnumNameStringSet<E : Enum<E>>(
         eClass: Class<E>, values: Array<E>,
     ) : PreferenceType.BaseEnumNameStringCollection<E, MutableSet<E>>(eClass, values) {
-        override fun createCollection(size: Int): MutableSet<E> = ArraySet(size)
+        override fun <MC : MutableCollection<E>> createCollection(size: Int): MC {
+            @Suppress("UNCHECKED_CAST")
+            return ArraySet<E>(size) as MC
+        }
+
+        companion object {
+            inline operator fun <reified E : Enum<E>> invoke() =
+                EnumNameStringSet(E::class.java, enumValues<E>())
+        }
     }
 
     companion object {
@@ -64,10 +69,9 @@ constructor(
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, Set<E?>?> {
             return EnumSetNameSpConvert<SpSaver, Sp, Ed, E>(
-                eClass = E::class.java,
-                nameNotFoundDefaultValue = nameNotFoundDefaultValue,
-                enumValues = enumValues<E>(),
                 saver = StringSetDelegate(key, expireDurationInSecond),
+                spValueType = EnumNameStringSet(),
+                nameNotFoundDefaultValue = nameNotFoundDefaultValue,
                 defaultValue = null,
             )
         }
@@ -83,10 +87,9 @@ constructor(
         ): AbsSpSaver.Delegate<SpSaver, Set<E>> {
             @Suppress("UNCHECKED_CAST")
             return EnumSetNameSpConvert<SpSaver, Sp, Ed, E>(
-                eClass = E::class.java,
-                nameNotFoundDefaultValue = nameNotFoundDefaultValue,
-                enumValues = enumValues<E>(),
                 saver = StringSetDelegate(key, expireDurationInSecond),
+                spValueType = EnumNameStringSet(),
+                nameNotFoundDefaultValue = nameNotFoundDefaultValue,
                 defaultValue = defaultValue
             ) as AbsSpSaver.Delegate<SpSaver, Set<E>>
         }

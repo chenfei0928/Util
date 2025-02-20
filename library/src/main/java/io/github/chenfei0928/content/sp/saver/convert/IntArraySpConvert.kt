@@ -15,9 +15,8 @@ class IntArraySpConvert<
 private constructor(
     saver: AbsSpSaver.Delegate<SpSaver, String?>,
     override val defaultValue: IntArray?,
-) : BaseSpConvert<SpSaver, Sp, Ed, String?, IntArray>(
-    saver, spValueType
-), AbsSpSaver.DefaultValue<IntArray?> {
+) : BaseSpConvert<SpSaver, Sp, Ed, String?, IntArray>(saver), AbsSpSaver.DefaultValue<IntArray?> {
+    override val spValueType: PreferenceType = IntArraySpConvert.spValueType
 
     override fun onRead(value: String): IntArray =
         value.split(",").mapToIntArray { it.toIntOrNull() ?: -1 }

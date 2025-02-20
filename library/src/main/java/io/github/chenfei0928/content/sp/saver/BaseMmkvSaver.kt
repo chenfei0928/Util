@@ -86,7 +86,7 @@ open class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
         }
         return dataStore.findFieldOrNullByProperty(property)
             ?.observable
-            ?: SpValueObservable.find(dataStore.getDelegateByReflect(property))
+            ?: SpValueObservable.find(dataStore.getDelegateOrByReflect(property))
             ?: throw IllegalArgumentException(
                 "没有找到 SpValueObservable，已经为它包装了 dataStore ？$property"
             )

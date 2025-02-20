@@ -3,7 +3,6 @@ package io.github.chenfei0928.content.sp.saver.convert
 import android.content.SharedPreferences
 import android.util.Log
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
-import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.lang.deepEquals
 import io.github.chenfei0928.lang.toStr
 import kotlin.reflect.KProperty
@@ -29,47 +28,49 @@ abstract class BaseSpConvert<
         SpValueType,
         FieldType>
 constructor(
-    final override val saver: AbsSpSaver.Delegate<SpSaver, SpValueType>,
-    final override val spValueType: PreferenceType,
+    final override val saver: AbsSpSaver.Delegate<SpSaver, SpValueType>
 ) : AbsSpSaver.AbsSpDelegate<SpSaver, Sp, Ed, FieldType?>,
     AbsSpSaver.Decorate<SpSaver, SpValueType> {
     @Volatile
     private var cacheValue: Pair<SpValueType & Any, FieldType>? = null
 
-    final override fun getLocalStorageKey(property: KProperty<*>): String {
-        return saver.getLocalStorageKey(property)
-    }
+    final override fun getLocalStorageKey(property: KProperty<*>): String =
+        saver.getLocalStorageKey(property)
 
     @Synchronized
-    override fun getValue(thisRef: SpSaver, property: KProperty<*>): FieldType? {
-        return saver.getValue(thisRef, property)?.let {
-            val cacheValue = cacheValue
-            @Suppress("TooGenericExceptionCaught")
-            if (cacheValue != null && cacheValue.first.deepEquals(it)) {
-                cacheValue.second
-            } else try {
-                val t = onRead(it)
-                this.cacheValue = it to t
-                t
-            } catch (e: Exception) {
-                Log.e(TAG, buildString {
-                    append("getValue: convert ")
-                    append(property)
-                    appendLine(" failed")
-                    append("in ")
-                    appendLine(this@BaseSpConvert)
-                    append("origin is ")
-                    append(it.toStr())
-                }, e)
-                null
-            }
-        } ?: if (this is AbsSpSaver.DefaultValue<*>) {
+    final override fun getValue(thisRef: SpSaver, property: KProperty<*>): FieldType? {
+        val value = saver.getValue(thisRef, property)
+        val cacheValue = cacheValue
+        @Suppress("TooGenericExceptionCaught")
+        return if (value == null) {
+            defaultValueOrNull
+        } else if (cacheValue != null && cacheValue.first.deepEquals(value)) {
+            cacheValue.second
+        } else try {
+            val t = onRead(value)
+            this.cacheValue = value to t
+            t
+        } catch (e: Exception) {
+            Log.e(TAG, buildString {
+                append("getValue: convert ")
+                append(property)
+                appendLine(" failed")
+                append("in ")
+                appendLine(this@BaseSpConvert)
+                append("origin is ")
+                append(value.toStr())
+            }, e)
+            defaultValueOrNull
+        }
+    }
+
+    private val defaultValueOrNull: FieldType?
+        get() = if (this is AbsSpSaver.DefaultValue<*>) {
             @Suppress("UNCHECKED_CAST")
             defaultValue as FieldType
         } else null
-    }
 
-    override fun setValue(thisRef: SpSaver, property: KProperty<*>, value: FieldType?) {
+    final override fun setValue(thisRef: SpSaver, property: KProperty<*>, value: FieldType?) {
         if (value == null) {
             thisRef.editor.remove(saver.getLocalStorageKey(property))
         } else {
@@ -79,12 +80,13 @@ constructor(
         }
     }
 
-    abstract fun onRead(value: SpValueType & Any): FieldType
+    protected abstract fun onRead(value: SpValueType & Any): FieldType & Any
+
+    // onSave 方法需要在 SpSaverFieldAccessor 中访问，需要定义为public
     abstract fun onSave(value: FieldType & Any): SpValueType & Any
 
-    override fun toString(): String {
-        return "${this.javaClass.simpleName}(saver=$saver, spValueType=$spValueType)"
-    }
+    override fun toString(): String =
+        "${this.javaClass.simpleName}(saver=$saver, spValueType=$spValueType)"
 
     companion object {
         private const val TAG = "BaseSpConvert"

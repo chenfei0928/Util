@@ -31,15 +31,10 @@ abstract class BasePreferenceDataStore<T : Any>(
             // 将preference的字符串转换为Enum设置给field
             set(it, vType.forName(value as String) as V)
         }
-        is PreferenceType.EnumNameStringCollection<*> -> {
-            // 将preference的字符串集合转换为Enum集合设置给field
-            // forName时使用field的字段类型
-            set(it, vType.forNames(value as Collection<String>, true) as V)
-        }
         is PreferenceType.BaseEnumNameStringCollection<*, *> -> {
             // 将preference的字符串集合转换为Enum集合设置给field
             // forName时使用field的字段类型
-            set(it, vType.forNames(value as Collection<String>) as V)
+            set(it, vType.forNames(value as Collection<String>, true) as V)
         }
         is PreferenceType.Native -> {
             // preference原生支持的类型，直接设置
@@ -61,7 +56,6 @@ abstract class BasePreferenceDataStore<T : Any>(
             // 将field的Enum转换为preference的字符串
             (get(data) as Enum<*>).name as V
         }
-        is PreferenceType.EnumNameStringCollection<*>,
         is PreferenceType.BaseEnumNameStringCollection<*, *> -> {
             // 将field的Enum集合转换为preference的字符串Set
             val enums = get(data) as Collection<Enum<*>>

@@ -59,7 +59,7 @@ constructor(
      * 根据 [property] 查询对应的委托，如果查找不到则通过反射获取其委托
      */
     @Suppress("UNCHECKED_CAST")
-    internal fun <V> getDelegateByReflect(property: KProperty<V>): AbsSpSaver.Delegate<SpSaver, V> {
+    internal fun <V> getDelegateOrByReflect(property: KProperty<V>): AbsSpSaver.Delegate<SpSaver, V> {
         return findFieldOrNullByProperty(property)?.outDelegate ?: run {
             Log.d(TAG, buildString {
                 append("getDelegateByProperty: getDelegate fallback to kotlin reflect call, maybe slow, because ")
@@ -104,7 +104,7 @@ constructor(
      * 查询指定 [property] 在持久化后的 spKey，用于向 [android.content.SharedPreferences] 注册监听的回调时使用
      */
     internal fun <V> getSpKeyByProperty(property: KProperty<V>): String =
-        getDelegateByReflect(property).getLocalStorageKey(property)
+        getDelegateOrByReflect(property).getLocalStorageKey(property)
 
     internal fun toSpSaverPropertyString(): String =
         saver.toStringRef(spSaverPropertyDelegateFields.mapToArray { it.property })

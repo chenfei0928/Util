@@ -27,14 +27,15 @@ import kotlin.reflect.KFunction
  */
 class ProtobufMessageField<T : Message, V>(
     private val fieldDescriptor: Descriptors.FieldDescriptor,
+    private val vClass: Class<V>?,
 ) : Field<T, V>, () -> PreferenceType {
     constructor(
-        defaultInstance: T, fieldNumber: Int,
-    ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1])
+        defaultInstance: T, fieldNumber: Int, vClass: Class<V>?,
+    ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1], vClass)
 
     override val pdsKey: String = fieldDescriptor.name
     override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE, this)
-    override fun invoke(): PreferenceType = PreferenceType.forType(fieldDescriptor)
+    override fun invoke(): PreferenceType = PreferenceType.forType(fieldDescriptor, vClass)
 
     @Suppress("UNCHECKED_CAST", "kotlin:S6531")
     override fun get(
@@ -52,14 +53,10 @@ class ProtobufMessageField<T : Message, V>(
         // repeat enum，返回 List<EnumValueDescriptor>
         val enum = data.getField(fieldDescriptor) as List<Descriptors.EnumValueDescriptor>
         when (val vType = vType) {
-            is PreferenceType.EnumNameStringCollection<*> -> {
+            is PreferenceType.BaseEnumNameStringCollection<*, *> -> {
                 // 此处并不关心返回的数据类型必须是field类型，不使用field的类型返回
                 // 因为当前get方法的返回值是给 BasePreferenceDataStore.getValue 使用的，它会再次进行mapTo
                 vType.forProtobufEnumValueDescriptors(enum, false) as V
-            }
-            is PreferenceType.BaseEnumNameStringCollection<*, *> -> {
-                // 根据其 List<EnumValueDescriptor> 获取 Collection<enum>
-                vType.forProtobufEnumValueDescriptors(enum) as V
             }
             is PreferenceType.Native,
             is PreferenceType.EnumNameString<*>,
@@ -90,17 +87,17 @@ class ProtobufMessageField<T : Message, V>(
     override fun toString(): String = "ProtobufMessageField($pdsKey:${fieldDescriptor.type})"
 
     companion object {
-        inline operator fun <reified T : Message, V> invoke(
+        inline operator fun <reified T : Message, reified V> invoke(
             fieldNumber: Int
         ) = ProtobufMessageField<T, V>(
-            T::class.java.getProtobufV3DefaultInstance(), fieldNumber
+            T::class.java.getProtobufV3DefaultInstance(), fieldNumber, V::class.java
         )
 
-        inline fun <reified T : GeneratedMessage, V> FieldAccessor<T>.field(
+        inline fun <reified T : GeneratedMessage, reified V> FieldAccessor<T>.field(
             fieldNumber: Int
         ): Field<T, V> = invoke<T, V>(fieldNumber)
 
-        inline fun <reified T : GeneratedMessage, V> FieldAccessor<T>.property(
+        inline fun <reified T : GeneratedMessage, reified V> FieldAccessor<T>.property(
             fieldNumber: Int
         ): Field<T, V> = field<T, V>(fieldNumber).let(::property)
 

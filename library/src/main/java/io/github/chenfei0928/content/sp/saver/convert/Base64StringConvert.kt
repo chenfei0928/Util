@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.annotation.IntRange
 import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
+import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.delegate.ByteArrayDelegate
 import io.github.chenfei0928.content.sp.saver.delegate.StringDelegate
 
@@ -17,10 +18,8 @@ class Base64StringConvert<
         Ed : SharedPreferences.Editor>
 constructor(
     saver: AbsSpSaver.Delegate<SpSaver, String?>,
-) : BaseSpConvert<SpSaver, Sp, Ed, String?, ByteArray>(
-    saver, ByteArrayDelegate.spValueType
-) {
-
+) : BaseSpConvert<SpSaver, Sp, Ed, String?, ByteArray>(saver) {
+    override val spValueType: PreferenceType = ByteArrayDelegate.spValueType
     override fun onRead(value: String): ByteArray = value.toByteArray()
     override fun onSave(value: ByteArray): String = String(value)
     override fun toString(): String = "Base64StringConvert(saver=$saver)"

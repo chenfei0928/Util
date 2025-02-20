@@ -90,10 +90,10 @@ class MainActivity : ComponentActivity() {
                 .show()
         }
         binding.btnPreload.setNoDoubleOnClickListener {
-            Debug.traceAndTime(TAG, "preload TestSpSaver") {
+            Debug.countTime(TAG, "preload TestSpSaver") {
                 TestSpSaver(this)
             }
-            Debug.traceAndTime(TAG, "preload TestMmkvSaver") {
+            Debug.countTime(TAG, "preload TestMmkvSaver") {
                 TestMmkvSaver.javaClass
             }
             Debug.countTime(TAG, "preload JsonLocalFileStorage") {
@@ -145,7 +145,7 @@ class MainActivity : ComponentActivity() {
                 BundleSupportType.ProtoBufType(Test::class.java, false)
             }
             // Frag 类加载时会初始化其委托属性的 KProperty 信息实例，会消耗一些时间
-            val f = Debug.traceAndTime(TAG, "f") {
+            val f = Debug.countTime(TAG, "f") {
                 Frag().apply {
                     a = 1
                     b = "asd"

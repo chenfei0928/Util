@@ -25,6 +25,7 @@ class KtxsJsonSpConvert<
     private val json: Json
     private val serializer: SerializationStrategy<V>
     private val deserializer: DeserializationStrategy<V>
+    override val spValueType: PreferenceType.Struct<V?>
 
     constructor(
         saver: AbsSpSaver.Delegate<SpSaver, String?>,
@@ -32,10 +33,11 @@ class KtxsJsonSpConvert<
         serializer: SerializationStrategy<V>,
         deserializer: DeserializationStrategy<V>,
         spValueType: PreferenceType.Struct<V?>,
-    ) : super(saver, spValueType) {
+    ) : super(saver) {
         this.json = json
         this.serializer = serializer
         this.deserializer = deserializer
+        this.spValueType = spValueType
     }
 
     constructor(
@@ -44,10 +46,11 @@ class KtxsJsonSpConvert<
         key: String? = null,
         @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         json: Json = Json,
-    ) : super(StringDelegate(key, expireDurationInSecond), spValueType) {
+    ) : super(StringDelegate(key, expireDurationInSecond)) {
         this.json = json
         this.serializer = serializer
         this.deserializer = serializer
+        this.spValueType = spValueType
     }
 
     constructor(
@@ -55,14 +58,12 @@ class KtxsJsonSpConvert<
         key: String? = null,
         @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         json: Json = Json,
-    ) : super(
-        StringDelegate(key, expireDurationInSecond),
-        PreferenceType.Struct<V?>(kType.javaType)
-    ) {
+    ) : super(StringDelegate(key, expireDurationInSecond)) {
         val serializer = json.serializersModule.serializer(kType) as KSerializer<V>
         this.json = json
         this.serializer = serializer
         this.deserializer = serializer
+        this.spValueType = PreferenceType.Struct<V?>(kType.javaType)
     }
 
     constructor(
@@ -70,14 +71,12 @@ class KtxsJsonSpConvert<
         key: String? = null,
         @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         json: Json = Json,
-    ) : super(
-        StringDelegate(key, expireDurationInSecond),
-        PreferenceType.Struct<V?>(type)
-    ) {
+    ) : super(StringDelegate(key, expireDurationInSecond)) {
         val serializer = json.serializersModule.serializer(type) as KSerializer<V>
         this.json = json
         this.serializer = serializer
         this.deserializer = serializer
+        this.spValueType = PreferenceType.Struct<V?>(type)
     }
 
     override fun onRead(value: String): V = json.decodeFromString(deserializer, value)

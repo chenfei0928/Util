@@ -23,9 +23,8 @@ class LocalSerializerSpConvert<
 private constructor(
     private val serializer: LocalSerializer<V>,
     saver: AbsSpSaver.Delegate<SpSaver, ByteArray?>,
-) : BaseSpConvert<SpSaver, Sp, Ed, ByteArray?, V>(
-    saver, PreferenceType.Struct<V>(serializer.defaultValue.javaClass)
-), AbsSpSaver.DefaultValue<V> {
+) : BaseSpConvert<SpSaver, Sp, Ed, ByteArray?, V>(saver), AbsSpSaver.DefaultValue<V> {
+    override val spValueType = PreferenceType.Struct<V>(serializer.defaultValue.javaClass)
     override val defaultValue: V = serializer.defaultValue
 
     override fun onRead(value: ByteArray): V {

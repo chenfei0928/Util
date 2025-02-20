@@ -13,13 +13,10 @@ class EnumNameSpConvert<
         Ed : SharedPreferences.Editor,
         E : Enum<E>>
 constructor(
-    eClass: Class<E>,
-    private val enumValues: Array<E>,
     saver: AbsSpSaver.Delegate<SpSaver, String?>,
+    override val spValueType: PreferenceType.EnumNameString<E>,
     override val defaultValue: E?,
-) : BaseSpConvert<SpSaver, Sp, Ed, String?, E?>(
-    saver, PreferenceType.EnumNameString(eClass, enumValues)
-), AbsSpSaver.DefaultValue<E?> {
+) : BaseSpConvert<SpSaver, Sp, Ed, String?, E?>(saver), AbsSpSaver.DefaultValue<E?> {
 
     constructor(
         eClass: Class<E>,
@@ -28,12 +25,12 @@ constructor(
         @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         defaultValue: E? = null,
     ) : this(
-        eClass, enumValues, StringDelegate(key, expireDurationInSecond), defaultValue
+        StringDelegate(key, expireDurationInSecond),
+        PreferenceType.EnumNameString(eClass, enumValues),
+        defaultValue
     )
 
-    override fun onRead(value: String): E? {
-        return enumValues.find { value == it.name } ?: defaultValue
-    }
+    override fun onRead(value: String): E = spValueType.forName(value, defaultValue)
 
     override fun onSave(value: E): String = value.name
 
@@ -45,9 +42,8 @@ constructor(
             key: String? = null,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, E?> = EnumNameSpConvert<SpSaver, Sp, Ed, E>(
-            eClass = E::class.java,
-            enumValues = enumValues<E>(),
             saver = StringDelegate(key, expireDurationInSecond),
+            spValueType = PreferenceType.EnumNameString(),
             defaultValue = null,
         )
 
@@ -61,9 +57,8 @@ constructor(
         ): AbsSpSaver.Delegate<SpSaver, E> {
             @Suppress("UNCHECKED_CAST")
             return EnumNameSpConvert<SpSaver, Sp, Ed, E>(
-                eClass = E::class.java,
-                enumValues = enumValues<E>(),
                 saver = StringDelegate(key, expireDurationInSecond),
+                spValueType = PreferenceType.EnumNameString(),
                 defaultValue = defaultValue,
             ) as AbsSpSaver.Delegate<SpSaver, E>
         }

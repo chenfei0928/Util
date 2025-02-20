@@ -88,32 +88,43 @@ sealed interface PreferenceType {
     ) : PreferenceType {
         constructor(eClass: Class<E>) : this(eClass, eClass.enumConstants)
 
-        fun forName(name: String): E = values.find { it.name == name }!!
+        fun forName(name: String, defaultValue: E? = null): E =
+            values.find { it.name == name } ?: defaultValue
+            ?: throw IllegalArgumentException("Enum name: $name not found in $eClass")
 
         override fun toString(): String =
             "EnumNameString(eClass=$eClass)"
 
         companion object {
             inline operator fun <reified E : Enum<E>> invoke() =
-                EnumNameString<E>(E::class.java)
+                EnumNameString<E>(E::class.java, enumValues<E>())
         }
     }
 
-    abstract class BaseEnumNameStringCollection<E : Enum<E>, C : MutableCollection<E>>(
-        private val eClass: Class<E>,
-        private val values: Array<E>,
+    abstract class BaseEnumNameStringCollection<E : Enum<E>, C : Collection<E>>(
+        protected val eClass: Class<E>,
+        protected val values: Array<E>,
     ) : PreferenceType {
-        fun forName(name: String): E = values.find { it.name == name }!!
+        //<editor-fold desc="枚举值转换与重写Object的方法" defaultstatus="collapsed">
+        fun forNameOrNull(name: String?, defaultValue: E? = null): E? =
+            values.find { it.name == name } ?: defaultValue
 
-        fun forNames(
-            names: Collection<String>
-        ): C = names.mapTo(createCollection(names.size)) { forName(it) }
+        fun forName(name: String?, defaultValue: E? = null): E = forNameOrNull(name, defaultValue)
+            ?: throw IllegalArgumentException("Enum name: $name not found in $eClass")
 
-        fun forProtobufEnumValueDescriptors(
-            enums: List<Descriptors.EnumValueDescriptor>
-        ): C = enums.mapTo(createCollection(enums.size)) { forName(it.name) }
+        open fun forNames(
+            names: Collection<String>,
+            focusReturnType: Boolean,
+            defaultValue: E? = null
+        ): C = names.mapTo(createCollection(names.size)) { forName(it, defaultValue) }
 
-        protected abstract fun createCollection(size: Int): C
+        open fun forProtobufEnumValueDescriptors(
+            enums: List<Descriptors.EnumValueDescriptor>,
+            focusReturnType: Boolean,
+            defaultValue: E? = null
+        ): C = enums.mapTo(createCollection(enums.size)) { forName(it.name, defaultValue) }
+
+        protected abstract fun <MC> createCollection(size: Int): MC where MC : MutableCollection<E>
 
         override fun equals(other: Any?): Boolean {
             return if (this.javaClass != other?.javaClass) {
@@ -127,24 +138,28 @@ sealed interface PreferenceType {
             return Util.hashCode(eClass.hashCode(), values.contentHashCode())
         }
 
-        override fun toString(): String =
-            "BaseEnumNameStringCollection(eClass=$eClass)"
+        override fun toString(): String = "BaseEnumNameStringCollection(eClass=$eClass)"
+        //</editor-fold>
 
         companion object {
             inline operator fun <reified E : Enum<E>, C : MutableCollection<E>> invoke(
                 crossinline createCollection: (size: Int) -> C
             ) = object : BaseEnumNameStringCollection<E, C>(E::class.java, enumValues<E>()) {
-                override fun createCollection(size: Int): C = createCollection(size)
+                @Suppress("UNCHECKED_CAST")
+                override fun <MC : MutableCollection<E>> createCollection(size: Int): MC =
+                    createCollection(size) as MC
             }
 
             fun <E : Enum<E>> forEnumDescriptor(
-                enumDescriptor: Descriptors.EnumDescriptor
+                enumDescriptor: Descriptors.EnumDescriptor, eClass: Class<E>?
             ): BaseEnumNameStringCollection<E, MutableList<E>> {
-                val eClass = enumDescriptor.enumClass<E>()
+                val eClass = eClass ?: enumDescriptor.enumClass<E>()
                 return object : BaseEnumNameStringCollection<E, MutableList<E>>(
                     eClass, eClass.enumConstants
                 ) {
-                    override fun createCollection(size: Int): MutableList<E> = ArrayList(size)
+                    @Suppress("UNCHECKED_CAST")
+                    override fun <MC : MutableCollection<E>> createCollection(size: Int): MC =
+                        ArrayList<E>(size) as MC
                 }
             }
         }
@@ -154,29 +169,40 @@ sealed interface PreferenceType {
      * 用于 [DataStorePreferenceDataStore] 的 [Field] 的数据类型，
      * 在[DataStorePreferenceDataStore]中对该类型进行判断
      */
-    data class EnumNameStringCollection<E : Enum<E>>(
-        private val eClass: Class<E>,
-        private val values: Array<E>,
+    class EnumNameStringCollection<E : Enum<E>>(
+        eClass: Class<E>,
+        values: Array<E>,
         private val returnType: Class<out Collection<*>>,
-    ) : PreferenceType {
+    ) : BaseEnumNameStringCollection<E, Collection<E>>(eClass, values) {
         constructor(
             eClass: Class<E>,
             returnType: Class<out Collection<*>>,
         ) : this(eClass, eClass.enumConstants, returnType)
 
-        fun forName(name: String): E = values.find { it.name == name }!!
-
-        fun forNames(
-            names: Collection<String>, focusReturnType: Boolean
+        //<editor-fold desc="枚举值转换与重写Object的方法" defaultstatus="collapsed">
+        override fun forNames(
+            names: Collection<String>, focusReturnType: Boolean, defaultValue: E?
         ): Collection<E> = names.mapTo(
             if (focusReturnType) createCollection(names.size) else ArraySet(names.size),
-        ) { forName(it) }
+        ) { forName(it, defaultValue) }
 
-        fun forProtobufEnumValueDescriptors(
-            enums: List<Descriptors.EnumValueDescriptor>, focusReturnType: Boolean
+        override fun forProtobufEnumValueDescriptors(
+            enums: List<Descriptors.EnumValueDescriptor>,
+            focusReturnType: Boolean,
+            defaultValue: E?
         ): Collection<E> = enums.mapTo(
             if (focusReturnType) createCollection(enums.size) else ArraySet(enums.size)
-        ) { forName(it.name) }
+        ) { forName(it.name, defaultValue) }
+
+        override fun equals(other: Any?): Boolean {
+            return super.equals(other) && if (other is EnumNameStringCollection<*>) {
+                this.returnType == other.returnType
+            } else false
+        }
+
+        override fun hashCode(): Int {
+            return Util.hashCode(super.hashCode(), returnType.hashCode())
+        }
 
         override fun toString(): String =
             "EnumNameStringCollection(eClass=$eClass, returnType=$returnType)"
@@ -185,8 +211,8 @@ sealed interface PreferenceType {
          * 构建集合，查表 like Gson:
          * [com.google.gson.internal.ConstructorConstructor.newDefaultImplementationConstructor]
          */
-        @Suppress("CyclomaticComplexMethod")
-        private fun createCollection(size: Int): MutableCollection<E> = when {
+        @Suppress("CyclomaticComplexMethod", "UNCHECKED_CAST")
+        override fun <MC : MutableCollection<E>> createCollection(size: Int): MC = when {
             returnType.isSubclassOf(ArraySet::class.java) -> ArraySet(size)
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                     && returnType.isSubclassOf(android.util.ArraySet::class.java) ->
@@ -215,17 +241,19 @@ sealed interface PreferenceType {
                     ArrayList(size)
                 }
             }
-        }
+        } as MC
+        //</editor-fold>
 
         companion object {
             inline operator fun <reified E : Enum<E>, reified C : Collection<E>> invoke(): EnumNameStringCollection<E> =
-                EnumNameStringCollection<E>(E::class.java, C::class.java)
+                EnumNameStringCollection<E>(E::class.java, enumValues<E>(), C::class.java)
 
-            @Suppress("UNCHECKED_CAST")
             fun forType(type: ParameterizedType): EnumNameStringCollection<*> {
+                @Suppress("UNCHECKED_CAST")
                 val rawClass = type.rawType as Class<out Collection<*>>
                 val arg0Type = type.actualTypeArguments[0]
                 if (arg0Type is Class<*> && arg0Type.isSubclassOf(Enum::class.java)) {
+                    @Suppress("UNCHECKED_CAST")
                     return EnumNameStringCollection(
                         eClass = arg0Type as Class<out Enum<*>>,
                         returnType = rawClass,
@@ -293,14 +321,17 @@ sealed interface PreferenceType {
         /**
          * 为 Protobuf full 的字段 fieldNumber 来获取类型信息
          */
-        fun forType(
-            field: Descriptors.FieldDescriptor
+        fun <T> forType(
+            field: Descriptors.FieldDescriptor, tClass: Class<T>?
         ): PreferenceType = if (field.isRepeated) {
             // protobuf 不支持 Set<String> 类型，只有 List<String> 类型，不处理 Native.StringSet
             require(field.type == Descriptors.FieldDescriptor.Type.ENUM) {
                 "Not support type: $field"
             }
-            BaseEnumNameStringCollection.forEnumDescriptor(field.enumType)
+            @Suppress("UNCHECKED_CAST")
+            BaseEnumNameStringCollection.forEnumDescriptor(
+                field.enumType, tClass as? Class<out Enum<*>>
+            )
         } else when (field.javaType) {
             Descriptors.FieldDescriptor.JavaType.INT -> Native.INT
             Descriptors.FieldDescriptor.JavaType.LONG -> Native.LONG
@@ -312,7 +343,9 @@ sealed interface PreferenceType {
             Descriptors.FieldDescriptor.JavaType.BYTE_STRING ->
                 throw IllegalArgumentException("Not support type: $field")
             Descriptors.FieldDescriptor.JavaType.ENUM ->
-                EnumNameString(field.enumType.enumClass())
+                @Suppress("UNCHECKED_CAST") EnumNameString(
+                    tClass as? Class<out Enum<*>> ?: field.enumType.enumClass()
+                )
             Descriptors.FieldDescriptor.JavaType.MESSAGE ->
                 throw IllegalArgumentException("Not support type: $field")
         }

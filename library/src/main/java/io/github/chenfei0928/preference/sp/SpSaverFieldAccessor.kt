@@ -70,7 +70,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
             delegate: AbsSpSaver.Delegate<SpSaver, V>?,
         ): Field<SpSaver, V> = propertyImpl(
             property, vType, findSpAccessorDelegateIfStructAndHasDelegate,
-            delegate ?: spSaver.dataStore.getDelegateByReflect(property),
+            delegate ?: spSaver.dataStore.getDelegateOrByReflect(property),
         )
 
         private fun <V> propertyImpl(
@@ -193,7 +193,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
                 ): Field<SpSaver, V> {
                     // vType复合类型或没传入委托，需要查找委托信息中的 spAccessDelegate
                     val delegate: AbsSpSaver.Delegate<SpSaver, V> = delegate
-                        ?: spSaver.dataStore.getDelegateByReflect(property)
+                        ?: spSaver.dataStore.getDelegateOrByReflect(property)
                     val outDelegate: AbsSpSaver.Delegate<SpSaver, V> = delegate
                     var observable: SpValueObservable<SpSaver, Any?>? = null
                     var spAccessDelegate: AbsSpSaver.Delegate<SpSaver, *> = delegate
