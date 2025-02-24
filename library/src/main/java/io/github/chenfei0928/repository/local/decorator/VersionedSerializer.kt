@@ -27,7 +27,9 @@ private constructor(
         inputStream.read(savedVersionCode)
         require(versionCode contentEquals savedVersionCode) {
             // 抛出异常，通知对数据进行反序列化失败，交由调用处LocalFileModule删除缓存文件
-            "当前版本是${versionCode.toLong()}, 本地文件的版本是${savedVersionCode.toLong()}，版本不匹配！数据结构可能已经被修改"
+            "current version is ${versionCode.toLong()}, local file's version is ${savedVersionCode.toLong()}," +
+                    " version code not match! The data structure may have been modified.\n" +
+                    "当前版本是${versionCode.toLong()}, 本地文件的版本是${savedVersionCode.toLong()}，版本不匹配！数据结构可能已经被修改"
         }
         // 版本号校验一致，读取内容
         return serializer.read(inputStream)

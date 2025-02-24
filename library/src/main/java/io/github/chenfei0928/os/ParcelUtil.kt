@@ -14,9 +14,11 @@ object ParcelUtil {
         block: (Parcel) -> T
     ): T {
         val parcel = Parcel.obtain()
-        val t = block(parcel)
-        parcel.recycle()
-        return t
+        return try {
+            block(parcel)
+        } finally {
+            parcel.recycle()
+        }
     }
 
     /**

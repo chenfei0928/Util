@@ -23,7 +23,7 @@ object GoogleTypes {
         DependencyChecker.GUAVA() -> Types.newParameterizedTypeWithOwner(
             ownerType, rawType, *typeArguments
         )
-        else -> throw IllegalArgumentException("没有引入依赖库")
+        else -> throw throwException()
     }
 
     @SuppressLint("VisibleForTests")
@@ -34,7 +34,7 @@ object GoogleTypes {
         DependencyChecker.GUAVA() -> Types.subtypeOf(
             bound
         )
-        else -> throw IllegalArgumentException("没有引入依赖库")
+        else -> throw throwException()
     }
 
     fun arrayOf(componentType: Type) = when {
@@ -44,6 +44,8 @@ object GoogleTypes {
         DependencyChecker.GUAVA() -> Types.newArrayType(
             componentType
         )
-        else -> throw IllegalArgumentException("没有引入依赖库")
+        else -> throw throwException()
     }
+
+    private fun throwException() = IllegalArgumentException("没有引入 Gson 或 Guava 依赖库")
 }

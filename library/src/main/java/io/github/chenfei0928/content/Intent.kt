@@ -6,7 +6,7 @@ import androidx.annotation.ReturnThis
 import androidx.collection.ArrayMap
 import com.google.protobuf.MessageLite
 import com.google.protobuf.protobufParserForType
-import io.github.chenfei0928.base.ContextProvider
+import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.lang.deepEquals
 import io.github.chenfei0928.os.ParcelUtil
 import java.io.ByteArrayInputStream
@@ -77,7 +77,7 @@ fun Intent.zipExtras(): Intent {
     return this
 }
 
-fun Intent.unzipExtras(classLoader: ClassLoader = ContextProvider::class.java.classLoader!!): Bundle {
+fun Intent.unzipExtras(classLoader: ClassLoader = UtilInitializer.context.classLoader): Bundle {
     val zipped = getByteArrayExtra(ZIPPED_EXTRA_KEY)
         ?: return Bundle.EMPTY
     val unzipped = GZIPInputStream(ByteArrayInputStream(zipped)).use {

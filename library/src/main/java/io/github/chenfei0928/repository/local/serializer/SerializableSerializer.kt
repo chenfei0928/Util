@@ -12,7 +12,7 @@ import java.io.Serializable
 /**
  * 对JDK的 [Serializable] 实现序列化和反序列化
  */
-@Discouraged("don't use Serializable interface")
+@Discouraged("don't use Serializable interface, because it performance too low")
 class SerializableSerializer<T : Serializable>(
     override val defaultValue: T
 ) : LocalSerializer<T> {

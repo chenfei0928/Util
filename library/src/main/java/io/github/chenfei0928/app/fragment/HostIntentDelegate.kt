@@ -37,7 +37,7 @@ class HostIntentDelegate<V>(
         inline operator fun <reified V> invoke(
             isMarkedNullable: Boolean = false, name: String? = null, defaultValue: V? = null
         ): ReadOnlyProperty<Fragment, V> = HostIntentDelegate(
-            BundleSupportType.AutoFind.findByType(isMarkedNullable), name, defaultValue
+            BundleSupportType.AutoFind.findByType<V>(isMarkedNullable), name, defaultValue
         )
 
         operator fun <V> invoke(
@@ -46,7 +46,7 @@ class HostIntentDelegate<V>(
             name: String? = null,
             defaultValue: V? = null
         ): ReadOnlyProperty<Fragment, V> = HostIntentDelegate(
-            BundleSupportType.ParcelerType(parceler, isMarkedNullable), name, defaultValue
+            BundleSupportType.ParcelerType<V>(parceler, isMarkedNullable), name, defaultValue
         )
 
         inline operator fun <reified V : MessageLite> invoke(

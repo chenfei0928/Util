@@ -9,9 +9,10 @@ object RunningEnvironmentUtil {
 
     fun isServiceWork(context: Context, service: Class<out Service>): Boolean {
         @Suppress("DEPRECATION")
-        val runningService = context.getSystemService<ActivityManager>()
-            ?.getRunningServices(40)
-            ?: return false
+        val runningService: List<ActivityManager.RunningServiceInfo> =
+            context.getSystemService<ActivityManager>()
+                ?.getRunningServices(40)
+                ?: return false
         val serviceName = service.name
         return runningService.any { it.service.className == serviceName }
     }

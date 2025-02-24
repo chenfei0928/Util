@@ -14,7 +14,7 @@
             tools:node="merge">
 
             <meta-data
-                android:name="io.github.chenfei0928.base.ContextProvider"
+                android:name="io.github.chenfei0928.base.UtilInitializer"
                 android:value="androidx.startup" />
         </provider>
     </application>

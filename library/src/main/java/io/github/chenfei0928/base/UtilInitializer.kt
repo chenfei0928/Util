@@ -8,11 +8,11 @@ import androidx.startup.Initializer
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-01-04 13:59
  */
-class ContextProvider : Initializer<Unit> {
+class UtilInitializer : Initializer<Unit> {
 
     override fun create(context: Context) {
         val appContext = context.applicationContext as Application
-        ContextProvider.context = appContext
+        UtilInitializer.context = appContext
         appContext.registerActivityLifecycleCallbacks(ActivityLifecycleCallback)
     }
 

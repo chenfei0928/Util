@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.github.chenfei0928.base.ContextProvider
+import io.github.chenfei0928.base.UtilInitializer
 
 /**
  * 获取设备是否处于省电模式的状态
@@ -17,7 +17,7 @@ import io.github.chenfei0928.base.ContextProvider
  */
 object PowerSaveUtil {
     private val powerManager: PowerManager? =
-        ContextProvider.context.getSystemService<PowerManager>()
+        UtilInitializer.context.getSystemService<PowerManager>()
     private val sReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             isInPowerSaveMode.value = powerManager?.isPowerSaveMode
@@ -30,7 +30,7 @@ object PowerSaveUtil {
         )
 
     init {
-        val context = ContextProvider.context
+        val context = UtilInitializer.context
         ContextCompat.registerReceiver(
             context.applicationContext,
             sReceiver,

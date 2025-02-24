@@ -37,7 +37,7 @@ class IntentDelegate<V>(
         inline operator fun <reified V> invoke(
             isMarkedNullable: Boolean = false, name: String? = null, defaultValue: V? = null
         ): ReadOnlyProperty<Activity, V> = IntentDelegate(
-            BundleSupportType.AutoFind.findByType(isMarkedNullable), name, defaultValue
+            BundleSupportType.AutoFind.findByType<V>(isMarkedNullable), name, defaultValue
         )
 
         operator fun <V> invoke(
@@ -46,7 +46,7 @@ class IntentDelegate<V>(
             name: String? = null,
             defaultValue: V? = null
         ): ReadOnlyProperty<Activity, V> = IntentDelegate(
-            BundleSupportType.ParcelerType(parceler, isMarkedNullable), name, defaultValue
+            BundleSupportType.ParcelerType<V>(parceler, isMarkedNullable), name, defaultValue
         )
 
         inline operator fun <reified V : MessageLite> invoke(

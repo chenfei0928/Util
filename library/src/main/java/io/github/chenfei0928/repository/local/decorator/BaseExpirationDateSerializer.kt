@@ -31,7 +31,8 @@ abstract class BaseExpirationDateSerializer<T : Any>(
         // 版本号校验一致，读取内容
         require(check(savedVersionCode.toLong())) {
             // 抛出异常，通知对数据进行反序列化失败，交由调用处LocalFileModule删除缓存文件
-            "本地文件的标记时间是${savedVersionCode.toLong()}，数据已过期"
+            "local file's time is ${savedVersionCode.toLong()}, Data has expired.\n" +
+                    "本地文件的标记时间是${savedVersionCode.toLong()}，数据已过期"
         }
         // 版本号校验一致，读取内容
         return serializer.read(inputStream)
