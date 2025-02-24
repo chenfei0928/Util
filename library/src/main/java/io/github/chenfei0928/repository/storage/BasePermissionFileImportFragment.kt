@@ -56,9 +56,9 @@ abstract class BasePermissionFileImportFragment<T>(
      * 当权限被拒绝
      */
     private fun onPermissionDenied() {
-        requireActivity().onPermissionDenied(getString(R.string.cf0928util_permissionDenied, permissionName),
-            { _, _ -> removeSelf(null) },
-            { _, _ -> removeSelf(null) })
+        requireActivity().onPermissionDenied(getString(
+            R.string.cf0928util_permissionDenied, permissionName
+        ), { _, _ -> removeSelf(null) }, { _, _ -> removeSelf(null) })
     }
 
     /**

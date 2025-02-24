@@ -3,7 +3,6 @@ package io.github.chenfei0928.util
 import android.os.SystemClock
 import androidx.annotation.IntRange
 import io.github.chenfei0928.collection.sumByLong
-import java.util.LinkedList
 
 /**
  * 秒表，提供恢复计时、暂停计时、获取当前计时时间
@@ -12,7 +11,7 @@ import java.util.LinkedList
 class Stopwatch(
     private val allowTrim: Boolean
 ) {
-    private val data: MutableList<Node> = LinkedList()
+    private val data: MutableList<Node> = ArrayList()
 
     /**
      * 开始、恢复计时

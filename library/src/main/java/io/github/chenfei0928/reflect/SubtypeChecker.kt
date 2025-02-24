@@ -8,7 +8,6 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
 import java.lang.reflect.WildcardType
-import java.util.LinkedList
 import java.util.Queue
 
 fun Class<*>.isSubclassOf(base: Class<*>): Boolean =
@@ -32,7 +31,7 @@ private class SubtypeChecker(
     private val indexOfTypeVariable: Int,
 ) {
     // 替换为 Host.typeParameters[which] = WhoClass 如果Host which WhoClass 一致则不判断 WhoClass
-    private val parentParameterChain: Queue<ParametersCheckRecord> = LinkedList()
+    private val parentParameterChain: Queue<ParametersCheckRecord> = java.util.ArrayDeque()
 
     @Suppress("CyclomaticComplexMethod")
     fun isSubtypeOf(

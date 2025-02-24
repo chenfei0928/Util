@@ -1,6 +1,8 @@
 package io.github.chenfei0928.io
 
+import android.os.Build
 import java.io.File
+import java.io.InputStream
 import java.io.Reader
 
 /**
@@ -19,4 +21,21 @@ inline fun Reader.forEachLine(block: (String) -> Unit) {
  */
 inline fun File.forEachLine(block: (String) -> Unit) {
     reader().forEachLine(block)
+}
+
+fun InputStream.readNBytesCompat(
+    size: Int
+): ByteArray = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    readNBytes(size)
+} else {
+    val bytes = ByteArray(size)
+    var n = 0
+    while (n < size) {
+        val count = read(bytes, n, size - n)
+        if (count < 0)
+            break
+        n += count
+    }
+    read(bytes, 0, size)
+    bytes
 }

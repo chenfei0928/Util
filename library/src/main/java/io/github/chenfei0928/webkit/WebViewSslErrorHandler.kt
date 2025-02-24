@@ -40,7 +40,9 @@ internal class WebViewSslErrorHandler(
         private var dialog: Dialog? = AlertDialog
             .Builder(context)
             .setMessage(R.string.cf0928util_sslError_message)
-            .setPositiveButton(R.string.cf0928util_sslError_ignoreAngGoOn) { _, _ -> onProcessResult(true) }
+            .setPositiveButton(R.string.cf0928util_sslError_ignoreAngGoOn) { _, _ ->
+                onProcessResult(true)
+            }
             .setNegativeButton(android.R.string.cancel) { _, _ -> onProcessResult(false) }
             .setOnCancelListener { onProcessResult(false) }
             .create()

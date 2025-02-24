@@ -11,7 +11,6 @@ import android.widget.FrameLayout
 import androidx.annotation.CallSuper
 import androidx.collection.ArraySet
 import androidx.collection.LongSparseArray
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle

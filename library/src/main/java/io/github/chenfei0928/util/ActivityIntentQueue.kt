@@ -14,7 +14,7 @@ import io.github.chenfei0928.lifecycle.bindUntilFirstEvent
 import io.github.chenfei0928.os.safeHandler
 import io.github.chenfei0928.util.ActivityIntentQueue.Task
 import io.github.chenfei0928.util.ActivityIntentQueue.Task.CallbackTask.ShowFuncWithDismissListener
-import java.util.LinkedList
+import java.util.Deque
 import kotlin.random.Random
 
 /**
@@ -28,7 +28,7 @@ import kotlin.random.Random
  * @date 2020-01-07 15:07
  */
 class ActivityIntentQueue : Fragment() {
-    private val pendingTaskQueue: LinkedList<Task> = LinkedList()
+    private val pendingTaskQueue: Deque<Task> = java.util.ArrayDeque<Task>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
