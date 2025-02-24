@@ -22,7 +22,7 @@ private constructor(
         sp.getLong(key, defaultValue)
 
     override fun putValue(editor: Ed, key: String, value: Long) {
-        if (expireDurationInSecond <= MMKV.ExpireNever || !DependencyChecker.MMKV() || editor !is MMKV) {
+        if (expireDurationInSecond <= MMKV.ExpireNever || !DependencyChecker.mmkv || editor !is MMKV) {
             editor.putLong(key, value)
         } else {
             editor.putLong(key, value, expireDurationInSecond)

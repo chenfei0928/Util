@@ -10,7 +10,6 @@ import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.util.DependencyChecker
 import io.github.chenfei0928.util.MapCache
 import java.lang.reflect.Modifier
-import kotlin.Enum
 
 fun <T : GeneratedMessageLite<T, *>> Class<T>.getProtobufLiteDefaultInstance(): T {
     return GeneratedMessageLite.getDefaultInstance(this)
@@ -53,7 +52,7 @@ fun Message.toShortString() = buildString {
 val <T : MessageLite> Class<T>.protobufDefaultInstance: T?
     get() = if (Modifier.FINAL !in modifiers) {
         null
-    } else if (DependencyChecker.PROTOBUF() && isSubclassOf(Message::class.java)) {
+    } else if (DependencyChecker.protobufFull && isSubclassOf(Message::class.java)) {
         (this as Class<out Message>).getProtobufV3DefaultInstance() as T
     } else {
         (this as Class<out GeneratedMessageLite<*, *>>)
@@ -64,7 +63,7 @@ val <T : MessageLite> Class<T>.protobufDefaultInstance: T?
 val <T : MessageLite> Class<T>.protobufParserForType: Parser<T>?
     get() = protobufDefaultInstance?.parserForType as Parser<T>?
 
-fun <E : Enum<E>> Descriptors.EnumDescriptor.enumClass(): Class<E> {
+fun <E : kotlin.Enum<E>> Descriptors.EnumDescriptor.enumClass(): Class<E> {
     @Suppress("UNCHECKED_CAST")
     return Class.forName(jvmFullyQualifiedName) as Class<E>
 }

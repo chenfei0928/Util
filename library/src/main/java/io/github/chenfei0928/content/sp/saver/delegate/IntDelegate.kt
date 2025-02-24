@@ -22,7 +22,7 @@ private constructor(
         sp.getInt(key, defaultValue)
 
     override fun putValue(editor: Ed, key: String, value: Int) {
-        if (expireDurationInSecond <= MMKV.ExpireNever || !DependencyChecker.MMKV() || editor !is MMKV) {
+        if (expireDurationInSecond <= MMKV.ExpireNever || !DependencyChecker.mmkv || editor !is MMKV) {
             editor.putInt(key, value)
         } else {
             editor.putInt(key, value, expireDurationInSecond)

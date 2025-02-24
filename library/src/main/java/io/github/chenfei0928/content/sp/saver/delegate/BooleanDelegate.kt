@@ -22,7 +22,7 @@ private constructor(
         sp.getBoolean(key, defaultValue)
 
     override fun putValue(editor: Ed, key: String, value: Boolean) {
-        if (expireDurationInSecond <= MMKV.ExpireNever || !DependencyChecker.MMKV() || editor !is MMKV) {
+        if (expireDurationInSecond <= MMKV.ExpireNever || !DependencyChecker.mmkv || editor !is MMKV) {
             editor.putBoolean(key, value)
         } else {
             editor.putBoolean(key, value, expireDurationInSecond)

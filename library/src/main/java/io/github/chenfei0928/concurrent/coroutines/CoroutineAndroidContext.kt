@@ -12,7 +12,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentViewLifecycleAccessor
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
-import io.github.chenfei0928.base.ContextProvider
+import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.content.findActivity
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.view.findParentFragment
@@ -144,7 +144,7 @@ private constructor(
                     CoroutineAndroidContextImpl(host, node, null)
                 }
                 else -> {
-                    CoroutineAndroidContextImpl(host, ContextProvider.context, null)
+                    CoroutineAndroidContextImpl(host, UtilInitializer.context, null)
                 }
             }
         }

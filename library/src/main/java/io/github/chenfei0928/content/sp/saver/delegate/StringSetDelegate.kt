@@ -27,7 +27,7 @@ private constructor(
     }
 
     override fun putValue(editor: Ed, key: String, value: Set<String?>) {
-        if (expireDurationInSecond <= MMKV.ExpireNever || !DependencyChecker.MMKV() || editor !is MMKV) {
+        if (expireDurationInSecond <= MMKV.ExpireNever || !DependencyChecker.mmkv || editor !is MMKV) {
             editor.putStringSet(key, value)
         } else {
             editor.putStringSet(key, value, expireDurationInSecond)

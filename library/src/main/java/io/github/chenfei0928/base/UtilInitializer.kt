@@ -3,6 +3,7 @@ package io.github.chenfei0928.base
 import android.app.Application
 import android.content.Context
 import androidx.startup.Initializer
+import io.github.chenfei0928.util.DependencyChecker
 
 /**
  * @author chenfei(chenfei0928@gmail.com)
@@ -24,5 +25,12 @@ class UtilInitializer : Initializer<Unit> {
         @JvmStatic
         lateinit var context: Application
             private set
+
+        @JvmStatic
+        var sdkDependency: DependencyChecker = DependencyChecker.ByReflectLazy
+            set(value) {
+                require(value !is DependencyChecker.Companion) { "需要为 DependencyChecker.SdkDependency 的实例" }
+                field = value
+            }
     }
 }

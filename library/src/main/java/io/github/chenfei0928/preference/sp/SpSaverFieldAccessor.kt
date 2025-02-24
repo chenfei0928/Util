@@ -81,7 +81,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
         ): Field<SpSaver, V> = when {
             delegate == null || (vType is PreferenceType.Struct<*> && findSpAccessorDelegateIfStructAndHasDelegate) -> {
                 // 没传入委托、vType复合类型，需要查找委托信息中的 spAccessDelegate
-                if (DependencyChecker.MMKV() && spSaver is BaseMmkvSaver<*>) {
+                if (DependencyChecker.mmkv && spSaver is BaseMmkvSaver<*>) {
                     Log.d(TAG, run {
                         "property: no 'delegate' param or 'vType' is PreferenceType.NoSupportPreferenceDataStore, " +
                                 "fallback find spAccessDelegate in delegate to R/W property, " +

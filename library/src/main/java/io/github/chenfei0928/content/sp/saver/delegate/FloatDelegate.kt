@@ -22,7 +22,7 @@ private constructor(
         sp.getFloat(key, defaultValue)
 
     override fun putValue(editor: Ed, key: String, value: Float) {
-        if (expireDurationInSecond <= MMKV.ExpireNever || !DependencyChecker.MMKV() || editor !is MMKV) {
+        if (expireDurationInSecond <= MMKV.ExpireNever || !DependencyChecker.mmkv || editor !is MMKV) {
             editor.putFloat(key, value)
         } else {
             editor.putFloat(key, value, expireDurationInSecond)

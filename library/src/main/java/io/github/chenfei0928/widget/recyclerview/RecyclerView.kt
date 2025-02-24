@@ -57,7 +57,7 @@ fun RecyclerView.findVisibleRange(): IntRange = when (val lm = layoutManager) {
         // 列表显示范围
         firstVisibleItem..lastVisibleItem
     }
-    else -> if (DependencyChecker.FLEXBOX() && lm is FlexboxLayoutManager) {
+    else -> if (DependencyChecker.flexBox && lm is FlexboxLayoutManager) {
         lm.findFirstVisibleItemPosition()..lm.findLastVisibleItemPosition()
     } else try {
         lm.javaClass.run {

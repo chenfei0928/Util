@@ -17,10 +17,10 @@ object GoogleTypes {
     fun newParameterizedTypeWithOwner(
         ownerType: Type?, rawType: Class<*>, vararg typeArguments: Type
     ): ParameterizedType = when {
-        DependencyChecker.GSON() -> GsonTypes.newParameterizedTypeWithOwner(
+        DependencyChecker.gson -> GsonTypes.newParameterizedTypeWithOwner(
             ownerType, rawType, *typeArguments
         )
-        DependencyChecker.GUAVA() -> Types.newParameterizedTypeWithOwner(
+        DependencyChecker.guava -> Types.newParameterizedTypeWithOwner(
             ownerType, rawType, *typeArguments
         )
         else -> throw throwException()
@@ -28,20 +28,20 @@ object GoogleTypes {
 
     @SuppressLint("VisibleForTests")
     fun subtypeOf(bound: Type): Type = when {
-        DependencyChecker.GSON() -> GsonTypes.subtypeOf(
+        DependencyChecker.gson -> GsonTypes.subtypeOf(
             bound
         )
-        DependencyChecker.GUAVA() -> Types.subtypeOf(
+        DependencyChecker.guava -> Types.subtypeOf(
             bound
         )
         else -> throw throwException()
     }
 
     fun arrayOf(componentType: Type) = when {
-        DependencyChecker.GSON() -> GsonTypes.arrayOf(
+        DependencyChecker.gson -> GsonTypes.arrayOf(
             componentType
         )
-        DependencyChecker.GUAVA() -> Types.newArrayType(
+        DependencyChecker.guava -> Types.newArrayType(
             componentType
         )
         else -> throw throwException()
