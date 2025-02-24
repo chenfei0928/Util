@@ -162,6 +162,8 @@ class MainActivity : ComponentActivity() {
                     m = Bean(Test.getDefaultInstance())
                     n = Test.getDefaultInstance()
                     o = Test.getDefaultInstance()
+                    p = null
+                    q = null
                 }
             }
             Log.i(TAG, "onCreate: $f")
@@ -200,9 +202,11 @@ class MainActivity : ComponentActivity() {
         var m: Bean by ArgumentDelegate<Bean>()
         var n: Test by ArgumentDelegate(ProtobufParceler())
         var o: Test by ArgumentDelegate()
+        var p: Test? by ArgumentDelegate(BundleSupportType.ProtoBufType.nullable())
+        var q: Lifecycle.State? by ArgumentDelegate(BundleSupportType.EnumType.nullable())
 
         override fun toString(): String = toString0(
-            ::a, ::b, ::c, ::d, ::e, ::f, ::g, ::h, ::i, ::j, ::k, ::l, ::m, ::n, ::o
+            ::a, ::b, ::c, ::d, ::e, ::f, ::g, ::h, ::i, ::j, ::k, ::l, ::m, ::n, ::o, ::p, ::q
         )
     }
 

@@ -49,19 +49,16 @@ class ArgumentDelegate<V>(
 
         operator fun <V> invoke(
             parceler: Parceler<V?>,
-            isMarkedNullable: Boolean = false,
             name: String? = null,
             defaultValue: V? = null
         ): ReadWriteProperty<Fragment, V> = ArgumentDelegate<V>(
-            BundleSupportType.ParcelerType(parceler, isMarkedNullable), name, defaultValue
+            BundleSupportType.ParcelerType(parceler), name, defaultValue
         )
 
         inline operator fun <reified V : MessageLite> invoke(
-            isMarkedNullable: Boolean = false, name: String? = null,
+            name: String? = null,
         ): ReadWriteProperty<Fragment, V> = ArgumentDelegate(
-            BundleSupportType.ProtoBufType<V>(isMarkedNullable),
-            name,
-            if (isMarkedNullable) null else V::class.java.protobufDefaultInstance
+            BundleSupportType.ProtoBufType<V>(), name, V::class.java.protobufDefaultInstance
         )
 
         fun Fragment.argInt(name: String? = null): ReadWriteProperty<Fragment, Int> =

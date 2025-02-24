@@ -42,19 +42,16 @@ class HostIntentDelegate<V>(
 
         operator fun <V> invoke(
             parceler: Parceler<V?>,
-            isMarkedNullable: Boolean = false,
             name: String? = null,
             defaultValue: V? = null
         ): ReadOnlyProperty<Fragment, V> = HostIntentDelegate(
-            BundleSupportType.ParcelerType<V>(parceler, isMarkedNullable), name, defaultValue
+            BundleSupportType.ParcelerType<V>(parceler), name, defaultValue
         )
 
         inline operator fun <reified V : MessageLite> invoke(
-            isMarkedNullable: Boolean = false, name: String? = null,
+            name: String? = null,
         ): ReadOnlyProperty<Fragment, V> = HostIntentDelegate(
-            BundleSupportType.ProtoBufType<V>(isMarkedNullable),
-            name,
-            if (isMarkedNullable) null else V::class.java.protobufDefaultInstance
+            BundleSupportType.ProtoBufType<V>(), name, V::class.java.protobufDefaultInstance
         )
 
         fun Fragment.intentInt(name: String? = null): ReadOnlyProperty<Fragment, Int> =
