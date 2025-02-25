@@ -732,26 +732,27 @@ abstract class BundleSupportType<T>(
         }
     }
 
-    class IBinderType(
+    class IBinderType<T : IBinder>(
         isMarkedNullable: Boolean? = false
-    ) : BundleSupportType<IBinder>(isMarkedNullable) {
-        override fun nonnullValue(property: KProperty<*>): IBinder =
+    ) : BundleSupportType<T>(isMarkedNullable) {
+        override fun nonnullValue(property: KProperty<*>): T =
             throw IllegalAccessException()
 
         override fun putNonnull(
-            bundle: Bundle, property: KProperty<*>, name: String, value: IBinder
+            bundle: Bundle, property: KProperty<*>, name: String, value: T
         ) = bundle.putBinder(name, value)
 
+        @Suppress("UNCHECKED_CAST")
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
-        ): IBinder? = bundle.getBinder(name)
+        ): T? = bundle.getBinder(name) as T
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): IBinder? = throw IllegalArgumentException("Not support return type: $property")
+        ): T? = throw IllegalArgumentException("Not support return type: $property")
 
         companion object : AutoFind.Creator<IBinder> {
-            override val default = IBinderType(null)
+            override val default = IBinderType<IBinder>(null)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<IBinder> = IBinderType(isMarkedNullable)

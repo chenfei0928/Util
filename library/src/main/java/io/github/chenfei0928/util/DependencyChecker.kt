@@ -61,7 +61,13 @@ interface DependencyChecker {
         override val protobufLite: Boolean,
         override val gson: Boolean,
         override val mmkv: Boolean,
-    ) : DependencyChecker
+    ) : DependencyChecker {
+        init {
+            require(!(protobufFull && !protobufLite)) {
+                "protobufFull 包含 protobufLite，如果引入了 protobufFull 一定有 protobufLite 依赖"
+            }
+        }
+    }
 
     /**
      * 用于处理部分函数中对部分库有额外处理逻辑的判断逻辑

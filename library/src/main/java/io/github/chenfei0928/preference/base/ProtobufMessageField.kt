@@ -21,6 +21,7 @@ import kotlin.reflect.KFunction
  * @param T 字段宿主对象类型
  * @param V 字段类型
  * @property fieldDescriptor 字段描述信息
+ * @property vClass 用于优化对于 Enum 的 [vType] 类型获取性能
  *
  * @author chenf()
  * @date 2024-12-19 17:21

@@ -327,10 +327,7 @@ sealed interface PreferenceType {
             require(field.type == Descriptors.FieldDescriptor.Type.ENUM) {
                 "Not support type: $field"
             }
-            @Suppress("UNCHECKED_CAST")
-            BaseEnumNameStringCollection.forEnumDescriptor(
-                field.enumType, tClass as? Class<out Enum<*>>
-            )
+            BaseEnumNameStringCollection.forEnumDescriptor(field.enumType, null)
         } else when (field.javaType) {
             Descriptors.FieldDescriptor.JavaType.INT -> Native.INT
             Descriptors.FieldDescriptor.JavaType.LONG -> Native.LONG

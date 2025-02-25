@@ -59,7 +59,8 @@ class KtxsJsonSpConvert<
         @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         json: Json = Json,
     ) : super(StringDelegate(key, expireDurationInSecond)) {
-        val serializer = json.serializersModule.serializer(kType) as KSerializer<V>
+        @Suppress("UNCHECKED_CAST") val serializer =
+            json.serializersModule.serializer(kType) as KSerializer<V>
         this.json = json
         this.serializer = serializer
         this.deserializer = serializer
@@ -72,7 +73,8 @@ class KtxsJsonSpConvert<
         @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         json: Json = Json,
     ) : super(StringDelegate(key, expireDurationInSecond)) {
-        val serializer = json.serializersModule.serializer(type) as KSerializer<V>
+        @Suppress("UNCHECKED_CAST") val serializer =
+            json.serializersModule.serializer(type) as KSerializer<V>
         this.json = json
         this.serializer = serializer
         this.deserializer = serializer
