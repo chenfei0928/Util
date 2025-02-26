@@ -63,6 +63,7 @@ class FixedScaleDrawable(
      * 像 [ImageView] 一样处理内容显示范围
      * [ImageView.configureBounds]
      */
+    @Suppress("CyclomaticComplexMethod", "LongMethod", "kotlin:S3776")
     private fun configureBounds() {
         val dwidth: Int = drawable.intrinsicWidth
         val dheight: Int = drawable.intrinsicHeight
@@ -149,6 +150,7 @@ class FixedScaleDrawable(
 
     private fun scaleTypeToScaleToFit(st: ImageView.ScaleType): ScaleToFit {
         // ScaleToFit enum to their corresponding Matrix.ScaleToFit values
+        @Suppress("kotlin:S6611")
         return sS2FArray[st]!!
     }
     //</editor-fold>

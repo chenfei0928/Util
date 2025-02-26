@@ -3,10 +3,7 @@ package io.github.chenfei0928.preference
 import android.content.Context
 import androidx.annotation.RestrictTo
 import androidx.preference.CheckBoxPreference
-import androidx.preference.DropDownPreference
 import androidx.preference.EditTextPreference
-import androidx.preference.ListPreference
-import androidx.preference.MultiSelectListPreference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceGroup
 import androidx.preference.PreferenceManager
@@ -49,7 +46,7 @@ constructor(
 
     inline fun <reified E : Enum<E>> dropDownPreference(
         property: FieldAccessor.Field<T, E>,
-        block: DropDownPreference.() -> Unit
+        block: EnumDropDownPreference<E>.() -> Unit,
     ): FieldAccessorPreferenceGroupBuilder<T> = applyBuilder {
         require(property in fieldAccessor) {
             "property ${property.pdsKey} must in dataStore"
@@ -69,7 +66,7 @@ constructor(
 
     inline fun <reified E : Enum<E>> listPreference(
         property: FieldAccessor.Field<T, E>,
-        block: ListPreference.() -> Unit
+        block: EnumListPreference<E>.() -> Unit
     ): FieldAccessorPreferenceGroupBuilder<T> = applyBuilder {
         require(property in fieldAccessor) {
             "property ${property.pdsKey} must in dataStore"
@@ -79,7 +76,7 @@ constructor(
 
     inline fun <reified E : Enum<E>> multiSelectListPreference(
         property: FieldAccessor.Field<T, Set<E>>,
-        block: MultiSelectListPreference.() -> Unit
+        block: EnumMultiSelectListPreference<E>.() -> Unit
     ): FieldAccessorPreferenceGroupBuilder<T> = applyBuilder {
         require(property in fieldAccessor) {
             "property ${property.pdsKey} must in dataStore"

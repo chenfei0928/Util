@@ -7,7 +7,6 @@ import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor
 import io.github.chenfei0928.util.Log
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 
@@ -28,7 +27,7 @@ private const val TAG = "KW_AbsSpSaverWatcher"
  */
 fun <SpSaver : BaseSpSaver<SpSaver>> SpSaver.registerOnSpPropertyChangeListener(
     owner: LifecycleOwner,
-    @MainThread callback: (kProperty: KProperty<*>) -> Unit,
+    @MainThread callback: (field: SpSaverFieldAccessor.Field<SpSaver, *>) -> Unit,
 ) {
     val spSaver = this
     AbsSpSaver.getSp(this).registerOnSharedPreferenceChangeListener(owner) { key ->
@@ -36,26 +35,21 @@ fun <SpSaver : BaseSpSaver<SpSaver>> SpSaver.registerOnSpPropertyChangeListener(
             // Android R以上时 clear sp，会回调null，R以下时clear时不会回调
             spSaver.dataStore
                 .spSaverPropertyDelegateFields
-                .forEach {
-                    callback(it.property)
-                }
+                .forEach { callback(it) }
         } else {
             // 根据key获取其对应的AbsSpSaver字段
-            val property = spSaver.dataStore
+            val fields = spSaver.dataStore
                 .spSaverPropertyDelegateFields
-                .find {
-                    it.outDelegate.getLocalStorageKey(it.property) == key
-                }
-                ?.property
+                .filter { it.localStorageKey == key }
             // 找得到属性，回调通知该字段被更改
-            if (property == null) {
+            if (fields.isEmpty()) {
                 Log.d(TAG, buildString {
                     append("registerOnSharedPreferenceChangeListener: ")
                     append("cannot found property of the key($key) in class ")
                     append(spSaver.javaClass.simpleName)
                 })
             } else {
-                callback(property)
+                fields.forEach { callback(it) }
             }
         }
     }

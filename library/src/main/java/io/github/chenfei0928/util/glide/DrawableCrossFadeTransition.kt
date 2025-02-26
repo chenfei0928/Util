@@ -22,7 +22,10 @@ class DrawableCrossFadeTransition(
 ) : Transition<Drawable> {
 
     override fun transition(current: Drawable, adapter: Transition.ViewAdapter): Boolean {
-        val previous = adapter.currentDrawable?.mutate()?.let { currentDrawable ->
+        val currentDrawable = adapter.currentDrawable
+        val previous = if (currentDrawable == null) {
+            ColorDrawable(Color.TRANSPARENT)
+        } else {
             val imageView = adapter.view as? ImageView
             // 使用当前正在显示的drawable尺寸构建目标图片尺寸的drawable，并传入想要的ScaleType缩放方式
             if (imageView == null) {
@@ -62,7 +65,7 @@ class DrawableCrossFadeTransition(
                     it.setValues(imageMatrixValues)
                 }
             }
-        } ?: ColorDrawable(Color.TRANSPARENT)
+        }
         // 创建过渡动画Drawable并设置
         val transitionDrawable = TransitionDrawable(arrayOf(previous, current))
         transitionDrawable.isCrossFadeEnabled = isCrossFadeEnabled

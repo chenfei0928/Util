@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.http.SslError
 import android.webkit.SslErrorHandler
 import androidx.appcompat.app.AlertDialog
+import androidx.collection.ArrayMap
 import androidx.core.net.toUri
 import io.github.chenfei0928.util.R
 
@@ -18,7 +19,7 @@ internal class WebViewSslErrorHandler(
     private val context: Context
 ) {
     // 网站域名到其是否忽略证书校验信息和处理器的映射
-    private val sslErrorHandlerOpinion = mutableMapOf<String?, Opinion>()
+    private val sslErrorHandlerOpinion = ArrayMap<String?, Opinion>()
 
     fun emit(handler: SslErrorHandler, error: SslError?) {
         sslErrorHandlerOpinion
@@ -32,10 +33,10 @@ internal class WebViewSslErrorHandler(
         context: Context
     ) {
         @Volatile
-        var isAllowed: Boolean? = null
+        private var isAllowed: Boolean? = null
 
         @Volatile
-        var listeners: MutableSet<SslErrorHandler>? = mutableSetOf()
+        private var listeners: MutableSet<SslErrorHandler>? = mutableSetOf()
 
         private var dialog: Dialog? = AlertDialog
             .Builder(context)
@@ -63,18 +64,13 @@ internal class WebViewSslErrorHandler(
 
         @Synchronized
         fun process(handler: SslErrorHandler) {
-            val allowed = isAllowed
-            when {
-                allowed == null -> {
+            when (val allowed = isAllowed) {
+                null -> {
                     listeners?.add(handler)
                     dialog?.show()
                 }
-                allowed -> {
-                    handler.proceed()
-                }
-                else -> {
-                    handler.cancel()
-                }
+                allowed -> handler.proceed()
+                else -> handler.cancel()
             }
         }
     }

@@ -25,9 +25,11 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
     /**
      * 使用[property]与[delegate]注册一个字段，如果 [delegate] 为 null 则向 [SpSaver] 查询或反射获取
      *
-     * @param findSpAccessorDelegateIfStructAndHasDelegate 当 [vType] 是 [PreferenceType.Struct]
+     * @param vType 该字段数据类型 [V] 的类型信息
+     * @param findSpAccessorDelegateIfStructAndHasDelegate 如果传入 `true` 且当 [vType] 是 [PreferenceType.Struct]
      * 且 [delegate] 不为 `null` 时，查找 spAccessor 委托信息。
-     * 如果这个字段不用于 Preference 显示（较少会有需要 Preference 显示的结构体数据，因为它的内容需要符合特定格式），
+     * 如果这个字段不用于 Preference 显示（较少会有需要 Preference 显示的结构体数据，
+     * 因为 [androidx.preference.Preference] 的内容需要符合特定格式），
      * 传入 `false` 以减少方法执行时间消耗。
      * @param delegate 服务该 [property] 属性的委托对象
      */
@@ -96,50 +98,29 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
             }
             property is KMutableProperty0 -> {
                 // 原生支持的vType类型，传入了委托
-                property(SpDelegateField0(property, delegate, vType))
+                property(RwByDelegateField(property, delegate, vType))
             }
             property is KMutableProperty1<*, *> -> {
                 // 原生支持的vType类型，传入了委托
                 @Suppress("UNCHECKED_CAST")
                 property as KMutableProperty1<SpSaver, V>
-                property(SpDelegateField1(property, delegate, vType))
+                property(RwByDelegateField(property, delegate, vType))
             }
             else -> {
                 // 只读字段或KProperty2字段，通过委托进行读写，而非通过 property
-                property(ReadOnlySpDelegateField(property, delegate, vType))
+                property(RwByDelegateField(property, delegate, vType))
             }
         }
 
         //<editor-fold desc="传入了委托对象和vType" defaultstatus="collapsed">
-        private class SpDelegateField0<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
-            override val property: KMutableProperty0<V>,
-            override val outDelegate: AbsSpSaver.Delegate<SpSaver, V>,
-            override val vType: PreferenceType,
-        ) : Field<SpSaver, V> {
-            override val observable: SpValueObservable<SpSaver, V>? =
-                SpValueObservable.find(outDelegate)
-
-            override fun get(data: SpSaver): V = property.get()
-            override fun set(data: SpSaver, value: V): SpSaver = data.apply { property.set(value) }
-            override fun toString(): String = "SpDelegateField0($pdsKey:$vType)"
-        }
-
-        private class SpDelegateField1<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
-            override val property: KMutableProperty1<SpSaver, V>,
-            override val outDelegate: AbsSpSaver.Delegate<SpSaver, V>,
-            override val vType: PreferenceType,
-        ) : Field<SpSaver, V> {
-            override val observable: SpValueObservable<SpSaver, V>? =
-                SpValueObservable.find(outDelegate)
-
-            override fun get(data: SpSaver): V = property.get(data)
-            override fun set(data: SpSaver, value: V): SpSaver =
-                data.apply { property.set(data, value) }
-
-            override fun toString(): String = "SpDelegateField1($pdsKey:$vType)"
-        }
-
-        private class ReadOnlySpDelegateField<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
+        /**
+         * 对 [KMutableProperty0]、[KMutableProperty1] 的读写无差别使用委托 [outDelegate] 进行读写。
+         *
+         * Kotlin编译期生成并传入 [io.github.chenfei0928.content.sp.saver.DataStoreDelegateStoreProvider]
+         * 的属性委托字段不内联 getter、setter 方法，而是只传入 set 方法签名，运行时遇到访问时进行反射获取，首次访问效率较低，
+         * 故而不通过 [property] 进行读写。
+         */
+        private class RwByDelegateField<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
             override val property: KProperty<V>,
             override val outDelegate: AbsSpSaver.Delegate<SpSaver, V>,
             override val vType: PreferenceType,
@@ -151,7 +132,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
             override fun set(data: SpSaver, value: V): SpSaver =
                 data.apply { outDelegate.setValue(data, property, value) }
 
-            override fun toString(): String = "ReadOnlySpDelegateField($pdsKey:$vType)"
+            override fun toString(): String = "RwByDelegateField($pdsKey:$vType)"
         }
         //</editor-fold>
 

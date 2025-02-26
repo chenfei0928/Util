@@ -1,5 +1,6 @@
 package io.github.chenfei0928.content.sp.saver
 
+import androidx.collection.ArrayMap
 import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.content.sp.saver.convert.SpValueObservable
 import io.github.chenfei0928.lifecycle.ILiveListener
@@ -34,9 +35,10 @@ open class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
     )
 
     override fun getSpAll(): Map<String, *> {
-        return dataStore.spSaverPropertyDelegateFields.associate {
+        val fields = dataStore.spSaverPropertyDelegateFields
+        return fields.associateByTo(ArrayMap<String, Any>(fields.size), { it.pdsKey }) {
             @Suppress("UNCHECKED_CAST")
-            it.pdsKey to it.get(this as SpSaver)
+            it.get(this as SpSaver)
         }
     }
 
@@ -44,6 +46,7 @@ open class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
         super.onFieldValueRemoved(field)
         if (!enableFieldObservable)
             return
+        @Suppress("UNCHECKED_CAST")
         field.observable?.onLocalStorageChange(this as SpSaver, field.property)
     }
 
@@ -53,6 +56,7 @@ open class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
             return
         }
         dataStore.spSaverPropertyDelegateFields.forEach { field ->
+            @Suppress("UNCHECKED_CAST")
             field.observable?.onLocalStorageChange(this as SpSaver, field.property)
         }
     }

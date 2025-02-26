@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.webkit.MimeTypeMap
+import androidx.collection.ArrayMap
 import androidx.core.content.FileProvider
 import io.github.chenfei0928.collection.getContainOrPut
 import io.github.chenfei0928.io.FileUtil
@@ -16,7 +17,7 @@ import java.io.File
  */
 object FileProviderUtil {
     var defaultFileProviderClass: Class<out FileProvider> = FileProvider::class.java
-    private val schemeCache = LinkedHashMap<Class<out FileProvider>, String?>()
+    private val schemeCache = ArrayMap<Class<out FileProvider>, String?>()
 
     /**
      * 获取指定[FileProvider]在Manifest文件中注册的的authority信息

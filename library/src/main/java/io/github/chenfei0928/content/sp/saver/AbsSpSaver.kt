@@ -100,6 +100,11 @@ constructor(
     /**
      * 为解决委托字段声明后缓存的编译器类型检查无法进行类型推导问题，
      * 添加此方法用于让使用处可以只构建委托，由此方法进行缓存
+     *
+     * @param findSpAccessorDelegateIfStruct 传入 `true` 时会查找 spAccessor 委托信息。
+     * 如果这个字段不用于 Preference 显示（较少会有需要 Preference 显示的结构体数据，
+     * 因为 [androidx.preference.Preference] 的内容需要符合特定格式），
+     * 传入 `false` 以减少方法执行时间消耗。
      */
     protected inline fun <V> dataStore(
         findSpAccessorDelegateIfStruct: Boolean = false,

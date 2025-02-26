@@ -18,7 +18,7 @@ import java.io.OutputStream
             " recommend use `VersionedSerializer` wrap."
 )
 class ParcelableSerializer<T : Parcelable>(
-    private val parcelable: Parcelable.Creator<T>,
+    private val creator: Parcelable.Creator<T>,
     override val defaultValue: T,
 ) : LocalSerializer<T> {
 
@@ -36,8 +36,12 @@ class ParcelableSerializer<T : Parcelable>(
             inputStream.readBytes()
         }
         return ParcelUtil.unmarshall(bytes) {
-            parcelable.createFromParcel(it)
+            creator.createFromParcel(it)
         }
+    }
+
+    override fun copy(obj: T): T {
+        return ParcelUtil.copy(obj, creator)
     }
 
     override fun toString(): String {

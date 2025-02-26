@@ -42,6 +42,10 @@ class ParcelerSerializer<T : Any>(
         }
     }
 
+    override fun copy(obj: T): T {
+        return ParcelUtil.copy(obj, parceler)
+    }
+
     override fun toString(): String {
         return "ParcelerSerializer<${defaultValue.javaClass.name}>"
     }

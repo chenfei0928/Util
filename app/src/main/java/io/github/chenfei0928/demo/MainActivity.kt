@@ -96,6 +96,9 @@ class MainActivity : ComponentActivity() {
             Debug.countTime(TAG, "preload TestMmkvSaver") {
                 TestMmkvSaver.javaClass
             }
+            Debug.countTime(TAG, "preload TestMmkvSaver") {
+                TestMmkvSaver.toString()
+            }
             Debug.countTime(TAG, "preload JsonLocalFileStorage") {
                 JsonLocalFileStorage.storage(this).get()
             }
@@ -138,6 +141,7 @@ class MainActivity : ComponentActivity() {
             // 加载Protobuf runtime，其会消耗较长时间
             Debug.countTime(TAG, "Test_toByteArray") {
                 Test.getDefaultInstance().toByteArray()
+                Test.getDefaultInstance().toString()
                 Test.getDefaultInstance().parserForType
             }
             // ProtoBufType 支持类，不知为何会有很多的loadClass

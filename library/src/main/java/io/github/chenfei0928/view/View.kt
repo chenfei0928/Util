@@ -3,6 +3,7 @@ package io.github.chenfei0928.view
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
+import androidx.collection.ArrayMap
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -44,11 +45,11 @@ fun View.findParentFragment(): Fragment? {
     val activity = context.findActivity() as? FragmentActivity
         ?: return null
     val viewsToFragment: Map<View, Fragment> = findAllSupportFragmentsWithViews(
-        activity.supportFragmentManager.fragments, mutableMapOf()
+        activity.supportFragmentManager.fragments, ArrayMap()
     )
     val activityRootView = activity.findViewById<View>(android.R.id.content)
     var view: View? = this
-    while (view != null && view != activityRootView) {
+    while (view != null && view !== activityRootView) {
         val fragment = viewsToFragment[view]
         if (fragment != null) {
             return fragment

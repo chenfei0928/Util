@@ -3,15 +3,15 @@ package io.github.chenfei0928.preference.base
 import android.content.Context
 import androidx.annotation.RestrictTo
 import androidx.preference.CheckBoxPreference
-import androidx.preference.DropDownPreference
 import androidx.preference.EditTextPreference
-import androidx.preference.ListPreference
-import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceGroup
 import androidx.preference.SeekBarPreference
 import androidx.preference.SwitchPreference
+import io.github.chenfei0928.preference.EnumDropDownPreference
+import io.github.chenfei0928.preference.EnumListPreference
+import io.github.chenfei0928.preference.EnumMultiSelectListPreference
 
 /**
  * PreferenceScreen的构建器
@@ -75,9 +75,9 @@ abstract class AbsPreferenceGroupBuilder<Builder>(
 
     inline fun <reified E : Enum<E>> dropDownPreference(
         key: String,
-        block: DropDownPreference.() -> Unit,
+        block: EnumDropDownPreference<E>.() -> Unit,
     ): Builder = applyBuilder {
-        preference(DropDownPreference(context).apply {
+        preference(EnumDropDownPreference<E>(context).apply {
             this.key = key
 //            bindEnum(enumValues<E>())
         }, block)
@@ -94,9 +94,9 @@ abstract class AbsPreferenceGroupBuilder<Builder>(
 
     inline fun <reified E : Enum<E>> listPreference(
         key: String,
-        block: ListPreference.() -> Unit
+        block: EnumListPreference<E>.() -> Unit
     ): Builder = applyBuilder {
-        preference(ListPreference(context).apply {
+        preference(EnumListPreference<E>(context).apply {
             this.key = key
 //            bindEnum(enumValues<E>())
         }, block)
@@ -104,9 +104,9 @@ abstract class AbsPreferenceGroupBuilder<Builder>(
 
     inline fun <reified E : Enum<E>> multiSelectListPreference(
         key: String,
-        block: MultiSelectListPreference.() -> Unit
+        block: EnumMultiSelectListPreference<E>.() -> Unit
     ): Builder = applyBuilder {
-        preference(MultiSelectListPreference(context).apply {
+        preference(EnumMultiSelectListPreference<E>(context).apply {
             this.key = key
 //            bindEnum(enumValues<E>())
         }, block)

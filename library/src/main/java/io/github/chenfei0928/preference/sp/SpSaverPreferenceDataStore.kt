@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import android.util.Log
 import androidx.preference.PreferenceManager
-import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.DataStoreDelegateStoreProvider.Companion
 import io.github.chenfei0928.lang.toStringRef
@@ -52,7 +51,7 @@ constructor(
     internal fun <V> findFieldOrNullByProperty(
         property: KProperty<V>
     ): SpSaverFieldAccessor.Field<SpSaver, V>? = spSaverPropertyDelegateFields.find {
-        it.property.name == property.name
+        it.property == property
     } as? SpSaverFieldAccessor.Field<SpSaver, V>
 
     /**
@@ -106,8 +105,14 @@ constructor(
     internal fun <V> getSpKeyByProperty(property: KProperty<V>): String =
         getDelegateOrByReflect(property).getLocalStorageKey(property)
 
+    /**
+     * 对所有 field 进行 toString，其读取字段方式为访问 [Field.get] 方法，而非访问 [Field.property] 以优化性能。
+     *
+     * 但如果调用 [SpSaverFieldAccessor.property] 传入 `findSpAccessorDelegateIfStructAndHasDelegate` 值为 `true` 时
+     * 可能会造成读取结构体时输出反序列化前的原始信息而非结构体的 `toString` 方法。
+     */
     internal fun toSpSaverPropertyString(): String =
-        saver.toStringRef(spSaverPropertyDelegateFields.mapToArray { it.property })
+        saver.toStringRef(spSaverPropertyDelegateFields.toTypedArray())
     //</editor-fold>
 
     /**

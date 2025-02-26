@@ -28,14 +28,14 @@ inline fun LayoutInflater.inflate(
 inline fun <reified VB : ViewBinding> LayoutInflater.inflate(
     root: ViewGroup?,
     attachToRoot: Boolean = false,
-    applyBlock: VB.() -> Unit
+    applyBlock: VB.() -> Unit = {}
 ): VB = inflate(VB::class.java.inflateFunc(), root, attachToRoot, applyBlock)
 
 inline fun <VB : ViewBinding> LayoutInflater.inflate(
     inflateFunc: (LayoutInflater, ViewGroup?, Boolean) -> VB,
     root: ViewGroup?,
     attachToRoot: Boolean = false,
-    applyBlock: VB.() -> Unit
+    applyBlock: VB.() -> Unit = {}
 ): VB {
     val binding = inflateFunc.invoke(this, root, false)
     applyBlock(binding)

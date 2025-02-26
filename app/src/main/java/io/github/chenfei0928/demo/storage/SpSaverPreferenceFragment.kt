@@ -14,10 +14,9 @@ import io.github.chenfei0928.lang.toStr
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.os.safeHandler
 import io.github.chenfei0928.preference.base.FieldAccessor
-import io.github.chenfei0928.preference.base.bindEnum
+import io.github.chenfei0928.preference.bindEnum
 import io.github.chenfei0928.preference.sp.SpSaverPreferenceGroupBuilder.Companion.buildPreferenceScreen
 import kotlin.random.Random
-import kotlin.reflect.KMutableProperty1
 
 /**
  * @author chenf()
@@ -39,7 +38,7 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
                 append("onCreate: spSaver onSpPropertyChange ")
                 append(it)
                 append(' ')
-                append((it as KMutableProperty1<TestSpSaver, Any?>).get(spSaver)?.toStr())
+                append(it.get(spSaver)?.toStr())
             })
         }
         safeHandler.postDelayed(100L) {
@@ -70,11 +69,11 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
             }
             dropDownPreference<JsonBean.JsonEnum>(TestSpSaver::enum) {
                 title = "enum"
-                bindEnum<JsonBean.JsonEnum> { it.name }
+                bindEnum()
             }
             multiSelectListPreference<JsonBean.JsonEnum>(TestSpSaver::enums) {
                 title = "enumList"
-                bindEnum<JsonBean.JsonEnum> { it.name }
+                bindEnum()
             }
             // 以下方式可以达到引用sp中结构体类型的字段，但不建议，sp存储大量数据时性能较低
             // 且会丢失值更新缓存，除非在实现时添加接口 FieldAccessor.SpLocalStorageKey

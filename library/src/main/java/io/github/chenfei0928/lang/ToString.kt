@@ -1,5 +1,6 @@
 package io.github.chenfei0928.lang
 
+import io.github.chenfei0928.preference.base.FieldAccessor
 import kotlin.reflect.KCallable
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
@@ -63,7 +64,7 @@ fun Any.toStringKV(vararg fields: Pair<String, Any?>) = buildString {
         }
         append(key)
         append('=')
-        append(value.toStr())
+        append(getValue(this@toStringKV, value).toStr())
     }
     append(')')
 }
@@ -112,6 +113,9 @@ private fun getValue(
         is Function1<*, *> ->
             (field as Any.() -> Any)(thisRef)
         else -> field
+    }
+    is FieldAccessor.Field<*, *> -> {
+        (field as FieldAccessor.Field<Any, *>).get(thisRef)
     }
     else -> field
 }

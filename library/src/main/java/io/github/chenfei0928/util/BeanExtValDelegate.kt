@@ -19,5 +19,5 @@ abstract class BeanExtValDelegate<Bean, R>(
         return map.getOrPut(thisRef) { create(thisRef) }
     }
 
-    abstract fun create(thisRef: Bean): R
+    protected abstract fun create(thisRef: Bean): R
 }

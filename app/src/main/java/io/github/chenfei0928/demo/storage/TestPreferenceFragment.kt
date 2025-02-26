@@ -13,7 +13,7 @@ import io.github.chenfei0928.preference.base.ProtobufMessageField
 import io.github.chenfei0928.preference.base.ProtobufMessageField.Companion.property
 import io.github.chenfei0928.preference.base.ProtobufMessageField.Companion.protobufField
 import io.github.chenfei0928.preference.base.ProtobufMessageField.Companion.protobufProperty
-import io.github.chenfei0928.preference.base.bindEnum
+import io.github.chenfei0928.preference.bindEnum
 
 /**
  * @author chenf()
@@ -61,11 +61,11 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
             }
             dropDownPreference<TestEnum>(dataStore.property(Test.ENUM_FIELD_NUMBER)) {
                 title = "enum"
-                bindEnum<TestEnum> { it.name }
+                bindEnum { it.name }
             }
             multiSelectListPreference<TestEnum>(dataStore.property(Test.ENUMLIST_FIELD_NUMBER)) {
                 title = "enumList"
-                bindEnum<TestEnum> { it.name }
+                bindEnum { it.name }
             }
         }
     }

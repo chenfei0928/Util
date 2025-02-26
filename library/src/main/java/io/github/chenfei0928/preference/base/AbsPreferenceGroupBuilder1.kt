@@ -3,15 +3,15 @@ package io.github.chenfei0928.preference.base
 import android.content.Context
 import androidx.annotation.RestrictTo
 import androidx.preference.CheckBoxPreference
-import androidx.preference.DropDownPreference
 import androidx.preference.EditTextPreference
-import androidx.preference.ListPreference
-import androidx.preference.MultiSelectListPreference
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceGroup
 import androidx.preference.PreferenceManager
 import androidx.preference.SeekBarPreference
 import androidx.preference.SwitchPreference
+import io.github.chenfei0928.preference.EnumDropDownPreference
+import io.github.chenfei0928.preference.EnumListPreference
+import io.github.chenfei0928.preference.EnumMultiSelectListPreference
 import kotlin.reflect.KProperty1
 
 /**
@@ -49,7 +49,7 @@ abstract class AbsPreferenceGroupBuilder1<SpSaver, Builder>(
 
     inline fun <reified E : Enum<E>> dropDownPreference(
         property: KProperty1<SpSaver, E>,
-        block: DropDownPreference.() -> Unit
+        block: EnumDropDownPreference<E>.() -> Unit,
     ): Builder = applyBuilder {
         dropDownPreference<E>(spSaver.getPropertyKey(property), block)
     }
@@ -63,14 +63,14 @@ abstract class AbsPreferenceGroupBuilder1<SpSaver, Builder>(
 
     inline fun <reified E : Enum<E>> listPreference(
         property: KProperty1<SpSaver, E>,
-        block: ListPreference.() -> Unit
+        block: EnumListPreference<E>.() -> Unit
     ): Builder = applyBuilder {
         listPreference<E>(spSaver.getPropertyKey(property), block)
     }
 
     inline fun <reified E : Enum<E>> multiSelectListPreference(
         property: KProperty1<SpSaver, Set<E>>,
-        block: MultiSelectListPreference.() -> Unit
+        block: EnumMultiSelectListPreference<E>.() -> Unit
     ): Builder = applyBuilder {
         multiSelectListPreference<E>(spSaver.getPropertyKey(property), block)
     }

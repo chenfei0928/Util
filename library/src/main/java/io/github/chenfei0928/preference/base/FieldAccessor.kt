@@ -177,10 +177,6 @@ interface FieldAccessor<T> {
                 dataValuePairCache = newData to value
                 return newData
             }
-
-            fun invalidCache() {
-                dataValuePairCache = null
-            }
         }
     }
 

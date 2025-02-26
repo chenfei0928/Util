@@ -2,6 +2,7 @@ package io.github.chenfei0928.os
 
 import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parceler
 
 /**
  * [Github仓库文件](https://github.com/fengzhizi715/SAF/blob/master/saf-cache/src/main/java/com/safframework/cache/ParcelableUtils.java)
@@ -76,5 +77,25 @@ object ParcelUtil {
         bytes: ByteArray, creator: Parcelable.Creator<T>
     ): List<T>? = unmarshall(bytes) {
         it.createTypedArrayList(creator)
+    }
+
+    fun <T : Parcelable> copy(obj: T, creator: Parcelable.Creator<T>): T = use {
+        obj.writeToParcel(it, 0)
+        it.setDataPosition(0)
+        creator.createFromParcel(it)
+    }
+
+    fun <T : Any> copy(obj: T, parceler: Parceler<T>): T = use {
+        parceler.run {
+            obj.write(it, 0)
+        }
+        it.setDataPosition(0)
+        parceler.create(it)
+    }
+
+    fun <T : Parcelable> copy(obj: T): T = use {
+        it.writeParcelable(obj, 0)
+        it.setDataPosition(0)
+        it.readParcelable<T>(obj.javaClass.classLoader, obj.javaClass)!!
     }
 }

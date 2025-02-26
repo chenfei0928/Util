@@ -35,6 +35,9 @@ class ProtobufMessageField<T : Message, V>(
     ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1], vClass)
 
     override val pdsKey: String = fieldDescriptor.name
+
+    // 此处不可直接forType vType实例，ProtobufMessageField 可能不会直接使用它的类型，而是用来获取内部字段使用，而导致 V 是个结构体
+    // 包括 toString 或 get、set 方法中也不优先使用 vType 判断类型
     override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE, this)
     override fun invoke(): PreferenceType = PreferenceType.forType(fieldDescriptor, vClass)
 
@@ -50,20 +53,18 @@ class ProtobufMessageField<T : Message, V>(
         val vType = vType as PreferenceType.EnumNameString<*>
         // 根据其name获取enum
         vType.forName(enum.name) as V
-    } else {
-        // repeat enum，返回 List<EnumValueDescriptor>
-        val enum = data.getField(fieldDescriptor) as List<Descriptors.EnumValueDescriptor>
-        when (val vType = vType) {
-            is PreferenceType.BaseEnumNameStringCollection<*, *> -> {
-                // 此处并不关心返回的数据类型必须是field类型，不使用field的类型返回
-                // 因为当前get方法的返回值是给 BasePreferenceDataStore.getValue 使用的，它会再次进行mapTo
-                vType.forProtobufEnumValueDescriptors(enum, false) as V
-            }
-            is PreferenceType.Native,
-            is PreferenceType.EnumNameString<*>,
-            is PreferenceType.Struct<*> -> {
-                throw IllegalArgumentException("Protobuf 枚举字段 $fieldDescriptor 与vType信息 $vType 类型不匹配")
-            }
+    } else when (val vType = vType) {
+        is PreferenceType.BaseEnumNameStringCollection<*, *> -> {
+            // repeat enum，返回 List<EnumValueDescriptor>
+            val enum = data.getField(fieldDescriptor) as List<Descriptors.EnumValueDescriptor>
+            // 此处并不关心返回的数据类型必须是field类型，不使用field的类型返回
+            // 因为当前get方法的返回值是给 BasePreferenceDataStore.getValue 使用的，它会再次进行mapTo
+            vType.forProtobufEnumValueDescriptors(enum, false) as V
+        }
+        is PreferenceType.Native,
+        is PreferenceType.EnumNameString<*>,
+        is PreferenceType.Struct<*> -> {
+            throw IllegalArgumentException("Protobuf 枚举字段 $fieldDescriptor 与vType信息 $vType 类型不匹配")
         }
     }
 
@@ -85,7 +86,16 @@ class ProtobufMessageField<T : Message, V>(
         data.toBuilder().setField(fieldDescriptor, value.valueDescriptor).build() as T
     }
 
-    override fun toString(): String = "ProtobufMessageField($pdsKey:${fieldDescriptor.type})"
+    override fun toString(): String {
+        val type = if (fieldDescriptor.type != Descriptors.FieldDescriptor.Type.ENUM) {
+            fieldDescriptor.type.toString()
+        } else if (fieldDescriptor.isRepeated) {
+            "List<${fieldDescriptor.enumType.fullName}>"
+        } else {
+            fieldDescriptor.enumType.fullName
+        }
+        return "ProtobufMessageField($pdsKey:$type)"
+    }
 
     companion object {
         inline operator fun <reified T : Message, reified V> invoke(
