@@ -83,6 +83,7 @@ class KtxsJsonSpConvert<
 
     override fun onRead(value: String): V = json.decodeFromString(deserializer, value)
     override fun onSave(value: V): String = json.encodeToString(serializer, value)
+    override fun toString(): String = "KtxsJsonSpConvert(saver=$saver, spValueType=$spValueType)"
 
     /**
      * 提供 inline 获取 [V] 类型的工厂构造器，但以下构造器中的 `json.serializersModule.serializer<V>()` 会有一些时间消耗。

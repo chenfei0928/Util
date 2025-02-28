@@ -40,6 +40,13 @@ class ExampleUnitTest {
             io.github.chenfei0928.demo.bean.Test.InnerEnum.getDescriptor(),
             io.github.chenfei0928.demo.bean.Test.InnerEnum::class.java
         )
+        logProto(
+            io.github.chenfei0928.demo.bean.Test.InnerEnum.DEFAULT.descriptorForType,
+            io.github.chenfei0928.demo.bean.Test.InnerEnum::class.java
+        )
+        logProto(
+            io.github.chenfei0928.demo.bean.Test.InnerEnum.DEFAULT.valueDescriptor
+        )
         logProto(io.github.chenfei0928.demo.bean.Test.getDescriptor().findFieldByNumber(2))
     }
 

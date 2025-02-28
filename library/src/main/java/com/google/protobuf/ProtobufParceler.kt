@@ -2,7 +2,6 @@ package com.google.protobuf
 
 import android.os.Parcel
 import android.os.Parcelable.Creator
-import androidx.collection.LruCache
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.TypeParceler
 
@@ -34,10 +33,16 @@ import kotlinx.parcelize.TypeParceler
  * @param MessageType
  * @constructor Create empty Base protobuf parceler
  */
-open class ProtobufParceler<MessageType : MessageLite>(
-    private val parser: Parser<MessageType>? = null,
-    cacheSize: Int = 10,
-) : LruCache<String, Parser<MessageType>>(cacheSize), Parceler<MessageType?> {
+open class ProtobufParceler<MessageType : MessageLite> : Parceler<MessageType?> {
+    private val parser: Parser<MessageType>?
+
+    private constructor() {
+        this.parser = null
+    }
+
+    constructor(parser: Parser<MessageType>) {
+        this.parser = parser
+    }
 
     override fun create(parcel: Parcel): MessageType? {
         return if (parser != null) {
@@ -45,7 +50,7 @@ open class ProtobufParceler<MessageType : MessageLite>(
         } else {
             val className = parcel.readString()
                 ?: return null
-            val parser = this[className]!!
+            val parser = MessageParserLruCache.getParser<MessageType>(className)
             parcel.createByteArray().let(parser::parseFrom)
         }
     }
@@ -61,11 +66,16 @@ open class ProtobufParceler<MessageType : MessageLite>(
         }
     }
 
-    override fun create(key: String): Parser<MessageType> {
-        @Suppress("UNCHECKED_CAST")
-        val messageType = Class.forName(key) as Class<MessageType>
-        return messageType.protobufParserForType!!
+    override fun toString(): String {
+        return if (parser == null) {
+            "ProtobufParceler"
+        } else {
+            "ProtobufParceler(parser=$parser)"
+        }
     }
 
-    companion object Instance : Parceler<MessageLite?> by ProtobufParceler()
+    companion object Instance : Parceler<MessageLite?> by ProtobufParceler() {
+        inline operator fun <reified MessageType : MessageLite> invoke(): Parceler<MessageType?> =
+            ProtobufParceler(MessageType::class.java.protobufParserForType!!)
+    }
 }

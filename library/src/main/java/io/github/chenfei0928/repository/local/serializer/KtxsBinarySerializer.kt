@@ -38,7 +38,7 @@ class KtxsBinarySerializer<T : Any>(
     }
 
     override fun toString(): String {
-        return "KtxsBinarySerializer<${defaultValue.javaClass.name}>(format=$format)"
+        return "KtxsBinarySerializer<${serializer.descriptor.serialName}>(format=$format)"
     }
 
     companion object {

@@ -4,7 +4,6 @@
  */
 package com.google.protobuf
 
-import androidx.annotation.VisibleForTesting
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.util.DependencyChecker
@@ -62,49 +61,3 @@ val <T : MessageLite> Class<T>.protobufDefaultInstance: T?
 @Suppress("UNCHECKED_CAST")
 val <T : MessageLite> Class<T>.protobufParserForType: Parser<T>?
     get() = protobufDefaultInstance?.parserForType as Parser<T>?
-
-fun <E : kotlin.Enum<E>> Descriptors.EnumDescriptor.enumClass(): Class<E> {
-    @Suppress("UNCHECKED_CAST")
-    return Class.forName(jvmFullyQualifiedName) as Class<E>
-}
-
-fun <T : Message> Descriptors.Descriptor.messageClass(): Class<T> {
-    @Suppress("UNCHECKED_CAST")
-    return Class.forName(jvmFullyQualifiedName) as Class<T>
-}
-
-val Descriptors.GenericDescriptor.jvmFullyQualifiedName: String
-    get() {
-        val fileOptions = file.options
-        var className =
-            if (this is Descriptors.FieldDescriptor || this is Descriptors.MethodDescriptor) {
-                "." + name!!
-            } else {
-                "$" + name!!
-            }
-        var parent = parent
-        while (parent != null) {
-            if (parent !is Descriptors.FileDescriptor) {
-                // 类（字段或枚举实例的 parent 只能是message/类）
-                className = "$" + parent.name + className
-            } else if (!fileOptions.javaMultipleFiles) {
-                className = if (fileOptions.hasJavaOuterClassname()) {
-                    "$" + fileOptions.javaOuterClassname + className
-                } else {
-                    "$" + parent.name.let {
-                        it.substring(0, it.length - ".proto".length)
-                    } + className
-                }
-            }
-            parent = parent.parent
-        }
-        return if (fileOptions.hasJavaPackage()) {
-            fileOptions.javaPackage + "." + className.substring(1)
-        } else {
-            file.`package` + "." + className.substring(1)
-        }
-    }
-
-@VisibleForTesting
-val Descriptors.GenericDescriptor.parentForTesting: Descriptors.GenericDescriptor?
-    get() = parent

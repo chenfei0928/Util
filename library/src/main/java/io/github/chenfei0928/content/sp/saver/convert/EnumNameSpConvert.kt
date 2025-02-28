@@ -31,8 +31,8 @@ constructor(
     )
 
     override fun onRead(value: String): E = spValueType.forName(value, defaultValue)
-
     override fun onSave(value: E): String = value.name
+    override fun toString(): String = "EnumNameSpConvert(saver=$saver, spValueType=$spValueType)"
 
     companion object {
         inline operator fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,

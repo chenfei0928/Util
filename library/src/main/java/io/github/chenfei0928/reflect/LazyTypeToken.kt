@@ -51,9 +51,11 @@ open class LazyTypeToken<T> : () -> Type, Lazy<Type> {
 
     override fun toString(): String {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            "LazyTypeToken<${value.typeName}>"
+            value.typeName
+        } else if (value is Class<*>) {
+            (value as Class<*>).name
         } else {
-            "LazyTypeToken<$value>"
+            value.toString()
         }
     }
 

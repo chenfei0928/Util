@@ -15,7 +15,7 @@ import java.lang.reflect.Type
  */
 class GsonSerializer<T : Any>(
     gson: Gson = io.github.chenfei0928.json.gson.gson,
-    typeToken: TypeToken<T>,
+    private val typeToken: TypeToken<T>,
 ) : LocalSerializer<T> {
     private val typeAdapter: TypeAdapter<T> = gson.getAdapter(typeToken) as TypeAdapter<T>
 
@@ -50,7 +50,7 @@ class GsonSerializer<T : Any>(
     }
 
     override fun toString(): String {
-        return "GsonSerializer(typeAdapter=$typeAdapter)"
+        return "GsonSerializer(type=$typeToken)"
     }
 
     companion object {

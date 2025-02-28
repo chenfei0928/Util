@@ -25,10 +25,7 @@ protected constructor(
 
     override fun onRead(value: String): V & Any = typeAdapter.fromJson(value)!!
     override fun onSave(value: V & Any): String = typeAdapter.toJson(value)
-
-    override fun toString(): String {
-        return "GsonSpConvert(saver=$saver, typeAdapter=$typeAdapter)"
-    }
+    override fun toString(): String = "GsonSpConvert(saver=$saver, spValueType=$spValueType)"
 
     class ValueDefaultValue<SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
             Sp : SharedPreferences,

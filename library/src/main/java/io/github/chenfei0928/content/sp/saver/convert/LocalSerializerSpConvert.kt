@@ -23,8 +23,8 @@ class LocalSerializerSpConvert<
 private constructor(
     private val serializer: LocalSerializer<V>,
     saver: AbsSpSaver.Delegate<SpSaver, ByteArray?>,
+    override val spValueType: PreferenceType.Struct<V> = PreferenceType.Struct<V>(serializer.defaultValue.javaClass)
 ) : BaseSpConvert<SpSaver, Sp, Ed, ByteArray?, V>(saver), AbsSpSaver.DefaultValue<V> {
-    override val spValueType = PreferenceType.Struct<V>(serializer.defaultValue.javaClass)
     override val defaultValue: V = serializer.defaultValue
 
     override fun onRead(value: ByteArray): V {
@@ -46,26 +46,45 @@ private constructor(
 
     companion object {
         // 非空工厂方法，需要将nullable的V转换为nonnull的V
-        @Suppress("UNCHECKED_CAST")
         fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
                 Sp : SharedPreferences,
                 Ed : SharedPreferences.Editor,
-                V : Any> nonnullForSp(
+                V : Any> invoke(
             serializer: LocalSerializer<V>,
-            key: String? = null,
-            @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
-        ): AbsSpSaver.Delegate<SpSaver, V> = LocalSerializerSpConvert<SpSaver, Sp, Ed, V>(
-            serializer, Base64StringConvert<SpSaver, Sp, Ed>(key, expireDurationInSecond)
-        ) as AbsSpSaver.Delegate<SpSaver, V>
+            saver: AbsSpSaver.Delegate<SpSaver, ByteArray?>,
+            spValueType: PreferenceType.Struct<V> = PreferenceType.Struct<V>(serializer.defaultValue.javaClass)
+        ): AbsSpSaver.Delegate<SpSaver, V> {
+            @Suppress("UNCHECKED_CAST")
+            return LocalSerializerSpConvert<SpSaver, Sp, Ed, V>(
+                serializer, saver, spValueType
+            ) as AbsSpSaver.Delegate<SpSaver, V>
+        }
 
         // 非空工厂方法，需要将nullable的V转换为nonnull的V
-        @Suppress("UNCHECKED_CAST")
-        fun <SpSaver : AbsSpSaver<SpSaver, Sp, Sp>, Sp : MMKV, V : Any> nonnullForMmkv(
+        inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+                Sp : SharedPreferences,
+                Ed : SharedPreferences.Editor,
+                reified V : Any> forSp(
             serializer: LocalSerializer<V>,
             key: String? = null,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
-        ): AbsSpSaver.Delegate<SpSaver, V> = LocalSerializerSpConvert<SpSaver, Sp, Sp, V>(
-            serializer, ByteArrayDelegate<SpSaver, Sp>(key, expireDurationInSecond)
-        ) as AbsSpSaver.Delegate<SpSaver, V>
+            spValueType: PreferenceType.Struct<V> = PreferenceType.Struct<V>(serializer.defaultValue.javaClass)
+        ): AbsSpSaver.Delegate<SpSaver, V> = invoke<SpSaver, Sp, Ed, V>(
+            serializer,
+            Base64StringConvert<SpSaver, Sp, Ed>(key, expireDurationInSecond),
+            spValueType
+        )
+
+        // 非空工厂方法，需要将nullable的V转换为nonnull的V
+        inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Sp>, Sp : MMKV, reified V : Any> forMmkv(
+            serializer: LocalSerializer<V>,
+            key: String? = null,
+            @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
+            spValueType: PreferenceType.Struct<V> = PreferenceType.Struct<V>(serializer.defaultValue.javaClass)
+        ): AbsSpSaver.Delegate<SpSaver, V> = invoke<SpSaver, Sp, Sp, V>(
+            serializer,
+            ByteArrayDelegate<SpSaver, Sp>(key, expireDurationInSecond),
+            spValueType
+        )
     }
 }

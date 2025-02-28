@@ -42,6 +42,6 @@ object TestMmkvSaver : BaseMmkvSaver<TestMmkvSaver>("test", enableFieldObservabl
         IntArraySpConvert.nonnull()
     }
     var test: Test by dataStore {
-        LocalSerializerSpConvert.nonnullForMmkv(ProtobufSerializer())
+        LocalSerializerSpConvert.forMmkv(ProtobufSerializer())
     }
 }

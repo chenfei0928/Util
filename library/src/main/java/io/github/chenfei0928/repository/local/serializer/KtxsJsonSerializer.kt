@@ -39,7 +39,7 @@ class KtxsJsonSerializer<T : Any>(
     }
 
     override fun toString(): String {
-        return "KtxsJsonSerializer<${defaultValue.javaClass.name}>(json=$json)"
+        return "KtxsJsonSerializer<${serializer.descriptor.serialName}>(json=$json)"
     }
 
     companion object {

@@ -26,11 +26,15 @@ class KtxsStringSerializer<T : Any>(
     ) : this(format, serializer, serializer, defaultValue)
 
     override fun write(outputStream: OutputStream, obj: T) {
-        outputStream.write(format.encodeToString(serializer, obj).toByteArray())
+        outputStream.writer().use {
+            it.write(format.encodeToString(serializer, obj))
+        }
     }
 
     override fun read(inputStream: InputStream): T {
-        return format.decodeFromString(deserializer, String(inputStream.readBytes()))
+        return inputStream.reader().use {
+            format.decodeFromString(deserializer, it.readText())
+        }
     }
 
     override fun copy(obj: T): T {
@@ -38,7 +42,7 @@ class KtxsStringSerializer<T : Any>(
     }
 
     override fun toString(): String {
-        return "KtxsStringSerializer<${defaultValue.javaClass.name}>(format=$format)"
+        return "KtxsStringSerializer<${serializer.descriptor.serialName}>(format=$format)"
     }
 
     companion object {

@@ -49,4 +49,8 @@ open class ListParser<T>(
             }
         }
     }
+
+    override fun toString(): String {
+        return "ListParser(parceler=$parceler)"
+    }
 }

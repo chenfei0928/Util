@@ -47,6 +47,6 @@ class ParcelerSerializer<T : Any>(
     }
 
     override fun toString(): String {
-        return "ParcelerSerializer<${defaultValue.javaClass.name}>"
+        return "ParcelerSerializer(parceler=$parceler)"
     }
 }

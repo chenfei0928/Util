@@ -2,7 +2,6 @@ package com.google.protobuf
 
 import android.os.Parcel
 import android.os.Parcelable.Creator
-import androidx.collection.LruCache
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.TypeParceler
 
@@ -33,27 +32,36 @@ import kotlinx.parcelize.TypeParceler
  * @author chenf()
  * @date 2024-12-12 16:56
  */
-open class ProtobufListParceler<MessageType : MessageLite>(
-    private val parser: Parser<MessageType>? = null,
-    cacheSize: Int = 10,
-) : LruCache<String, Parser<MessageType>>(cacheSize), Parceler<List<MessageType?>?> {
+open class ProtobufListParceler<MessageType : MessageLite> : Parceler<List<MessageType?>?> {
+    private val parser: Parser<MessageType>?
+
+    private constructor() {
+        this.parser = null
+    }
+
+    constructor(parser: Parser<MessageType>) {
+        this.parser = parser
+    }
 
     override fun create(parcel: Parcel): List<MessageType?>? {
         val size = parcel.readInt()
-        var lastClassName: String? = null
         return if (size < 0) {
             null
-        } else (0 until size).map {
-            val parser = parser ?: when (val itClassName = parcel.readString()) {
-                null -> null
-                "" -> this[lastClassName!!]!!
-                else -> {
-                    lastClassName = itClassName
-                    this[itClassName]!!
+        } else if (parser != null) {
+            (0 until size).map { parser.parseFrom(parcel.createByteArray()) }
+        } else {
+            var parser: Parser<MessageType>? = null
+            (0 until size).map {
+                when (val itClassName = parcel.readString()) {
+                    null -> null
+                    "" -> {
+                        parser!!.parseFrom(parcel.createByteArray())
+                    }
+                    else -> {
+                        parser = MessageParserLruCache.getParser<MessageType>(itClassName)
+                        parser.parseFrom(parcel.createByteArray())
+                    }
                 }
-            }
-            parcel.createByteArray()?.let {
-                parser?.parseFrom(it)
             }
         }
     }
@@ -71,24 +79,32 @@ open class ProtobufListParceler<MessageType : MessageLite>(
         parcel.writeInt(size)
         var lastClass: Class<MessageType>? = null
         forEach {
-            val itClassName = when (val itClass = it?.javaClass) {
-                null -> null
-                lastClass -> ""
+            when (val itClass = it?.javaClass) {
+                null -> parcel.writeString(null)
+                lastClass -> {
+                    parcel.writeString("")
+                    parcel.writeByteArray(it.toByteArray())
+                }
                 else -> {
                     lastClass = itClass
-                    itClass.name
+                    parcel.writeString(itClass.name)
+                    parcel.writeByteArray(it.toByteArray())
                 }
             }
-            parcel.writeString(itClassName)
-            parcel.writeByteArray(it?.toByteArray())
         }
     }
 
-    override fun create(key: String): Parser<MessageType> {
-        @Suppress("UNCHECKED_CAST")
-        val messageType = Class.forName(key) as Class<MessageType>
-        return messageType.protobufParserForType!!
+    override fun toString(): String {
+        return if (parser == null) {
+            "ProtobufListParceler"
+        } else {
+            "ProtobufListParceler(parser=$parser)"
+        }
     }
 
-    companion object Instance : Parceler<List<MessageLite?>?> by ProtobufListParceler<MessageLite>()
+    companion object Instance :
+        Parceler<List<MessageLite?>?> by ProtobufListParceler<MessageLite>() {
+        inline operator fun <reified MessageType : MessageLite> invoke(): Parceler<List<MessageType?>?> =
+            ProtobufListParceler(MessageType::class.java.protobufParserForType!!)
+    }
 }

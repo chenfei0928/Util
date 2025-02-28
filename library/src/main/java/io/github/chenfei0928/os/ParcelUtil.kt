@@ -2,6 +2,7 @@ package io.github.chenfei0928.os
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.core.os.ParcelCompat
 import kotlinx.parcelize.Parceler
 
 /**
@@ -79,10 +80,16 @@ object ParcelUtil {
         it.createTypedArrayList(creator)
     }
 
-    fun <T : Parcelable> copy(obj: T, creator: Parcelable.Creator<T>): T = use {
-        obj.writeToParcel(it, 0)
-        it.setDataPosition(0)
-        creator.createFromParcel(it)
+    fun <T : Parcelable> copy(obj: T, creator: Parcelable.Creator<T>? = null): T = use {
+        if (creator == null) {
+            it.writeParcelable(obj, 0)
+            it.setDataPosition(0)
+            ParcelCompat.readParcelable<T>(it, obj.javaClass.classLoader, obj.javaClass)!!
+        } else {
+            obj.writeToParcel(it, 0)
+            it.setDataPosition(0)
+            creator.createFromParcel(it)
+        }
     }
 
     fun <T : Any> copy(obj: T, parceler: Parceler<T>): T = use {
@@ -91,11 +98,5 @@ object ParcelUtil {
         }
         it.setDataPosition(0)
         parceler.create(it)
-    }
-
-    fun <T : Parcelable> copy(obj: T): T = use {
-        it.writeParcelable(obj, 0)
-        it.setDataPosition(0)
-        it.readParcelable<T>(obj.javaClass.classLoader, obj.javaClass)!!
     }
 }

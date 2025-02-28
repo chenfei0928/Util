@@ -45,6 +45,8 @@ constructor(
         return value.mapTo(ArraySet(value.size)) { it?.name }
     }
 
+    override fun toString(): String = "EnumSetNameSpConvert(saver=$saver, spValueType=$spValueType)"
+
     class EnumNameStringSet<E : Enum<E>>(
         eClass: Class<E>, values: Array<E>,
     ) : PreferenceType.BaseEnumNameStringCollection<E, MutableSet<E>>(eClass, values) {
