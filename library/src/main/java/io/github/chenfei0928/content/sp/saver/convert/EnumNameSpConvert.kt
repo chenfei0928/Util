@@ -2,6 +2,8 @@ package io.github.chenfei0928.content.sp.saver.convert
 
 import android.content.SharedPreferences
 import androidx.annotation.IntRange
+import com.google.protobuf.ProtocolMessageEnum
+import com.google.protobuf.protobufEnumUnrecognized
 import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
@@ -31,7 +33,7 @@ constructor(
     )
 
     override fun onRead(value: String): E = spValueType.forName(value, defaultValue)
-    override fun onSave(value: E): String = value.name
+    override fun onSave(value: E): String = spValueType.toName(value)
     override fun toString(): String = "EnumNameSpConvert(saver=$saver, spValueType=$spValueType)"
 
     companion object {
@@ -59,6 +61,22 @@ constructor(
             return EnumNameSpConvert<SpSaver, Sp, Ed, E>(
                 saver = StringDelegate(key, expireDurationInSecond),
                 spValueType = PreferenceType.EnumNameString(),
+                defaultValue = defaultValue,
+            ) as AbsSpSaver.Delegate<SpSaver, E>
+        }
+
+        inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+                Sp : SharedPreferences,
+                Ed : SharedPreferences.Editor,
+                reified E> protobuf(
+            defaultValue: E = protobufEnumUnrecognized<E>(),
+            key: String? = null,
+            @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
+        ): AbsSpSaver.Delegate<SpSaver, E> where E : Enum<E>, E : ProtocolMessageEnum {
+            @Suppress("UNCHECKED_CAST")
+            return EnumNameSpConvert<SpSaver, Sp, Ed, E>(
+                saver = StringDelegate(key, expireDurationInSecond),
+                spValueType = PreferenceType.EnumNameString.ProtobufEnumNumber(),
                 defaultValue = defaultValue,
             ) as AbsSpSaver.Delegate<SpSaver, E>
         }

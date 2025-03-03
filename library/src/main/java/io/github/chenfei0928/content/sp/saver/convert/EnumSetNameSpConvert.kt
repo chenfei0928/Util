@@ -3,6 +3,8 @@ package io.github.chenfei0928.content.sp.saver.convert
 import android.content.SharedPreferences
 import androidx.annotation.IntRange
 import androidx.collection.ArraySet
+import com.google.protobuf.ProtocolMessageEnum
+import com.google.protobuf.protobufEnumUnrecognized
 import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
@@ -30,26 +32,25 @@ constructor(
         defaultValue: Set<E>? = null,
     ) : this(
         saver = StringSetDelegate(key, expireDurationInSecond),
-        spValueType = EnumNameStringSet(eClass, enumValues),
+        spValueType = EnumNameStringSet(PreferenceType.EnumNameString(eClass, enumValues)),
         nameNotFoundDefaultValue = nameNotFoundDefaultValue,
         defaultValue = defaultValue
     )
 
     override fun onRead(value: Set<String?>): Set<E?> {
-        return value.mapNotNullTo(ArraySet(value.size)) { item ->
-            spValueType.forNameOrNull(item, nameNotFoundDefaultValue)
-        }
+        return spValueType.forNames(value, false, nameNotFoundDefaultValue)
     }
 
     override fun onSave(value: Set<E?>): Set<String?> {
-        return value.mapTo(ArraySet(value.size)) { it?.name }
+        @Suppress("kotlin:S6531", "UNCHECKED_CAST")
+        return spValueType.toNames(value, false) as Set<String?>
     }
 
     override fun toString(): String = "EnumSetNameSpConvert(saver=$saver, spValueType=$spValueType)"
 
     class EnumNameStringSet<E : Enum<E>>(
-        eClass: Class<E>, values: Array<E>,
-    ) : PreferenceType.BaseEnumNameStringCollection<E, MutableSet<E>>(eClass, values) {
+        type: PreferenceType.EnumNameString<E>,
+    ) : PreferenceType.BaseEnumNameStringCollection<E, MutableSet<E>>(type) {
         override fun <MC : MutableCollection<E>> createCollection(size: Int): MC {
             @Suppress("UNCHECKED_CAST")
             return ArraySet<E>(size) as MC
@@ -57,7 +58,7 @@ constructor(
 
         companion object {
             inline operator fun <reified E : Enum<E>> invoke() =
-                EnumNameStringSet(E::class.java, enumValues<E>())
+                EnumNameStringSet(PreferenceType.EnumNameString<E>())
         }
     }
 
@@ -91,6 +92,24 @@ constructor(
             return EnumSetNameSpConvert<SpSaver, Sp, Ed, E>(
                 saver = StringSetDelegate(key, expireDurationInSecond),
                 spValueType = EnumNameStringSet(),
+                nameNotFoundDefaultValue = nameNotFoundDefaultValue,
+                defaultValue = defaultValue
+            ) as AbsSpSaver.Delegate<SpSaver, Set<E>>
+        }
+
+        inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
+                Sp : SharedPreferences,
+                Ed : SharedPreferences.Editor,
+                reified E> protobuf(
+            nameNotFoundDefaultValue: E = protobufEnumUnrecognized<E>(),
+            defaultValue: Set<E> = emptySet(),
+            key: String? = null,
+            @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
+        ): AbsSpSaver.Delegate<SpSaver, Set<E>> where E : Enum<E>, E : ProtocolMessageEnum {
+            @Suppress("UNCHECKED_CAST")
+            return EnumSetNameSpConvert<SpSaver, Sp, Ed, E>(
+                saver = StringSetDelegate(key, expireDurationInSecond),
+                spValueType = EnumNameStringSet(PreferenceType.EnumNameString.ProtobufEnumNumber()),
                 nameNotFoundDefaultValue = nameNotFoundDefaultValue,
                 defaultValue = defaultValue
             ) as AbsSpSaver.Delegate<SpSaver, Set<E>>

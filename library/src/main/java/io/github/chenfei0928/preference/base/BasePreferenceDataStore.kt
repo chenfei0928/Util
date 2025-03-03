@@ -1,6 +1,5 @@
 package io.github.chenfei0928.preference.base
 
-import androidx.collection.ArraySet
 import androidx.preference.PreferenceDataStore
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 
@@ -54,12 +53,16 @@ abstract class BasePreferenceDataStore<T : Any>(
     ): V = when (vType) {
         is PreferenceType.EnumNameString<*> -> {
             // 将field的Enum转换为preference的字符串
-            (get(data) as Enum<*>).name as V
+            val vType = vType as PreferenceType.EnumNameString<Enum<*>>
+            @Suppress("kotlin:S6531")
+            vType.toName(get(data) as Enum<*>) as V
         }
         is PreferenceType.BaseEnumNameStringCollection<*, *> -> {
             // 将field的Enum集合转换为preference的字符串Set
+            val vType = vType as PreferenceType.BaseEnumNameStringCollection<Enum<*>, *>
             val enums = get(data) as Collection<Enum<*>>
-            enums.mapTo(ArraySet(enums.size)) { it.name } as V
+            @Suppress("kotlin:S6531")
+            vType.toNames(enums, false) as V
         }
         is PreferenceType.Native -> {
             // preference原生支持的类型，直接返回

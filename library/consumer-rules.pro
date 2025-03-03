@@ -75,3 +75,7 @@
 ## io.github.chenfei0928.util.DependencyChecker.FLEXBOX
 -keepnames class com.google.android.flexbox.FlexboxLayoutManager
 
+## 保留protobuf enum的未定义的entity
+-keepclassmembernames class * implements com.google.protobuf.ProtocolMessageEnum {
+    UNRECOGNIZED;
+}
