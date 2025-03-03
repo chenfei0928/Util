@@ -3,7 +3,6 @@ package io.github.chenfei0928.repository.local.serializer
 import com.google.protobuf.MessageLite
 import com.google.protobuf.Parser
 import com.google.protobuf.protobufDefaultInstance
-import com.google.protobuf.protobufParserForType
 import io.github.chenfei0928.repository.local.LocalSerializer
 import java.io.InputStream
 import java.io.OutputStream
@@ -21,14 +20,14 @@ class ProtobufSerializer<MessageType : MessageLite>(
 
     constructor(
         messageType: Class<MessageType>
-    ) : this(messageType.protobufParserForType!!, messageType.protobufDefaultInstance!!)
-
-    constructor(parser: Parser<MessageType>) : this(parser, parser.parseFrom(byteArrayOf()))
+    ) : this(messageType.protobufDefaultInstance)
 
     @Suppress("UNCHECKED_CAST")
     constructor(defaultValue: MessageType) : this(
         defaultValue.parserForType as Parser<MessageType>, defaultValue
     )
+
+    constructor(parser: Parser<MessageType>) : this(parser, parser.parseFrom(byteArrayOf()))
 
     override fun write(outputStream: OutputStream, obj: MessageType) {
         obj.writeTo(outputStream)

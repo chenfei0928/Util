@@ -94,7 +94,7 @@ class MainActivity : ComponentActivity() {
                 TestSpSaver(this)
             }
             Debug.countTime(TAG, "preload TestMmkvSaver") {
-                TestMmkvSaver.javaClass
+                TestMmkvSaver.json
             }
             Debug.countTime(TAG, "preload TestMmkvSaver") {
                 TestMmkvSaver.toString()

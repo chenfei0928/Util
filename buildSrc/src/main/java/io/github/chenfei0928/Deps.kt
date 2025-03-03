@@ -19,7 +19,6 @@ object Deps {
         val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0"
         val protobuf = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.8.0"
 
-
         // Ktor
         // https://ktor.io/docs/client-create-multiplatform-application.html#ktor-dependencies
         val ktor_version = "3.1.0"

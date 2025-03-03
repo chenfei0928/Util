@@ -105,6 +105,6 @@ open class ProtobufListParceler<MessageType : MessageLite> : Parceler<List<Messa
     companion object Instance :
         Parceler<List<MessageLite?>?> by ProtobufListParceler<MessageLite>() {
         inline operator fun <reified MessageType : MessageLite> invoke(): Parceler<List<MessageType?>?> =
-            ProtobufListParceler(MessageType::class.java.protobufParserForType!!)
+            ProtobufListParceler(MessageType::class.java.protobufParserForType)
     }
 }

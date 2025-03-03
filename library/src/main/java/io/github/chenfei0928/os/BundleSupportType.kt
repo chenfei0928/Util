@@ -1174,17 +1174,19 @@ abstract class BundleSupportType<T>(
         private fun ByteArray.parseData(
             property: KProperty<*>
         ): T & Any = if (!writeClassName) {
-            val parser: Parser<T & Any>? = parser
-                ?: property.getReturnTypeJClass<T & Any>().protobufParserForType
-            parser ?: throw IllegalArgumentException(
-                "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
-            )
+            val parser = parser ?: run {
+                val returnJClass = property.getReturnTypeJClass<T & Any>()
+                require(Modifier.FINAL in returnJClass.modifiers) {
+                    "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
+                }
+                returnJClass.protobufParserForType
+            }
             parser.parseFrom(this)
         } else DataInputStream(ByteArrayInputStream(this)).use { input ->
             val size = input.readInt()
             val className = String(input.readNBytesCompat(size))
             @Suppress("UNCHECKED_CAST")
-            (Class.forName(className) as Class<T & Any>).protobufParserForType!!.parseFrom(input)
+            (Class.forName(className) as Class<T & Any>).protobufParserForType.parseFrom(input)
         }
 
         companion object : AutoFind.Creator<MessageLite> {
@@ -1234,12 +1236,11 @@ abstract class BundleSupportType<T>(
 
         override fun getParceler(property: KProperty<*>): Parceler<List<T?>?> {
             return parceler ?: run {
-                val parser: Parser<T> = property.returnType.argument0TypeJClass<T>()
-                    .protobufParserForType
-                    ?: throw IllegalArgumentException(
-                        "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
-                    )
-                ProtobufListParceler(parser)
+                val arg0JClass = property.returnType.argument0TypeJClass<T>()
+                require(Modifier.FINAL in arg0JClass.modifiers) {
+                    "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
+                }
+                ProtobufListParceler(arg0JClass.protobufParserForType)
             }
         }
 

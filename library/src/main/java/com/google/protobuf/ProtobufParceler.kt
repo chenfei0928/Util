@@ -76,6 +76,6 @@ open class ProtobufParceler<MessageType : MessageLite> : Parceler<MessageType?> 
 
     companion object Instance : Parceler<MessageLite?> by ProtobufParceler() {
         inline operator fun <reified MessageType : MessageLite> invoke(): Parceler<MessageType?> =
-            ProtobufParceler(MessageType::class.java.protobufParserForType!!)
+            ProtobufParceler(MessageType::class.java.protobufParserForType)
     }
 }

@@ -25,7 +25,7 @@ inline fun <T : MessageLite> Intent.getProtobufExtra(
 }
 
 inline fun <reified T : MessageLite> Intent.getProtobufExtra(name: String): T? {
-    return getByteArrayExtra(name)?.let(T::class.java.protobufParserForType!!::parseFrom)
+    return getByteArrayExtra(name)?.let(T::class.java.protobufParserForType::parseFrom)
 }
 
 fun Intent.getAllExtras(): Map<String, Any> = extras?.getAll() ?: emptyMap()

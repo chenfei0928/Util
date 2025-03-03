@@ -21,6 +21,7 @@ val Descriptors.GenericDescriptor.jvmFullyQualifiedName: String
             is Descriptors.ServiceDescriptor,
             is Descriptors.FileDescriptor,
                 -> name!!
+            // PackageDescriptor 访问权限是private的，无法引用
             // is Descriptors.PackageDescriptor,
             else -> return if (fileOptions.hasJavaPackage()) {
                 fileOptions.javaPackage

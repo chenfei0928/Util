@@ -43,6 +43,6 @@ class TestSpSaver(context: Context) : BaseSpSaver<TestSpSaver>(context, "test") 
         IntArraySpConvert.nonnull()
     }
     var test: Test by dataStore {
-        LocalSerializerSpConvert.forSp(ProtobufSerializer())
+        LocalSerializerSpConvert.forSp(ProtobufSerializer(Test.getDefaultInstance()))
     }
 }
