@@ -42,7 +42,7 @@ constructor(
     }
 
     override fun onSave(value: Set<E?>): Set<String?> {
-        @Suppress("kotlin:S6531", "UNCHECKED_CAST")
+        @Suppress("kotlin:S6531")
         return spValueType.toNames(value, false) as Set<String?>
     }
 

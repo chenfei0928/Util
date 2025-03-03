@@ -94,10 +94,10 @@ sealed interface PreferenceType {
 
         //<editor-fold desc="枚举值转换与重写Object的方法" defaultstatus="collapsed">
         open fun forName(name: String?, defaultValue: E? = null): E =
-            forNameOrNull(name, defaultValue)
-                ?: throw IllegalArgumentException("Enum name: $name not found in $eClass")
+            values.find { it.name == name } ?: defaultValue
+            ?: throw IllegalArgumentException("Enum name: $name not found in $eClass")
 
-        open fun toName(value: E): String = value.name
+        open fun toName(value: E?): String = value?.name ?: ""
 
         override fun equals(other: Any?): Boolean {
             return if (this.javaClass != other?.javaClass) {
@@ -144,8 +144,8 @@ sealed interface PreferenceType {
                 else numberedValue[number] ?: defaultValue ?: unrecognized
             }
 
-            override fun toName(value: E): String {
-                return if (value.isUnrecognized) PROTOBUF_ENUM_UNRECOGNIZED_NAME
+            override fun toName(value: E?): String {
+                return if (value == null || value.isUnrecognized) PROTOBUF_ENUM_UNRECOGNIZED_NAME
                 else value.number.toString()
             }
 
@@ -176,7 +176,7 @@ sealed interface PreferenceType {
             defaultValue: E? = null
         ): C = enums.mapTo(createCollection(enums.size)) { type.forName(it.name, defaultValue) }
 
-        open fun toNames(enums: Collection<E?>, focusReturnType: Boolean): Collection<E> =
+        open fun toNames(enums: Collection<E?>, focusReturnType: Boolean): Collection<String> =
             enums.mapTo(createCollection(enums.size)) { type.toName(it) }
 
         protected abstract fun <MC> createCollection(size: Int): MC where MC : MutableCollection<E>
@@ -248,8 +248,8 @@ sealed interface PreferenceType {
         ) { type.forName(it.name, defaultValue) }
 
         override fun toNames(
-            enums: Collection<E>, focusReturnType: Boolean
-        ): Collection<E> = enums.mapTo(
+            enums: Collection<E?>, focusReturnType: Boolean
+        ): Collection<String> = enums.mapTo(
             if (focusReturnType) createCollection(enums.size) else ArraySet(enums.size)
         ) { type.toName(it) }
 
