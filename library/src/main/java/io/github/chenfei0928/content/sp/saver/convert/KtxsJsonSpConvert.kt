@@ -112,6 +112,7 @@ class KtxsJsonSpConvert<
                 Ed : SharedPreferences.Editor,
                 reified V : Any> invoke(
             serializer: KSerializer<V>,
+            type: Type? = null,
             key: String? = null,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
             json: Json = Json,
@@ -120,7 +121,7 @@ class KtxsJsonSpConvert<
             expireDurationInSecond = expireDurationInSecond,
             json = json,
             serializer = serializer,
-            spValueType = PreferenceType.Struct<V?>()
+            spValueType = if (type != null) PreferenceType.Struct<V?>(type) else PreferenceType.Struct<V?>()
         )
 
         inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,

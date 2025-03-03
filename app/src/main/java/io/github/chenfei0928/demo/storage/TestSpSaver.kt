@@ -37,7 +37,7 @@ class TestSpSaver(context: Context) : BaseSpSaver<TestSpSaver>(context, "test") 
 
     // 下面三个是结构体类型，不支持作为 preferenceDataStore
     var json: JsonBean.InnerJsonBean? by dataStore {
-        KtxsJsonSpConvert(JsonBean.InnerJsonBean.serializer())
+        KtxsJsonSpConvert(JsonBean.InnerJsonBean.serializer(), JsonBean.InnerJsonBean::class.java)
     }
     var intArray: IntArray by dataStore {
         IntArraySpConvert.nonnull()
