@@ -47,7 +47,7 @@ abstract class BaseLazyInitFragment : BaseFragment() {
     }
 
     override fun getView(): FrameLayout? {
-        return super.getView() as FrameLayout?
+        return super.view as FrameLayout?
     }
 
     override fun onResume() {
