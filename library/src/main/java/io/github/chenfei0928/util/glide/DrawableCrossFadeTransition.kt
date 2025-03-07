@@ -48,16 +48,20 @@ class DrawableCrossFadeTransition(
                     ImageView.ScaleType.MATRIX
                 ).configMatrix {
                     // 加载matrix阵列，并对操作数取反/倒数
+                    // https://github.com/GcsSloop/AndroidNote/blob/master/CustomView/Advance/%5B09%5DMatrix_Basic.md
+                    // https://github.com/GcsSloop/AndroidNote/blob/master/CustomView/Advance/%5B10%5DMatrix_Method.md
+                    // http://www.gcssloop.com/customview/Matrix_Basic.html
+                    // http://www.gcssloop.com/customview/Matrix_Method.html
                     val imageMatrixValues = imageView.imageMatrix.values().apply {
-                        this[Matrix.MSCALE_X] = 1 / this[Matrix.MSCALE_X]
-                        this[Matrix.MSKEW_X] = -this[Matrix.MSKEW_X]
-                        this[Matrix.MTRANS_X] = -this[Matrix.MTRANS_X]
-                        this[Matrix.MSKEW_Y] = -this[Matrix.MSKEW_Y]
-                        this[Matrix.MSCALE_Y] = 1 / this[Matrix.MSCALE_Y]
-                        this[Matrix.MTRANS_Y] = -this[Matrix.MTRANS_Y]
-                        this[Matrix.MPERSP_0] = -this[Matrix.MPERSP_0]
-                        this[Matrix.MPERSP_1] = -this[Matrix.MPERSP_1]
-                        this[Matrix.MPERSP_2] = 1 / this[Matrix.MPERSP_2]
+                        this[Matrix.MSCALE_X] = 1 / this[Matrix.MSCALE_X] // x轴缩放
+                        this[Matrix.MSKEW_X] = -this[Matrix.MSKEW_X] // x轴错切
+                        this[Matrix.MTRANS_X] = -this[Matrix.MTRANS_X] // x轴平移
+                        this[Matrix.MSKEW_Y] = -this[Matrix.MSKEW_Y] // y轴错切
+                        this[Matrix.MSCALE_Y] = 1 / this[Matrix.MSCALE_Y] // y轴缩放
+                        this[Matrix.MTRANS_Y] = -this[Matrix.MTRANS_Y] // y轴平移
+                        this[Matrix.MPERSP_0] = -this[Matrix.MPERSP_0] // x轴方向透视
+                        this[Matrix.MPERSP_1] = -this[Matrix.MPERSP_1] // y轴方向透视
+                        this[Matrix.MPERSP_2] = 1 / this[Matrix.MPERSP_2] // w方向（距离？）透视
                     }
                     currentDrawable.setBounds(
                         0, 0, imageView.measuredWidth, imageView.measuredHeight
