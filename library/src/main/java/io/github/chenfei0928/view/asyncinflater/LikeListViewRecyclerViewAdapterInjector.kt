@@ -23,7 +23,8 @@ object LikeListViewRecyclerViewAdapterInjector {
     fun <VG : ViewGroup, VH : RecyclerView.ViewHolder> inject(
         asyncLayoutInflater: IAsyncLayoutInflater,
         viewGroup: VG,
-        adapter: RecyclerView.Adapter<VH>
+        adapter: RecyclerView.Adapter<VH>,
+        onDone: () -> Unit = {},
     ) {
         val binderClassName = adapter.javaClass.name
         injectImpl(viewGroup, adapter)?.forEachInject(
@@ -42,7 +43,9 @@ object LikeListViewRecyclerViewAdapterInjector {
                 // 加入viewGroup并设置数据
                 viewGroup.addView(holder.itemView)
                 adapter.onBindViewHolder(holder, index, emptyList())
-            })
+            },
+            onDone
+        )
     }
 
     private fun <VG : ViewGroup, VH : RecyclerView.ViewHolder> injectImpl(

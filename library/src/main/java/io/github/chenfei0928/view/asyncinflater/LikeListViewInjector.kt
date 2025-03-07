@@ -54,6 +54,7 @@ object LikeListViewInjector {
         beanIterable: Iterable<Bean>?,
         @LayoutRes layoutId: Int,
         adapter: AsyncAdapter<VG, Bean>,
+        onDone: () -> Unit = {},
     ) {
         BaseLikeListViewInjector.injectImpl(
             viewGroup, beanIterable, adapter
@@ -62,12 +63,12 @@ object LikeListViewInjector {
             // 记录binder类名，防止绑定视图错误
             view.injectorClassNameTag = adapter.javaClass.name
             view
-        }) { view, bean ->
+        }, { view, bean ->
             // 布局已加载，通知初始化、加入ViewGroup并绑定数据
             adapter.onViewCreated(view)
             viewGroup.addView(view)
             adapter.onBindView(view, bean)
-        }
+        }, onDone)
     }
 
     /**
@@ -83,7 +84,9 @@ object LikeListViewInjector {
     @JvmStatic
     fun <Bean, VG : ViewGroup> inject(
         asyncLayoutInflater: IAsyncLayoutInflater,
-        viewGroup: VG, beanIterable: Iterable<Bean>?, adapter: AsyncAdapter<VG, Bean>
+        viewGroup: VG, beanIterable: Iterable<Bean>?,
+        adapter: AsyncAdapter<VG, Bean>,
+        onDone: () -> Unit = {},
     ) {
         BaseLikeListViewInjector.injectImpl(
             viewGroup, beanIterable, adapter
@@ -92,11 +95,11 @@ object LikeListViewInjector {
             // 记录binder类名，防止绑定视图错误
             view.injectorClassNameTag = adapter.javaClass.name
             view
-        }) { view, bean ->
+        }, { view, bean ->
             // 布局已加载，通知初始化、加入ViewGroup并绑定数据
             adapter.onViewCreated(view)
             viewGroup.addView(view)
             adapter.onBindView(view, bean)
-        }
+        }, onDone)
     }
 }

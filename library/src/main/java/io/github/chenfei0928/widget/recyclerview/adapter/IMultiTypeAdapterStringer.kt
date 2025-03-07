@@ -4,6 +4,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.MultiTypeAdapter
 import com.drakeet.multitype.MutableTypes
 import com.drakeet.multitype.Types
+import io.github.chenfei0928.view.findParentFragment
+import java.lang.ref.Reference
+import java.lang.ref.WeakReference
 
 /**
  * 修复 [RecyclerView.exceptionLabel] 只输出adapter信息而难以debug问题
@@ -21,8 +24,20 @@ interface IMultiTypeAdapterStringer {
     ) : MultiTypeAdapter(items, initialCapacity, types), IMultiTypeAdapterStringer {
         override var binding: Any = Unit
 
+        override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+            super.onAttachedToRecyclerView(recyclerView)
+            if (binding == Unit) {
+                binding = recyclerView.findParentFragment()?.let(::WeakReference) ?: binding
+            }
+        }
+
         override fun toString(): String {
-            return super.toString() + ", binding:" + binding
+            val binding = binding
+            return if (binding is Reference<*>) {
+                super.toString() + ", binding:" + binding.get()
+            } else {
+                super.toString() + ", binding:" + binding
+            }
         }
     }
 }

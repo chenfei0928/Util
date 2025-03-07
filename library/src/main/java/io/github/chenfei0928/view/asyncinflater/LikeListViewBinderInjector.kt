@@ -36,6 +36,7 @@ object LikeListViewBinderInjector {
         viewGroup: VG,
         beanIterable: Iterable<Bean>?,
         binder: ItemViewDelegate<Bean, ViewHolder>,
+        onDone: () -> Unit = {},
     ) {
         val binderClassName = binder.javaClass.name
         injectImpl(
@@ -56,7 +57,7 @@ object LikeListViewBinderInjector {
             viewGroup.addView(holder.itemView)
             binder.onBindViewHolder(holder, bean, emptyList())
             binder.onViewAttachedToWindow(holder)
-        })
+        }, onDone)
     }
 
     /**

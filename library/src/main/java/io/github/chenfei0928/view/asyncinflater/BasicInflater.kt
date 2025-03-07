@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 
 /**
+ * copy from [androidx.asynclayoutinflater.view.AsyncLayoutInflater.BasicInflater]
+ *
  * @author chenf()
  * @date 2024-09-03 15:37
  */

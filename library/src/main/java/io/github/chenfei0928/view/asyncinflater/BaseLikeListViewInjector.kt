@@ -2,6 +2,7 @@ package io.github.chenfei0928.view.asyncinflater
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isNotEmpty
 import androidx.core.view.iterator
 import androidx.recyclerview.widget.RecyclerView
 import io.github.chenfei0928.concurrent.ExecutorAndCallback
@@ -9,8 +10,8 @@ import io.github.chenfei0928.util.R
 import io.github.chenfei0928.view.ViewTagDelegate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * 为ViewGroup填充子View帮助类
@@ -20,34 +21,54 @@ object BaseLikeListViewInjector {
     inline fun <Bean, R> Iterator<Bean>.forEachInject(
         executorOrScope: Any,
         crossinline command: (Bean) -> R,
-        crossinline callback: (R, Bean) -> Unit
+        crossinline callback: (R, Bean) -> Unit,
+        crossinline onDone: () -> Unit,
+    ) = forEachInjectImpl(executorOrScope, object : ForEachInjectImpl<Bean, R> {
+        override fun command(bean: Bean): R = command(bean)
+        override fun callback(r: R, bean: Bean) = callback(r, bean)
+        override fun onDone() = onDone()
+    })
+
+    interface ForEachInjectImpl<Bean, R> {
+        fun command(bean: Bean): R
+        fun callback(r: R, bean: Bean)
+        fun onDone()
+    }
+
+    fun <Bean, R> Iterator<Bean>.forEachInjectImpl(
+        executorOrScope: Any,
+        inject: ForEachInjectImpl<Bean, R>,
     ) {
         if (!hasNext()) {
             return
         } else when (executorOrScope) {
             is ExecutorAndCallback.DirectExecutor -> {
+                // 直接执行
                 forEach { bean ->
-                    callback(command(bean), bean)
+                    inject.callback(inject.command(bean), bean)
                 }
+                inject.onDone()
             }
             is CoroutineScope -> {
+                // 协程，多线程并发创建，并回调
                 executorOrScope.launch {
-                    forEach { bean ->
-                        val r = withContext(Dispatchers.Default) {
-                            command(bean)
-                        }
-                        callback(r, bean)
+                    Iterable { this@forEachInjectImpl }.map {
+                        async(Dispatchers.Default) { it to inject.command(it) }
+                    }.forEach {
+                        val (bean, r) = it.await()
+                        inject.callback(r, bean)
                     }
+                    inject.onDone()
                 }
             }
             is ExecutorAndCallback -> {
+                // 普通执行器，在其线程中挨个执行并回调
                 forEach { bean ->
-                    executorOrScope.execute({
-                        command(bean)
-                    }) {
-                        callback(it, bean)
-                    }
+                    executorOrScope.execute(
+                        commend = { inject.command(bean) },
+                        callback = { inject.callback(it, bean) })
                 }
+                inject.onDone()
             }
             else -> throw IllegalArgumentException(
                 "executorOrScope 需要是 CoroutineScope / ExecutorAndCallback 中一个作为执行器: $executorOrScope"
@@ -84,7 +105,7 @@ object BaseLikeListViewInjector {
         }
 
         viewGroup.visibility = View.VISIBLE
-        if (viewGroup.childCount > 0) {
+        if (viewGroup.isNotEmpty()) {
             // 对view和bean列表进行迭代
             val viewIterator = viewGroup.iterator()
             while (viewIterator.hasNext()) {

@@ -1,10 +1,13 @@
 package io.github.chenfei0928.view.asyncinflater
 
+import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.UiThread
+import androidx.fragment.app.Fragment
 import io.github.chenfei0928.concurrent.ExecutorAndCallback
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.util.Log
@@ -71,5 +74,18 @@ class AsyncLayoutInflater(
 
     companion object {
         private const val TAG = "KW_AsyncLayoutInflater"
+
+        fun sync(context: Context) = AsyncLayoutInflater(
+            context, ExecutorAndCallback.DirectExecutor,
+            if (context is Activity) context.layoutInflater else LayoutInflater.from(context)
+        )
+
+        fun sync(fragment: Fragment) = AsyncLayoutInflater(
+            fragment.requireContext(), ExecutorAndCallback.DirectExecutor, fragment.layoutInflater
+        )
+
+        fun sync(dialog: Dialog) = AsyncLayoutInflater(
+            dialog.context, ExecutorAndCallback.DirectExecutor, dialog.layoutInflater
+        )
     }
 }

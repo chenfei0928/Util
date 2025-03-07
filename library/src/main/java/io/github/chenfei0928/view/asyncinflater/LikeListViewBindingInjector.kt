@@ -54,6 +54,7 @@ object LikeListViewBindingInjector {
         viewGroup: ViewGroup,
         beanIterable: Iterable<Bean>?,
         adapter: DataBindingAdapter<Binding, Bean>,
+        onDone: () -> Unit = {},
     ) {
         val binderClassName = adapter.javaClass.name
         BaseLikeListViewInjector.injectImpl(
@@ -70,7 +71,7 @@ object LikeListViewBindingInjector {
             adapter.onViewCreated(binding)
             viewGroup.addView(binding.root)
             adapter.onBindView(binding, bean)
-        })
+        }, onDone)
     }
 
     private var View.viewHolderTag: ViewBinding
