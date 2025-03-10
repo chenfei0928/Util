@@ -40,24 +40,29 @@ object LikeListViewBinderInjector {
     ) {
         val binderClassName = binder.javaClass.name
         injectImpl(
-            viewGroup, beanIterable, binder
-        )?.forEachInject(asyncLayoutInflater.executorOrScope, {
-            // 加载视图
-            val holder = if (binder is ItemViewBinder) {
-                binder.onCreateViewHolder(asyncLayoutInflater.inflater, viewGroup)
-            } else {
-                binder.onCreateViewHolder(viewGroup.context, viewGroup)
-            }
-            holder.itemView.viewHolderTag = holder
-            // 记录binder类名，防止绑定视图错误
-            holder.itemView.injectorClassNameTag = binderClassName
-            holder
-        }, { holder, bean ->
-            // 加入viewGroup并设置数据
-            viewGroup.addView(holder.itemView)
-            binder.onBindViewHolder(holder, bean, emptyList())
-            binder.onViewAttachedToWindow(holder)
-        }, onDone)
+            viewGroup = viewGroup, beanIterable = beanIterable, binder = binder
+        )?.forEachInject(
+            executorOrScope = asyncLayoutInflater.executorOrScope,
+            command = {
+                // 加载视图
+                val holder = if (binder is ItemViewBinder) {
+                    binder.onCreateViewHolder(asyncLayoutInflater.inflater, viewGroup)
+                } else {
+                    binder.onCreateViewHolder(viewGroup.context, viewGroup)
+                }
+                holder.itemView.viewHolderTag = holder
+                // 记录binder类名，防止绑定视图错误
+                holder.itemView.injectorClassNameTag = binderClassName
+                holder
+            },
+            callback = { holder, bean ->
+                // 加入viewGroup并设置数据
+                viewGroup.addView(holder.itemView)
+                binder.onBindViewHolder(holder, bean, emptyList())
+                binder.onViewAttachedToWindow(holder)
+            },
+            onDone = onDone
+        )
     }
 
     /**
@@ -71,8 +76,10 @@ object LikeListViewBinderInjector {
         viewGroup: VG,
         beanIterable: Iterable<Bean>?,
         binder: ItemViewDelegate<Bean, ViewHolder>,
-    ): Iterator<Bean>? = BaseLikeListViewInjector.injectImpl(
-        viewGroup, beanIterable, object : BasicAdapter<VG, Bean> {
+    ): Iterator<Bean>? = BaseLikeListViewInjector.injectContainedViewImpl(
+        viewGroup = viewGroup,
+        beanIterable = beanIterable,
+        adapter = object : BasicAdapter<VG, Bean> {
             private val binderClassName = binder.javaClass.name
 
             override fun isView(view: View): Boolean =

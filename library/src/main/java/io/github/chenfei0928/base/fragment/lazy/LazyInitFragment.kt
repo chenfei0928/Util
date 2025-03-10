@@ -16,8 +16,9 @@ abstract class LazyInitFragment(
 ) : BaseDoubleCheckLazyInitFragment() {
     @Volatile
     private var asyncInflateDid = false
-    open val asyncLayoutInflater: IAsyncLayoutInflater? =
+    open val asyncLayoutInflater: IAsyncLayoutInflater? by lazy(LazyThreadSafetyMode.NONE) {
         if (loadInMainThread) null else AsyncLayoutInflater(requireContext())
+    }
 
     final override fun checkInflateImpl() {
         val layout = view

@@ -3,6 +3,7 @@ package io.github.chenfei0928.view.asyncinflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.EmptySuper
 import androidx.annotation.MainThread
 import androidx.viewbinding.ViewBinding
 import io.github.chenfei0928.util.R
@@ -38,6 +39,11 @@ object LikeListViewBindingInjector {
         }
 
         fun onBindView(itemBinding: Binding, bean: Bean)
+
+        @EmptySuper
+        fun onDone() {
+            // noop
+        }
     }
 
     /**
@@ -54,24 +60,28 @@ object LikeListViewBindingInjector {
         viewGroup: ViewGroup,
         beanIterable: Iterable<Bean>?,
         adapter: DataBindingAdapter<Binding, Bean>,
-        onDone: () -> Unit = {},
     ) {
         val binderClassName = adapter.javaClass.name
-        BaseLikeListViewInjector.injectImpl(
-            viewGroup, beanIterable, adapter
-        )?.forEachInject(asyncLayoutInflater.executorOrScope, {
-            // 在主线程直接加载布局、加入ViewGroup并绑定数据
-            val binding = adapter.onCreateView(asyncLayoutInflater.inflater, viewGroup)
-            binding.root.viewHolderTag = binding
-            // 记录binder类名，防止绑定视图错误
-            binding.root.injectorClassNameTag = binderClassName
-            binding
-        }, { binding, bean ->
-            // 布局已加载，通知初始化、加入ViewGroup并绑定数据
-            adapter.onViewCreated(binding)
-            viewGroup.addView(binding.root)
-            adapter.onBindView(binding, bean)
-        }, onDone)
+        BaseLikeListViewInjector.injectContainedViewImpl(
+            viewGroup = viewGroup, beanIterable = beanIterable, adapter = adapter
+        )?.forEachInject(
+            executorOrScope = asyncLayoutInflater.executorOrScope,
+            command = {
+                // 在主线程直接加载布局、加入ViewGroup并绑定数据
+                val binding = adapter.onCreateView(asyncLayoutInflater.inflater, viewGroup)
+                binding.root.viewHolderTag = binding
+                // 记录binder类名，防止绑定视图错误
+                binding.root.injectorClassNameTag = binderClassName
+                binding
+            },
+            callback = { binding, bean ->
+                // 布局已加载，通知初始化、加入ViewGroup并绑定数据
+                adapter.onViewCreated(binding)
+                viewGroup.addView(binding.root)
+                adapter.onBindView(binding, bean)
+            },
+            onDone = adapter::onDone
+        )
     }
 
     private var View.viewHolderTag: ViewBinding

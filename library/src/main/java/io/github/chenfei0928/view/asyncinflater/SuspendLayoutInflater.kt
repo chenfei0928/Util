@@ -17,6 +17,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
+ * 作为 [IAsyncLayoutInflater] 传递给 [BaseLikeListViewInjector] 或各个 Injector 时，
+ * inflate 布局会并发 inflate 多个。
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-10-24 15:36
  */

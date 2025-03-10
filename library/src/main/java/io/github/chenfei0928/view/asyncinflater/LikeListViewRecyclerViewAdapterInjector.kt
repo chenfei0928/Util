@@ -28,8 +28,8 @@ object LikeListViewRecyclerViewAdapterInjector {
     ) {
         val binderClassName = adapter.javaClass.name
         injectImpl(viewGroup, adapter)?.forEachInject(
-            asyncLayoutInflater.executorOrScope,
-            { index ->
+            executorOrScope = asyncLayoutInflater.executorOrScope,
+            command = { index ->
                 val itemViewType = adapter.getItemViewType(index)
                 // 加载视图
                 val holder = adapter.onCreateViewHolder(viewGroup, itemViewType)
@@ -39,18 +39,18 @@ object LikeListViewRecyclerViewAdapterInjector {
                 holder.itemView.injectorClassNameTag = binderClassName
                 holder
             },
-            { holder, index ->
+            callback = { holder, index ->
                 // 加入viewGroup并设置数据
                 viewGroup.addView(holder.itemView)
                 adapter.onBindViewHolder(holder, index, emptyList())
             },
-            onDone
+            onDone = onDone
         )
     }
 
     private fun <VG : ViewGroup, VH : RecyclerView.ViewHolder> injectImpl(
         viewGroup: VG, adapter: RecyclerView.Adapter<VH>
-    ): Iterator<Int>? = BaseLikeListViewInjector.injectImpl(
+    ): Iterator<Int>? = BaseLikeListViewInjector.injectContainedViewImpl(
         viewGroup = viewGroup,
         beanIterable = 0 until adapter.itemCount,
         adapter = object : BasicAdapter<VG, Int> {

@@ -23,7 +23,9 @@ object BaseLikeListViewInjector {
         crossinline command: (Bean) -> R,
         crossinline callback: (R, Bean) -> Unit,
         crossinline onDone: () -> Unit,
-    ) = forEachInjectImpl(executorOrScope, object : ForEachInjectImpl<Bean, R> {
+    ) = if (!hasNext()) {
+        Unit
+    } else forEachInjectImpl(executorOrScope, object : ForEachInjectImpl<Bean, R> {
         override fun command(bean: Bean): R = command(bean)
         override fun callback(r: R, bean: Bean) = callback(r, bean)
         override fun onDone() = onDone()
@@ -77,7 +79,7 @@ object BaseLikeListViewInjector {
     }
 
     /**
-     * 将bean列表设置给容器ViewGroup里
+     * 将bean列表设置给容器ViewGroup中已存在的view，并返回[beanIterable]中未使用的部分，或如果[beanIterable]已经全部已消费时返回null
      *
      * @param viewGroup    注入的目标ViewGroup
      * @param beanIterable 等待注入的实例列表
@@ -85,7 +87,7 @@ object BaseLikeListViewInjector {
      * @return 仍有需要显示的数据实例时，返回未处理完的迭代器。如果数据已处理完毕，返回null
      */
     @Suppress("ReturnCount")
-    fun <Bean, VG : ViewGroup, Adapter : BasicAdapter<VG, Bean>> injectImpl(
+    fun <Bean, VG : ViewGroup, Adapter : BasicAdapter<VG, Bean>> injectContainedViewImpl(
         viewGroup: VG, beanIterable: Iterable<Bean>?, adapter: Adapter
     ): Iterator<Bean>? {
         // 对适配的数据集判空

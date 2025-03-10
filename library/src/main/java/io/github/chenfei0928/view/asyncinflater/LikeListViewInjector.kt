@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AnyThread
+import androidx.annotation.EmptySuper
 import androidx.annotation.LayoutRes
 import androidx.annotation.MainThread
 import io.github.chenfei0928.view.asyncinflater.BaseLikeListViewInjector.forEachInject
@@ -34,6 +35,11 @@ object LikeListViewInjector {
         override fun isView(view: View): Boolean {
             return view.injectorClassNameTag == this.javaClass.name
         }
+
+        @EmptySuper
+        fun onDone() {
+            // noop
+        }
     }
 
     /**
@@ -54,21 +60,25 @@ object LikeListViewInjector {
         beanIterable: Iterable<Bean>?,
         @LayoutRes layoutId: Int,
         adapter: AsyncAdapter<VG, Bean>,
-        onDone: () -> Unit = {},
     ) {
-        BaseLikeListViewInjector.injectImpl(
-            viewGroup, beanIterable, adapter
-        )?.forEachInject(asyncLayoutInflater.executorOrScope, {
-            val view = asyncLayoutInflater.inflater.inflate(layoutId, viewGroup, false)
-            // 记录binder类名，防止绑定视图错误
-            view.injectorClassNameTag = adapter.javaClass.name
-            view
-        }, { view, bean ->
-            // 布局已加载，通知初始化、加入ViewGroup并绑定数据
-            adapter.onViewCreated(view)
-            viewGroup.addView(view)
-            adapter.onBindView(view, bean)
-        }, onDone)
+        BaseLikeListViewInjector.injectContainedViewImpl(
+            viewGroup = viewGroup, beanIterable = beanIterable, adapter = adapter
+        )?.forEachInject(
+            executorOrScope = asyncLayoutInflater.executorOrScope,
+            command = {
+                val view = asyncLayoutInflater.inflater.inflate(layoutId, viewGroup, false)
+                // 记录binder类名，防止绑定视图错误
+                view.injectorClassNameTag = adapter.javaClass.name
+                view
+            },
+            callback = { view, bean ->
+                // 布局已加载，通知初始化、加入ViewGroup并绑定数据
+                adapter.onViewCreated(view)
+                viewGroup.addView(view)
+                adapter.onBindView(view, bean)
+            },
+            onDone = adapter::onDone
+        )
     }
 
     /**
@@ -86,20 +96,24 @@ object LikeListViewInjector {
         asyncLayoutInflater: IAsyncLayoutInflater,
         viewGroup: VG, beanIterable: Iterable<Bean>?,
         adapter: AsyncAdapter<VG, Bean>,
-        onDone: () -> Unit = {},
     ) {
-        BaseLikeListViewInjector.injectImpl(
-            viewGroup, beanIterable, adapter
-        )?.forEachInject(asyncLayoutInflater.executorOrScope, {
-            val view = adapter.onCreateView(asyncLayoutInflater.inflater, viewGroup)
-            // 记录binder类名，防止绑定视图错误
-            view.injectorClassNameTag = adapter.javaClass.name
-            view
-        }, { view, bean ->
-            // 布局已加载，通知初始化、加入ViewGroup并绑定数据
-            adapter.onViewCreated(view)
-            viewGroup.addView(view)
-            adapter.onBindView(view, bean)
-        }, onDone)
+        BaseLikeListViewInjector.injectContainedViewImpl(
+            viewGroup = viewGroup, beanIterable = beanIterable, adapter = adapter
+        )?.forEachInject(
+            executorOrScope = asyncLayoutInflater.executorOrScope,
+            command = {
+                val view = adapter.onCreateView(asyncLayoutInflater.inflater, viewGroup)
+                // 记录binder类名，防止绑定视图错误
+                view.injectorClassNameTag = adapter.javaClass.name
+                view
+            },
+            callback = { view, bean ->
+                // 布局已加载，通知初始化、加入ViewGroup并绑定数据
+                adapter.onViewCreated(view)
+                viewGroup.addView(view)
+                adapter.onBindView(view, bean)
+            },
+            onDone = adapter::onDone
+        )
     }
 }

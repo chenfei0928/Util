@@ -14,6 +14,11 @@ import io.github.chenfei0928.util.Log
 
 /**
  * 使用自定义的次线程执行器来替换其类的布局加载器，并简化逻辑
+ *
+ * 作为 [IAsyncLayoutInflater] 传递给 [BaseLikeListViewInjector] 或各个 Injector 时，
+ * 会 One-By-One 的 inflate。
+ *
+ * 实现参考自：
  * [androidx.asynclayoutinflater.view.AsyncLayoutInflater]
  *
  * @author MrFeng
