@@ -21,7 +21,7 @@ object Deps {
 
         // Ktor
         // https://ktor.io/docs/client-create-multiplatform-application.html#ktor-dependencies
-        val ktor_version = "3.1.0"
+        private const val ktor_version = "3.1.0"
 
         val ktorClientCore = "io.ktor:ktor-client-core:$ktor_version"
         val ktorClientOkhttp = "io.ktor:ktor-client-okhttp:$ktor_version"

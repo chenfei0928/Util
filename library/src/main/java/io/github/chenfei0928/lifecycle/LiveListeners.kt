@@ -53,8 +53,11 @@ open class LiveListeners<Observer> : Iterable<Observer>, ILiveListener<Observer>
 
     override fun removeObserver(observer: Observer) {
         map.remove(observer)?.let { eventObserver ->
-            if (eventObserver is LiveListeners.ObserveLifecycleBind)
+            if (eventObserver is LiveListeners.ObserveLifecycleBind) {
                 eventObserver.owner.lifecycle.removeObserver(eventObserver)
+            }
+            eventObserver.onRemoved()
+            onObserverRemoved(observer)
         }
     }
 
@@ -63,6 +66,14 @@ open class LiveListeners<Observer> : Iterable<Observer>, ILiveListener<Observer>
             if (bind is LiveListeners.ObserveLifecycleBind && bind.owner === owner)
                 removeObserver(observer)
         }
+    }
+
+    protected open fun onObserverActiveChanged(observer: Observer, isActive: Boolean) {
+        // noop
+    }
+
+    protected open fun onObserverRemoved(observer: Observer) {
+        // noop
     }
 
     /**
@@ -84,17 +95,27 @@ open class LiveListeners<Observer> : Iterable<Observer>, ILiveListener<Observer>
     private sealed interface BindWrapper<Observer> {
         val active: Boolean
         val observer: Observer
+
+        fun onRemoved()
     }
 
     private inner class ForeverBind(
         override val observer: Observer
     ) : BindWrapper<Observer> {
         override val active: Boolean = true
+
+        init {
+            activeObserverCount++
+        }
+
+        override fun onRemoved() {
+            activeObserverCount--
+        }
     }
 
     private inner class ObserveLifecycleBind(
         val owner: LifecycleOwner,
-        val state: Lifecycle.State,
+        private val state: Lifecycle.State,
         override val observer: Observer,
     ) : LifecycleEventObserver, BindWrapper<Observer> {
         override var active: Boolean = false
@@ -107,14 +128,19 @@ open class LiveListeners<Observer> : Iterable<Observer>, ILiveListener<Observer>
                 } else {
                     activeObserverCount--
                 }
+                onObserverActiveChanged(observer, field)
             }
 
         override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-            if (event == Lifecycle.Event.ON_DESTROY) {
-                removeObserver(observer)
-                return
-            }
             active = owner.lifecycle.currentState >= state
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                onObserverActiveChanged(observer, false)
+                removeObserver(observer)
+            }
+        }
+
+        override fun onRemoved() {
+            active = false
         }
     }
 }

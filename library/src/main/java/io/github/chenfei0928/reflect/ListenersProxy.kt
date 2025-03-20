@@ -87,7 +87,7 @@ object ListenersProxy {
     ): T = newImplByGetter(T::class.java) { getter.value }
 
     inline fun <reified T : Any> newImplByGetter(
-        crossinline getter: () -> T
+        crossinline getter: () -> T?
     ): T = newImplByGetter(T::class.java, getter)
 
     /**
@@ -95,10 +95,33 @@ object ListenersProxy {
      */
     @Suppress("kotlin:S6530", "UNCHECKED_CAST")
     inline fun <T : Any> newImplByGetter(
-        clazz: Class<T>, crossinline getter: () -> T
+        clazz: Class<T>, crossinline getter: () -> T?
     ): T = Proxy.newProxyInstance(
         clazz.classLoader, arrayOf(clazz)
     ) { _, method, args ->
-        return@newProxyInstance method.safeInvoke(getter(), args)
+        val lis = getter()
+        return@newProxyInstance if (lis != null) {
+            method.safeInvoke(lis, args)
+        } else when (method.returnType) {
+            Void::class.java, Void.TYPE
+                -> null
+            java.lang.Byte::class.java, java.lang.Byte.TYPE
+                -> 0.toByte()
+            java.lang.Short::class.java, java.lang.Short.TYPE
+                -> 0.toShort()
+            Integer::class.java, Integer.TYPE
+                -> 0
+            java.lang.Long::class.java, java.lang.Long.TYPE,
+                -> 0L
+            java.lang.Float::class.java, java.lang.Float.TYPE
+                -> 0f
+            java.lang.Double::class.java, java.lang.Double.TYPE
+                -> 0.0
+            java.lang.Boolean::class.java, java.lang.Boolean.TYPE
+                -> false
+            java.lang.Character::class.java, java.lang.Character.TYPE
+                -> Character.MIN_VALUE
+            else -> null
+        }
     } as T
 }

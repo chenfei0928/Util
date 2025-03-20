@@ -72,14 +72,14 @@ interface DependencyChecker {
     /**
      * 用于处理部分函数中对部分库有额外处理逻辑的判断逻辑
      *
-     * 对 `try class.toString catch NoClassDefFoundError`
-     * 与 `try Class.forName catch ClassNotFoundException`
+     * 对 `try class.toString catch NoClassDefFoundError` [reference]
+     * 与 `try Class.forName catch ClassNotFoundException` [forName]
      * 进行性能测试：
      *
-     *  * [MATERIAL] 获取 [BottomSheetDialog]
-     *  * [GUAVA_LISTENABLE_FUTURE] 获取 [ListenableFuture]
-     *  * [ANDROID_X_LISTENABLE_FUTURE] 获取 `ListenableFutureKt`
-     *  * [FLEXBOX] 获取 `FlexboxLayoutManager`
+     *  * [ByReflectLazy.MATERIAL] 获取 [BottomSheetDialog]
+     *  * [ByReflectLazy.GUAVA_LISTENABLE_FUTURE] 获取 [ListenableFuture]
+     *  * [ByReflectLazy.ANDROID_X_LISTENABLE_FUTURE] 获取 `ListenableFutureKt`
+     *  * [ByReflectLazy.FLEXBOX] 获取 `FlexboxLayoutManager`
      *
      * 的测试结果：
      *
@@ -90,8 +90,8 @@ interface DependencyChecker {
      *
      * 为优化性能：
      *
-     *  * 对于大概率存在的类，使用方案1进行判断
-     *  * 对于大概率不存在的类，使用方案2进行判断
+     *  * 对于大概率存在的类，使用方案1进行判断 [reference]
+     *  * 对于大概率不存在的类，使用方案2进行判断 [forName]
      *
      * @author chenf()
      * @date 2024-11-29 14:16
@@ -102,13 +102,8 @@ interface DependencyChecker {
          * 判断Material依赖是否被引入了，调用一下它的方法避免class引用被编译器优化掉
          */
         MATERIAL {
-            override fun initValue(): Boolean = try {
-                // material 库存在大量标准控件，大概率存在，使用方案1加载
-                BottomSheetDialog::class.java.toString()
-                true
-            } catch (_: NoClassDefFoundError) {
-                false
-            }
+            // material 库存在大量标准控件，大概率存在，使用方案1加载
+            override fun initValue(): Boolean = reference<BottomSheetDialog>()
         },
 
         /**
@@ -118,23 +113,13 @@ interface DependencyChecker {
          * GuavaListenable 与 Guava 库不是同一个库
          */
         GUAVA_LISTENABLE_FUTURE {
-            override fun initValue(): Boolean = try {
-                // guava listenerFuture 被androidx core依赖，大概率存在，使用方案1加载
-                ListenableFuture::class.java.toString()
-                true
-            } catch (_: NoClassDefFoundError) {
-                false
-            }
+            // guava listenerFuture 被androidx core依赖，大概率存在，使用方案1加载
+            override fun initValue(): Boolean = reference<ListenableFuture<*>>()
         },
 
         GUAVA {
-            override fun initValue(): Boolean = try {
-                // guava库大概率不存在，使用方案2加载
-                Class.forName("com.google.common.reflect.TypeToken")
-                true
-            } catch (_: ClassNotFoundException) {
-                false
-            }
+            // guava库大概率不存在，使用方案2加载
+            override fun initValue(): Boolean = forName("com.google.common.reflect.TypeToken")
         },
 
         /**
@@ -146,12 +131,9 @@ interface DependencyChecker {
         ANDROID_X_LISTENABLE_FUTURE {
             override fun initValue(): Boolean = if (GUAVA_LISTENABLE_FUTURE._value == false) {
                 false
-            } else try {
+            } else {
                 // androidx concurrentFuturesKtx 没有被当前库其它依赖依赖，大概率不存在，使用方案2加载
-                Class.forName("androidx.concurrent.futures.ListenableFutureKt")
-                true
-            } catch (_: ClassNotFoundException) {
-                false
+                forName("androidx.concurrent.futures.ListenableFutureKt")
             }
         },
 
@@ -159,57 +141,35 @@ interface DependencyChecker {
          * 判断FlexBox依赖是否被引入了，调用一下它的方法避免class引用被编译器优化掉
          */
         FLEXBOX {
-            override fun initValue(): Boolean {
-                try {
-                    // flexbox库大概率不存在，使用方案2加载
-                    Class.forName("com.google.android.flexbox.FlexboxLayoutManager")
-                    return true
-                } catch (_: ClassNotFoundException) {
-                    return false
-                }
-            }
+            // flexbox库大概率不存在，使用方案2加载
+            override fun initValue(): Boolean =
+                forName("com.google.android.flexbox.FlexboxLayoutManager")
         },
         PROTOBUF_FULL {
             override fun initValue(): Boolean = if (PROTOBUF_LITE._value == false) {
                 false
-            } else try {
+            } else {
                 // protobuf库大概率不存在，使用方案2加载
-                Class.forName("com.google.protobuf.Message")
-                true
-            } catch (_: ClassNotFoundException) {
-                false
+                forName("com.google.protobuf.Message")
             }
         },
         PROTOBUF_LITE {
             override fun initValue(): Boolean = if (PROTOBUF_FULL._value == true) {
                 // 如果完整库有被引入，lite就一定包含在内
                 true
-            } else try {
+            } else {
                 // protobufLite库大概率不存在，使用方案2加载
                 // lite库会keep这个类 https://github.com/protocolbuffers/protobuf/blob/main/java/lite/proguard.pgcfg
-                Class.forName("com.google.protobuf.GeneratedMessageLite")
-                true
-            } catch (_: ClassNotFoundException) {
-                false
+                forName("com.google.protobuf.GeneratedMessageLite")
             }
         },
         GSON {
-            override fun initValue(): Boolean = try {
-                // gson 轻量级常用，大概率会存在，使用方案1加载
-                TypeToken::class.java.toString()
-                true
-            } catch (_: NoClassDefFoundError) {
-                false
-            }
+            // gson 轻量级常用，大概率会存在，使用方案1加载
+            override fun initValue(): Boolean = reference<TypeToken<*>>()
         },
         MMKV {
-            override fun initValue(): Boolean = try {
-                // mmkv库大概率不存在，使用方案2加载
-                Class.forName("com.tencent.mmkv.MMKV")
-                true
-            } catch (_: ClassNotFoundException) {
-                false
-            }
+            // mmkv库大概率不存在，使用方案2加载
+            override fun initValue(): Boolean = forName("com.tencent.mmkv.MMKV")
         };
 
         @Volatile
@@ -228,6 +188,22 @@ interface DependencyChecker {
 
         override fun isInitialized(): Boolean {
             return _value != null
+        }
+
+        // 大概率会存在的，使用方案1加载
+        protected inline fun <reified T> reference() = try {
+            T::class.java.toString()
+            true
+        } catch (_: NoClassDefFoundError) {
+            false
+        }
+
+        // 大概率不存在的，使用方案2加载
+        protected fun forName(name: String) = try {
+            Class.forName(name)
+            true
+        } catch (_: ClassNotFoundException) {
+            false
         }
         //</editor-fold>
 
