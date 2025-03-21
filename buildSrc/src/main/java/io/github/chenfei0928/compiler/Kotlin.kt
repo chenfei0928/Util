@@ -15,10 +15,8 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
-import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.internal.Kapt3GradleSubplugin
 import org.jetbrains.kotlin.gradle.internal.ParcelizeSubplugin
@@ -80,24 +78,28 @@ fun Project.applyKotlin(
             resources.excludes += "win32-x86-64/**"
             resources.excludes += "win32-x86/**"
         }
+    }
 
-        (this as ExtensionAware).buildSrcKotlinOptions<KotlinJvmOptions> {
-            jvmTarget = Contract.JAVA_VERSION.toString()
+    buildSrcKotlin<KotlinAndroidProjectExtension> {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(Contract.JAVA_VERSION.toString()))
 
             // Kotlin编译选项，可使用 kotlinc -X 查看
             // https://droidyue.com/blog/2019/07/21/configure-kotlin-compiler-options/
-            freeCompilerArgs = if (Env.containsReleaseBuild) {
-                // Release编译时禁止参数非空检查
-                freeCompilerArgs + listOf(
-                    "-Xno-call-assertions", "-Xno-param-assertions", "-Xno-receiver-assertions"
-                )
-            } else {
-                // Debug编译时启用debug编译，以优化断点支持与断点时变量捕获
-                // https://kotlinlang.org/docs/whatsnew18.html#a-new-compiler-option-for-disabling-optimizations
-                freeCompilerArgs + listOf(
+            freeCompilerArgs.addAll(
+                if (Env.containsReleaseBuild) {
+                    // Release编译时禁止参数非空检查
+                    listOf(
+                        "-Xno-call-assertions", "-Xno-param-assertions", "-Xno-receiver-assertions"
+                    )
+                } else {
+                    // Debug编译时启用debug编译，以优化断点支持与断点时变量捕获
+                    // https://kotlinlang.org/docs/whatsnew18.html#a-new-compiler-option-for-disabling-optimizations
+                    listOf(
 //                    "-Xdebug"
-                )
-            }
+                    )
+                }
+            )
         }
     }
 
@@ -159,17 +161,9 @@ internal fun ExtensionAware.buildSrcKapt(block: KaptExtension.() -> Unit) =
 internal fun ExtensionAware.buildSrcKsp(block: KspExtension.() -> Unit) =
     extensions.configure<KspExtension>("ksp", block)
 
-internal fun <Kotlin : KotlinCommonOptions> ExtensionAware.buildSrcKotlinOptions(
-    block: Kotlin.() -> Unit
-): Unit = extensions.configure<Kotlin>("kotlinOptions", block)
-
 internal fun <Kotlin : KotlinProjectExtension> Project.buildSrcKotlin(
     configure: Kotlin.() -> Unit
 ): Unit = this.extensions.configure("kotlin", configure)
-
-internal fun <Kotlin : KotlinCommonCompilerOptions> ExtensionAware.buildSrcKotlinCompilerOptions(
-    block: Kotlin.() -> Unit
-): Unit = extensions.configure<Kotlin>("compilerOptions", block)
 //</editor-fold>
 
 // 移除kotlin断言

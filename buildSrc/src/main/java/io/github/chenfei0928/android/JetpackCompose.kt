@@ -3,17 +3,17 @@ package io.github.chenfei0928.android
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.Deps
 import io.github.chenfei0928.DepsAndroidx
-import io.github.chenfei0928.compiler.buildSrcKotlinOptions
+import io.github.chenfei0928.compiler.buildSrcKotlin
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debugImplementation
 import io.github.chenfei0928.util.implementation
 import org.gradle.api.Project
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradleSubplugin
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import kotlin.math.max
 
 /**
@@ -43,9 +43,11 @@ fun Project.applyJetpackCompose(
             sourceCompatibility = Contract.JAVA_VERSION
             targetCompatibility = Contract.JAVA_VERSION
         }
+    }
 
-        (this as ExtensionAware).buildSrcKotlinOptions<KotlinJvmOptions> {
-            jvmTarget = Contract.JAVA_VERSION.toString()
+    buildSrcKotlin<KotlinAndroidProjectExtension> {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(Contract.JAVA_VERSION.toString()))
         }
     }
 
