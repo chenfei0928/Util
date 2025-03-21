@@ -80,23 +80,23 @@ object ParcelUtil {
         it.createTypedArrayList(creator)
     }
 
-    fun <T : Parcelable> copy(obj: T, creator: Parcelable.Creator<T>? = null): T = use {
+    fun <T : Parcelable> copy(obj: T, creator: Parcelable.Creator<T>? = null): T = use { parcel ->
         if (creator == null) {
-            it.writeParcelable(obj, 0)
-            it.setDataPosition(0)
-            ParcelCompat.readParcelable<T>(it, obj.javaClass.classLoader, obj.javaClass)!!
+            parcel.writeParcelable(obj, 0)
+            parcel.setDataPosition(0)
+            ParcelCompat.readParcelable<T>(parcel, obj.javaClass.classLoader, obj.javaClass)!!
         } else {
-            obj.writeToParcel(it, 0)
-            it.setDataPosition(0)
-            creator.createFromParcel(it)
+            obj.writeToParcel(parcel, 0)
+            parcel.setDataPosition(0)
+            creator.createFromParcel(parcel)
         }
     }
 
-    fun <T : Any> copy(obj: T, parceler: Parceler<T>): T = use {
+    fun <T : Any> copy(obj: T, parceler: Parceler<T>): T = use { parcel ->
         parceler.run {
-            obj.write(it, 0)
+            obj.write(parcel, 0)
         }
-        it.setDataPosition(0)
-        parceler.create(it)
+        parcel.setDataPosition(0)
+        parceler.create(parcel)
     }
 }

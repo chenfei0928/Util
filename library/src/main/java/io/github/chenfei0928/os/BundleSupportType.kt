@@ -17,6 +17,11 @@ import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.io.readNBytesCompat
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.lang.toByteArray
+import io.github.chenfei0928.os.BundleSupportType.AutoFind.NullableCheck.CHECK_NOW
+import io.github.chenfei0928.os.BundleSupportType.AutoFind.NullableCheck.DEFAULT_INSTANCE
+import io.github.chenfei0928.os.BundleSupportType.AutoFind.NullableCheck.NONNULL
+import io.github.chenfei0928.os.BundleSupportType.AutoFind.NullableCheck.NULLABLE
+import io.github.chenfei0928.os.BundleSupportType.AutoFind.findByType
 import io.github.chenfei0928.reflect.LazyTypeToken
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.jvmErasureClassOrNull
@@ -1094,9 +1099,9 @@ abstract class BundleSupportType<T>(
 
         final override fun putNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, value: T & Any
-        ) = bundle.putByteArray(name, ParcelUtil.use {
-            getParceler(property).run { value.write(it, 0) }
-            it.marshall()
+        ) = bundle.putByteArray(name, ParcelUtil.use { parcel ->
+            getParceler(property).run { value.write(parcel, 0) }
+            parcel.marshall()
         })
 
         final override fun getExtraNullable(

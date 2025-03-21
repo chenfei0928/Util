@@ -35,7 +35,7 @@ open class BaseWebChromeClient(
         val msg = buildString {
             append("debugMessage: onConsoleMessage message=")
             append(consoleMessage.message())
-            append("\n at")
+            append("\n at ")
             append(consoleMessage.sourceId())
             append(':')
             append(consoleMessage.lineNumber())

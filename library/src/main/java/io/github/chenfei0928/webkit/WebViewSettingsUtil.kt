@@ -32,6 +32,7 @@ import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.view.SystemUiUtil
 import io.github.chenfei0928.view.removeSelfFromParent
+import io.github.chenfei0928.webkit.WebViewSettingsUtil.isLowRamDevice
 import io.github.chenfei0928.widget.ToastUtil
 
 /**
@@ -68,12 +69,35 @@ object WebViewSettingsUtil {
         }
     }
 
-    private fun initEnvironment(context: Context) {
+    fun initEnvironment(context: Context) {
         if (!initEnvironment) {
             return
         }
         val appContext = context.applicationContext
-        isLowRamDevice = context.getSystemService<ActivityManager>()?.isLowRamDevice == true
+        // 在实例构建前设置目录前缀
+        /**
+         * webView隔离，隔离不同进程webView的数据目录
+         * 同一个进程中，只允许在webView初始化前调用，webView创建一次后调用会导致设置失败并activity退出
+         *
+         * [官方介绍](https://developer.android.google.cn/about/versions/pie/android-9.0-changes-28.web-data-dirs)
+         *
+         * [相关博文](https://www.sunzn.com/2019/04/18/Android-P-%E8%A1%8C%E4%B8%BA%E5%8F%98%E6%9B%B4%E5%AF%B9-WebView-%E7%9A%84%E5%BD%B1%E5%93%8D/)
+         */
+        if (WebViewFeature.isStartupFeatureSupported(
+                appContext, WebViewFeature.STARTUP_FEATURE_SET_DATA_DIRECTORY_SUFFIX
+            )
+        ) {
+            val config = ProcessGlobalConfig()
+            val processName = ProcessUtil.getProcessName(appContext)
+            // 如果运行的进程不是主进程中，添加前缀
+            if (appContext.packageName != processName) {
+                config.setDataDirectorySuffix(appContext, processName)
+            }
+            Debug.countTime(TAG, "checkWebViewDir:") {
+                ProcessGlobalConfig.apply(config)
+            }
+        }
+        isLowRamDevice = appContext.getSystemService<ActivityManager>()?.isLowRamDevice == true
         // 当前的webView提供者
         if (WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROCESS)) {
             val multiProcessEnabled = WebViewCompat.isMultiProcessEnabled()
@@ -92,29 +116,6 @@ object WebViewSettingsUtil {
             val array: Set<String> = ArraySet(2)
             WebViewCompat.setSafeBrowsingAllowlist(array) { isReceive: Boolean ->
                 Log.i(TAG, "setSafeBrowsingWhitelist: $isReceive")
-            }
-        }
-        // 在实例构建前设置目录前缀
-        /**
-         * webView隔离，隔离不同进程webView的数据目录
-         * 同一个进程中，只允许在webView初始化前调用，webView创建一次后调用会导致设置失败并activity退出
-         *
-         * [官方介绍](https://developer.android.google.cn/about/versions/pie/android-9.0-changes-28.web-data-dirs)
-         *
-         * [相关博文](https://www.sunzn.com/2019/04/18/Android-P-%E8%A1%8C%E4%B8%BA%E5%8F%98%E6%9B%B4%E5%AF%B9-WebView-%E7%9A%84%E5%BD%B1%E5%93%8D/)
-         */
-        if (WebViewFeature.isStartupFeatureSupported(
-                context, WebViewFeature.STARTUP_FEATURE_SET_DATA_DIRECTORY_SUFFIX
-            )
-        ) {
-            val config = ProcessGlobalConfig()
-            val processName = ProcessUtil.getProcessName(context)
-            // 如果运行的进程不是主进程中，添加前缀
-            if (context.packageName != processName) {
-                config.setDataDirectorySuffix(context, processName)
-            }
-            Debug.countTime(TAG, "checkWebViewDir:") {
-                ProcessGlobalConfig.apply(config)
             }
         }
     }
@@ -180,6 +181,12 @@ object WebViewSettingsUtil {
         }
     }
 
+    fun installWebViewWithLifecycle(
+        lifecycleOwner: LifecycleOwner,
+        placeHolder: View,
+        config: Config = Config(),
+    ): WebView? = installWebViewWithLifecycle(lifecycleOwner, placeHolder, config, ::WebView)
+
     /**
      * 创建并安装WebView到占位View上。
      *
@@ -193,7 +200,7 @@ object WebViewSettingsUtil {
     fun <V : WebView> installWebViewWithLifecycle(
         lifecycleOwner: LifecycleOwner,
         placeHolder: View,
-        config: Config,
+        config: Config = Config(),
         creator: (Context) -> V
     ): V? {
         val webView = installWebView(placeHolder, creator)
