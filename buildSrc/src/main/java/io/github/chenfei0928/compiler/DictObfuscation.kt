@@ -5,13 +5,13 @@ import io.github.chenfei0928.Contract
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.checkApp
 import io.github.chenfei0928.util.child
+import io.github.chenfei0928.util.replaceFirstCharToUppercase
 import io.github.chenfei0928.util.tmpProguardFilesDir
 import io.github.chenfei0928.util.writeTmpProguardFile
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.task
-import java.util.Locale
 import kotlin.random.Random
 
 /**
@@ -118,9 +118,7 @@ private fun getPreBuildName(variantName: String): String? {
         return "preReleaseBuild"
     }
     Contract.minifyBuildTypes.find { variantName.endsWith(it, true) }?.let {
-        val upcaseVariantName = variantName.replaceFirstChar {
-            if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
-        }
+        val upcaseVariantName = variantName.replaceFirstCharToUppercase()
         return "pre" + upcaseVariantName + "Build"
     }
     return null

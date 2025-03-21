@@ -1,6 +1,6 @@
 package io.github.chenfei0928.bean
 
-import java.util.Locale
+import io.github.chenfei0928.util.replaceFirstCharToUppercase
 
 
 /**
@@ -23,7 +23,5 @@ internal data class TaskInfo(
     val dimensionedFlavorBuildTypeName: String,
 ) {
     val targetFlavorBuildTypeVariantName =
-        dimensionedFlavorName + buildType.replaceFirstChar {
-            if (it.isLowerCase()) it.toString() else it.lowercase(Locale.ROOT)
-        }
+        dimensionedFlavorName + buildType.replaceFirstCharToUppercase()
 }

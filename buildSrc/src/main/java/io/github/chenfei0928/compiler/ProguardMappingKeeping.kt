@@ -8,9 +8,9 @@ import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.buildSrcAndroidComponents
 import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.mappingFileSaveDir
+import io.github.chenfei0928.util.replaceFirstCharToUppercase
 import org.gradle.api.Project
 import java.io.File
-import java.util.Locale
 
 /**
  * 保存Proguard代码混淆/aapt2资源名混淆映射表，以备在后续生成补丁包时应用
@@ -29,9 +29,7 @@ internal fun Project.applyProguardMappingKeeping() {
             // 某个flavor的混淆表导入文件夹
             Contract.minifyBuildTypes.map { buildType ->
                 mappingFileSaveDir.child {
-                    val upcaseBuildType = buildType.replaceFirstChar {
-                        if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
-                    }
+                    val upcaseBuildType = buildType.replaceFirstCharToUppercase()
                     "${this@productFlavor.name}${upcaseBuildType}"
                 }
             }.find {

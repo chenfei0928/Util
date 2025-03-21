@@ -3,9 +3,9 @@ package io.github.chenfei0928.tinker
 import com.android.build.gradle.api.ApplicationVariant
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.child
+import io.github.chenfei0928.util.replaceFirstCharToUppercase
 import org.gradle.api.Project
 import org.gradle.api.Task
-import java.util.Locale
 
 /**
  * 修复应用Tinker后MultiDex不生效问题
@@ -29,9 +29,7 @@ internal fun Project.applyTinkerMainDexSplit() {
         }
         println("main-dex，minSdkVersion is ${android.defaultConfig.minSdkVersion!!.apiLevel}")
         android.applicationVariants.forEach { variant ->
-            val variantName = variant.name.replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
-            }
+            val variantName = variant.name.replaceFirstCharToUppercase()
             val multidexTask = project.tasks.findByName(
                 "transformClassesWithMultidexlistFor${variantName}"
             )
@@ -47,9 +45,7 @@ internal fun Project.applyTinkerMainDexSplit() {
 }
 
 private fun Project.createReplaceMainDexListTask(variant: ApplicationVariant): Task {
-    val variantName = variant.name.replaceFirstChar {
-        if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
-    }
+    val variantName = variant.name.replaceFirstCharToUppercase()
 
     return task("replace${variantName}MainDexClassList").doLast {
         // 从主dex移除的列表

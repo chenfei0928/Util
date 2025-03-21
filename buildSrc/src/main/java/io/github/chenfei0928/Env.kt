@@ -2,11 +2,12 @@ package io.github.chenfei0928
 
 import io.github.chenfei0928.data.ProtobufType
 import io.github.chenfei0928.util.RuntimeExecProperty
+import io.github.chenfei0928.util.replaceFirstCharToUppercase
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.joor.Reflect
-import java.util.*
+import java.util.Date
 
 object Env {
     internal val logger: Logger = Logging.getLogger(this::class.java)
@@ -26,9 +27,7 @@ object Env {
             .flatMap { it.args }
             .any { startTaskRequestArg ->
                 Contract.minifyBuildTypes.any { minifyBuildType ->
-                    startTaskRequestArg.contains(minifyBuildType.replaceFirstChar {
-                        if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
-                    })
+                    startTaskRequestArg.contains(minifyBuildType.replaceFirstCharToUppercase())
                 }
             }
         // 创建impl

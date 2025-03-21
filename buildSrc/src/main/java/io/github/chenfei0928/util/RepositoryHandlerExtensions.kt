@@ -18,7 +18,6 @@ import org.gradle.api.Task
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.kotlin.dsl.DependencyHandlerScope
-import java.util.Locale
 import java.util.regex.Pattern
 
 internal fun <Android : BaseExtension> Project.buildSrcAndroid(
@@ -142,7 +141,7 @@ internal fun <TaskType : Task> Project.forEachTasks(
         // 当前task的flavor名或空字符串（全flavor编译）
         val dimensionedFlavorName = dimensionedFlavorBuildTypeName
             .substring(0, dimensionedFlavorBuildTypeName.length - buildType.length)
-            .replaceFirstChar { it.lowercase(Locale.ROOT) }
+            .replaceFirstCharToLowercase()
         val dimensionFlavorNames = run {
             var localDimensionedFlavorName = dimensionedFlavorName
             flavorDimensions.map { dimension ->

@@ -10,12 +10,12 @@ import io.github.chenfei0928.util.checkApp
 import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.forEachAssembleTasks
 import io.github.chenfei0928.util.implementation
+import io.github.chenfei0928.util.replaceFirstCharToUppercase
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.kotlin.dsl.dependencies
 import org.joor.Reflect
 import java.io.File
-import java.util.Locale
 
 /**
  * 使用打包脚本CLI进行处理，此处不依赖plugin
@@ -55,9 +55,7 @@ fun Project.applyAppWalle() {
         // 根据buildTypes创建属于该buildType的全flavor编译任务，并在之后对该project的所有task遍历中将其添加到该task的依赖中
         val buildTypesAllFlavorTask: Map<String, Task> = buildTypeNames.associateWith { buildType ->
             return@associateWith task(
-                Contract.ASSEMBLE_TASK_PREFIX + buildType.replaceFirstChar {
-                    if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
-                } + MAKE_CHANNEL_TASK_SUFFIX
+                Contract.ASSEMBLE_TASK_PREFIX + buildType.replaceFirstCharToUppercase() + MAKE_CHANNEL_TASK_SUFFIX
             ) {
                 outputs.dir(buildOutputsDir.child {
                     CHANNELS_APK_OUTPUT_DIR_NAME / buildType

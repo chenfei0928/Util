@@ -20,13 +20,13 @@ import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.forEachAssembleTasks
 import io.github.chenfei0928.util.implementation
 import io.github.chenfei0928.util.mappingFileSaveDir
+import io.github.chenfei0928.util.replaceFirstCharToUppercase
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 import java.io.File
-import java.util.Locale
 
 // tinker混淆文件存放位置
 internal const val TINKER_CONFIG_DIR = "tinker"
@@ -122,11 +122,7 @@ private fun Project.applyTinkerTask() {
 
         // 根据buildTypes创建属于该buildType的全flavor的Tinker补丁包生成任务，并在之后对该project的所有task遍历中将其添加到该task的依赖中
         val patchBuildTypesTask: Map<String, Task> = buildTypeNames.associateWith { buildType ->
-            return@associateWith task(
-                TINKER_PATCH_TASK_PREFIX + buildType.replaceFirstChar {
-                    if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
-                }
-            ) {
+            return@associateWith task(TINKER_PATCH_TASK_PREFIX + buildType.replaceFirstCharToUppercase()) {
                 description = "Make Patch by Tencent Tinker"
                 group = "Patch"
             }

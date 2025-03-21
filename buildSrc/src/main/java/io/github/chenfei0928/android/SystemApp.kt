@@ -6,11 +6,11 @@ import io.github.chenfei0928.util.buildOutputsDir
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.forEachAssembleTasks
+import io.github.chenfei0928.util.replaceFirstCharToUppercase
 import org.gradle.api.Project
 import java.io.File
 import java.io.IOException
 import java.text.DateFormat
-import java.util.Locale
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -22,9 +22,7 @@ fun Project.applySystemApp() {
     val certFile = File(rootProject.rootDir, "gradle/platform.x509.pem")
 
     forEachAssembleTasks { assembleTask, taskInfo ->
-        val upCaseName = taskInfo.dimensionedFlavorBuildTypeName.replaceFirstChar {
-            if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
-        }
+        val upCaseName = taskInfo.dimensionedFlavorBuildTypeName.replaceFirstCharToUppercase()
         tasks.register("buildAndInstall${upCaseName}Apk") {
             dependsOn(assembleTask)
             doLast {
