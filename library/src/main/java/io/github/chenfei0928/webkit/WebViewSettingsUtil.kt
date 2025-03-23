@@ -17,8 +17,6 @@ import androidx.collection.ArraySet
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.webkit.ProcessGlobalConfig
 import androidx.webkit.ProxyConfig
@@ -202,27 +200,10 @@ object WebViewSettingsUtil {
     ): V? {
         val webView = installWebView(config.placeHolder, config.parentView, config::create)
             ?: return null
-        val lifecycleObserver = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_RESUME -> {
-                    webView.onResume()
-                    webView.resumeTimers()
-                }
-                Lifecycle.Event.ON_PAUSE -> {
-                    webView.pauseTimers()
-                    webView.onPause()
-                }
-                Lifecycle.Event.ON_DESTROY -> {
-                    onDestroy(webView, config.placeHolder)
-                }
-                else -> {
-                    // noop
-                }
-            }
-        }
+        val lifecycleObserver = WebViewLifecycleOwner(webView, config.placeHolder)
         config.lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
         settingWebView(webView, lifecycleObserver, config)
-        config.onWebViewCreated(webView)
+        config.onWebViewCreated(webView, lifecycleObserver)
         return webView
     }
 
@@ -323,7 +304,7 @@ object WebViewSettingsUtil {
 
     fun <V : WebView> settingWebView(
         webView: V,
-        observer: LifecycleEventObserver,
+        observer: WebViewLifecycleOwner<V>,
         config: ConfigWithCreator<V>
     ) {
         settingWebViewByConfigBase(webView, config)
@@ -423,8 +404,8 @@ object WebViewSettingsUtil {
          * 如果为true时，当渲染进程无响应时重启渲染进程
          */
         var restartRenderProcessWhenUnresponsive: Boolean = true,
-        var webViewClient: WebViewClient = WebViewClient(),
-        var webChromeClient: WebChromeClient = WebChromeClient(),
+        var webViewClient: WebViewClient = BaseWebViewClient(placeHolder.context),
+        var webChromeClient: WebChromeClient = BaseWebChromeClient(),
     ) : Config(algorithmicDarkeningAllowed, openOffscreenPreRaster) {
         val parentView: ViewGroup = placeHolder.parent as ViewGroup
         var hostActivity: Activity? = null
@@ -433,7 +414,7 @@ object WebViewSettingsUtil {
             get() = field ?: parentView.findParentFragment()
 
         abstract fun create(context: Context): V
-        abstract fun onWebViewCreated(webView: V)
+        abstract fun onWebViewCreated(webView: V, webViewLifecycleOwner: LifecycleOwner)
 
         companion object {
             const val RENDER_GONE_NOOP = 0
@@ -443,21 +424,21 @@ object WebViewSettingsUtil {
             const val RENDER_GONE_RECREATE_HOST_FRAGMENT = 4
             const val RENDER_GONE_RECREATE_VIEW = 5
 
-            inline operator fun <reified V : WebView> invoke(
+            inline operator fun <V : WebView> invoke(
                 hostFragment: Fragment,
                 placeHolder: View,
                 crossinline create: (Context) -> V,
-                crossinline onWebViewCreated: (webView: V) -> Unit
+                crossinline onWebViewCreated: (webView: V, webViewLifecycleOwner: LifecycleOwner) -> Unit
             ) = object : ConfigWithCreator<V>(hostFragment.viewLifecycleOwner, placeHolder) {
                 init {
-                    hostActivity = hostFragment.requireActivity()
+                    this.hostActivity = hostFragment.requireActivity()
                     this.hostFragment = hostFragment
                 }
 
                 override fun create(context: Context): V = create(context)
 
-                override fun onWebViewCreated(webView: V) =
-                    onWebViewCreated(webView)
+                override fun onWebViewCreated(webView: V, webViewLifecycleOwner: LifecycleOwner) =
+                    onWebViewCreated(webView, webViewLifecycleOwner)
             }
         }
     }

@@ -19,7 +19,6 @@ import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 
 /**
  * @author chenf()
@@ -213,7 +212,7 @@ open class WebViewClientWrapper(
 
     class RestartWhenRenderProcessGone<V : WebView>(
         impl: WebViewClient,
-        private val observer: LifecycleEventObserver,
+        private val webViewLifecycleOwner: WebViewLifecycleOwner<V>,
         private val config: WebViewSettingsUtil.ConfigWithCreator<V>,
     ) : WebViewClientWrapper(impl) {
         override fun onRenderProcessGone(
@@ -265,9 +264,8 @@ open class WebViewClientWrapper(
                     }
                 }
                 WebViewSettingsUtil.ConfigWithCreator.RENDER_GONE_RECREATE_VIEW -> {
-                    config.lifecycleOwner.lifecycle.removeObserver(observer)
-                    observer.onStateChanged(config.lifecycleOwner, Lifecycle.Event.ON_PAUSE)
-                    observer.onStateChanged(config.lifecycleOwner, Lifecycle.Event.ON_DESTROY)
+                    config.lifecycleOwner.lifecycle.removeObserver(webViewLifecycleOwner)
+                    webViewLifecycleOwner.lifecycle.currentState = Lifecycle.State.DESTROYED
                     WebViewSettingsUtil.installWebViewWithLifecycleImpl(config)
                     true
                 }
