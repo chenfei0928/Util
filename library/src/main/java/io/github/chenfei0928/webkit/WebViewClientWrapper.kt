@@ -220,6 +220,9 @@ open class WebViewClientWrapper(
             detail: RenderProcessGoneDetail?
         ): Boolean {
             val result = super.onRenderProcessGone(view, detail)
+            Log.d(TAG, run {
+                "onRenderProcessGone: impl result is $result, config: ${config.restartWebViewOnRenderGone}"
+            })
             return when (config.restartWebViewOnRenderGone) {
                 WebViewSettingsUtil.ConfigWithCreator.RENDER_GONE_NOOP -> result
                 WebViewSettingsUtil.ConfigWithCreator.RENDER_GONE_CRASH -> {

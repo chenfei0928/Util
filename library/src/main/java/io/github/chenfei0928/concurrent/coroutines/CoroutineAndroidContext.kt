@@ -16,6 +16,7 @@ import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.content.findActivity
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.view.findParentFragment
+import io.github.chenfei0928.webkit.WebViewLifecycleOwner
 import java.lang.reflect.Modifier
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
@@ -116,17 +117,16 @@ private constructor(
             ) {
                 // 使用fragment的viewLifecycle创建协程实例，通过该方式获取其fragment
                 val fragment = FragmentViewLifecycleAccessor.getFragmentByViewLifecycleOwner(node)
-                CoroutineAndroidContextImpl(
-                    host,
-                    fragment.activity ?: fragment.requireContext(),
-                    fragment
-                )
+                newInstanceImpl(host, fragment)
             } else when (node) {
                 is View -> {
                     newInstanceImpl(
                         host,
                         node.findParentFragment() ?: node.context.findActivity() ?: node.context
                     )
+                }
+                is WebViewLifecycleOwner<*> -> {
+                    newInstanceImpl(host, node.webView)
                 }
                 is Dialog -> {
                     CoroutineAndroidContextImpl(host, node.context, null)
