@@ -78,17 +78,9 @@ open class BaseWebViewClient(
             // The app can recover gracefully by creating a new WebView instance
             // in the foreground.
             if (debugLog) {
-                Log.e(TAG, run {
-                    "System killed the WebView rendering process to reclaim memory. Recreating..."
-                })
+                Log.e(TAG, "System killed the WebView rendering process to reclaim memory.")
             }
-
-            WebViewSettingsUtil.onDestroy(view)
-
-            // By this point, the instance variable "mWebView" is guaranteed
-            // to be null, so it's safe to reinitialize it.
-
-            true // The app continues executing.
+            false
         }
     }
 

@@ -1,18 +1,22 @@
 package io.github.chenfei0928.webkit
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.collection.ArraySet
 import androidx.core.content.getSystemService
+import androidx.core.net.toUri
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -27,12 +31,12 @@ import androidx.webkit.WebViewRenderProcessClient
 import io.github.chenfei0928.app.ProcessUtil
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.concurrent.FragileBooleanDelegate
+import io.github.chenfei0928.content.findActivity
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.util.R
 import io.github.chenfei0928.view.SystemUiUtil
-import io.github.chenfei0928.view.removeSelfFromParent
-import io.github.chenfei0928.webkit.WebViewSettingsUtil.isLowRamDevice
+import io.github.chenfei0928.view.findParentFragment
 import io.github.chenfei0928.widget.ToastUtil
 
 /**
@@ -131,11 +135,11 @@ object WebViewSettingsUtil {
      */
     fun <V : WebView> installWebView(
         placeHolder: View,
+        parentView: ViewGroup = placeHolder.parent as ViewGroup,
         creator: (Context) -> V
     ): V? {
         // 在构建实例前初始化环境
         initEnvironment(placeHolder.context)
-        val parent = placeHolder.parent as ViewGroup
         // 修复 5.x 系统上webView初始化失败问题
         // https://www.twblogs.net/a/5b7f6cff2b717767c6af8a3c
         val tryCreateWebView: Function1<Context, V?> = label@{ context: Context ->
@@ -170,22 +174,16 @@ object WebViewSettingsUtil {
             // 更新其id，以兼容相对布局/约束布局依赖viewId布局ui的父View
             id = placeHolder.id
             // 替换到placeHolder占位View
-            val index = parent.indexOfChild(placeHolder)
-            parent.removeViewInLayout(placeHolder)
+            val index = parentView.indexOfChild(placeHolder)
+            parentView.removeView(placeHolder)
             val layoutParams = placeHolder.layoutParams
             if (layoutParams != null) {
-                parent.addView(this, index, layoutParams)
+                parentView.addView(this, index, layoutParams)
             } else {
-                parent.addView(this, index)
+                parentView.addView(this, index)
             }
         }
     }
-
-    fun installWebViewWithLifecycle(
-        lifecycleOwner: LifecycleOwner,
-        placeHolder: View,
-        config: Config = Config(),
-    ): WebView? = installWebViewWithLifecycle(lifecycleOwner, placeHolder, config, ::WebView)
 
     /**
      * 创建并安装WebView到占位View上。
@@ -193,20 +191,18 @@ object WebViewSettingsUtil {
      * 创建WebView成功后将会将WebView替换到占位View上，并使WebView监听宿主的生命周期。
      * 以自动恢复/暂停WebView的Js计时器，并在宿主销毁时自动销毁WebView实例，以优化电量消耗与避免内存泄漏。
      *
-     * @param lifecycleOwner 生命周期宿主，为WebView所在的Activity/Fragment
-     * @param placeHolder    WebView布局占位View，WebView创建完毕后会将其移除
-     * @param creator        WebView构造者
+     * @param config WebView构造配置
      */
     fun <V : WebView> installWebViewWithLifecycle(
-        lifecycleOwner: LifecycleOwner,
-        placeHolder: View,
-        config: Config = Config(),
-        creator: (Context) -> V
+        config: ConfigWithCreator<V>,
+    ): V? = installWebViewWithLifecycleImpl(config)
+
+    internal fun <V : WebView> installWebViewWithLifecycleImpl(
+        config: ConfigWithCreator<V>,
     ): V? {
-        val webView = installWebView(placeHolder, creator)
+        val webView = installWebView(config.placeHolder, config.parentView, config::create)
             ?: return null
-        settingWebView(webView, config)
-        lifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+        val lifecycleObserver = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
                     webView.onResume()
@@ -217,22 +213,35 @@ object WebViewSettingsUtil {
                     webView.onPause()
                 }
                 Lifecycle.Event.ON_DESTROY -> {
-                    onDestroy(webView)
+                    onDestroy(webView, config.placeHolder)
                 }
                 else -> {
                     // noop
                 }
             }
-        })
+        }
+        config.lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+        settingWebView(webView, lifecycleObserver, config)
+        config.onWebViewCreated(webView)
         return webView
     }
 
-    fun onDestroy(webView: WebView?) {
+    fun onDestroy(webView: WebView?, placeHolder: View? = null) {
         if (webView != null) {
             webView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null)
             webView.clearHistory()
+            webView.webViewClient = WebViewClient()
             webView.webChromeClient = null
-            webView.removeSelfFromParent()
+            (webView.parent as? ViewGroup)?.let { parentView ->
+                val index = parentView.indexOfChild(webView)
+                parentView.removeView(webView)
+                val layoutParams = webView.layoutParams
+                if (layoutParams != null) {
+                    parentView.addView(placeHolder, index, layoutParams)
+                } else {
+                    parentView.addView(placeHolder, index)
+                }
+            }
             webView.destroy()
         }
     }
@@ -240,12 +249,7 @@ object WebViewSettingsUtil {
 
     //<editor-fold desc="设置构建完成的WebView实例" defaultstatus="collapsed">
     @SuppressLint("SetJavaScriptEnabled")
-    fun settingWebView(webView: WebView, config: Config) {
-        // 监听渲染器进程客户端
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
-            Log.i(TAG, "settingWebView: setWebViewRenderProcessClient")
-            WebViewCompat.setWebViewRenderProcessClient(webView, webViewRenderProcessClient)
-        }
+    private fun settingWebViewByConfigBase(webView: WebView, config: Config) {
         val settings = webView.settings
         // 安全浏览
         if (WebViewFeature.isFeatureSupported(WebViewFeature.SAFE_BROWSING_ENABLE)) {
@@ -303,8 +307,44 @@ object WebViewSettingsUtil {
             )
             val intent = Intent(Intent.ACTION_VIEW)
             intent.addCategory(Intent.CATEGORY_BROWSABLE)
-            intent.setData(Uri.parse(url))
+            intent.setData(url.toUri())
             webView.context.startActivity(intent)
+        }
+    }
+
+    fun settingWebView(webView: WebView, config: Config) {
+        settingWebViewByConfigBase(webView, config)
+        // 监听渲染器进程客户端
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
+            Log.i(TAG, "settingWebView: setWebViewRenderProcessClient")
+            WebViewCompat.setWebViewRenderProcessClient(webView, BaseWebViewRenderProcessClient())
+        }
+    }
+
+    fun <V : WebView> settingWebView(
+        webView: V,
+        observer: LifecycleEventObserver,
+        config: ConfigWithCreator<V>
+    ) {
+        settingWebViewByConfigBase(webView, config)
+        // 监听渲染器进程客户端
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
+            Log.i(TAG, "settingWebView: setWebViewRenderProcessClient")
+            WebViewCompat.setWebViewRenderProcessClient(
+                webView, ConfigWebViewRenderProcessClient(config)
+            )
+        }
+
+        // 设置webView的client
+        webView.webChromeClient = config.webChromeClient
+        webView.webViewClient = if (
+            config.restartWebViewOnRenderGone == ConfigWithCreator.RENDER_GONE_NOOP
+        ) {
+            config.webViewClient
+        } else {
+            WebViewClientWrapper.RestartWhenRenderProcessGone(
+                config.webViewClient, observer, config
+            )
         }
     }
 
@@ -316,31 +356,109 @@ object WebViewSettingsUtil {
         )
     }
 
-    private val webViewRenderProcessClient = object : WebViewRenderProcessClient() {
+    private open class BaseWebViewRenderProcessClient : WebViewRenderProcessClient() {
         override fun onRenderProcessUnresponsive(view: WebView, renderer: WebViewRenderProcess?) {
-            Log.w(TAG, "onRenderProcessUnresponsive: $renderer")
-            if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_TERMINATE)) {
-                renderer?.terminate()
-            } else {
-                Log.e(TAG, "onRenderProcessUnresponsive: can not terminate renderer.")
-            }
+            Log.e(TAG, "onRenderProcessUnresponsive: can not terminate renderer.")
         }
 
         override fun onRenderProcessResponsive(view: WebView, renderer: WebViewRenderProcess?) {
             Log.v(TAG, "onRenderProcessResponsive: ")
         }
     }
+
+    private class ConfigWebViewRenderProcessClient(
+        private val config: ConfigWithCreator<out WebView>,
+    ) : BaseWebViewRenderProcessClient() {
+        override fun onRenderProcessUnresponsive(view: WebView, renderer: WebViewRenderProcess?) {
+            if (!config.restartRenderProcessWhenUnresponsive) {
+                Log.w(TAG, "onRenderProcessUnresponsive: $renderer but noop")
+            } else if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_TERMINATE)) {
+                Log.w(TAG, run {
+                    "onRenderProcessUnresponsive: $renderer, will be restart render process."
+                })
+                renderer?.terminate()
+            } else {
+                Log.e(TAG, "onRenderProcessUnresponsive: can not terminate renderer.")
+            }
+        }
+    }
     //</editor-fold>
 
-    data class Config(
+    open class Config(
+        /**
+         * 允许使用夜间模式
+         */
         var algorithmicDarkeningAllowed: Boolean = true,
-
         /**
          * 离屏渲染，优化滑动时的伪影（会消耗较多内存）
          * 设置此 WebView 在屏幕外但附加到窗口时是否应光栅化图块。
          * 在屏幕上为屏幕外的 WebView 设置动画时，打开此选项可以避免渲染伪影。
-         * 此模式下的屏幕外 WebView 使用更多内存。默认值为 ![isLowRamDevice]。
+         * 此模式下的屏幕外 WebView 使用更多内存。默认值为 ![WebViewSettingsUtil.isLowRamDevice]。
          **/
-        var openOffscreenPreRaster: Boolean = !isLowRamDevice
+        var openOffscreenPreRaster: Boolean = !isLowRamDevice,
     )
+
+    @Suppress("LongParameterList")
+    abstract class ConfigWithCreator<V : WebView>(
+        val lifecycleOwner: LifecycleOwner,
+        val placeHolder: View,
+        /**
+         * 允许使用夜间模式
+         */
+        algorithmicDarkeningAllowed: Boolean = true,
+        /**
+         * 离屏渲染，优化滑动时的伪影（会消耗较多内存）
+         * 设置此 WebView 在屏幕外但附加到窗口时是否应光栅化图块。
+         * 在屏幕上为屏幕外的 WebView 设置动画时，打开此选项可以避免渲染伪影。
+         * 此模式下的屏幕外 WebView 使用更多内存。默认值为 ![WebViewSettingsUtil.isLowRamDevice]。
+         **/
+        openOffscreenPreRaster: Boolean = !isLowRamDevice,
+        /**
+         * 当 WebView 实例的渲染进程丢失时，自动重启 WebView
+         *
+         * 但需要应用当前进程内所有 WebView 都实现了自动重启的实现
+         */
+        var restartWebViewOnRenderGone: Int = RENDER_GONE_RECREATE_VIEW,
+        /**
+         * 如果为true时，当渲染进程无响应时重启渲染进程
+         */
+        var restartRenderProcessWhenUnresponsive: Boolean = true,
+        var webViewClient: WebViewClient = WebViewClient(),
+        var webChromeClient: WebChromeClient = WebChromeClient(),
+    ) : Config(algorithmicDarkeningAllowed, openOffscreenPreRaster) {
+        val parentView: ViewGroup = placeHolder.parent as ViewGroup
+        var hostActivity: Activity? = null
+            get() = field ?: parentView.context.findActivity()
+        var hostFragment: Fragment? = null
+            get() = field ?: parentView.findParentFragment()
+
+        abstract fun create(context: Context): V
+        abstract fun onWebViewCreated(webView: V)
+
+        companion object {
+            const val RENDER_GONE_NOOP = 0
+            const val RENDER_GONE_CRASH = 1
+            const val RENDER_GONE_RECREATE_ACTIVITY = 2
+            const val RENDER_GONE_REUSE_HOST_FRAGMENT = 3
+            const val RENDER_GONE_RECREATE_HOST_FRAGMENT = 4
+            const val RENDER_GONE_RECREATE_VIEW = 5
+
+            inline operator fun <reified V : WebView> invoke(
+                hostFragment: Fragment,
+                placeHolder: View,
+                crossinline create: (Context) -> V,
+                crossinline onWebViewCreated: (webView: V) -> Unit
+            ) = object : ConfigWithCreator<V>(hostFragment.viewLifecycleOwner, placeHolder) {
+                init {
+                    hostActivity = hostFragment.requireActivity()
+                    this.hostFragment = hostFragment
+                }
+
+                override fun create(context: Context): V = create(context)
+
+                override fun onWebViewCreated(webView: V) =
+                    onWebViewCreated(webView)
+            }
+        }
+    }
 }
