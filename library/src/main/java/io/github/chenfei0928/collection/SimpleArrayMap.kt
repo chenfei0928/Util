@@ -9,16 +9,13 @@ import androidx.collection.SimpleArrayMap
 /**
  * 将[Map]转换为[SimpleArrayMap]，[SimpleArrayMap]的实现性能更高
  */
-fun <K, V> Map<K, V>.asSimpleArrayMap(): SimpleArrayMap<K, V> = if (this is SimpleArrayMap<*, *>) {
-    @Suppress("UNCHECKED_CAST")
-    this as SimpleArrayMap<K, V>
-} else {
-    SimpleArrayMap<K, V>(size).also {
+@Suppress("UNCHECKED_CAST")
+fun <K, V> Map<K, V>.asSimpleArrayMap(): SimpleArrayMap<K, V> =
+    this as? SimpleArrayMap<K, V> ?: SimpleArrayMap<K, V>(size).also {
         this.forEach { (k, v) ->
             it.put(k, v)
         }
     }
-}
 
 inline operator fun <K, V> SimpleArrayMap<K, V>.set(key: K, value: V): V? = put(key, value)
 

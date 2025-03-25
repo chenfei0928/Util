@@ -47,6 +47,6 @@ private constructor(
          * 数据Base64化修饰器
          */
         fun <T : Any> LocalSerializer<T>.base64(): LocalSerializer<T> =
-            if (this is Base64Serializer) this else Base64Serializer(this)
+            this as? Base64Serializer ?: Base64Serializer(this)
     }
 }

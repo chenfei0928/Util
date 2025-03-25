@@ -45,6 +45,6 @@ private constructor(
          * 对数据进行GZip压缩
          */
         fun <T : Any> LocalSerializer<T>.gzip(): LocalSerializer<T> =
-            if (this is GZipSerializer) this else GZipSerializer(this)
+            this as? GZipSerializer ?: GZipSerializer(this)
     }
 }

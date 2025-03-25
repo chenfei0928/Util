@@ -4,24 +4,20 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
-import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.collection.ArraySet
 import androidx.core.content.getSystemService
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.webkit.ProcessGlobalConfig
 import androidx.webkit.ProxyConfig
 import androidx.webkit.ProxyController
-import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import androidx.webkit.WebViewRenderProcess
@@ -49,9 +45,11 @@ object WebViewSettingsUtil {
     private const val TAG = "KW_WebSettingUtil"
 
     //<editor-fold desc="初始化环境" defaultstatus="collapsed">
-    private var safeBrowsingEnable = true
+    internal var safeBrowsingEnable = true
+        private set
     private val initEnvironment by FragileBooleanDelegate()
-    private var isLowRamDevice = false
+    internal var isLowRamDevice = false
+        private set
 
     /**
      * 为webView设置代理
@@ -229,77 +227,26 @@ object WebViewSettingsUtil {
     //</editor-fold>
 
     //<editor-fold desc="设置构建完成的WebView实例" defaultstatus="collapsed">
-    @SuppressLint("SetJavaScriptEnabled")
+    @Suppress("kotlin:S3776")
     private fun settingWebViewByConfigBase(webView: WebView, config: Config) {
+        config.webView = webView
         val settings = webView.settings
-        // 安全浏览
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.SAFE_BROWSING_ENABLE)) {
-            WebSettingsCompat.setSafeBrowsingEnabled(settings, safeBrowsingEnable)
-        }
-        settings.blockNetworkImage = false
-        // 允许使用Js
-        settings.javaScriptEnabled = true
-        settings.javaScriptCanOpenWindowsAutomatically = true
-        // 如果缓存可用则从缓存中获取
-        settings.cacheMode = WebSettings.LOAD_DEFAULT
-        // 将图片调整到适合webView的大小
-        settings.useWideViewPort = true
-        // 支持内容重新布局
-        settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.NORMAL
-        // 支持自动加载图片
-        settings.loadsImagesAutomatically = true
-        // 当webView调用requestFocus时为webView设置节点
-        settings.setNeedInitialFocus(true)
-        // 自适应屏幕
-        settings.useWideViewPort = true
-        settings.loadWithOverviewMode = true
-        // 开启DOM storage API功能（HTML5 提供的一种标准的接口，主要将键值对存储在本地，在页面加载完毕后可以通过 javascript 来操作这些数据。）
-        settings.domStorageEnabled = true
-        // 支持缩放
-        settings.builtInZoomControls = false
-        settings.setSupportZoom(true)
-
-        // 不允许WebView对文件的操作，使用
-        settings.allowFileAccess = false
-        settings.allowContentAccess = false
-        // WebView在5.0之前默认允许其加载混合网络协议内容
-        // 在5.0之后，默认不允许加载http与https混合内容，需要设置WebView允许其加载混合网络协议内容
-        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-        // 夜间模式
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
-            WebSettingsCompat.setAlgorithmicDarkeningAllowed(
-                settings, config.algorithmicDarkeningAllowed
-            )
-        }
-        // 离屏渲染，优化滑动时的伪影（会消耗较多内存）
-        // 设置此 WebView 在屏幕外但附加到窗口时是否应光栅化图块。在屏幕上为屏幕外的 WebView 设置动画时，打开此选项可以避免渲染伪影。
-        // 此模式下的屏幕外 WebView 使用更多内存。默认值为false。
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.OFF_SCREEN_PRERASTER)) {
-            WebSettingsCompat.setOffscreenPreRaster(settings, config.openOffscreenPreRaster)
+        WebSettingsConfig.settingsConfigField.forEach {
+            it.apply(settings, config)
         }
 
-        webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
-            Log.v(
-                TAG, "onDownloadStart: " + url
-                        + " userAgent " + userAgent
-                        + " contentDisposition " + contentDisposition
-                        + " mimetype " + mimetype
-                        + " contentLength " + contentLength
-            )
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.addCategory(Intent.CATEGORY_BROWSABLE)
-            intent.setData(url.toUri())
-            webView.context.startActivity(intent)
+        webView.setNetworkAvailable(config.networkAvailable)
+        config.javascriptInterface.forEach {
+            @SuppressLint("JavascriptInterface")
+            webView.addJavascriptInterface(it.value, it.key)
         }
+        webView.setDownloadListener(config.downloadListener)
     }
 
     fun settingWebView(webView: WebView, config: Config) {
         settingWebViewByConfigBase(webView, config)
         // 监听渲染器进程客户端
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
-            Log.i(TAG, "settingWebView: setWebViewRenderProcessClient")
-            WebViewCompat.setWebViewRenderProcessClient(webView, BaseWebViewRenderProcessClient())
-        }
+        webView.webViewRenderProcessClientCompat = BaseWebViewRenderProcessClient()
     }
 
     fun <V : WebView> settingWebView(
@@ -309,12 +256,7 @@ object WebViewSettingsUtil {
     ) {
         settingWebViewByConfigBase(webView, config)
         // 监听渲染器进程客户端
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
-            Log.i(TAG, "settingWebView: setWebViewRenderProcessClient")
-            WebViewCompat.setWebViewRenderProcessClient(
-                webView, ConfigWebViewRenderProcessClient(config)
-            )
-        }
+        webView.webViewRenderProcessClientCompat = ConfigWebViewRenderProcessClient(config)
 
         // 设置webView的client
         webView.webChromeClient = config.webChromeClient
@@ -365,53 +307,32 @@ object WebViewSettingsUtil {
     }
     //</editor-fold>
 
-    open class Config(
-        /**
-         * 允许使用夜间模式
-         */
-        var algorithmicDarkeningAllowed: Boolean = true,
-        /**
-         * 离屏渲染，优化滑动时的伪影（会消耗较多内存）
-         * 设置此 WebView 在屏幕外但附加到窗口时是否应光栅化图块。
-         * 在屏幕上为屏幕外的 WebView 设置动画时，打开此选项可以避免渲染伪影。
-         * 此模式下的屏幕外 WebView 使用更多内存。默认值为 ![WebViewSettingsUtil.isLowRamDevice]。
-         **/
-        var openOffscreenPreRaster: Boolean = !isLowRamDevice,
-    )
+    open class Config : WebViewConfig()
 
     @Suppress("LongParameterList")
     abstract class ConfigWithCreator<V : WebView>(
         val lifecycleOwner: LifecycleOwner,
         val placeHolder: View,
-        /**
-         * 允许使用夜间模式
-         */
-        algorithmicDarkeningAllowed: Boolean = true,
-        /**
-         * 离屏渲染，优化滑动时的伪影（会消耗较多内存）
-         * 设置此 WebView 在屏幕外但附加到窗口时是否应光栅化图块。
-         * 在屏幕上为屏幕外的 WebView 设置动画时，打开此选项可以避免渲染伪影。
-         * 此模式下的屏幕外 WebView 使用更多内存。默认值为 ![WebViewSettingsUtil.isLowRamDevice]。
-         **/
-        openOffscreenPreRaster: Boolean = !isLowRamDevice,
-        /**
-         * 当 WebView 实例的渲染进程丢失时，自动重启 WebView
-         *
-         * 但需要应用当前进程内所有 WebView 都实现了自动重启的实现
-         */
-        var restartWebViewOnRenderGone: Int = RENDER_GONE_RECREATE_VIEW,
-        /**
-         * 如果为true时，当渲染进程无响应时重启渲染进程
-         */
-        var restartRenderProcessWhenUnresponsive: Boolean = true,
-        var webViewClient: WebViewClient = BaseWebViewClient(placeHolder.context),
-        var webChromeClient: WebChromeClient = BaseWebChromeClient(),
-    ) : Config(algorithmicDarkeningAllowed, openOffscreenPreRaster) {
+    ) : Config() {
         val parentView: ViewGroup = placeHolder.parent as ViewGroup
         var hostActivity: Activity? = null
             get() = field ?: parentView.context.findActivity()
         var hostFragment: Fragment? = null
             get() = field ?: parentView.findParentFragment()
+
+        /**
+         * 当 WebView 实例的渲染进程丢失时，自动重启 WebView
+         *
+         * 但需要应用当前进程内所有 WebView 都实现了自动重启的实现
+         */
+        var restartWebViewOnRenderGone: Int = RENDER_GONE_RECREATE_VIEW
+
+        /**
+         * 如果为true时，当渲染进程无响应时重启渲染进程
+         */
+        var restartRenderProcessWhenUnresponsive: Boolean = true
+        var webViewClient: WebViewClient = BaseWebViewClient(placeHolder.context)
+        var webChromeClient: WebChromeClient = BaseWebChromeClient()
 
         abstract fun create(context: Context): V
         abstract fun onWebViewCreated(webView: V, webViewLifecycleOwner: LifecycleOwner)

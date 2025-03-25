@@ -90,7 +90,7 @@ object DepsAndroidx {
     // https://developer.android.com/jetpack/androidx/releases/webkit
     // https://developer.android.com/reference/androidx/webkit/package-summary?hl=zh-cn
     // https://dl.google.com/dl/android/maven2/androidx/webkit/webkit/maven-metadata.xml
-    const val webkit = "androidx.webkit:webkit:1.12.1"
+    const val webkit = "androidx.webkit:webkit:1.13.0"
 
     // https://developer.android.com/jetpack/androidx/releases/datastore
     // https://dl.google.com/dl/android/maven2/androidx/datastore/datastore-core/maven-metadata.xml

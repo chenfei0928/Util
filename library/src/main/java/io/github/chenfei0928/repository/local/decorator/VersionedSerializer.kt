@@ -31,10 +31,7 @@ private constructor(
     companion object {
         fun <T : Any> LocalSerializer<T>.versioned(
             versionCodeLong: Long = UtilInitializer.context.packageInfo.versionCodeLong
-        ): LocalSerializer<T> = if (this is VersionedSerializer) {
-            this
-        } else {
-            VersionedSerializer(this, versionCodeLong)
-        }
+        ): LocalSerializer<T> =
+            this as? VersionedSerializer ?: VersionedSerializer(this, versionCodeLong)
     }
 }
