@@ -22,7 +22,6 @@ private val classFieldsCache = object : LruCache<Class<*>, List<Field>>(32) {
     }
 }
 
-@Suppress("CyclomaticComplexMethod")
 fun Any?.toStringByReflect(): String {
     return if (this == null) {
         "null"
@@ -46,34 +45,37 @@ fun Any?.toStringByReflect(): String {
         is FloatArray -> contentToString()
         is DoubleArray -> contentToString()
         is BooleanArray -> contentToString()
-        else -> buildString {
-            // 不是数组，toString 也没有被重写过，调用反射输出每一个字段
-            var thisClass = this@toStringByReflect.javaClass
-            append(thisClass.simpleName)
-            append('(')
-            var hasAnyField = false
-            while (thisClass != Any::javaClass) {
-                val fields = classFieldsCache.get(thisClass)!!
-                fields.forEach {
-                    hasAnyField = true
-                    append(it.name)
-                    append('=')
-                    val value = it.get(this@toStringByReflect)
-                    if (value == this@toStringByReflect) {
-                        append("this")
-                    } else {
-                        append(value?.toStringByReflect())
-                    }
-                    append(',')
-                }
-            }
-//            if (this.charAt(length - 1) == ',') {
-            if (hasAnyField) {
-                replace(length - 1, length, ")")
+        else -> toStringByReflectImpl()
+    }
+}
+
+private fun Any.toStringByReflectImpl() = buildString {
+    // 不是数组，toString 也没有被重写过，调用反射输出每一个字段
+    var thisClass: Class<*> = this@toStringByReflectImpl.javaClass
+    append(thisClass.simpleName)
+    append('(')
+    var hasAnyField = false
+    while (thisClass != Any::javaClass) {
+        val fields = classFieldsCache[thisClass]!!
+        fields.forEach { field ->
+            hasAnyField = true
+            append(field.name)
+            append('=')
+            val value = field[this@toStringByReflectImpl]
+            if (value == this@toStringByReflectImpl) {
+                append("this")
             } else {
-                append(')')
+                append(value?.toStringByReflect())
             }
+            append(',')
         }
+        thisClass = thisClass.getSuperclass()
+    }
+//    if (this.charAt(length - 1) == ',') {
+    if (hasAnyField) {
+        replace(length - 1, length, ")")
+    } else {
+        append(')')
     }
 }
 
