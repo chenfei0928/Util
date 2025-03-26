@@ -21,22 +21,27 @@ class BorderImageView
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : OutlineClipImageView(context, attrs, defStyleAttr) {
 
-    var borderColor: ColorStateList? = null
-        set(value) {
-            field = value
-            borderPaint.color = borderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
-                ?: DEFAULT_BORDER_COLOR
-        }
     private val borderPaint = Paint().apply {
         style = Paint.Style.STROKE
         isAntiAlias = true
-        color = borderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
-            ?: DEFAULT_BORDER_COLOR
+        color = DEFAULT_BORDER_COLOR
     }
-
+    var borderColor: ColorStateList? = null
+        set(value) {
+            field = value
+            val newColor = borderColor?.getColorForState(drawableState, DEFAULT_BORDER_COLOR)
+                ?: DEFAULT_BORDER_COLOR
+            if (borderPaint.color != newColor) {
+                borderPaint.color = newColor
+                invalidate()
+            }
+        }
     var borderWidth: Float
         set(value) {
-            borderPaint.strokeWidth = value
+            if (borderPaint.strokeWidth != value) {
+                borderPaint.strokeWidth = value
+                invalidate()
+            }
         }
         get() = borderPaint.strokeWidth
 
@@ -55,6 +60,7 @@ class BorderImageView
             ?: DEFAULT_BORDER_COLOR
         if (borderPaint.color != newColor) {
             borderPaint.color = newColor
+            invalidate()
         }
     }
 
