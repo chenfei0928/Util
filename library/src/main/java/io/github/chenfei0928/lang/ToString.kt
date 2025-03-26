@@ -67,7 +67,7 @@ private fun Any.toStringByReflectImpl() = buildString {
             } else {
                 append(value?.toStringByReflect())
             }
-            append(',')
+            append(", ")
         }
         thisClass = thisClass.getSuperclass()
     }
