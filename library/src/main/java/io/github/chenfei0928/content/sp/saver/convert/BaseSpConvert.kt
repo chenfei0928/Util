@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.lang.deepEquals
-import io.github.chenfei0928.lang.toStr
+import io.github.chenfei0928.lang.toStringByReflect
 import kotlin.reflect.KProperty
 
 /**
@@ -58,7 +58,7 @@ constructor(
                 append("in ")
                 appendLine(this@BaseSpConvert)
                 append("origin is ")
-                append(value.toStr())
+                append(value.toStringByReflect())
             }, e)
             defaultValueOrNull
         }

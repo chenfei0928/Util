@@ -10,7 +10,7 @@ import io.github.chenfei0928.content.sp.saver.registerOnSpPropertyChangeListener
 import io.github.chenfei0928.content.sp.saver.toLiveData
 import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.demo.bean.Test
-import io.github.chenfei0928.lang.toStr
+import io.github.chenfei0928.lang.toStringByReflect
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.os.safeHandler
 import io.github.chenfei0928.preference.base.FieldAccessor
@@ -38,7 +38,7 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
                 append("onCreate: spSaver onSpPropertyChange ")
                 append(it)
                 append(' ')
-                append(it.get(spSaver)?.toStr())
+                append(it.get(spSaver)?.toStringByReflect())
             })
         }
         safeHandler.postDelayed(100L) {
@@ -77,7 +77,8 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
             }
             // 以下方式可以达到引用sp中结构体类型的字段，但不建议，sp存储大量数据时性能较低
             // 且会丢失值更新缓存，除非在实现时添加接口 FieldAccessor.SpLocalStorageKey
-            checkBoxPreference(spSaver.dataStore.property(
+            checkBoxPreference(
+                spSaver.dataStore.property(
                 object : FieldAccessor.Field<TestSpSaver, Boolean>,
                     FieldAccessor.SpLocalStorageKey {
                     override val pdsKey: String = "json_boolean"

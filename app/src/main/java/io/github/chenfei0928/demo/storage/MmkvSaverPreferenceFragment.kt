@@ -8,7 +8,7 @@ import androidx.preference.PreferenceFragmentCompat
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.demo.bean.Test
-import io.github.chenfei0928.lang.toStr
+import io.github.chenfei0928.lang.toStringByReflect
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.os.safeHandler
 import io.github.chenfei0928.preference.base.FieldAccessor
@@ -30,7 +30,7 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
                 append("onCreate: mmkvSaver anyPropertySetCallback ")
                 append(it)
                 append(' ')
-                append(it.second?.toStr())
+                append(it.second?.toStringByReflect())
             })
         }
         spSaver.getPropertyObservable(TestMmkvSaver::int).observe(viewLifecycleOwner) {

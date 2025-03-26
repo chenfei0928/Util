@@ -5,8 +5,7 @@ import android.content.SharedPreferences.Editor
 import android.util.Log
 import androidx.preference.PreferenceManager
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
-import io.github.chenfei0928.content.sp.saver.DataStoreDelegateStoreProvider.Companion
-import io.github.chenfei0928.lang.toStringRef
+import io.github.chenfei0928.lang.toStringAny
 import io.github.chenfei0928.preference.base.BasePreferenceDataStore
 import io.github.chenfei0928.preference.base.FieldAccessor
 import kotlin.reflect.KProperty
@@ -112,7 +111,7 @@ constructor(
      * 可能会造成读取结构体时输出反序列化前的原始信息而非结构体的 `toString` 方法。
      */
     internal fun toSpSaverPropertyString(): String =
-        saver.toStringRef(spSaverPropertyDelegateFields.toTypedArray())
+        saver.toStringAny(spSaverPropertyDelegateFields.toTypedArray())
     //</editor-fold>
 
     /**

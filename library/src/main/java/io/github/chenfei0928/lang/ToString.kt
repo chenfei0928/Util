@@ -1,76 +1,84 @@
 package io.github.chenfei0928.lang
 
+import androidx.collection.ArrayMap
+import androidx.collection.LruCache
 import io.github.chenfei0928.preference.base.FieldAccessor
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 import kotlin.reflect.KCallable
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 
-fun Any.toString0(
-    vararg fields: KProperty0<*>,
-) = buildString {
-    append(this@toString0.javaClass.simpleName)
-    append('(')
-    fields.forEachIndexed { index, kProperty0 ->
-        if (index != 0) {
-            append(", ")
+private val toStringWasOverrideCache: MutableMap<Class<*>, Boolean> = ArrayMap()
+private val classFieldsCache = object : LruCache<Class<*>, List<Field>>(32) {
+    override fun create(key: Class<*>): List<Field>? {
+        return key.declaredFields.filter {
+            Modifier.STATIC !in it.modifiers
+        }.onEach {
+            it.isAccessible = true
         }
-        append(kProperty0.name)
-        append('=')
-        append(kProperty0.get().toStr())
     }
-    append(')')
 }
 
-fun <T : Any> T.toString1(
-    vararg fields: KProperty1<T, *>,
-) = buildString {
-    append(this@toString1.javaClass.simpleName)
-    append('(')
-    fields.forEachIndexed { index, kProperty1 ->
-        if (index != 0) {
-            append(", ")
+@Suppress("CyclomaticComplexMethod")
+fun Any?.toStringByReflect(): String {
+    return if (this == null) {
+        "null"
+    } else if (toStringWasOverrideCache.getOrPut(javaClass) {
+            javaClass.getMethod("toString").declaringClass != Any::class.java
+        }) {
+        // 如果该类的 toString 方法被重写过（包裹其父类）直接调用toString方法输出
+        this.toString()
+    } else when (this) {
+        is Array<*> -> joinToString(
+            prefix = "[",
+            postfix = "]",
+            separator = ", ",
+            transform = { toStringByReflect() }
+        )
+        is ByteArray -> contentToString()
+        is ShortArray -> contentToString()
+        is IntArray -> contentToString()
+        is LongArray -> contentToString()
+        is CharArray -> contentToString()
+        is FloatArray -> contentToString()
+        is DoubleArray -> contentToString()
+        is BooleanArray -> contentToString()
+        else -> buildString {
+            // 不是数组，toString 也没有被重写过，调用反射输出每一个字段
+            var thisClass = this@toStringByReflect.javaClass
+            append(thisClass.simpleName)
+            append('(')
+            var hasAnyField = false
+            while (thisClass != Any::javaClass) {
+                val fields = classFieldsCache.get(thisClass)!!
+                fields.forEach {
+                    hasAnyField = true
+                    append(it.name)
+                    append('=')
+                    val value = it.get(this@toStringByReflect)
+                    if (value == this@toStringByReflect) {
+                        append("this")
+                    } else {
+                        append(value?.toStringByReflect())
+                    }
+                    append(',')
+                }
+            }
+//            if (this.charAt(length - 1) == ',') {
+            if (hasAnyField) {
+                replace(length - 1, length, ")")
+            } else {
+                append(')')
+            }
         }
-        append(kProperty1.name)
-        append('=')
-        append(kProperty1.get(this@toString1).toStr())
     }
-    append(')')
 }
 
-fun <T> Any.toStringT(
-    fields: Array<T>,
-): String where T : KCallable<*>, T : () -> Any? = buildString {
-    append(this@toStringT.javaClass.simpleName)
-    append('(')
-    fields.forEachIndexed { index, kProperty0 ->
-        if (index != 0) {
-            append(", ")
-        }
-        append(kProperty0.name)
-        append('=')
-        append(kProperty0().toStr())
-    }
-    append(')')
-}
-
-fun Any.toStringKV(vararg fields: Pair<String, Any?>) = buildString {
-    append(this@toStringKV.javaClass.simpleName)
-    append('(')
-    fields.forEachIndexed { index, (key, value) ->
-        if (index != 0) {
-            append(", ")
-        }
-        append(key)
-        append('=')
-        append(getValue(this@toStringKV, value).toStr())
-    }
-    append(')')
-}
-
-fun Any.toStringRef(fields: Array<Any>) = buildString {
-    append(this@toStringRef.javaClass.simpleName)
+fun Any.toStringAny(vararg fields: Any) = buildString {
+    append(this@toStringAny.javaClass.simpleName)
     append('(')
     fields.forEachIndexed { index, field ->
         if (index != 0) {
@@ -81,15 +89,15 @@ fun Any.toStringRef(fields: Array<Any>) = buildString {
                 val (key, value) = field
                 append(key)
                 append('=')
-                append(getValue(this@toStringRef, value).toStr())
+                append(getValue(this@toStringAny, value).toStringByReflect())
             }
             is KCallable<*> -> {
                 append(field.name)
                 append('=')
-                append(getValue(this@toStringRef, field).toStr())
+                append(getValue(this@toStringAny, field).toStringByReflect())
             }
             else -> {
-                append(field.toStr())
+                append(field.toStringByReflect())
             }
         }
     }

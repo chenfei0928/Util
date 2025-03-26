@@ -260,6 +260,10 @@ object Deps {
 //        val mmkv = "com.tencent:mmkv:1.3.12"
         val mmkv = "com.tencent:mmkv:2.1.0"
 
+        // https://github.com/eclipse-collections/eclipse-collections
+        val eclipseCollectionsApi = "org.eclipse.collections:eclipse-collections-api:11.1.0"
+        val eclipseCollections = "org.eclipse.collections:eclipse-collections:11.1.0"
+
         // dagger2，依赖注入
         // https://github.com/google/dagger
         object dagger {

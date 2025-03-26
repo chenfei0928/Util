@@ -42,6 +42,7 @@ import io.github.chenfei0928.demo.storage.TestMmkvSaver
 import io.github.chenfei0928.demo.storage.TestPreferenceFragment
 import io.github.chenfei0928.demo.storage.TestSpSaver
 import io.github.chenfei0928.lang.toString0
+import io.github.chenfei0928.lang.toStringAny
 import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.repository.datastore.toDatastore
@@ -209,7 +210,7 @@ class MainActivity : ComponentActivity() {
         var p: Test? by ArgumentDelegate(BundleSupportType.ProtoBufType.nullable())
         var q: Lifecycle.State? by ArgumentDelegate(BundleSupportType.EnumType.nullable())
 
-        override fun toString(): String = toString0(
+        override fun toString(): String = toStringAny(
             ::a, ::b, ::c, ::d, ::e, ::f, ::g, ::h, ::i, ::j, ::k, ::l, ::m, ::n, ::o, ::p, ::q
         )
     }
