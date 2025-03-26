@@ -73,7 +73,7 @@ private fun Any.toStringByReflectImpl() = buildString {
     }
 //    if (this.charAt(length - 1) == ',') {
     if (hasAnyField) {
-        replace(length - 1, length, ")")
+        replace(length - 2, length, ")")
     } else {
         append(')')
     }
