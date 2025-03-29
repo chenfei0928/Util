@@ -19,6 +19,7 @@ import androidx.lifecycle.LifecycleRegistry
 abstract class WebViewPreloader<V : WebView>(
     context: Context,
     webViewPlaceHolder: View = View(context),
+    private val minimumState: Lifecycle.State = Lifecycle.State.CREATED,
 ) {
     val webViewContainerView = FrameLayout(context).apply {
         addView(webViewPlaceHolder)
@@ -51,7 +52,7 @@ abstract class WebViewPreloader<V : WebView>(
     )
 
     open fun init() {
-        webViewPreloaderLifecycleOwner.lifecycle.currentState = Lifecycle.State.CREATED
+        webViewPreloaderLifecycleOwner.lifecycle.currentState = minimumState
         WebViewSettingsUtil.installWebViewWithLifecycle(config = webViewConfig)
     }
 
@@ -85,7 +86,7 @@ abstract class WebViewPreloader<V : WebView>(
                 }
             } else {
                 webViewPreloaderLifecycleOwner.lifecycle.currentState =
-                    event.targetState
+                    maxOf(event.targetState, minimumState)
             }
         })
     }
