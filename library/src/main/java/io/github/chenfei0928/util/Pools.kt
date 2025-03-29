@@ -1,11 +1,24 @@
 package io.github.chenfei0928.util
 
 import androidx.core.util.Pools
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 
 inline fun <T : Any> Pools.Pool<T>.toNonnull(
     crossinline creator: () -> T
 ): NonnullPools<T> = object : NonnullPools.SimplePool<T>(this@toNonnull) {
     override fun create(): T = creator()
+}
+
+fun <T : Any> NonnullPools<T>.acquire(lifecycleOwner: LifecycleOwner): T {
+    val t = acquire()
+    lifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+        if (event == Lifecycle.Event.ON_DESTROY) {
+            release(t)
+        }
+    })
+    return t
 }
 
 inline fun <T : Any, R> NonnullPools<T>.use(block: (T) -> R): R {
@@ -15,6 +28,17 @@ inline fun <T : Any, R> NonnullPools<T>.use(block: (T) -> R): R {
     } finally {
         release(t)
     }
+}
+
+fun <T : Any> Pools.Pool<T>.acquire(lifecycleOwner: LifecycleOwner): T? {
+    val t = acquire()
+        ?: return null
+    lifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+        if (event == Lifecycle.Event.ON_DESTROY) {
+            release(t)
+        }
+    })
+    return t
 }
 
 inline fun <T : Any> Pools.Pool<T>.use(block: (T?) -> Pair<T, R>): R {
@@ -28,6 +52,16 @@ inline fun <T : Any> Pools.Pool<T>.use(block: (T?) -> Pair<T, R>): R {
             release(it)
         }
     }
+}
+
+fun <T : Any> Pools.Pool<T>.acquire(lifecycleOwner: LifecycleOwner, creator: () -> T): T {
+    val t = acquire() ?: creator()
+    lifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+        if (event == Lifecycle.Event.ON_DESTROY) {
+            release(t)
+        }
+    })
+    return t
 }
 
 inline fun <T : Any, R> Pools.Pool<T>.use(creator: () -> T, block: (T) -> R): R {
