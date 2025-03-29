@@ -49,6 +49,8 @@ class WebViewLifecycleOwner<V : WebView> constructor(
     override fun onStateChanged(
         source: LifecycleOwner, event: Lifecycle.Event
     ) {
+        if (lifecycle.currentState == Lifecycle.State.DESTROYED)
+            return
         lifecycle.currentState = event.targetState
     }
 }

@@ -266,12 +266,15 @@ open class WebViewClientWrapper(
                         result
                     }
                 }
-                WebViewSettingsUtil.ConfigWithCreator.RENDER_GONE_RECREATE_VIEW -> {
-                    config.lifecycleOwner.lifecycle.removeObserver(webViewLifecycleOwner)
-                    webViewLifecycleOwner.lifecycle.currentState = Lifecycle.State.DESTROYED
-                    WebViewSettingsUtil.installWebViewWithLifecycleImpl(config)
-                    true
-                }
+                WebViewSettingsUtil.ConfigWithCreator.RENDER_GONE_RECREATE_VIEW ->
+                    if (webViewLifecycleOwner.lifecycle.currentState == Lifecycle.State.DESTROYED) {
+                        return true
+                    } else {
+                        config.lifecycleOwner.lifecycle.removeObserver(webViewLifecycleOwner)
+                        webViewLifecycleOwner.lifecycle.currentState = Lifecycle.State.DESTROYED
+                        WebViewSettingsUtil.installWebViewWithLifecycleImpl(config)
+                        true
+                    }
                 else -> result
             }
         }

@@ -228,7 +228,7 @@ object WebViewSettingsUtil {
 
     //<editor-fold desc="设置构建完成的WebView实例" defaultstatus="collapsed">
     @Suppress("kotlin:S3776")
-    private fun settingWebViewByConfigBase(webView: WebView, config: Config) {
+    private fun settingWebViewByConfigBase(webView: WebView, config: WebViewConfig) {
         config.webView = webView
         val settings = webView.settings
         WebSettingsConfig.settingsConfigField.forEach {
@@ -307,14 +307,14 @@ object WebViewSettingsUtil {
     }
     //</editor-fold>
 
-    open class Config : WebViewConfig()
+    class Config : WebViewConfig()
 
-    @Suppress("LongParameterList")
     abstract class ConfigWithCreator<V : WebView>(
         val lifecycleOwner: LifecycleOwner,
         val placeHolder: View,
-    ) : Config() {
-        val parentView: ViewGroup = placeHolder.parent as ViewGroup
+    ) : WebViewConfig() {
+        open val parentView: ViewGroup
+            get() = placeHolder.parent as ViewGroup
         var hostActivity: Activity? = null
             get() = field ?: parentView.context.findActivity()
         var hostFragment: Fragment? = null
@@ -335,7 +335,7 @@ object WebViewSettingsUtil {
         var webChromeClient: WebChromeClient = BaseWebChromeClient()
 
         abstract fun create(context: Context): V
-        abstract fun onWebViewCreated(webView: V, webViewLifecycleOwner: LifecycleOwner)
+        abstract fun onWebViewCreated(webView: V, webViewLifecycleOwner: WebViewLifecycleOwner<V>)
 
         companion object {
             const val RENDER_GONE_NOOP = 0
@@ -349,7 +349,7 @@ object WebViewSettingsUtil {
                 hostFragment: Fragment,
                 placeHolder: View,
                 crossinline create: (Context) -> V,
-                crossinline onWebViewCreated: (webView: V, webViewLifecycleOwner: LifecycleOwner) -> Unit
+                crossinline onWebViewCreated: (webView: V, webViewLifecycleOwner: WebViewLifecycleOwner<V>) -> Unit
             ) = object : ConfigWithCreator<V>(hostFragment.viewLifecycleOwner, placeHolder) {
                 init {
                     this.hostActivity = hostFragment.requireActivity()
@@ -358,8 +358,10 @@ object WebViewSettingsUtil {
 
                 override fun create(context: Context): V = create(context)
 
-                override fun onWebViewCreated(webView: V, webViewLifecycleOwner: LifecycleOwner) =
-                    onWebViewCreated(webView, webViewLifecycleOwner)
+                override fun onWebViewCreated(
+                    webView: V,
+                    webViewLifecycleOwner: WebViewLifecycleOwner<V>
+                ) = onWebViewCreated(webView, webViewLifecycleOwner)
             }
         }
     }

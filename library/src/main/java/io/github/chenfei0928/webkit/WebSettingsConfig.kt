@@ -31,7 +31,7 @@ internal interface WebSettingsConfig<T, V> {
             crossinline get: (T) -> V,
             crossinline set: (T, V) -> Unit,
             crossinline configGet: (WebViewConfig) -> V
-        ) = object : WebSettingsConfig.Gettable<T, V> {
+        ) = object : Gettable<T, V> {
             override fun get(t: T): V = get(t)
             override fun set(t: T, value: V) = set(t, value)
             override val WebViewConfig.value: V
@@ -41,7 +41,7 @@ internal interface WebSettingsConfig<T, V> {
         inline operator fun <T, V> invoke(
             property: KMutableProperty1<T, V>,
             crossinline configGet: (WebViewConfig) -> V
-        ) = object : WebSettingsConfig.Gettable<T, V> {
+        ) = object : Gettable<T, V> {
             override fun get(t: T): V = property.get(t)
             override fun set(t: T, value: V) = property.set(t, value)
             override val WebViewConfig.value: V
