@@ -35,6 +35,9 @@ abstract class WebViewPreloader<V : WebView>(
     protected val webViewConfig = object : WebViewSettingsUtil.ConfigWithCreator<V>(
         webViewPreloaderLifecycleOwner, webViewPlaceHolder
     ) {
+        override val parentView: ViewGroup
+            get() = this@WebViewPreloader.webViewContainerView
+
         override fun create(context: Context): V =
             this@WebViewPreloader.create(context)
 
