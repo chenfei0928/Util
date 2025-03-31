@@ -48,8 +48,8 @@ class WebViewLifecycleOwner<V : WebView> constructor(
         })
     }
 
-    fun onRenderProcessGone() {
-        Log.v(TAG, "onRenderProcessGone: ${lifecycle.currentState}")
+    fun onDestroy() {
+        Log.v(TAG, "onDestroy: ${lifecycle.currentState}")
         lifecycle.currentState = Lifecycle.State.DESTROYED
     }
 

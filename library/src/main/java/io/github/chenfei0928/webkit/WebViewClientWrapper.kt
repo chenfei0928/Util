@@ -272,7 +272,7 @@ open class WebViewClientWrapper(
                         return true
                     } else {
                         config.lifecycleOwner.lifecycle.removeObserver(webViewLifecycleOwner)
-                        webViewLifecycleOwner.onRenderProcessGone()
+                        webViewLifecycleOwner.onDestroy()
                         // post一个task，避免其它
                         config.lifecycleOwner.safeHandler.post {
                             WebViewSettingsUtil.installWebViewWithLifecycleImpl(config)
