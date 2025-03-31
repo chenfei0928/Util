@@ -1,5 +1,6 @@
 package io.github.chenfei0928.webkit
 
+import android.util.Log
 import android.view.View
 import android.webkit.WebView
 import androidx.lifecycle.Lifecycle
@@ -23,7 +24,8 @@ class WebViewLifecycleOwner<V : WebView> constructor(
     val webView: V,
     placeHolder: View? = null
 ) : LifecycleOwner, LifecycleEventObserver {
-    override val lifecycle: LifecycleRegistry = LifecycleRegistry(this)
+    override val lifecycle: Lifecycle
+        private field = LifecycleRegistry(this)
 
     init {
         lifecycle.addObserver(LifecycleEventObserver { _, event ->
@@ -46,11 +48,21 @@ class WebViewLifecycleOwner<V : WebView> constructor(
         })
     }
 
+    fun onRenderProcessGone() {
+        Log.v(TAG, "onRenderProcessGone: ${lifecycle.currentState}")
+        lifecycle.currentState = Lifecycle.State.DESTROYED
+    }
+
     override fun onStateChanged(
         source: LifecycleOwner, event: Lifecycle.Event
     ) {
+        Log.v(TAG, "onStateChanged: $webView from ${lifecycle.currentState} to $event")
         if (lifecycle.currentState == Lifecycle.State.DESTROYED)
             return
         lifecycle.currentState = event.targetState
+    }
+
+    companion object {
+        private const val TAG = "WebViewLifecycleOwner"
     }
 }

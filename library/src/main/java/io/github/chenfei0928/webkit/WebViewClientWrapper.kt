@@ -19,6 +19,7 @@ import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
+import io.github.chenfei0928.os.safeHandler
 
 /**
  * @author chenf()
@@ -267,12 +268,15 @@ open class WebViewClientWrapper(
                     }
                 }
                 WebViewSettingsUtil.ConfigWithCreator.RENDER_GONE_RECREATE_VIEW ->
-                    if (webViewLifecycleOwner.lifecycle.currentState == Lifecycle.State.DESTROYED) {
+                    if (webViewLifecycleOwner.lifecycle.currentState == Lifecycle.State.INITIALIZED) {
                         return true
                     } else {
                         config.lifecycleOwner.lifecycle.removeObserver(webViewLifecycleOwner)
-                        webViewLifecycleOwner.lifecycle.currentState = Lifecycle.State.DESTROYED
-                        WebViewSettingsUtil.installWebViewWithLifecycleImpl(config)
+                        webViewLifecycleOwner.onRenderProcessGone()
+                        // post一个task，避免其它
+                        config.lifecycleOwner.safeHandler.post {
+                            WebViewSettingsUtil.installWebViewWithLifecycleImpl(config)
+                        }
                         true
                     }
                 else -> result
