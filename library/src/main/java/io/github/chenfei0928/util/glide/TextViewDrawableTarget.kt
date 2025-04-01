@@ -8,6 +8,7 @@ import androidx.annotation.GravityInt
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
 import io.github.chenfei0928.lang.contains
+import io.github.chenfei0928.widget.ext.applyIntrinsicBounds
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -33,7 +34,7 @@ open class TextViewDrawableTarget
     }
 
     protected open fun setDrawable(drawable: Drawable?) {
-        drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+        drawable?.applyIntrinsicBounds()
         if (Gravity.RELATIVE_LAYOUT_DIRECTION in direction
             || view.compoundDrawablesRelative.let { it[0] != null || it[3] != null }
         ) {

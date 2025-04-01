@@ -7,8 +7,8 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.widget.TextViewCompat
 
-private fun setIntrinsicBounds(drawable: Drawable?) {
-    drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+fun <D : Drawable> D.applyIntrinsicBounds() = apply {
+    setBounds(0, 0, intrinsicWidth, intrinsicHeight)
 }
 
 fun TextView.updateDrawableRelative(
@@ -18,16 +18,16 @@ fun TextView.updateDrawableRelative(
     bottom: Drawable? = compoundDrawablesRelative[3]
 ) {
     if (start !== compoundDrawablesRelative[0]) {
-        setIntrinsicBounds(start)
+        start?.applyIntrinsicBounds()
     }
     if (top !== compoundDrawablesRelative[1]) {
-        setIntrinsicBounds(top)
+        top?.applyIntrinsicBounds()
     }
     if (end !== compoundDrawablesRelative[2]) {
-        setIntrinsicBounds(end)
+        end?.applyIntrinsicBounds()
     }
     if (bottom !== compoundDrawablesRelative[3]) {
-        setIntrinsicBounds(bottom)
+        bottom?.applyIntrinsicBounds()
     }
     setCompoundDrawablesRelative(start, top, end, bottom)
 }

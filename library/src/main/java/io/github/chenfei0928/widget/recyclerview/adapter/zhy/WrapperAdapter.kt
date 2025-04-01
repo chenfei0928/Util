@@ -114,12 +114,9 @@ class WrapperAdapter(
         private const val TAG = "KW_WrapperAdapter"
 
         fun wrap(adapter: RecyclerView.Adapter<*>): WrapperAdapter {
-            return if (adapter is WrapperAdapter) {
-                adapter
-            } else {
-                @Suppress("UNCHECKED_CAST")
+            return adapter as? WrapperAdapter
+                ?: @Suppress("UNCHECKED_CAST")
                 WrapperAdapter(adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
-            }
         }
     }
 }
