@@ -161,10 +161,10 @@ abstract class AbsWrapperAdapter(
         }
     }
 
-    internal val headerSize: Int
+    val headerSize: Int
         get() = headerViews.size()
 
-    internal val footerSize: Int
+    val footerSize: Int
         get() = footerViews.size()
 
     protected open fun isRealEmpty() = innerAdapter.isEmpty()
