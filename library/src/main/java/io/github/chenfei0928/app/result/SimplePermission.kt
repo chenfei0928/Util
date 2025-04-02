@@ -20,12 +20,12 @@ import io.github.chenfei0928.util.R
 fun Fragment.registerForSimplePermission(
     permissions: Array<String>,
     @StringRes permissionName: Int,
-    showRequestPermissionRationaleWhenFirst: Boolean = true,
+    showRationaleWhenFirst: Boolean = true,
     callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> = registerForSimplePermission(
     this::requireActivity,
     permissions,
-    showRequestPermissionRationaleWhenFirst,
+    showRationaleWhenFirst,
     { getString(permissionName) },
     callback
 )
@@ -37,14 +37,10 @@ fun Fragment.registerForSimplePermission(
 fun ComponentActivity.registerForSimplePermission(
     permissions: Array<String>,
     @StringRes permissionName: Int,
-    showRequestPermissionRationaleWhenFirst: Boolean = true,
+    showRationaleWhenFirst: Boolean = true,
     callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> = registerForSimplePermission(
-    { this },
-    permissions,
-    showRequestPermissionRationaleWhenFirst,
-    { getString(permissionName) },
-    callback
+    { this }, permissions, showRationaleWhenFirst, { getString(permissionName) }, callback
 )
 
 /**
@@ -53,15 +49,11 @@ fun ComponentActivity.registerForSimplePermission(
  */
 inline fun Fragment.registerForSimplePermission(
     permissions: Array<String>,
-    showRequestPermissionRationaleWhenFirst: Boolean = true,
+    showRationaleWhenFirst: Boolean = true,
     crossinline permissionName: Context.() -> String,
     noinline callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> = registerForSimplePermission(
-    this::requireActivity,
-    permissions,
-    showRequestPermissionRationaleWhenFirst,
-    permissionName,
-    callback
+    this::requireActivity, permissions, showRationaleWhenFirst, permissionName, callback
 )
 
 /**
@@ -70,11 +62,11 @@ inline fun Fragment.registerForSimplePermission(
  */
 inline fun ComponentActivity.registerForSimplePermission(
     permissions: Array<String>,
-    showRequestPermissionRationaleWhenFirst: Boolean = true,
+    showRationaleWhenFirst: Boolean = true,
     crossinline permissionName: Context.() -> String,
     noinline callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> = registerForSimplePermission(
-    { this }, permissions, showRequestPermissionRationaleWhenFirst, permissionName, callback
+    { this }, permissions, showRationaleWhenFirst, permissionName, callback
 )
 
 /**
@@ -82,11 +74,13 @@ inline fun ComponentActivity.registerForSimplePermission(
  * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
  *
  * 该方法[callback]参数不要 inline ，方法实现内部会有多处调用到该字段，回调体过大可能会在编译器inline展开后代码量爆炸
+ *
+ * @param showRationaleWhenFirst 当权限未被允许，在首次需要申请权限时是否要给予用户对要申请权限的原因提示
  */
 inline fun ActivityResultCaller.registerForSimplePermission(
     crossinline context: () -> Activity,
     permissions: Array<String>,
-    showRequestPermissionRationaleWhenFirst: Boolean = true,
+    showRationaleWhenFirst: Boolean = true,
     crossinline permissionName: Context.() -> String,
     noinline callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> {
@@ -117,7 +111,7 @@ inline fun ActivityResultCaller.registerForSimplePermission(
     )
     registerForPermission = object : PermissionLauncher(
         permissions,
-        showRequestPermissionRationaleWhenFirst,
+        showRationaleWhenFirst,
         registerForActivityResult,
         resultCallback
     ) {

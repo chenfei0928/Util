@@ -47,7 +47,7 @@ abstract class PermissionLauncher(
             ) && showRequestPermissionRationaleWhenFirst -> {
                 onRationale(object : PermissionRequest {
                     override fun proceed() = launcher.launch(permissions, options)
-                    override fun cancel() = callback.onDenied()
+                    override fun cancel() = callback.onDeniedInternal()
                 })
             }
             else -> {

@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
  * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
  *
  * @param permissions   要申请的权限
+ * @param showRationaleWhenFirst 当权限未被允许，在首次需要申请权限时是否要给予用户对要申请权限的原因提示
  * @param onRationale   当权限未被允许需要申请权限时，给予用户对要申请权限的原因提示，
  *                      并根据用户选择调用该回调的方法以通知用户是否想要继续授予权限以继续
  * @param onAgree       当权限被允许/权限已获取到时的回调，可以执行后续操作
@@ -24,12 +25,19 @@ import androidx.fragment.app.Fragment
  */
 inline fun Fragment.registerForPermission(
     permissions: Array<String>,
+    showRationaleWhenFirst: Boolean = true,
     crossinline onRationale: (request: PermissionRequest) -> Unit,
     crossinline onAgree: () -> Unit,
     crossinline onDenied: () -> Unit,
     crossinline onNeverAskAgain: () -> Unit
 ): ActivityResultLauncher<Unit?> = registerForPermission(
-    this::requireActivity, permissions, onRationale, onAgree, onDenied, onNeverAskAgain
+    this::requireActivity,
+    permissions,
+    showRationaleWhenFirst,
+    onRationale,
+    onAgree,
+    onDenied,
+    onNeverAskAgain
 )
 
 /**
@@ -37,6 +45,7 @@ inline fun Fragment.registerForPermission(
  * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
  *
  * @param permissions   要申请的权限
+ * @param showRationaleWhenFirst 当权限未被允许，在首次需要申请权限时是否要给予用户对要申请权限的原因提示
  * @param onRationale   当权限未被允许需要申请权限时，给予用户对要申请权限的原因提示，
  *                      并根据用户选择调用该回调的方法以通知用户是否想要继续授予权限以继续
  * @param onAgree       当权限被允许/权限已获取到时的回调，可以执行后续操作
@@ -45,12 +54,13 @@ inline fun Fragment.registerForPermission(
  */
 inline fun ComponentActivity.registerForPermission(
     permissions: Array<String>,
+    showRationaleWhenFirst: Boolean = true,
     crossinline onRationale: (request: PermissionRequest) -> Unit,
     crossinline onAgree: () -> Unit,
     crossinline onDenied: () -> Unit,
     crossinline onNeverAskAgain: () -> Unit
 ): ActivityResultLauncher<Unit?> = registerForPermission(
-    { this }, permissions, onRationale, onAgree, onDenied, onNeverAskAgain
+    { this }, permissions, showRationaleWhenFirst, onRationale, onAgree, onDenied, onNeverAskAgain
 )
 
 /**
@@ -58,6 +68,7 @@ inline fun ComponentActivity.registerForPermission(
  * 不要使用[lazy]进行懒加载，其注册权限请求时会检查当前状态
  *
  * @param permissions   要申请的权限
+ * @param showRationaleWhenFirst 当权限未被允许，在首次需要申请权限时是否要给予用户对要申请权限的原因提示
  * @param onRationale   当权限未被允许需要申请权限时，给予用户对要申请权限的原因提示，
  *                      并根据用户选择调用该回调的方法以通知用户是否想要继续授予权限以继续
  * @param onAgree       当权限被允许/权限已获取到时的回调，可以执行后续操作
@@ -67,6 +78,7 @@ inline fun ComponentActivity.registerForPermission(
 inline fun ActivityResultCaller.registerForPermission(
     crossinline context: () -> Activity,
     permissions: Array<String>,
+    showRationaleWhenFirst: Boolean = true,
     crossinline onRationale: (request: PermissionRequest) -> Unit,
     crossinline onAgree: () -> Unit,
     crossinline onDenied: () -> Unit,
@@ -92,7 +104,7 @@ inline fun ActivityResultCaller.registerForPermission(
         ActivityResultContracts.RequestMultiplePermissions(), resultCallback
     )
     return object : PermissionLauncher(
-        permissions, registerForActivityResult, resultCallback
+        permissions, showRationaleWhenFirst, registerForActivityResult, resultCallback
     ) {
         override fun context(): Activity {
             return context()

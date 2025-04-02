@@ -39,6 +39,8 @@ abstract class PermissionResultCallback(
      */
     protected abstract fun onAgree()
 
+    internal fun onDeniedInternal() = onDenied()
+
     /**
      * 权限被拒绝的回调
      */
