@@ -1,6 +1,6 @@
 package io.github.chenfei0928.preference
 
-import io.github.chenfei0928.preference.base.BasePreferenceDataStore
+import io.github.chenfei0928.preference.base.BaseFieldAccessorCache
 import io.github.chenfei0928.preference.base.FieldAccessor
 import io.github.chenfei0928.preference.base.MutableFieldAccessor
 import io.github.chenfei0928.repository.local.LocalFileStorage
@@ -17,12 +17,12 @@ import io.github.chenfei0928.repository.local.LocalFileStorage0
  * @author chenf()
  * @date 2024-12-26 18:30
  */
-class LocalStoragePreferenceDataStore<T : Any>(
+class LocalStorageFieldAccessorCache<T : Any>(
     private val storage: Storage<T>,
     private val fieldAccessor: MutableFieldAccessor<T> = MutableFieldAccessor.Impl(
         redirectToMutableField = true, readCache = true
     ),
-) : BasePreferenceDataStore<T>(fieldAccessor), MutableFieldAccessor<T> by fieldAccessor {
+) : BaseFieldAccessorCache<T>(fieldAccessor), MutableFieldAccessor<T> by fieldAccessor {
 
     /**
      * 如果不想要使用 mutable 方式写入字段而是用 copy，在导入包时导入

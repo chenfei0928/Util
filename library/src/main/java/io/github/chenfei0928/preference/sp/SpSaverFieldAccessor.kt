@@ -43,7 +43,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
     /**
      * [SpSaver] 的字段信息接口
      *
-     * 用于 [SpSaverPreferenceDataStore] 负责提供的获取其Kt字段信息 [property] 与最外层委托 [outDelegate]
+     * 用于 [SpSaverFieldAccessorCache] 负责提供的获取其Kt字段信息 [property] 与最外层委托 [outDelegate]
      */
     interface Field<SpSaver : AbsSpSaver<SpSaver, *, *>, V> : FieldAccessor.Field<SpSaver, V>,
         FieldAccessor.SpLocalStorageKey {
@@ -72,7 +72,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
             delegate: AbsSpSaver.Delegate<SpSaver, V>?,
         ): Field<SpSaver, V> = propertyImpl(
             property, vType, findSpAccessorDelegateIfStructAndHasDelegate,
-            delegate ?: spSaver.dataStore.getDelegateOrByReflect(property),
+            delegate ?: spSaver.fieldAccessorCache.getDelegateOrByReflect(property),
         )
 
         private fun <V> propertyImpl(
@@ -174,7 +174,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
                 ): Field<SpSaver, V> {
                     // vType复合类型或没传入委托，需要查找委托信息中的 spAccessDelegate
                     val delegate: AbsSpSaver.Delegate<SpSaver, V> = delegate
-                        ?: spSaver.dataStore.getDelegateOrByReflect(property)
+                        ?: spSaver.fieldAccessorCache.getDelegateOrByReflect(property)
                     val outDelegate: AbsSpSaver.Delegate<SpSaver, V> = delegate
                     var observable: SpValueObservable<SpSaver, Any?>? = null
                     var spAccessDelegate: AbsSpSaver.Delegate<SpSaver, *> = delegate

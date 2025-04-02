@@ -1,8 +1,9 @@
 package io.github.chenfei0928.content.sp.saver
 
 import android.content.SharedPreferences
+import io.github.chenfei0928.content.sp.saver.AbsSpSaver.Companion.edit
 import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor
-import io.github.chenfei0928.preference.sp.SpSaverPreferenceDataStore
+import io.github.chenfei0928.preference.sp.SpSaverFieldAccessorCache
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -63,25 +64,25 @@ constructor(
     }
     //</editor-fold>
 
-    val dataStore: SpSaverPreferenceDataStore<SpSaver> by lazy {
+    val fieldAccessorCache: SpSaverFieldAccessorCache<SpSaver> by lazy {
         @Suppress("UNCHECKED_CAST")
-        SpSaverPreferenceDataStore<SpSaver>(this as SpSaver)
+        SpSaverFieldAccessorCache<SpSaver>(this as SpSaver)
     }
 
     //<editor-fold desc="提供通用SpCommit的默认实现" defaultstatus="collapsed">
     override fun contains(key: String): Boolean = sp.contains(key)
     override fun contains(property: KProperty<*>): Boolean =
-        sp.contains(dataStore.findFieldByPropertyOrThrow(property).localStorageKey)
+        sp.contains(fieldAccessorCache.findFieldByPropertyOrThrow(property).localStorageKey)
 
     final override fun remove(key: String) {
         editor.remove(key)
         // 查找存储值为该key的字段，为了避免找到二次field，使用pdsKey查找
-        dataStore.spSaverPropertyDelegateFields.find { it.pdsKey == key }
+        fieldAccessorCache.spSaverPropertyDelegateFields.find { it.pdsKey == key }
             ?.let(::onFieldValueRemoved)
     }
 
     final override fun remove(property: KProperty<*>) {
-        val field = dataStore.findFieldByPropertyOrThrow(property)
+        val field = fieldAccessorCache.findFieldByPropertyOrThrow(property)
         editor.remove(field.localStorageKey)
         onFieldValueRemoved(field)
     }
@@ -94,7 +95,7 @@ constructor(
         editor.clear()
     }
 
-    override fun toString(): String = dataStore.toSpSaverPropertyString()
+    override fun toString(): String = fieldAccessorCache.toSpSaverPropertyString()
     //</editor-fold>
 
     /**

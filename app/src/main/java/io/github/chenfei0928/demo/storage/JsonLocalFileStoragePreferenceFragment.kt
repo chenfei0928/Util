@@ -6,7 +6,7 @@ import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.demo.storage.JsonLocalFileStorage0.Companion.jsonLocalStorage0
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.preference.FieldAccessorPreferenceGroupBuilder.Companion.buildPreferenceScreen
-import io.github.chenfei0928.preference.LocalStoragePreferenceDataStore
+import io.github.chenfei0928.preference.LocalStorageFieldAccessorCache
 import io.github.chenfei0928.preference.base.DataCopyClassFieldAccessor.Companion.cacheCopyFunc
 import io.github.chenfei0928.preference.base.DataCopyClassFieldAccessor.Companion.property
 import io.github.chenfei0928.preference.base.MutableFieldAccessor.Companion.property
@@ -23,7 +23,7 @@ abstract class JsonLocalFileStoragePreferenceFragment(
     override fun onCreatePreferences(
         savedInstanceState: Bundle?, rootKey: String?
     ) = Debug.countTime(TAG, name) {
-        val dataStore: LocalStoragePreferenceDataStore<JsonBean> =
+        val dataStore: LocalStorageFieldAccessorCache<JsonBean> =
             createPreferenceDataStore()
         preferenceManager.preferenceDataStore = dataStore
         // 缓存data class copy方法
@@ -58,17 +58,17 @@ abstract class JsonLocalFileStoragePreferenceFragment(
         }
     }
 
-    abstract fun createPreferenceDataStore(): LocalStoragePreferenceDataStore<JsonBean>
+    abstract fun createPreferenceDataStore(): LocalStorageFieldAccessorCache<JsonBean>
 
     class StorageFragment : JsonLocalFileStoragePreferenceFragment("json") {
-        override fun createPreferenceDataStore(): LocalStoragePreferenceDataStore<JsonBean> {
-            return LocalStoragePreferenceDataStore(JsonLocalFileStorage.storage(requireContext()))
+        override fun createPreferenceDataStore(): LocalStorageFieldAccessorCache<JsonBean> {
+            return LocalStorageFieldAccessorCache(JsonLocalFileStorage.storage(requireContext()))
         }
     }
 
     class Storage0Fragment : JsonLocalFileStoragePreferenceFragment("json0") {
-        override fun createPreferenceDataStore(): LocalStoragePreferenceDataStore<JsonBean> {
-            return LocalStoragePreferenceDataStore(requireContext().jsonLocalStorage0)
+        override fun createPreferenceDataStore(): LocalStorageFieldAccessorCache<JsonBean> {
+            return LocalStorageFieldAccessorCache(requireContext().jsonLocalStorage0)
         }
     }
 

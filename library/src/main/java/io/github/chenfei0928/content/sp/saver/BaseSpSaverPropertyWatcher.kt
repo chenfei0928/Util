@@ -27,7 +27,7 @@ internal inline fun <SpSaver : BaseSpSaver<SpSaver>> SpSaver.internalRegisterOnS
 fun <SpSaver : BaseSpSaver<SpSaver>, V> SpSaver.registerOnSpPropertyChangeListener(
     owner: LifecycleOwner, property: KProperty0<V>, listener: (V) -> Unit,
 ): Unit = internalRegisterOnSharedPreferenceChangeListener(
-    owner, dataStore.getSpKeyByProperty(property)
+    owner, fieldAccessorCache.getSpKeyByProperty(property)
 ) { listener(property.get()) }
 
 /**
@@ -40,7 +40,7 @@ fun <SpSaver : BaseSpSaver<SpSaver>, V> SpSaver.registerOnSpPropertyChangeListen
 fun <SpSaver : BaseSpSaver<SpSaver>, V> SpSaver.registerOnSpPropertyChangeListener(
     owner: LifecycleOwner, property: KProperty1<SpSaver, V>, listener: (V) -> Unit,
 ): Unit = internalRegisterOnSharedPreferenceChangeListener(
-    owner, dataStore.getSpKeyByProperty(property)
+    owner, fieldAccessorCache.getSpKeyByProperty(property)
 ) { listener(property.get(this)) }
 
 /**
@@ -51,7 +51,7 @@ fun <SpSaver : BaseSpSaver<SpSaver>, V> SpSaver.registerOnSpPropertyChangeListen
 fun <SpSaver : BaseSpSaver<SpSaver>, V> SpSaver.toLiveData(
     property: KProperty0<V>,
 ): LiveData<V> = AbsSpSaver.getSp(this@toLiveData).toLiveData(
-    dataStore.getSpKeyByProperty(property)
+    fieldAccessorCache.getSpKeyByProperty(property)
 ) { property.get() }
 
 /**
@@ -62,5 +62,5 @@ fun <SpSaver : BaseSpSaver<SpSaver>, V> SpSaver.toLiveData(
 fun <SpSaver : BaseSpSaver<SpSaver>, V> SpSaver.toLiveData(
     property: KProperty1<SpSaver, V>,
 ): LiveData<V> = AbsSpSaver.getSp(this@toLiveData).toLiveData(
-    dataStore.getSpKeyByProperty(property)
+    fieldAccessorCache.getSpKeyByProperty(property)
 ) { property.get(this@toLiveData) }

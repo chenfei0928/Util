@@ -2,6 +2,7 @@ package io.github.chenfei0928.content.sp.saver
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import io.github.chenfei0928.concurrent.updateAndGetCompat
 import java.util.concurrent.atomic.AtomicReference
 
@@ -19,6 +20,10 @@ open class BaseSpSaver<SpSaver : BaseSpSaver<SpSaver>>(
     constructor(
         context: Context, name: String, mode: Int = Context.MODE_PRIVATE,
     ) : this(context.getSharedPreferences(name, mode))
+
+    constructor(context: Context) : this(
+        PreferenceManager.getDefaultSharedPreferences(context)
+    )
 
     private val editorAtomicReference = AtomicReference<SharedPreferences.Editor?>()
 

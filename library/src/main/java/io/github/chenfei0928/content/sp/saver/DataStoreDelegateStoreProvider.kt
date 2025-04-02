@@ -28,7 +28,7 @@ constructor(
             SpValueObservable(delegate) else delegate
 
         @Suppress("UNCHECKED_CAST")
-        val field = thisRef.dataStore.property(
+        val field = thisRef.fieldAccessorCache.property(
             property as KProperty<V>, delegate.spValueType, findSpAccessorDelegateIfStruct, delegate
         )
         thisRef.onPropertyAdded(field)

@@ -3,10 +3,10 @@ package io.github.chenfei0928.preference.base
 import androidx.collection.ArrayMap
 import androidx.preference.PreferenceDataStore
 import io.github.chenfei0928.content.sp.saver.PreferenceType
-import io.github.chenfei0928.preference.DataStorePreferenceDataStore
+import io.github.chenfei0928.preference.DataStoreFieldAccessorCache
 
 /**
- * 用于 [DataStorePreferenceDataStore] 的字段访问器存储与获取
+ * 用于 [DataStoreFieldAccessorCache] 的字段访问器存储与获取
  *
  * @author chenf()
  * @date 2024-10-12 17:54

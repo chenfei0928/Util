@@ -1,7 +1,7 @@
 package io.github.chenfei0928.preference
 
 import androidx.datastore.core.DataStore
-import io.github.chenfei0928.preference.base.BasePreferenceDataStore
+import io.github.chenfei0928.preference.base.BaseFieldAccessorCache
 import io.github.chenfei0928.preference.base.DataCopyClassFieldAccessor
 import io.github.chenfei0928.preference.base.FieldAccessor
 import io.github.chenfei0928.preference.base.MutableFieldAccessor
@@ -31,12 +31,12 @@ import kotlin.reflect.KMutableProperty1
  * @author chenf()
  * @date 2024-08-13 18:18
  */
-class DataStorePreferenceDataStore<T : Any>(
+class DataStoreFieldAccessorCache<T : Any>(
     private val coroutineScope: CoroutineScope,
     private val dataStore: DataStore<T>,
     private val blockingWrite: Boolean = false,
     private val fieldAccessor: DataCopyClassFieldAccessor<T> = DataCopyClassFieldAccessor.Impl(true),
-) : BasePreferenceDataStore<T>(fieldAccessor), DataCopyClassFieldAccessor<T> by fieldAccessor {
+) : BaseFieldAccessorCache<T>(fieldAccessor), DataCopyClassFieldAccessor<T> by fieldAccessor {
     // 缓存dataStore字段最后的值，否则每次 dataStore.data.first() 耗时较久
     private val field: StateFlow<T?> = dataStore.data.stateIn(
         CoroutineScope(coroutineScope.coroutineContext + Dispatchers.IO),

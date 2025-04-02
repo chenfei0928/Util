@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.preference.PreferenceManager
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.lang.toStringAny
-import io.github.chenfei0928.preference.base.BasePreferenceDataStore
+import io.github.chenfei0928.preference.base.BaseFieldAccessorCache
 import io.github.chenfei0928.preference.base.FieldAccessor
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
@@ -21,11 +21,11 @@ import kotlin.reflect.jvm.isAccessible
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-04-24 10:42
  */
-class SpSaverPreferenceDataStore<SpSaver : AbsSpSaver<SpSaver, *, *>>
+class SpSaverFieldAccessorCache<SpSaver : AbsSpSaver<SpSaver, *, *>>
 constructor(
     internal val saver: SpSaver,
     fieldAccessor: SpSaverFieldAccessor<SpSaver> = SpSaverFieldAccessor.Impl(saver),
-) : BasePreferenceDataStore<SpSaver>(fieldAccessor),
+) : BaseFieldAccessorCache<SpSaver>(fieldAccessor),
     SpSaverFieldAccessor<SpSaver> by fieldAccessor {
 
     //<editor-fold desc="根据 KProperty 获取Field、委托、字段名" defaultstatus="collapsed">

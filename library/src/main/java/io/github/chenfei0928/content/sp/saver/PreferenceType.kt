@@ -13,11 +13,9 @@ import com.google.protobuf.PROTOBUF_ENUM_UNRECOGNIZED_NAME
 import com.google.protobuf.ProtocolMessageEnum
 import com.google.protobuf.enumClass
 import com.google.protobuf.isUnrecognized
-import io.github.chenfei0928.content.sp.saver.PreferenceType.EnumNameString
-import io.github.chenfei0928.content.sp.saver.PreferenceType.Native
 import io.github.chenfei0928.content.sp.saver.convert.BaseSpConvert
 import io.github.chenfei0928.lang.contains
-import io.github.chenfei0928.preference.DataStorePreferenceDataStore
+import io.github.chenfei0928.preference.DataStoreFieldAccessorCache
 import io.github.chenfei0928.preference.base.FieldAccessor.Field
 import io.github.chenfei0928.reflect.LazyTypeToken
 import io.github.chenfei0928.reflect.isSubclassOf
@@ -83,8 +81,8 @@ sealed interface PreferenceType {
     }
 
     /**
-     * 用于 [DataStorePreferenceDataStore] 的 [Field] 的数据类型，
-     * 在[DataStorePreferenceDataStore]中对该类型进行判断
+     * 用于 [DataStoreFieldAccessorCache] 的 [Field] 的数据类型，
+     * 在[DataStoreFieldAccessorCache]中对该类型进行判断
      */
     open class EnumNameString<E : Enum<E>>(
         val eClass: Class<E>,
@@ -220,8 +218,8 @@ sealed interface PreferenceType {
     }
 
     /**
-     * 用于 [DataStorePreferenceDataStore] 的 [Field] 的数据类型，
-     * 在[DataStorePreferenceDataStore]中对该类型进行判断
+     * 用于 [DataStoreFieldAccessorCache] 的 [Field] 的数据类型，
+     * 在[DataStoreFieldAccessorCache]中对该类型进行判断
      */
     class EnumNameStringCollection<E : Enum<E>>(
         type: EnumNameString<E>,

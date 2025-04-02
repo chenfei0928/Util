@@ -1,13 +1,13 @@
 package io.github.chenfei0928.preference.base
 
 import io.github.chenfei0928.content.sp.saver.PreferenceType
-import io.github.chenfei0928.preference.LocalStoragePreferenceDataStore
+import io.github.chenfei0928.preference.LocalStorageFieldAccessorCache
 import kotlin.reflect.KFunction
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
 
 /**
- * 用于 [LocalStoragePreferenceDataStore] 允许直接修改原对象返回持久化的持久化器
+ * 用于 [LocalStorageFieldAccessorCache] 允许直接修改原对象返回持久化的持久化器
  * @author chenf()
  * @date 2024-12-31 11:21
  */

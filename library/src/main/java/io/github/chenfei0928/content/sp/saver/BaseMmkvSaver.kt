@@ -35,7 +35,7 @@ open class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
     )
 
     override fun getSpAll(): Map<String, *> {
-        val fields = dataStore.spSaverPropertyDelegateFields
+        val fields = fieldAccessorCache.spSaverPropertyDelegateFields
         return fields.associateByTo(ArrayMap<String, Any>(fields.size), { it.pdsKey }) {
             @Suppress("UNCHECKED_CAST")
             it.get(this as SpSaver)
@@ -55,7 +55,7 @@ open class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
         if (!enableFieldObservable) {
             return
         }
-        dataStore.spSaverPropertyDelegateFields.forEach { field ->
+        fieldAccessorCache.spSaverPropertyDelegateFields.forEach { field ->
             @Suppress("UNCHECKED_CAST")
             field.observable?.onLocalStorageChange(this as SpSaver, field.property)
         }
@@ -88,9 +88,9 @@ open class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
             "to use getPropertyObservable, you must set enableFieldObservable to true.\n" +
                     "使用 getPropertyObservable 要设置 enableFieldObservable 为 true"
         }
-        return dataStore.findFieldOrNullByProperty(property)
+        return fieldAccessorCache.findFieldOrNullByProperty(property)
             ?.observable
-            ?: SpValueObservable.find(dataStore.getDelegateOrByReflect(property))
+            ?: SpValueObservable.find(fieldAccessorCache.getDelegateOrByReflect(property))
             ?: throw IllegalArgumentException(
                 "没有找到 SpValueObservable，已经为它包装了 dataStore ？$property"
             )

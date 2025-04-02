@@ -14,8 +14,8 @@ import kotlin.reflect.KProperty1
 /**
  * PreferenceScreen的构建器
  *
- * 通过 [spSaverDataStore] 与 [SpSaverPreferenceDataStore] 来存储值，
- * 要求实例化 [SpSaverPreferenceDataStore] 并设置给 [PreferenceManager.setPreferenceDataStore]
+ * 通过 [spSaverDataStore] 与 [SpSaverFieldAccessorCache] 来存储值，
+ * 要求实例化 [SpSaverFieldAccessorCache] 并设置给 [PreferenceManager.setPreferenceDataStore]
  *
  * @param spSaverDataStore 传入用于调用 [getPropertyKey] 来获取字段名
  *
@@ -24,7 +24,7 @@ import kotlin.reflect.KProperty1
  */
 class SpSaverPreferenceGroupBuilder<SpSaver : AbsSpSaver<SpSaver, *, *>>(
     context: Context,
-    private val spSaverDataStore: SpSaverPreferenceDataStore<SpSaver>,
+    private val spSaverDataStore: SpSaverFieldAccessorCache<SpSaver>,
     preferenceGroup: PreferenceGroup,
 ) : AbsPreferenceGroupBuilder1<SpSaver, SpSaverPreferenceGroupBuilder<SpSaver>>(
     context, spSaverDataStore.saver, preferenceGroup
@@ -42,12 +42,12 @@ class SpSaverPreferenceGroupBuilder<SpSaver : AbsSpSaver<SpSaver, *, *>>(
 
     @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     override fun SpSaver.getPropertyKey(property: KProperty1<SpSaver, *>): String {
-        return dataStore.findFieldByPropertyOrThrow(property).pdsKey
+        return fieldAccessorCache.findFieldByPropertyOrThrow(property).pdsKey
     }
 
     companion object {
         inline fun <SpSaver : AbsSpSaver<SpSaver, *, *>> PreferenceFragmentCompat.buildPreferenceScreen(
-            dataStore: SpSaverPreferenceDataStore<SpSaver>,
+            dataStore: SpSaverFieldAccessorCache<SpSaver>,
             builder: SpSaverPreferenceGroupBuilder<SpSaver>.() -> Unit
         ): PreferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).also {
             SpSaverPreferenceGroupBuilder(requireContext(), dataStore, it).builder()

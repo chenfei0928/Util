@@ -6,7 +6,7 @@ import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.MainActivity.Companion.jsonDataStore
 import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.os.Debug
-import io.github.chenfei0928.preference.DataStorePreferenceDataStore
+import io.github.chenfei0928.preference.DataStoreFieldAccessorCache
 import io.github.chenfei0928.preference.FieldAccessorPreferenceGroupBuilder.Companion.buildPreferenceScreen
 import io.github.chenfei0928.preference.base.DataCopyClassFieldAccessor.Companion.cacheCopyFunc
 import io.github.chenfei0928.preference.base.DataCopyClassFieldAccessor.Companion.property
@@ -21,8 +21,8 @@ class JsonDataStorePreferenceFragment : PreferenceFragmentCompat() {
         savedInstanceState: Bundle?, rootKey: String?
     ) = Debug.countTime(TAG, "json") {
         val jsonDataStore = requireContext().jsonDataStore
-        val dataStore: DataStorePreferenceDataStore<JsonBean> =
-            DataStorePreferenceDataStore(coroutineScope, jsonDataStore)
+        val dataStore: DataStoreFieldAccessorCache<JsonBean> =
+            DataStoreFieldAccessorCache(coroutineScope, jsonDataStore)
         preferenceManager.preferenceDataStore = dataStore
         // 缓存data class copy方法
         dataStore.cacheCopyFunc(JsonBean::class, JsonBean::copy)

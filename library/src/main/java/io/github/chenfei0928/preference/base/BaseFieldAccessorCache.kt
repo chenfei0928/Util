@@ -12,9 +12,9 @@ import io.github.chenfei0928.content.sp.saver.PreferenceType
  * @date 2024-12-17 15:41
  */
 @Suppress("TooManyFunctions")
-abstract class BasePreferenceDataStore<T : Any>(
+abstract class BaseFieldAccessorCache<T : Any>(
     private val fieldAccessor: FieldAccessor<T> = FieldAccessor.Impl(false),
-) : PreferenceDataStore() {
+) {
 
     protected abstract fun <V> FieldAccessor.Field<T, V>.set(value: V)
     protected abstract fun <V> FieldAccessor.Field<T, V>.get(): V
@@ -73,55 +73,61 @@ abstract class BasePreferenceDataStore<T : Any>(
         )
     }
 
-    //<editor-fold desc="put\get" defaultstatus="collapsed">
-    override fun putString(key: String, value: String?) {
-        fieldAccessor.findByName<String?>(key).set(value)
-    }
+    val preferenceDataStore: PreferenceDataStore by lazy(mode = LazyThreadSafetyMode.NONE) {
+        object : PreferenceDataStore() {
+            //<editor-fold desc="put\get" defaultstatus="collapsed">
+            override fun putString(key: String, value: String?) {
+                fieldAccessor.findByName<String?>(key).set(value)
+            }
 
-    override fun putStringSet(key: String, values: MutableSet<String>?) {
-        fieldAccessor.findByName<Set<String>?>(key).set(values)
-    }
+            override fun putStringSet(key: String, values: MutableSet<String>?) {
+                fieldAccessor.findByName<Set<String>?>(key).set(values)
+            }
 
-    override fun putInt(key: String, value: Int) {
-        fieldAccessor.findByName<Int>(key).set(value)
-    }
+            override fun putInt(key: String, value: Int) {
+                fieldAccessor.findByName<Int>(key).set(value)
+            }
 
-    override fun putLong(key: String, value: Long) {
-        fieldAccessor.findByName<Long>(key).set(value)
-    }
+            override fun putLong(key: String, value: Long) {
+                fieldAccessor.findByName<Long>(key).set(value)
+            }
 
-    override fun putFloat(key: String, value: Float) {
-        fieldAccessor.findByName<Float>(key).set(value)
-    }
+            override fun putFloat(key: String, value: Float) {
+                fieldAccessor.findByName<Float>(key).set(value)
+            }
 
-    override fun putBoolean(key: String, value: Boolean) {
-        fieldAccessor.findByName<Boolean>(key).set(value)
-    }
+            override fun putBoolean(key: String, value: Boolean) {
+                fieldAccessor.findByName<Boolean>(key).set(value)
+            }
 
-    override fun getString(key: String, defValue: String?): String? {
-        return fieldAccessor.findByName<String?>(key).get() ?: defValue
-    }
+            override fun getString(key: String, defValue: String?): String? {
+                return fieldAccessor.findByName<String?>(key).get() ?: defValue
+            }
 
-    override fun getStringSet(key: String, defValues: MutableSet<String>?): MutableSet<String>? {
-        return fieldAccessor.findByName<Set<String>?>(key).get()?.let {
-            if (it is MutableSet) it else it.toMutableSet()
-        } ?: defValues
-    }
+            override fun getStringSet(
+                key: String, defValues: MutableSet<String>?
+            ): MutableSet<String>? {
+                return fieldAccessor.findByName<Set<String>?>(key).get()?.let {
+                    it as? MutableSet ?: it.toMutableSet()
+                } ?: defValues
+            }
 
-    override fun getInt(key: String, defValue: Int): Int {
-        return fieldAccessor.findByName<Int?>(key).get() ?: defValue
-    }
+            override fun getInt(key: String, defValue: Int): Int {
+                return fieldAccessor.findByName<Int?>(key).get() ?: defValue
+            }
 
-    override fun getLong(key: String, defValue: Long): Long {
-        return fieldAccessor.findByName<Long?>(key).get() ?: defValue
-    }
+            override fun getLong(key: String, defValue: Long): Long {
+                return fieldAccessor.findByName<Long?>(key).get() ?: defValue
+            }
 
-    override fun getFloat(key: String, defValue: Float): Float {
-        return fieldAccessor.findByName<Float?>(key).get() ?: defValue
-    }
+            override fun getFloat(key: String, defValue: Float): Float {
+                return fieldAccessor.findByName<Float?>(key).get() ?: defValue
+            }
 
-    override fun getBoolean(key: String, defValue: Boolean): Boolean {
-        return fieldAccessor.findByName<Boolean?>(key).get() ?: defValue
+            override fun getBoolean(key: String, defValue: Boolean): Boolean {
+                return fieldAccessor.findByName<Boolean?>(key).get() ?: defValue
+            }
+            //</editor-fold>
+        }
     }
-    //</editor-fold>
 }

@@ -48,9 +48,9 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(
         savedInstanceState: Bundle?, rootKey: String?
     ) = Debug.countTime(TAG, "mmkvSaver onCreatePreferences") {
-        preferenceManager.preferenceDataStore = spSaver.dataStore
+        preferenceManager.preferenceDataStore = spSaver.fieldAccessorCache
         Log.i(TAG, "onCreatePreferences: buildPreferenceScreen")
-        preferenceScreen = buildPreferenceScreen<TestMmkvSaver>(spSaver.dataStore) {
+        preferenceScreen = buildPreferenceScreen<TestMmkvSaver>(spSaver.fieldAccessorCache) {
             // sp属性引用
             checkBoxPreference(TestMmkvSaver::boolean) {
                 title = "boolean"
@@ -70,10 +70,10 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
                 bindEnum()
             }
             // 以下方式可以达到引用sp中结构体类型的字段，但会丢失值更新缓存，除非在实现时添加接口 FieldAccessor.SpLocalStorageKey
-            val innerField = if ("json_boolean" in spSaver.dataStore.properties) {
+            val innerField = if ("json_boolean" in spSaver.fieldAccessorCache.properties) {
                 "json_boolean"
             } else {
-                spSaver.dataStore.property(
+                spSaver.fieldAccessorCache.property(
                     object : FieldAccessor.Field<TestMmkvSaver, Boolean>,
                         FieldAccessor.SpLocalStorageKey {
                         override val pdsKey: String = "json_boolean"

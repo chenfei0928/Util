@@ -54,9 +54,9 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(
         savedInstanceState: Bundle?, rootKey: String?
     ) = Debug.countTime(TAG, "spSaver") {
-        preferenceManager.preferenceDataStore = spSaver.dataStore
+        preferenceManager.preferenceDataStore = spSaver.fieldAccessorCache
         Log.i(TAG, "onCreatePreferences: buildPreferenceScreen")
-        preferenceScreen = buildPreferenceScreen<TestSpSaver>(spSaver.dataStore) {
+        preferenceScreen = buildPreferenceScreen<TestSpSaver>(spSaver.fieldAccessorCache) {
             // sp属性引用
             checkBoxPreference(TestSpSaver::boolean) {
                 title = "boolean"
@@ -78,7 +78,7 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
             // 以下方式可以达到引用sp中结构体类型的字段，但不建议，sp存储大量数据时性能较低
             // 且会丢失值更新缓存，除非在实现时添加接口 FieldAccessor.SpLocalStorageKey
             checkBoxPreference(
-                spSaver.dataStore.property(
+                spSaver.fieldAccessorCache.property(
                 object : FieldAccessor.Field<TestSpSaver, Boolean>,
                     FieldAccessor.SpLocalStorageKey {
                     override val pdsKey: String = "json_boolean"
