@@ -18,6 +18,7 @@ import permissions.dispatcher.PermissionUtils
  */
 abstract class PermissionLauncher(
     private val permissions: Array<String>,
+    private val showRequestPermissionRationaleWhenFirst: Boolean,
     private val launcher: ActivityResultLauncher<Array<String>>,
     private val callback: PermissionResultCallback,
 ) : ActivityResultLauncher<Unit?>() {
@@ -43,15 +44,10 @@ abstract class PermissionLauncher(
             }
             PermissionUtils.shouldShowRequestPermissionRationale(
                 context(), permissions = permissions
-            ) -> {
+            ) && showRequestPermissionRationaleWhenFirst -> {
                 onRationale(object : PermissionRequest {
-                    override fun proceed() {
-                        launcher.launch(permissions, options)
-                    }
-
-                    override fun cancel() {
-                        callback.onDenied()
-                    }
+                    override fun proceed() = launcher.launch(permissions, options)
+                    override fun cancel() = callback.onDenied()
                 })
             }
             else -> {

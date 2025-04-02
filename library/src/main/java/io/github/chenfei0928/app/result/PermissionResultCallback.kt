@@ -42,7 +42,7 @@ abstract class PermissionResultCallback(
     /**
      * 权限被拒绝的回调
      */
-    internal abstract fun onDenied()
+    protected abstract fun onDenied()
 
     /**
      * 权限被拒绝且不再提示的回调

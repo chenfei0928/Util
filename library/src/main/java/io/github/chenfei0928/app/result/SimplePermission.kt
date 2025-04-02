@@ -20,9 +20,14 @@ import io.github.chenfei0928.util.R
 fun Fragment.registerForSimplePermission(
     permissions: Array<String>,
     @StringRes permissionName: Int,
+    showRequestPermissionRationaleWhenFirst: Boolean = true,
     callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> = registerForSimplePermission(
-    this::requireActivity, permissions, { getString(permissionName) }, callback
+    this::requireActivity,
+    permissions,
+    showRequestPermissionRationaleWhenFirst,
+    { getString(permissionName) },
+    callback
 )
 
 /**
@@ -32,9 +37,14 @@ fun Fragment.registerForSimplePermission(
 fun ComponentActivity.registerForSimplePermission(
     permissions: Array<String>,
     @StringRes permissionName: Int,
+    showRequestPermissionRationaleWhenFirst: Boolean = true,
     callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> = registerForSimplePermission(
-    { this }, permissions, { getString(permissionName) }, callback
+    { this },
+    permissions,
+    showRequestPermissionRationaleWhenFirst,
+    { getString(permissionName) },
+    callback
 )
 
 /**
@@ -43,10 +53,15 @@ fun ComponentActivity.registerForSimplePermission(
  */
 inline fun Fragment.registerForSimplePermission(
     permissions: Array<String>,
+    showRequestPermissionRationaleWhenFirst: Boolean = true,
     crossinline permissionName: Context.() -> String,
     noinline callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> = registerForSimplePermission(
-    this::requireActivity, permissions, permissionName, callback
+    this::requireActivity,
+    permissions,
+    showRequestPermissionRationaleWhenFirst,
+    permissionName,
+    callback
 )
 
 /**
@@ -55,10 +70,11 @@ inline fun Fragment.registerForSimplePermission(
  */
 inline fun ComponentActivity.registerForSimplePermission(
     permissions: Array<String>,
+    showRequestPermissionRationaleWhenFirst: Boolean = true,
     crossinline permissionName: Context.() -> String,
     noinline callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> = registerForSimplePermission(
-    { this }, permissions, permissionName, callback
+    { this }, permissions, showRequestPermissionRationaleWhenFirst, permissionName, callback
 )
 
 /**
@@ -70,6 +86,7 @@ inline fun ComponentActivity.registerForSimplePermission(
 inline fun ActivityResultCaller.registerForSimplePermission(
     crossinline context: () -> Activity,
     permissions: Array<String>,
+    showRequestPermissionRationaleWhenFirst: Boolean = true,
     crossinline permissionName: Context.() -> String,
     noinline callback: (isHasPermission: Boolean) -> Unit
 ): ActivityResultLauncher<Unit?> {
@@ -78,26 +95,20 @@ inline fun ActivityResultCaller.registerForSimplePermission(
         override val context: Activity
             get() = context()
 
-        override fun onAgree() {
-            callback(true)
+        override fun onAgree() = callback(true)
+
+        override fun onDenied() = context().run {
+            onPermissionDenied(
+                getString(R.string.cf0928util_permissionDenied, permissionName()),
+                { _, _ -> registerForPermission!!.launch(null) },
+                { _, _ -> callback(false) })
         }
 
-        override fun onDenied() {
-            context().run {
-                onPermissionDenied(
-                    getString(R.string.cf0928util_permissionDenied, permissionName()),
-                    { _, _ -> registerForPermission!!.launch(null) },
-                    { _, _ -> callback(false) })
-            }
-        }
-
-        override fun onNeverAskAgain() {
-            context().run {
-                onPermissionNeverAskAgain(
-                    getString(R.string.cf0928util_permissionNeverAskAgain, permissionName())
-                ) { _, _ ->
-                    callback(false)
-                }
+        override fun onNeverAskAgain() = context().run {
+            onPermissionNeverAskAgain(
+                getString(R.string.cf0928util_permissionNeverAskAgain, permissionName())
+            ) { _, _ ->
+                callback(false)
             }
         }
     }
@@ -105,18 +116,16 @@ inline fun ActivityResultCaller.registerForSimplePermission(
         ActivityResultContracts.RequestMultiplePermissions(), resultCallback
     )
     registerForPermission = object : PermissionLauncher(
-        permissions, registerForActivityResult, resultCallback
+        permissions,
+        showRequestPermissionRationaleWhenFirst,
+        registerForActivityResult,
+        resultCallback
     ) {
-        override fun context(): Activity {
-            return context()
-        }
-
-        override fun onRationale(request: PermissionRequest) {
-            context().run {
-                onShowPermissionRationale(
-                    getString(R.string.cf0928util_permissionRationale, permissionName()), request
-                )
-            }
+        override fun context(): Activity = context()
+        override fun onRationale(request: PermissionRequest) = context().run {
+            onShowPermissionRationale(
+                getString(R.string.cf0928util_permissionRationale, permissionName()), request
+            )
         }
     }
     return registerForPermission
