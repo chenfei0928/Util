@@ -7,13 +7,13 @@ import android.util.AttributeSet
  * 修复该控件先设置checked，再设置text失效的bug
  * Created by MrFeng on 2018/5/31.
  */
-class ToggleButton : androidx.appcompat.widget.AppCompatToggleButton {
-    constructor(context: Context) : super(context)
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
-            : super(context, attrs, defStyleAttr)
+class ToggleButton
+@JvmOverloads
+constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = android.R.attr.buttonStyleToggle
+) : androidx.appcompat.widget.AppCompatToggleButton(context, attrs, defStyleAttr) {
 
     override fun setTextOff(textOff: CharSequence?) {
         super.setTextOff(textOff)

@@ -4,21 +4,24 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.SoundEffectConstants;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Created by MrFeng on 2016/11/14.
  */
 public class CheckedTextView extends androidx.appcompat.widget.AppCompatCheckedTextView {
     private OnCheckedChangeListener mOnCheckedChangeListener;
 
-    public CheckedTextView(Context context) {
+    public CheckedTextView(@NonNull Context context) {
         this(context, null);
     }
 
-    public CheckedTextView(Context context, AttributeSet attrs) {
+    public CheckedTextView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CheckedTextView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CheckedTextView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
