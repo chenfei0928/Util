@@ -7,7 +7,7 @@ import android.util.AttributeSet
  * 修复该控件先设置checked，再设置text失效的bug
  * Created by MrFeng on 2018/5/31.
  */
-class ToggleButton
+open class ToggleButton
 @JvmOverloads
 constructor(
     context: Context,

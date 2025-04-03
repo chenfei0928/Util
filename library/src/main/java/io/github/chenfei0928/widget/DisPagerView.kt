@@ -10,7 +10,7 @@ import androidx.viewpager.widget.ViewPager
  * 禁用了左右滑动的ViewPager，用来管理Fragment最简单实现
  * Created by Admin on 2015/11/23.
  */
-class DisPagerView
+open class DisPagerView
 @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

@@ -23,7 +23,7 @@ import kotlin.random.Random
 /**
  * [来源博客](https://blog.csdn.net/u010302765/article/details/70843831)
  */
-class LikeLayout
+open class LikeLayout
 @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {

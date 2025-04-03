@@ -18,7 +18,7 @@ public class CheckedTextView extends androidx.appcompat.widget.AppCompatCheckedT
     }
 
     public CheckedTextView(@NonNull Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
+        this(context, attrs, androidx.appcompat.R.attr.checkedTextViewStyle);
     }
 
     public CheckedTextView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {

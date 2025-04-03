@@ -16,7 +16,7 @@ import io.github.chenfei0928.view.asyncinflater.LikeListViewInjector
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-05-24 13:59
  */
-class TabLayout : LinearLayout {
+open class TabLayout : LinearLayout {
     lateinit var childTabViewCreator: LikeListViewInjector.AsyncAdapter<TabLayout, TabState>
     private var privateOnTabSelectListener: OnTabSelectListener =
         ListenersProxy.newEmptyListener(OnTabSelectListener::class.java)

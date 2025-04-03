@@ -28,7 +28,7 @@ import kotlin.math.min
  * - `android:textColor` 字体颜色，不传则为黑色
  * - `android:text` 字体内容
  */
-class IconFontView
+open class IconFontView
 @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

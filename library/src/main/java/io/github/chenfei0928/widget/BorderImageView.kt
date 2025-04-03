@@ -16,7 +16,7 @@ import io.github.chenfei0928.view.OutlineType
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-01-25 17:21
  */
-class BorderImageView
+open class BorderImageView
 @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : OutlineClipImageView(context, attrs, defStyleAttr) {
