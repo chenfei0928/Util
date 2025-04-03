@@ -70,6 +70,6 @@ public class CheckedTextView extends androidx.appcompat.widget.AppCompatCheckedT
          * @param buttonView The view whose state has changed.
          * @param isChecked  The new checked state of checkableView.
          */
-        void onCheckedChanged(CheckedTextView buttonView, boolean isChecked);
+        void onCheckedChanged(@NonNull CheckedTextView buttonView, boolean isChecked);
     }
 }

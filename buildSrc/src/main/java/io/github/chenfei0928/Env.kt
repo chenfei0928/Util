@@ -7,6 +7,7 @@ import org.gradle.api.invocation.Gradle
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.joor.Reflect
+import java.time.Instant
 import java.util.Date
 
 object Env {
@@ -32,7 +33,7 @@ object Env {
             }
         // 创建impl
         impl = EnvImpl(containsReleaseBuild, protobufType)
-        logger.lifecycle("Env环境初始化：$containsReleaseBuild")
+        logger.lifecycle("Env环境初始化：$containsReleaseBuild, ${Instant.now()}")
     }
 
     /**
