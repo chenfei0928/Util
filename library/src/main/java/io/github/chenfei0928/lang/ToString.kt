@@ -31,7 +31,7 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
     null -> append("null")
     is Array<*> -> {
         append('[')
-        forEachIndexed { i, it ->
+        any.forEachIndexed { i, it ->
             if (i != 0) {
                 append(", ")
             }
@@ -50,7 +50,7 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
     is CharSequence -> append(any)
     is Iterable<*> -> {
         append('[')
-        forEachIndexed { i, it ->
+        any.forEachIndexed { i, it ->
             if (i != 0) {
                 append(", ")
             }
@@ -72,12 +72,12 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
         replace(length - 2, length, "]")
     }
     is Reference<*> -> appendByReflect(any.get())
-    else -> if (toStringWasOverrideCache.getOrPut(javaClass) {
-            javaClass.getMethod("toString").declaringClass != Any::class.java
+    else -> if (toStringWasOverrideCache.getOrPut(any.javaClass) {
+            any.javaClass.getMethod("toString").declaringClass != Any::class.java
         }) {
         // 如果该类的 toString 方法被重写过（包裹其父类）直接调用toString方法输出
-        append(this.toString())
-    } else appendByReflectImpl(this)
+        append(any.toString())
+    } else appendByReflectImpl(any)
 }
 
 private fun StringBuilder.appendByReflectImpl(any: Any) = apply {
