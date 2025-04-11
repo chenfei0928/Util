@@ -29,7 +29,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.27.0")
     // Kotlin Symbol Processing 符号处理器编译器插件，需伴随Kotlin版本一同升级
     // https://github.com/google/ksp
-    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-1.0.32")
+    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-2.0.0")
     implementation(gradleApi())
 
     implementation(localGroovy())
@@ -89,6 +89,13 @@ dependencies {
     // 操作系统和硬件架构判断工具，tinker依赖
     // https://github.com/google/osdetector-gradle-plugin
     implementation("com.google.gradle:osdetector-gradle-plugin:1.7.3")
+    // 360插件化
+    // https://github.com/Qihoo360/RePlugin/blob/dev/README_CN.md
+    implementation("com.qihoo360.replugin:replugin-host-gradle:3.1.0")
+    implementation("com.qihoo360.replugin:replugin-plugin-gradle:3.1.0")
+    // 腾讯Shadow插件化
+    // https://github.com/Tencent/Shadow
+    implementation("com.tencent.shadow.plugin:com.tencent.shadow.plugin.gradle.plugin:local-dc5bafb2-SNAPSHOT")
 
     // https://github.com/bintray/gradle-bintray-plugin
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
@@ -107,11 +114,25 @@ repositories {
         name = "aliMirrors-google"
     }
     // 原生镜像
+    mavenLocal()
     mavenCentral()
     google()
     gradlePluginPortal()
     // DEX控制流混淆、SdkEditor
     maven("https://jitpack.io") {
         name = "jetpack"
+    }
+    exclusiveContent {
+        forRepository {
+            // 360 RePlugin 仓库
+            maven("http://maven.geelib.360.cn/nexus/repository/replugin/") {
+                isAllowInsecureProtocol = true
+                name = "360"
+            }
+        }
+        filter {
+//            includeGroup("com.qihoo360.replugin")
+            includeModule("com.qihoo360.replugin","replugin-host-gradle")
+        }
     }
 }

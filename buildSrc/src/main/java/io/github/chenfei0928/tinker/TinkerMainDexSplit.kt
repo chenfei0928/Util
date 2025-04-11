@@ -1,11 +1,12 @@
 package io.github.chenfei0928.tinker
 
 import com.android.build.gradle.api.ApplicationVariant
+import io.github.chenfei0928.Contract
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.child
-import io.github.chenfei0928.util.replaceFirstCharToUppercase
 import org.gradle.api.Project
 import org.gradle.api.Task
+import java.util.Locale
 
 /**
  * 修复应用Tinker后MultiDex不生效问题
@@ -16,7 +17,7 @@ import org.gradle.api.Task
  *
  * https://juejin.cn/post/6844904164540022792
  *
- * @author ChenFei(chenfei0928@gmail.com)
+ * @author chenfei(chenfei@cocos.com)
  * @date 2022-01-26 16:47
  */
 internal fun Project.applyTinkerMainDexSplit() {
@@ -29,7 +30,9 @@ internal fun Project.applyTinkerMainDexSplit() {
         }
         println("main-dex，minSdkVersion is ${android.defaultConfig.minSdkVersion!!.apiLevel}")
         android.applicationVariants.forEach { variant ->
-            val variantName = variant.name.replaceFirstCharToUppercase()
+            val variantName = variant.name.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
+            }
             val multidexTask = project.tasks.findByName(
                 "transformClassesWithMultidexlistFor${variantName}"
             )
@@ -45,31 +48,32 @@ internal fun Project.applyTinkerMainDexSplit() {
 }
 
 private fun Project.createReplaceMainDexListTask(variant: ApplicationVariant): Task {
-    val variantName = variant.name.replaceFirstCharToUppercase()
+    val variantName = variant.name.replaceFirstChar {
+        if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
+    }
 
     return task("replace${variantName}MainDexClassList").doLast {
         // 从主dex移除的列表
         // 存放剔除规则的路径
         val excludeClassList = project.projectDir.child {
-            TINKER_CONFIG_DIR / "main_dex_exclude_class.txt"
-        }.takeIf { it.exists() }?.useLines { mainDexClass ->
-            mainDexClass.map { it.trim() }
+            Contract.mappingFileSaveDirName / "main_dex_exclude_class.txt"
+        }.takeIf { it.exists() }?.useLines {
+            it.map { it.trim() }
                 .filter { it.isNotEmpty() && !it.startsWith("#") }
                 .toList()
         } ?: return@doLast
 
         // 主dex中类列表
-        val mainDexFile = project.layout.buildDirectory.child {
-            "intermediates" / "legacy_multidex_main_dex_list" / variant.dirName /
-                    "transformClassesWithMultidexlistFor${variantName}"
-        }.let { file ->
+        val mainDexFile = project.buildDir.child {
+            "intermediates" / "legacy_multidex_main_dex_list" / variant.dirName / "transformClassesWithMultidexlistFor${variantName}"
+        }.let {
             //再次判断兼容 linux/mac 环境获取
-            file.child { "maindexlist.txt" }.takeIf { it.exists() }
-                ?: file.child { "mainDexList.txt" }.takeIf { it.exists() }
+            it.child { "maindexlist.txt" }.takeIf { it.exists() }
+                ?: it.child { "mainDexList.txt" }.takeIf { it.exists() }
         } ?: return@doLast
 
-        val mainDexList = mainDexFile.useLines { mainDexClass ->
-            mainDexClass.map { it.trim() }.filter { it.isNotEmpty() }.toList()
+        val mainDexList = mainDexFile.useLines {
+            it.map { it.trim() }.filter { it.isNotEmpty() }.toList()
         }
         val newMainDexList = mainDexList.mapNotNull { mainDexItem ->
             var isKeepMainDexItem = true

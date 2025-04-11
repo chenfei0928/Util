@@ -847,6 +847,11 @@ object Deps {
 
         // https://github.com/chachako/sweekt
         const val meowoolToolkit = "com.meowool.toolkit:sweekt:0.1.0-SNAPSHOT"
+
+        // https://github.com/Qihoo360/RePlugin/blob/dev/README_CN.md
+        private val rePluginVer = com.qihoo360.replugin.gradle.host.AppConstant.getVER().toString()
+        val repluginHost = "com.qihoo360.replugin:replugin-host-lib:$rePluginVer"
+        val repluginPlugin = "com.qihoo360.replugin:replugin-plugin-lib:$rePluginVer"
     }
     //</editor-fold>
 }

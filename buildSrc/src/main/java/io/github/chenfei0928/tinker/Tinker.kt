@@ -27,15 +27,13 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 import java.io.File
-
-// tinker混淆文件存放位置
-internal const val TINKER_CONFIG_DIR = "tinker"
+import java.util.Locale
 
 /**
  * 接入方式为仅依赖接入，编译完手动备份R8混淆表与资源文件混淆表。
  * 在需要打补丁时，应用基线包的混淆表生成新包，并使用命令行工具生成补丁包
  *
- * @author ChenFei(chenfei0928@gmail.com)
+ * @author chenfei(chenfei@cocos.com)
  * @date 2021-10-22 17:56
  */
 fun Project.applyAppTinker() {
@@ -47,9 +45,9 @@ fun Project.applyAppTinker() {
     // tinkerSdk 所需混淆表
     buildSrcAndroid<com.android.build.gradle.AppExtension> {
         defaultConfig {
-            proguardFiles(projectDir.child { TINKER_CONFIG_DIR / "tinker_proguard.pro" })
+            proguardFiles(projectDir.child { Contract.mappingFileSaveDirName / "tinker_proguard.pro" })
             multiDexKeepProguard = projectDir.child {
-                TINKER_CONFIG_DIR / "tinker_multidexkeep.pro"
+                Contract.mappingFileSaveDirName / "tinker_multidexkeep.pro"
             }
         }
     }
@@ -123,67 +121,71 @@ private fun Project.applyTinkerTask() {
         // 根据buildTypes创建属于该buildType的全flavor的Tinker补丁包生成任务，并在之后对该project的所有task遍历中将其添加到该task的依赖中
         val patchBuildTypesTask: Map<String, Task> = buildTypeNames.associateWith { buildType ->
             return@associateWith task(TINKER_PATCH_TASK_PREFIX + buildType.replaceFirstCharToUppercase()) {
-                description = "Make Patch by Tencent Tinker"
-                group = "Patch"
+                group = TASK_GROUP
+                description = TASK_DESC
             }
         }
 
         forEachAssembleTasks { assembleTask, taskInfo ->
-            if (taskInfo.dimensionedFlavorName.isNotEmpty()) {
-                // 当前dimensionedFlavorName+buildType的基线包apk文件
-                val baselineApkFile: File = project.mappingFileSaveDir.child {
-                    taskInfo.targetFlavorBuildTypeVariantName / "baseline.apk"
+            // Tinker补丁包需要文件夹配置与记录补丁信息（混淆符号映射表等）
+            if (taskInfo.dimensionedFlavorName.isEmpty()) {
+                return@forEachAssembleTasks
+            }
+            // 当前dimensionedFlavorName+buildType的基线包apk文件
+            val baselineApkFile: File = project.mappingFileSaveDir.child {
+                taskInfo.targetFlavorBuildTypeVariantName / "baseline.apk"
+            }
+            // 对当前的flavor+buildType的输出文件加渠道号
+            val (variant, targetFlavorBuildTypeApkFile, tinkerPatchExtension) = outputsApkPath
+                .find { (variant, _) -> variant.name == taskInfo.targetFlavorBuildTypeVariantName }
+                ?: throw IllegalArgumentException("没有找到 ${taskInfo.targetFlavorBuildTypeVariantName} 输出apk文件")
+
+            tinkerPatchExtension.oldApk = baselineApkFile.absolutePath
+
+            // 某个productFlavor-buildType的Tinker补丁包生成任务
+            val tinkerPatchSomeFlavorBuildType: Task = tasks.create<TinkerPatchSchemaTask>(
+                TINKER_PATCH_TASK_PREFIX + taskInfo.targetFlavorBuildTypeVariantName.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
                 }
-                // 对当前的flavor+buildType的输出文件加渠道号
-                val (variant, targetFlavorBuildTypeApkFile, tinkerPatchExtension) = outputsApkPath
-                    .find { (variant, _) ->
-                        variant.name == taskInfo.targetFlavorBuildTypeVariantName
-                    }
-                    ?: throw IllegalArgumentException("没有找到 ${taskInfo.targetFlavorBuildTypeVariantName} 输出apk文件")
+            ).apply {
+                group = TASK_GROUP
+                description = TASK_DESC
 
-                tinkerPatchExtension.oldApk = baselineApkFile.absolutePath
-
-                // 某个productFlavor-buildType的Tinker补丁包生成任务
-                val tinkerPatchSomeFlavorBuildType: Task = tasks.create<TinkerPatchSchemaTask>(
-                    TINKER_PATCH_TASK_PREFIX +
-                            taskInfo.dimensionedFlavorBuildTypeName
-                ).apply {
-                    description = "Make Patch by Tencent Tinker"
-                    group = "Patch"
-
-                    signConfig = variant.signingConfig
-                    this.doFirst {
-                        // 读取旧包中的tinkerId
-                        this@apply.configuration = tinkerPatchExtension.apply {
-                            buildConfig {
-                                tinkerId = AndroidParser.getAndroidManifest(baselineApkFile)
-                                    .metaDatas[TypedValue.TINKER_ID]
-                            }
+                signConfig = variant.signingConfig
+                this.doFirst {
+                    // 读取旧包中的tinkerId
+                    this@apply.configuration = tinkerPatchExtension.apply {
+                        buildConfig {
+                            tinkerId = AndroidParser.getAndroidManifest(baselineApkFile)
+                                .metaDatas[TypedValue.TINKER_ID]
                         }
                     }
+                }
 
-                    setPatchNewApkPath(
-                        tinkerPatchExtension, targetFlavorBuildTypeApkFile, variant, this
-                    )
-                    setPatchOutputFolder(
-                        tinkerPatchExtension, targetFlavorBuildTypeApkFile, variant, this
-                    )
-                }
-                // 要求该任务在标准Apk编译任务完成后进行执行
-                // 使自己的assembleSomeBuildTypeChannels task依赖其(assembleTask)，并在其编译后对输出文件注入渠道号
-                tinkerPatchSomeFlavorBuildType.dependsOn(assembleTask)
-                // 只有基线包存在，该task才可用
-                tinkerPatchSomeFlavorBuildType.onlyIf {
-                    baselineApkFile.exists()
-                }
-                // 将该注入渠道名任务依赖到对应buildType的全渠道Task中
-                patchBuildTypesTask[taskInfo.buildType]!!.dependsOn(
-                    tinkerPatchSomeFlavorBuildType
+                setPatchNewApkPath(
+                    tinkerPatchExtension, targetFlavorBuildTypeApkFile, variant, this
+                )
+                setPatchOutputFolder(
+                    tinkerPatchExtension, targetFlavorBuildTypeApkFile, variant, this
                 )
             }
+            // 要求该任务在标准Apk编译任务完成后进行执行
+            // 使自己的assembleSomeBuildTypeChannels task依赖其(assembleTask)，并在其编译后对输出文件注入渠道号
+            tinkerPatchSomeFlavorBuildType.dependsOn(assembleTask)
+            // 只有基线包存在，该task才可用
+            tinkerPatchSomeFlavorBuildType.onlyIf {
+                baselineApkFile.exists()
+            }
+            // 将该注入渠道名任务依赖到对应buildType的全渠道Task中
+            patchBuildTypesTask[taskInfo.buildType]!!.dependsOn(
+                tinkerPatchSomeFlavorBuildType
+            )
         }
     }
 }
+
+private const val TASK_GROUP = "Patch"
+private const val TASK_DESC = "Make Patch by Tencent Tinker"
 
 private fun setPatchNewApkPath(
     configuration: TinkerPatchExtension,
