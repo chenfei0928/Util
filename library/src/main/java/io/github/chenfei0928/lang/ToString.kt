@@ -31,11 +31,11 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
     null -> append("null")
     is Array<*> -> {
         append('[')
-        any.forEachIndexed { i, it ->
+        any.forEachIndexed { i, element ->
             if (i != 0) {
                 append(", ")
             }
-            appendByReflect(it)
+            appendByReflect(element)
         }
         append(']')
     }
@@ -50,11 +50,11 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
     is CharSequence -> append(any)
     is Iterable<*> -> {
         append('[')
-        any.forEachIndexed { i, it ->
+        any.forEachIndexed { i, element ->
             if (i != 0) {
                 append(", ")
             }
-            appendByReflect(it)
+            appendByReflect(element)
         }
         append(']')
     }
