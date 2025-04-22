@@ -9,8 +9,6 @@ import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debugImplementation
 import io.github.chenfei0928.util.implementation
 import io.github.chenfei0928.util.writeTmpProguardFile
-import kotlinx.atomicfu.plugin.gradle.AtomicFUGradlePlugin
-import kotlinx.atomicfu.plugin.gradle.AtomicFUPluginExtension
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.apply
@@ -37,7 +35,6 @@ fun Project.applyKotlin(
     ksp: Boolean = false,
     json: Boolean = false,
     protobuf: Boolean = false,
-    atomic: Boolean = false,
 ) {
     apply<KotlinAndroidPluginWrapper>()
     if (parcelize) {
@@ -51,9 +48,6 @@ fun Project.applyKotlin(
     }
     if (json || protobuf) {
         apply<SerializationGradleSubplugin>()
-    }
-    if (atomic) {
-        apply<AtomicFUGradlePlugin>()
     }
 
     buildSrcAndroid<com.android.build.gradle.BaseExtension> {
@@ -106,13 +100,7 @@ fun Project.applyKotlin(
     extensions.configure<KotlinAndroidProjectExtension>("kotlin") {
         sourceSets.all {
             languageSettings.enableLanguageFeature("ExplicitBackingFields")
-        }
-    }
-
-    if (atomic) {
-        extensions.configure<AtomicFUPluginExtension>("atomicfu") {
-            transformJvm = true // set to false to turn off JVM transformation
-            jvmVariant = "FU" // JVM transformation variant: FU,VH, or BOTH
+            languageSettings.enableLanguageFeature("ExperimentalAtomicApi")
         }
     }
 
