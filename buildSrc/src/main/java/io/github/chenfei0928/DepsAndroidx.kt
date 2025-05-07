@@ -95,8 +95,8 @@ object DepsAndroidx {
     // https://developer.android.com/jetpack/androidx/releases/datastore
     // https://dl.google.com/dl/android/maven2/androidx/datastore/datastore-core/maven-metadata.xml
     object datastore {
-        const val core = "androidx.datastore:datastore:1.1.1"
-        const val sp = "androidx.datastore:datastore-preferences:1.1.1"
+        const val core = "androidx.datastore:datastore:1.1.5"
+        const val sp = "androidx.datastore:datastore-preferences:1.1.5"
     }
 
     // https://developer.android.com/jetpack/androidx/releases/tracing

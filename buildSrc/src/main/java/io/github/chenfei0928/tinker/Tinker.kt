@@ -61,7 +61,7 @@ fun Project.applyAppTinker() {
             // 此处使用Metadata存储tinkerId，其字符串表现如果是纯数字/科学计数法/浮点Like时
             // 可能会被编译器当作是数字值而非字符串，在其字面值上加前缀规避
             variant.manifestPlaceholders.put("tinkerId", provider {
-                val channel: String = variant.buildConfigFields.getting("channel").get().run {
+                val channel: String = variant.buildConfigFields!!.getting("channel").get().run {
                     if (type == "String") {
                         // 字符串需要去掉两侧的引号
                         value.toString().substring(1, value.toString().length - 1)
