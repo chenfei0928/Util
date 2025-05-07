@@ -1,3 +1,5 @@
+@file:JvmName("ItemViewBinderCf0928Util")
+
 package com.drakeet.multitype
 
 import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder

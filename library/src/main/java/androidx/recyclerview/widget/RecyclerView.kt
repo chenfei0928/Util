@@ -1,3 +1,5 @@
+@file:JvmName("RecyclerViewCf0928Util")
+
 package androidx.recyclerview.widget
 
 /**

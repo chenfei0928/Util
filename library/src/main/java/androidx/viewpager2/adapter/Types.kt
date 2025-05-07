@@ -1,3 +1,5 @@
+@file:JvmName("TypesCf0928Util")
+
 package androidx.viewpager2.adapter
 
 import com.drakeet.multitype.Type

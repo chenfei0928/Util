@@ -2,6 +2,9 @@
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-07-15 16:13
  */
+
+@file:JvmName("MultiTypeAdapterCf0928Util")
+
 package com.drakeet.multitype
 
 fun MultiTypeAdapter.notifyItemChanged(item: Any) {

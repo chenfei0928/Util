@@ -7,7 +7,7 @@ import androidx.collection.ArrayMap
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManagerAccessor
+import androidx.fragment.app.FragmentManagerCf0928UtilAccessor
 import io.github.chenfei0928.content.checkIsDestroyed
 import io.github.chenfei0928.content.findActivity
 import kotlin.properties.ReadOnlyProperty
@@ -38,7 +38,7 @@ fun View?.removeSelfFromParent() {
  */
 @Suppress("ReturnCount")
 fun View.findParentFragment(): Fragment? {
-    val findViewFragment = FragmentManagerAccessor.findViewFragment(this)
+    val findViewFragment = FragmentManagerCf0928UtilAccessor.findViewFragment(this)
     if (findViewFragment != null) {
         return findViewFragment
     }

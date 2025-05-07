@@ -2,6 +2,9 @@
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2021-11-24 17:01
  */
+
+@file:JvmName("ProtobufAccessHelperCf0928Util")
+
 package com.google.protobuf
 
 import io.github.chenfei0928.lang.contains

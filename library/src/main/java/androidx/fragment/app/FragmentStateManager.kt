@@ -1,3 +1,5 @@
+@file:JvmName("FragmentStateManagerCf0928Util")
+
 package androidx.fragment.app
 
 import android.os.Bundle

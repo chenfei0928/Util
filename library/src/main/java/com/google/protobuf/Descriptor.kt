@@ -1,3 +1,5 @@
+@file:JvmName("DescriptorCf0928Util")
+
 package com.google.protobuf
 
 import androidx.annotation.VisibleForTesting

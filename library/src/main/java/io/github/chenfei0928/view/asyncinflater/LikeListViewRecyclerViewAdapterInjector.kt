@@ -3,7 +3,7 @@ package io.github.chenfei0928.view.asyncinflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerViewHelper
+import androidx.recyclerview.widget.RecyclerViewCf0928UtilHelper
 import io.github.chenfei0928.view.asyncinflater.BaseLikeListViewInjector.forEachInject
 import io.github.chenfei0928.view.asyncinflater.BaseLikeListViewInjector.injectorClassNameTag
 import io.github.chenfei0928.view.asyncinflater.BaseLikeListViewInjector.viewHolderTag
@@ -34,7 +34,7 @@ object LikeListViewRecyclerViewAdapterInjector {
                 // 加载视图
                 val holder = adapter.onCreateViewHolder(viewGroup, itemViewType)
                 holder.itemView.viewHolderTag = holder
-                RecyclerViewHelper.changeViewType(holder, itemViewType)
+                RecyclerViewCf0928UtilHelper.changeViewType(holder, itemViewType)
                 // 记录adapter类名，防止绑定视图错误
                 holder.itemView.injectorClassNameTag = binderClassName
                 holder

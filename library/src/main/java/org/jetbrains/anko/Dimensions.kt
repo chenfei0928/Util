@@ -1,3 +1,5 @@
+@file:JvmName("DimensionsCf0928Util")
+
 package org.jetbrains.anko
 
 import android.content.Context

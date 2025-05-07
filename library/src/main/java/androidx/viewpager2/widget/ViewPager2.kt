@@ -1,3 +1,5 @@
+@file:JvmName("ViewPager2Cf0928Util")
+
 package androidx.viewpager2.widget
 
 import androidx.recyclerview.widget.RecyclerView

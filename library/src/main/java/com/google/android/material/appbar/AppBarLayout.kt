@@ -1,3 +1,5 @@
+@file:JvmName("AppBarLayoutCf0928Util")
+
 package com.google.android.material.appbar
 
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout

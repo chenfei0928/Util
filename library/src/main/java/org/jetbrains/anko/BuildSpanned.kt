@@ -1,3 +1,5 @@
+@file:JvmName("BuildSpannedCf0928Util")
+
 package org.jetbrains.anko
 
 import android.text.Editable

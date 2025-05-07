@@ -1,3 +1,5 @@
+@file:JvmName("CollectionsCf0928Util")
+
 package org.jetbrains.anko.collections
 
 /**

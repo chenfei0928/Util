@@ -1,3 +1,5 @@
+@file:JvmName("GridLayoutCf0928Util")
+
 package androidx.gridlayout.widget
 
 import android.view.Gravity

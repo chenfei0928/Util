@@ -13,7 +13,7 @@ import java.util.WeakHashMap
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-02-17 17:25
  */
-internal object FragmentViewLifecycleAccessor : FragmentManager.FragmentLifecycleCallbacks() {
+internal object FragmentViewLifecycleCf0928UtilAccessor : FragmentManager.FragmentLifecycleCallbacks() {
     private val viewLifecycleOwnerFragmentMap: MutableMap<LifecycleOwner, Fragment> = WeakHashMap()
 
     private val mFragmentField: Field = FragmentViewLifecycleOwner::class.java

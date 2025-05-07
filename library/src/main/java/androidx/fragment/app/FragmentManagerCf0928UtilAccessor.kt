@@ -6,7 +6,7 @@ import android.view.View
  * @author chenf()
  * @date 2023-04-06 11:44
  */
-object FragmentManagerAccessor {
+object FragmentManagerCf0928UtilAccessor {
     fun findViewFragment(v: View): Fragment? {
         var view: View? = v
         while (view != null) {

@@ -2,6 +2,9 @@
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-04-05 22:08
  */
+
+@file:JvmName("LiveDataCf0928Util")
+
 package androidx.lifecycle
 
 import kotlinx.coroutines.suspendCancellableCoroutine

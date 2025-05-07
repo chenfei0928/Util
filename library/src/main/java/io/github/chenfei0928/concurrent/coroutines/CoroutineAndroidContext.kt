@@ -9,7 +9,7 @@ import androidx.collection.ArrayMap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentViewLifecycleAccessor
+import androidx.fragment.app.FragmentViewLifecycleCf0928UtilAccessor
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.base.UtilInitializer
@@ -113,10 +113,10 @@ private constructor(
 
         private fun newInstanceImpl(host: Any, node: Any?): CoroutineAndroidContext {
             return if (node is LifecycleOwner
-                && FragmentViewLifecycleAccessor.isViewLifecycleOwner(node)
+                && FragmentViewLifecycleCf0928UtilAccessor.isViewLifecycleOwner(node)
             ) {
                 // 使用fragment的viewLifecycle创建协程实例，通过该方式获取其fragment
-                val fragment = FragmentViewLifecycleAccessor.getFragmentByViewLifecycleOwner(node)
+                val fragment = FragmentViewLifecycleCf0928UtilAccessor.getFragmentByViewLifecycleOwner(node)
                 newInstanceImpl(host, fragment)
             } else when (node) {
                 is View -> {
