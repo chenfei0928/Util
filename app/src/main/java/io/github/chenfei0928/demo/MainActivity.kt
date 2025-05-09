@@ -2,6 +2,7 @@ package io.github.chenfei0928.demo
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -41,10 +42,11 @@ import io.github.chenfei0928.demo.storage.SpSaverPreferenceFragment
 import io.github.chenfei0928.demo.storage.TestMmkvSaver
 import io.github.chenfei0928.demo.storage.TestPreferenceFragment
 import io.github.chenfei0928.demo.storage.TestSpSaver
-import io.github.chenfei0928.lang.toString0
 import io.github.chenfei0928.lang.toStringAny
+import io.github.chenfei0928.lang.toStringByReflect
 import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.Debug
+import io.github.chenfei0928.reflect.isWriteByKotlin
 import io.github.chenfei0928.repository.datastore.toDatastore
 import io.github.chenfei0928.repository.local.serializer.KtxsJsonSerializer
 import io.github.chenfei0928.repository.local.serializer.ProtobufSerializer
@@ -122,6 +124,21 @@ class MainActivity : ComponentActivity() {
             }
         }
         binding.btnTest.setNoDoubleOnClickListener {
+            Log.i(TAG, buildString {
+                append("onCreate: isKtClass ")
+                append(Build::class.java.isWriteByKotlin)
+                append(' ')
+                append(MainActivity::class.java.isWriteByKotlin)
+                append(' ')
+                append(Companion::class.java.isWriteByKotlin)
+            })
+            Log.i(TAG, "onCreate: jClass ${Build::class.java.toStringByReflect()}")
+            Log.i(TAG, "onCreate: componentObj ${I.toStringByReflect()}")
+            Log.i(TAG, "onCreate: kClass ${I::class.toStringByReflect()}")
+            Log.i(TAG, "onCreate: jClass ${I::class.java.toStringByReflect()}")
+            Log.i(TAG, "onCreate: componentObj ${MainActivity.toStringByReflect()}")
+            Log.i(TAG, "onCreate: kClass ${MainActivity::class.toStringByReflect()}")
+            Log.i(TAG, "onCreate: jClass ${MainActivity::class.java.toStringByReflect()}")
             val typeUseOld = Debug.countTime(TAG, "I.I1") {
                 I.I1<Any, LinkedList<Any>>(false)
             }

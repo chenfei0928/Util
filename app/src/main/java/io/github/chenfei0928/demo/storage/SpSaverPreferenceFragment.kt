@@ -54,7 +54,7 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(
         savedInstanceState: Bundle?, rootKey: String?
     ) = Debug.countTime(TAG, "spSaver") {
-        preferenceManager.preferenceDataStore = spSaver.fieldAccessorCache
+        preferenceManager.preferenceDataStore = spSaver.fieldAccessorCache.preferenceDataStore
         Log.i(TAG, "onCreatePreferences: buildPreferenceScreen")
         preferenceScreen = buildPreferenceScreen<TestSpSaver>(spSaver.fieldAccessorCache) {
             // sp属性引用

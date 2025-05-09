@@ -26,7 +26,7 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
         val testDataStore = requireContext().testDataStore
         val dataStore: DataStoreFieldAccessorCache<Test> =
             DataStoreFieldAccessorCache(coroutineScope, testDataStore)
-        preferenceManager.preferenceDataStore = dataStore
+        preferenceManager.preferenceDataStore = dataStore.preferenceDataStore
         preferenceScreen = buildPreferenceScreen(dataStore) {
             // protobuf 字段引用方式1
             checkBoxPreference(

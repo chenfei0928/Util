@@ -25,7 +25,7 @@ abstract class JsonLocalFileStoragePreferenceFragment(
     ) = Debug.countTime(TAG, name) {
         val dataStore: LocalStorageFieldAccessorCache<JsonBean> =
             createPreferenceDataStore()
-        preferenceManager.preferenceDataStore = dataStore
+        preferenceManager.preferenceDataStore = dataStore.preferenceDataStore
         // 缓存data class copy方法
         dataStore.cacheCopyFunc(JsonBean::class, JsonBean::copy)
         dataStore.cacheCopyFunc<JsonBean.InnerJsonBean>(JsonBean.InnerJsonBean::copy)

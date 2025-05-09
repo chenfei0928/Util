@@ -48,7 +48,7 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(
         savedInstanceState: Bundle?, rootKey: String?
     ) = Debug.countTime(TAG, "mmkvSaver onCreatePreferences") {
-        preferenceManager.preferenceDataStore = spSaver.fieldAccessorCache
+        preferenceManager.preferenceDataStore = spSaver.fieldAccessorCache.preferenceDataStore
         Log.i(TAG, "onCreatePreferences: buildPreferenceScreen")
         preferenceScreen = buildPreferenceScreen<TestMmkvSaver>(spSaver.fieldAccessorCache) {
             // sp属性引用

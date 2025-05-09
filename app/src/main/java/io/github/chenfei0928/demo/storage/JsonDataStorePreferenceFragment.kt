@@ -23,7 +23,7 @@ class JsonDataStorePreferenceFragment : PreferenceFragmentCompat() {
         val jsonDataStore = requireContext().jsonDataStore
         val dataStore: DataStoreFieldAccessorCache<JsonBean> =
             DataStoreFieldAccessorCache(coroutineScope, jsonDataStore)
-        preferenceManager.preferenceDataStore = dataStore
+        preferenceManager.preferenceDataStore = dataStore.preferenceDataStore
         // 缓存data class copy方法
         dataStore.cacheCopyFunc(JsonBean::class, JsonBean::copy)
         dataStore.cacheCopyFunc<JsonBean.InnerJsonBean>(JsonBean.InnerJsonBean::copy)

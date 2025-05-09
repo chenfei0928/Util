@@ -30,4 +30,10 @@ abstract class I<E : Any> {
             useKtReflect: Boolean
         ) : IM<Any, ArrayList<Any>>(useKtReflect)
     }
+
+    companion object {
+        const val TAG = "I"
+        var testMember = 1
+        private val privateTestMember = 2
+    }
 }
