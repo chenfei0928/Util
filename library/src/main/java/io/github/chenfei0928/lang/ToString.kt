@@ -30,7 +30,7 @@ private val classNonStaticFieldsCache = object : LruCache<Class<*>, List<Field>>
     }
 }
 
-fun Any?.toStringByReflect() = StringBuilder().appendByReflect(this)
+fun Any?.toStringByReflect(): String = StringBuilder().appendByReflect(this).toString()
 
 fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
     null -> append("null")
@@ -114,19 +114,19 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
     } else appendObjectByReflectImpl(any)
 }
 
-private fun StringBuilder.appendKotlinComponentMembersByKtReflect(
-    companionKls: KClass<*>, companionObj: Any = companionKls.objectInstance!!
+private fun <T : Any> StringBuilder.appendKotlinComponentMembersByKtReflect(
+    companionKls: KClass<T>, companionObj: T = companionKls.objectInstance!!
 ): StringBuilder = apply {
     append('{')
     // kotlin，打印伴生对象自身定义的字段
-    companionKls.declaredMemberProperties.forEachIndexed { i, member ->
+    companionKls.declaredMemberProperties.forEachIndexed { i, property ->
         if (i != 0) {
             append(", ")
         }
-        member.isAccessible = true
-        append(member.name)
+        property.isAccessible = true
+        append(property.name)
         append('=')
-        append(member.call(companionObj))
+        append(property.get(companionObj))
     }
     append('}')
 }
@@ -147,7 +147,7 @@ private fun StringBuilder.appendObjectByReflectImpl(any: Any) = apply {
     append(thisClass?.simpleName)
     append('(')
     var hasAnyField = false
-    while (thisClass != null && thisClass != Any::javaClass) {
+    while (thisClass != null && thisClass != Any::class.java) {
         // 打印当前类的非static字段
         val fields = classNonStaticFieldsCache[thisClass]!!
         fields.forEach { field ->
