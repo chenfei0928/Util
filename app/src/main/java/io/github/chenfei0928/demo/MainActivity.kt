@@ -124,21 +124,31 @@ class MainActivity : ComponentActivity() {
             }
         }
         binding.btnTest.setNoDoubleOnClickListener {
-            Log.i(TAG, buildString {
-                append("onCreate: isKtClass ")
-                append(Build::class.java.isWriteByKotlin)
-                append(' ')
-                append(MainActivity::class.java.isWriteByKotlin)
-                append(' ')
-                append(Companion::class.java.isWriteByKotlin)
-            })
-            Log.i(TAG, "onCreate: jClass ${Build::class.java.toStringByReflect()}")
-            Log.i(TAG, "onCreate: componentObj ${I.toStringByReflect()}")
-            Log.i(TAG, "onCreate: kClass ${I::class.toStringByReflect()}")
-            Log.i(TAG, "onCreate: jClass ${I::class.java.toStringByReflect()}")
-            Log.i(TAG, "onCreate: componentObj ${MainActivity.toStringByReflect()}")
-            Log.i(TAG, "onCreate: kClass ${MainActivity::class.toStringByReflect()}")
-            Log.i(TAG, "onCreate: jClass ${MainActivity::class.java.toStringByReflect()}")
+            Debug.traceAndTime(TAG, "toStringByReflect") {
+                Log.i(TAG, buildString {
+                    append("onCreate: isKtClass ")
+                    append(Build::class.java.isWriteByKotlin)
+                    append(' ')
+                    append(MainActivity::class.java.isWriteByKotlin)
+                    append(' ')
+                    append(Companion::class.java.isWriteByKotlin)
+                })
+                it.record()
+                Log.i(TAG, "onCreate: jClass ${Build::class.java.toStringByReflect()}")
+                it.record()
+                Log.i(TAG, "onCreate: componentObj ${I.toStringByReflect()}")
+                it.record()
+                Log.i(TAG, "onCreate: kClass ${I::class.toStringByReflect()}")
+                it.record()
+                Log.i(TAG, "onCreate: jClass ${I::class.java.toStringByReflect()}")
+                it.record()
+                Log.i(TAG, "onCreate: componentObj ${MainActivity.toStringByReflect()}")
+                it.record()
+                Log.i(TAG, "onCreate: kClass ${MainActivity::class.toStringByReflect()}")
+                it.record()
+                Log.i(TAG, "onCreate: jClass ${MainActivity::class.java.toStringByReflect()}")
+            }
+
             val typeUseOld = Debug.countTime(TAG, "I.I1") {
                 I.I1<Any, LinkedList<Any>>(false)
             }

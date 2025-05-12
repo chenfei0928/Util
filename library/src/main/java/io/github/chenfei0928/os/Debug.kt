@@ -25,44 +25,50 @@ object Debug {
         tag: String,
         tracePath: String,
         msg: String = tracePath,
-        block: () -> T
+        block: (StopWatch) -> T
     ): T {
         // 追加时间戳后缀，避免AndroidStudio Profiler对trace进行的缓存
-        val l = System.currentTimeMillis()
-        Log.v(tag, "$msg, currentTimeMillis: $l")
-        Debug.startMethodTracing("${tracePath}_$l")
-        val nanoTime = System.nanoTime()
+        Log.v(tag, "$msg, nanoTime: ${System.nanoTime()}")
+        val watch = object : StopWatch.DebugTrace() {
+            override val tracePath: String
+                get() = "${tracePath}_${System.nanoTime()}"
+        }
+        watch.start()
         return try {
-            block()
+            block(watch)
         } finally {
-            val timeUsed = System.nanoTime() - nanoTime
-            Debug.stopMethodTracing()
-            logCountTime(tag, msg, timeUsed)
+            watch.stop()
+            logCountTime(tag, msg, watch)
         }
     }
 
-    inline fun <T> trace(tracePath: String, block: () -> T): T {
+    inline fun <T> trace(tracePath: String, block: (StopWatch) -> T): T {
         // 追加时间戳后缀，避免AndroidStudio Profiler对trace进行的缓存
-        val l = System.currentTimeMillis()
-        Debug.startMethodTracing("${tracePath}_$l")
+        val watch = object : StopWatch.DebugTrace() {
+            override val tracePath: String
+                get() = "${tracePath}_${System.nanoTime()}"
+        }
+        watch.start()
         return try {
-            block()
+            block(watch)
         } finally {
-            Debug.stopMethodTracing()
+            watch.stop()
         }
     }
 
     inline fun <T> countTime(
         @Size(max = 23) tag: String,
         msg: String = "",
-        block: () -> T
+        block: (StopWatch) -> T
     ): T {
-        Log.v(tag, "$msg, currentTimeMillis: ${System.currentTimeMillis()}")
-        val l = System.nanoTime()
+        Log.v(tag, "$msg, nanoTime: ${System.nanoTime()}")
+        val watch = StopWatch.Timestamps()
+        watch.start()
         return try {
-            block()
+            block(watch)
         } finally {
-            logCountTime(tag, msg, System.nanoTime() - l)
+            watch.stop()
+            logCountTime(tag, msg, watch)
         }
     }
 
@@ -70,24 +76,85 @@ object Debug {
     fun logCountTime(
         tag: String,
         msg: String,
-        timeUsed: Long
+        timeUsed: StopWatch.Internal
     ): Unit = logCountTimeFormat.use { format ->
-        if (timeUsed < MILLIS_IN_NANOS) {
-            // 在一毫秒以内，展示为纳秒
-            Log.v(tag, StringBuffer().apply {
-                append(msg)
-                append(", countTime: ")
-                appendFormat(format.first, timeUsed)
-                append(" ns.")
-            }.toString())
-        } else {
-            // 一毫秒以上，显示为毫秒，保留三位小数
-            Log.v(tag, StringBuffer().apply {
-                append(msg)
-                append(", countTime: ")
-                appendFormat(format.second, timeUsed / MILLIS_IN_NANOS.toFloat())
-                append(" ms.")
-            }.toString())
+        Log.v(tag, StringBuffer().apply {
+            append(msg)
+            append(", countTime: ")
+            for (i in 0 until timeUsed.nextIndex step 2) {
+                val timeUsed = timeUsed.timestamps[i + 1] - timeUsed.timestamps[i]
+                if (timeUsed < MILLIS_IN_NANOS) {
+                    // 在一毫秒以内，展示为纳秒
+                    appendFormat(format.first, timeUsed)
+                    append(" ns, ")
+                } else {
+                    // 一毫秒以上，显示为毫秒，保留三位小数
+                    appendFormat(format.second, timeUsed / MILLIS_IN_NANOS.toFloat())
+                    append(" ms, ")
+                }
+            }
+            replace(length - 2, length, ".")
+        }.toString())
+    }
+
+    sealed interface StopWatch {
+        fun record()
+
+        sealed class Internal(
+            size: Int
+        ) : StopWatch {
+            internal var nextIndex = 0
+            internal val timestamps: LongArray = LongArray(size)
+            abstract fun start()
+            abstract fun stop()
+        }
+
+        class Timestamps(
+            size: Int = 32
+        ) : Internal(size) {
+            override fun start() {
+                timestamps[nextIndex] = System.nanoTime()
+                nextIndex++
+            }
+
+            override fun record() {
+                timestamps[nextIndex] = System.nanoTime()
+                nextIndex++
+                timestamps[nextIndex] = System.nanoTime()
+                nextIndex++
+            }
+
+            override fun stop() {
+                timestamps[nextIndex] = System.nanoTime()
+                nextIndex++
+            }
+        }
+
+        abstract class DebugTrace(
+            size: Int = 32
+        ) : Internal(size) {
+            abstract val tracePath: String
+
+            override fun start() {
+                Debug.startMethodTracing(tracePath)
+                timestamps[nextIndex] = System.nanoTime()
+                nextIndex++
+            }
+
+            override fun record() {
+                timestamps[nextIndex] = System.nanoTime()
+                nextIndex++
+                Debug.stopMethodTracing()
+                Debug.startMethodTracing(tracePath)
+                timestamps[nextIndex] = System.nanoTime()
+                nextIndex++
+            }
+
+            override fun stop() {
+                timestamps[nextIndex] = System.nanoTime()
+                nextIndex++
+                Debug.stopMethodTracing()
+            }
         }
     }
 }
