@@ -189,8 +189,10 @@ private fun StringBuilder.appendObjectByReflectImpl(any: Any) = apply {
         // 如果当前实例的类是kotlin类，且当前对象是伴生对象，尝试打印伴生对象的字段
         val kClass = any.javaClass.kotlin
         if (kClass.isCompanion) {
-            StaticFieldsCache.cache.getOrPut(kClass.jvmName) {
-                StaticFieldsCache.KotlinKClassComponentObject(kClass, kClass)
+            // 获取该伴生对象的宿主类
+            val outerClass = any.javaClass.declaringClass
+            StaticFieldsCache.cache.getOrPut(outerClass.name) {
+                StaticFieldsCache.KotlinKClassComponentObject(outerClass.kotlin, kClass)
             }.appendTo(this)
             return@apply
         }
