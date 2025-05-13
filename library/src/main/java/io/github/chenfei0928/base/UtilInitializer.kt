@@ -26,6 +26,8 @@ class UtilInitializer : Initializer<Unit> {
         lateinit var context: Application
             private set
 
+        var lruCacheStandardSize: Int = 32
+
         @JvmStatic
         var sdkDependency: DependencyChecker = DependencyChecker.ByReflectLazy
             set(value) {

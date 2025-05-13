@@ -9,6 +9,7 @@ import androidx.annotation.LayoutRes
 import androidx.collection.LruCache
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.reflect.safeInvoke
 import io.github.chenfei0928.util.DependencyChecker
 import java.lang.reflect.Method
@@ -56,10 +57,11 @@ fun Dialog.setContentViewAndGetView(@LayoutRes layoutId: Int): View {
 //</editor-fold>
 
 //<editor-fold desc="获取ViewBinding类的bind方法">
-private val bindFuncCache = object : LruCache<Class<out ViewBinding>, Method>(16) {
-    override fun create(key: Class<out ViewBinding>): Method {
-        return key.getMethod("bind", View::class.java)
-    }
+private val bindFuncCache = object : LruCache<Class<out ViewBinding>, Method>(
+    UtilInitializer.lruCacheStandardSize / 2
+) {
+    override fun create(key: Class<out ViewBinding>): Method =
+        key.getMethod("bind", View::class.java)
 }
 
 fun <T : ViewBinding> Class<T>.bindFunc(): (View) -> T = {
@@ -69,12 +71,12 @@ fun <T : ViewBinding> Class<T>.bindFunc(): (View) -> T = {
 //</editor-fold>
 
 //<editor-fold desc="获取ViewBinding类的inflate方法">
-private val inflateFuncCache = object : LruCache<Class<out ViewBinding>, Method>(16) {
-    override fun create(key: Class<out ViewBinding>): Method {
-        return key.getMethod(
-            "inflate", LayoutInflater::class.java, ViewGroup::class.java, java.lang.Boolean.TYPE
-        )
-    }
+private val inflateFuncCache = object : LruCache<Class<out ViewBinding>, Method>(
+    UtilInitializer.lruCacheStandardSize / 2
+) {
+    override fun create(key: Class<out ViewBinding>): Method = key.getMethod(
+        "inflate", LayoutInflater::class.java, ViewGroup::class.java, java.lang.Boolean.TYPE
+    )
 }
 
 fun <T : ViewBinding> Class<T>.inflateFunc(): (LayoutInflater, ViewGroup?, Boolean) -> T =

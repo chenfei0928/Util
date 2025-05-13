@@ -50,7 +50,7 @@ open class ProtobufParceler<MessageType : MessageLite> : Parceler<MessageType?> 
         } else {
             val className = parcel.readString()
                 ?: return null
-            val parser = MessageParserLruCache.getParser<MessageType>(className)
+            val parser = MessageParserCache.getParser<MessageType>(className)
             parcel.createByteArray().let(parser::parseFrom)
         }
     }

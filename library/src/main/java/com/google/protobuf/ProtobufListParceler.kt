@@ -58,7 +58,7 @@ open class ProtobufListParceler<MessageType : MessageLite> : Parceler<List<Messa
                         parser!!.parseFrom(parcel.createByteArray())
                     }
                     else -> {
-                        parser = MessageParserLruCache.getParser<MessageType>(itClassName)
+                        parser = MessageParserCache.getParser<MessageType>(itClassName)
                         parser.parseFrom(parcel.createByteArray())
                     }
                 }
