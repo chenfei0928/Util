@@ -18,6 +18,7 @@ import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.jvmName
 
@@ -170,57 +171,106 @@ private sealed interface StaticFieldsCache {
     }
 }
 
-private val classNonStaticFieldsCache = object : LruCache<Class<*>, List<Field>>(
-    UtilInitializer.lruCacheStandardSize
-) {
-    override fun create(key: Class<*>): List<Field>? {
-        return key.declaredFields.filter {
+private sealed interface FieldsCache<T> {
+    val hasField: Boolean
+    fun appendTo(builder: StringBuilder, any: T): StringBuilder
+
+    class Java<T>(
+        clazz: Class<T>
+    ) : FieldsCache<T> {
+        private val fields = clazz.declaredFields.filter {
             Modifier.TRANSIENT !in it.modifiers
                     && Modifier.STATIC !in it.modifiers
                     && !it.isSynthetic
         }.onEach {
             it.isAccessible = true
         }
+        override val hasField: Boolean = fields.isNotEmpty()
+
+        override fun appendTo(builder: StringBuilder, any: T): StringBuilder = builder.apply {
+            fields.forEach { field ->
+                append(field.name)
+                append('=')
+                val value = field[any]
+                if (value == any) {
+                    append("this")
+                } else {
+                    appendByReflect(value)
+                }
+                append(", ")
+            }
+        }
+    }
+
+    class Kotlin<T : Any>(
+        kClass: KClass<T>
+    ) : FieldsCache<T> {
+        private val fields = kClass.memberProperties.onEach {
+            it.isAccessible = true
+        }
+        override val hasField: Boolean = fields.isNotEmpty()
+
+        override fun appendTo(builder: StringBuilder, any: T): StringBuilder = builder.apply {
+            fields.forEach { field ->
+                append(field.name)
+                append('=')
+                val value = field.get(any)
+                if (value == any) {
+                    append("this")
+                } else {
+                    appendByReflect(value)
+                }
+                append(", ")
+            }
+        }
+    }
+
+    companion object {
+        val cache = LruCache<String, FieldsCache<*>>(UtilInitializer.lruCacheStandardSize)
     }
 }
 
 private fun StringBuilder.appendObjectByReflectImpl(any: Any) = apply {
-    if (any.javaClass.isWriteByKotlin) {
+    var thisClass: Class<*> = any.javaClass
+    if (thisClass.isWriteByKotlin) {
         // 如果当前实例的类是kotlin类，且当前对象是伴生对象，尝试打印伴生对象的字段
-        val kClass = any.javaClass.kotlin
+        val kClass = thisClass.kotlin
         if (kClass.isCompanion) {
             // 获取该伴生对象的宿主类
-            val outerClass = any.javaClass.declaringClass
+            val outerClass = thisClass.declaringClass
             StaticFieldsCache.cache.getOrPut(outerClass.name) {
                 StaticFieldsCache.KotlinKClassComponentObject(outerClass.kotlin, kClass)
             }.appendTo(this)
             return@apply
         }
     }
-
     // 不是数组，toString 也没有被重写过，调用反射输出每一个字段
-    var thisClass: Class<*>? = any.javaClass
-    append(thisClass?.simpleName)
+    var thisOrSuperClass: Class<*>? = thisClass
+    append(thisOrSuperClass?.simpleName)
     append('(')
     var hasAnyField = false
-    while (thisClass != null && thisClass != Any::class.java) {
+    while (thisOrSuperClass != null && thisOrSuperClass != Any::class.java) {
         // 打印当前类的非static字段
-        val fields = classNonStaticFieldsCache[thisClass]!!
-        fields.forEach { field ->
-            hasAnyField = true
-            append(field.name)
-            append('=')
-            val value = field[any]
-            if (value == any) {
-                append("this")
-            } else {
-                appendByReflect(value)
-            }
-            append(", ")
+        if (thisOrSuperClass.isWriteByKotlin) {
+            // Kotlin会输出所有字段，包括父类的
+            @Suppress("UNCHECKED_CAST")
+            val cache: FieldsCache<Any> = FieldsCache.cache.getOrPut(thisOrSuperClass.name) {
+                FieldsCache.Kotlin(thisOrSuperClass.kotlin)
+            } as FieldsCache<Any>
+            cache.appendTo(this, any)
+            hasAnyField = hasAnyField or cache.hasField
+            break
+        } else {
+            // Java只会输出当前类的
+            @Suppress("UNCHECKED_CAST")
+            val cache: FieldsCache<Any> = FieldsCache.cache.getOrPut(thisOrSuperClass.name) {
+                FieldsCache.Java(thisOrSuperClass)
+            } as FieldsCache<Any>
+            cache.appendTo(this, any)
+            hasAnyField = hasAnyField or cache.hasField
+            thisOrSuperClass = thisOrSuperClass.getSuperclass()
         }
-        thisClass = thisClass.getSuperclass()
     }
-//    if (this.charAt(length - 1) == ',') {
     if (hasAnyField) {
         replace(length - 2, length, ")")
     } else {
