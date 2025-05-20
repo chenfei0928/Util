@@ -5,9 +5,14 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
 import androidx.preference.PreferenceHelper
 import androidx.preference.PreferenceScreen
+import io.github.chenfei0928.content.sp.saver.BaseMmkvSaver
 import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor
 
 /**
+ * 可用于 [SharedPreferences.registerOnSharedPreferenceChangeListener] 来注册sp变化监听
+ * 或 [BaseMmkvSaver.anyPropertySetCallback] 来注册mmkv变化监听，
+ * 来自动向 [preferenceScreen] 刷新关联项
+ *
  * @author chenf()
  * @date 2025-02-14 17:24
  */
