@@ -27,12 +27,14 @@ fun Any?.toStringByReflect(): String = StringBuilder().appendByReflect(this).toS
 
 fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
     null -> append("null")
+    // Java类对象
     is Class<*> -> if (any.isWriteByKotlin) {
         appendByReflect(any.kotlin)
     } else StaticFieldsCache.cache.getOrPut(any.name) {
         // java，打印当前类自身定义的static字段
         StaticFieldsCache.JavaClass(any)
     }.appendTo(this)
+    // Kotlin类对象
     is KClass<*> -> if (!any.java.isWriteByKotlin) {
         append(any.java)
     } else StaticFieldsCache.cache.getOrPut(any.jvmName) {
@@ -45,6 +47,7 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
             StaticFieldsCache.KotlinKClass(any)
         }
     }.appendTo(this)
+    // 数组
     is Array<*> -> {
         append('[')
         any.forEachIndexed { i, element ->
@@ -63,6 +66,7 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
     is FloatArray -> append(any.contentToString())
     is DoubleArray -> append(any.contentToString())
     is BooleanArray -> append(any.contentToString())
+    // JDK类型
     is CharSequence -> append(any)
     is Iterable<*> -> {
         append('[')
@@ -88,6 +92,7 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
         replace(length - 2, length, "]")
     }
     is Reference<*> -> appendByReflect(any.get())
+    // 判断该类有没有重写toString
     else -> if (toStringWasOverrideCache.getOrPut(any.javaClass) {
             any.javaClass.getMethod("toString").declaringClass != Any::class.java
         }) {
@@ -156,6 +161,9 @@ private sealed interface StaticFieldsCache {
         private val companionObj: T = companionKls.objectInstance!!
     ) : StaticFieldsCache {
         override val clazzName: String = any.qualifiedName!!
+
+        // 获取这个类自身定义的非扩展字段
+        // https://github.com/JetBrains/kotlin/blob/db825efc9f8cf648f33d30fb730d47a484519497/core/reflection.jvm/src/kotlin/reflect/full/KClasses.kt#L159
         private val fields = companionKls.declaredMemberProperties.mapToArray {
             it.isAccessible = true
             if (!it.isFinal) it else it.name to it.get(companionObj)
@@ -205,6 +213,8 @@ private sealed interface FieldsCache<T> {
     class Kotlin<T : Any>(
         kClass: KClass<T>
     ) : FieldsCache<T> {
+        // 获取该类及其父类自身定义的属性
+        // https://github.com/JetBrains/kotlin/blob/db825efc9f8cf648f33d30fb730d47a484519497/core/reflection.jvm/src/kotlin/reflect/full/KClasses.kt#L145
         private val fields = kClass.memberProperties.onEach {
             it.isAccessible = true
         }
@@ -292,21 +302,30 @@ fun StringBuilder.appendAnyFields(any: Any, vararg fields: Any): StringBuilder =
             append(", ")
         }
         when (field) {
+            // name to Kotlin字段、方法
             is Pair<*, *> -> {
                 val (key, value) = field
                 append(key)
                 append('=')
                 appendByReflect(getValue(any, value))
             }
+            // Kotlin 字段、方法
             is KCallable<*> -> {
                 append(field.name)
                 append('=')
                 appendByReflect(getValue(any, field))
             }
-            is Field -> if (Modifier.isStatic(field.modifiers)) {
-                field.get(null)
-            } else {
-                field.get(any)
+            // Jvm反射体系的field
+            is Field -> {
+                append(field.name)
+                append('=')
+                appendByReflect(getValue(any, field))
+            }
+            // SpSaver preferenceDataStore的field
+            is FieldAccessor.Field<*, *> -> {
+                append(field.pdsKey)
+                append('=')
+                appendByReflect(getValue(any, field))
             }
             else -> {
                 appendByReflect(field)
@@ -320,6 +339,7 @@ fun StringBuilder.appendAnyFields(any: Any, vararg fields: Any): StringBuilder =
 private fun getValue(
     thisRef: Any, field: Any?,
 ): Any? = when (field) {
+    // Kotlin字段
     is KProperty<*> -> when (field) {
         is KProperty0<*> ->
             field.get()
@@ -327,6 +347,7 @@ private fun getValue(
             (field as KProperty1<Any, *>).get(thisRef)
         else -> field
     }
+    // Kotlin方法
     is KFunction<*> -> when (field) {
         is Function0<*> ->
             field()
@@ -334,6 +355,13 @@ private fun getValue(
             (field as Any.() -> Any)(thisRef)
         else -> field
     }
+    // Jvm反射体系的field
+    is Field -> if (Modifier.isStatic(field.modifiers)) {
+        field.get(null)
+    } else {
+        field.get(thisRef)
+    }
+    // SpSaver preferenceDataStore的field
     is FieldAccessor.Field<*, *> -> {
         (field as FieldAccessor.Field<Any, *>).get(thisRef)
     }

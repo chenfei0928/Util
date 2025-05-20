@@ -74,6 +74,9 @@ dependencies {
     implementation("com.meituan.android.walle:plugin:1.1.7")
     // https://github.com/google/guava
     implementation("com.google.guava:guava:33.4.0-jre")
+    // https://github.com/didi/booster
+    // https://juejin.cn/post/7504839725611728896
+    implementation("com.didiglobal.booster:booster-gradle-plugin:5.1.0")
     // 腾讯Bugly混淆表上传工具
     // https://bugly.qq.com/docs/utility-tools/plugin-gradle-bugly/
     // https://repo1.maven.org/maven2/com/tencent/bugly/symtabfileuploader/
@@ -120,6 +123,11 @@ repositories {
     maven("https://jitpack.io") {
         name = "jetpack"
     }
+    // DidiBoost
+    // OPTIONAL If you want to use SNAPSHOT version, sonatype repository is required.
+    maven("https://oss.sonatype.org/content/repositories/public") {
+        name = "sonatype"
+    }
     exclusiveContent {
         forRepository {
             // 360 RePlugin 仓库
@@ -130,7 +138,7 @@ repositories {
         }
         filter {
 //            includeGroup("com.qihoo360.replugin")
-            includeModule("com.qihoo360.replugin","replugin-host-gradle")
+            includeModule("com.qihoo360.replugin", "replugin-host-gradle")
         }
     }
 }
