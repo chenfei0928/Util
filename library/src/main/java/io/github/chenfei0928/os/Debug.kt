@@ -1,6 +1,7 @@
 package io.github.chenfei0928.os
 
 import android.os.Debug
+import android.view.Choreographer
 import androidx.annotation.Size
 import io.github.chenfei0928.annotation.NoSideEffects
 import io.github.chenfei0928.text.appendFormat
@@ -20,6 +21,22 @@ object Debug {
         NonnullPools.SimplePool<Pair<DecimalFormat, DecimalFormat>>(1) {
             DecimalFormat(",###") to DecimalFormat(",###.###")
         }
+
+    fun traceAndTimeFrameTime(
+        tag: String,
+        tracePath: String = "${tag}_traceFrameTime",
+        msg: String = tracePath,
+    ) {
+        // 追加时间戳后缀，避免AndroidStudio Profiler对trace进行的缓存
+        val l = System.nanoTime()
+        Log.v(tag, "$msg, nanoTime: $l")
+        Debug.startMethodTracing("${tracePath}_$l")
+        Choreographer.getInstance().postFrameCallback {
+            val endTime = System.nanoTime()
+            Debug.stopMethodTracing()
+            logCountTime(tag, msg, StopWatch.NoMoreRecord(l, endTime))
+        }
+    }
 
     inline fun <T> traceAndTime(
         tag: String,
@@ -76,13 +93,13 @@ object Debug {
     fun logCountTime(
         tag: String,
         msg: String,
-        timeUsed: StopWatch.Internal
+        timeUsed: StopWatch.LogCountTime
     ): Unit = logCountTimeFormat.use { format ->
         Log.v(tag, StringBuffer().apply {
             append(msg)
             append(", countTime: ")
             for (i in 0 until timeUsed.nextIndex step 2) {
-                val timeUsed = timeUsed.timestamps[i + 1] - timeUsed.timestamps[i]
+                val timeUsed = timeUsed.nanoTimestamps[i + 1] - timeUsed.nanoTimestamps[i]
                 if (timeUsed < MILLIS_IN_NANOS) {
                     // 在一毫秒以内，展示为纳秒
                     appendFormat(format.first, timeUsed)
@@ -100,32 +117,47 @@ object Debug {
     sealed interface StopWatch {
         fun record()
 
+        sealed interface LogCountTime {
+            val nextIndex: Int
+            val nanoTimestamps: LongArray
+        }
+
         sealed class Internal(
             size: Int
-        ) : StopWatch {
-            internal var nextIndex = 0
-            internal val timestamps: LongArray = LongArray(size)
+        ) : StopWatch, LogCountTime {
+            override var nextIndex = 0
+            override val nanoTimestamps: LongArray = LongArray(size)
             abstract fun start()
             abstract fun stop()
+        }
+
+        class NoMoreRecord(
+            startTimestamp: Long,
+            endTimestamp: Long,
+        ) : LogCountTime {
+            override val nextIndex: Int = 2
+            override val nanoTimestamps: LongArray = longArrayOf(
+                startTimestamp, endTimestamp
+            )
         }
 
         class Timestamps(
             size: Int = 32
         ) : Internal(size) {
             override fun start() {
-                timestamps[nextIndex] = System.nanoTime()
+                nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
             }
 
             override fun record() {
-                timestamps[nextIndex] = System.nanoTime()
+                nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
-                timestamps[nextIndex] = System.nanoTime()
+                nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
             }
 
             override fun stop() {
-                timestamps[nextIndex] = System.nanoTime()
+                nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
             }
         }
@@ -137,21 +169,21 @@ object Debug {
 
             override fun start() {
                 Debug.startMethodTracing(tracePath)
-                timestamps[nextIndex] = System.nanoTime()
+                nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
             }
 
             override fun record() {
-                timestamps[nextIndex] = System.nanoTime()
+                nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
                 Debug.stopMethodTracing()
                 Debug.startMethodTracing(tracePath)
-                timestamps[nextIndex] = System.nanoTime()
+                nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
             }
 
             override fun stop() {
-                timestamps[nextIndex] = System.nanoTime()
+                nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
                 Debug.stopMethodTracing()
             }
