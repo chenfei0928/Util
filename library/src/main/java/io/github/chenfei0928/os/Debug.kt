@@ -46,10 +46,7 @@ object Debug {
     ): T {
         // 追加时间戳后缀，避免AndroidStudio Profiler对trace进行的缓存
         Log.v(tag, "$msg, nanoTime: ${System.nanoTime()}")
-        val watch = object : StopWatch.DebugTrace() {
-            override val tracePath: String
-                get() = "${tracePath}_${System.nanoTime()}"
-        }
+        val watch = StopWatch.DebugTrace(tracePath)
         watch.start()
         return try {
             block(watch)
@@ -61,10 +58,7 @@ object Debug {
 
     inline fun <T> trace(tracePath: String, block: (StopWatch) -> T): T {
         // 追加时间戳后缀，避免AndroidStudio Profiler对trace进行的缓存
-        val watch = object : StopWatch.DebugTrace() {
-            override val tracePath: String
-                get() = "${tracePath}_${System.nanoTime()}"
-        }
+        val watch = StopWatch.DebugTrace(tracePath)
         watch.start()
         return try {
             block(watch)
@@ -97,8 +91,12 @@ object Debug {
     ): Unit = logCountTimeFormat.use { format ->
         Log.v(tag, StringBuffer().apply {
             append(msg)
-            append(", countTime: ")
+            append(", countTimes: ")
             for (i in 0 until timeUsed.nextIndex step 2) {
+                timeUsed.names[i / 2]?.let {
+                    append(it)
+                    append('_')
+                }
                 val timeUsed = timeUsed.nanoTimestamps[i + 1] - timeUsed.nanoTimestamps[i]
                 if (timeUsed < MILLIS_IN_NANOS) {
                     // 在一毫秒以内，展示为纳秒
@@ -115,11 +113,17 @@ object Debug {
     }
 
     sealed interface StopWatch {
-        fun record()
+        /**
+         * 记录一个耗时信息
+         *
+         * @param name 调用此方法前的代码的标记标签
+         */
+        fun record(name: String? = null)
 
         sealed interface LogCountTime {
             val nextIndex: Int
             val nanoTimestamps: LongArray
+            val names: Array<String?>
         }
 
         sealed class Internal(
@@ -127,6 +131,7 @@ object Debug {
         ) : StopWatch, LogCountTime {
             override var nextIndex = 0
             override val nanoTimestamps: LongArray = LongArray(size)
+            override val names: Array<String?> = Array<String?>(size) { null }
             abstract fun start()
             abstract fun stop()
         }
@@ -139,6 +144,7 @@ object Debug {
             override val nanoTimestamps: LongArray = longArrayOf(
                 startTimestamp, endTimestamp
             )
+            override val names: Array<String?> = arrayOf(null)
         }
 
         class Timestamps(
@@ -149,7 +155,8 @@ object Debug {
                 nextIndex++
             }
 
-            override fun record() {
+            override fun record(name: String?) {
+                names[nextIndex / 2] = name
                 nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
                 nanoTimestamps[nextIndex] = System.nanoTime()
@@ -157,15 +164,18 @@ object Debug {
             }
 
             override fun stop() {
+                names[nextIndex / 2] = ""
                 nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
             }
         }
 
-        abstract class DebugTrace(
+        class DebugTrace(
+            private val tracePathPrefix: String,
             size: Int = 32
         ) : Internal(size) {
-            abstract val tracePath: String
+            private val tracePath: String
+                get() = "${tracePathPrefix}_${System.nanoTime()}"
 
             override fun start() {
                 Debug.startMethodTracing(tracePath)
@@ -173,7 +183,8 @@ object Debug {
                 nextIndex++
             }
 
-            override fun record() {
+            override fun record(name: String?) {
+                names[nextIndex / 2] = name
                 nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
                 Debug.stopMethodTracing()
@@ -183,6 +194,7 @@ object Debug {
             }
 
             override fun stop() {
+                names[nextIndex / 2] = ""
                 nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
                 Debug.stopMethodTracing()
