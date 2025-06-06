@@ -11,7 +11,7 @@ import kotlinx.coroutines.plus
 import java.io.Closeable
 import kotlin.coroutines.CoroutineContext
 
-private const val SCOPE_KEY = "androidx.lifecycle.UncaughtHandlerCoroutineScope.JOB_KEY"
+private const val SCOPE_KEY = "io.github.chenfei0928.util.UncaughtHandlerCoroutineScope.JOB_KEY"
 
 /**
  * 提供异常处理

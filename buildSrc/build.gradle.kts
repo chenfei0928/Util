@@ -12,10 +12,10 @@ tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
 @Suppress("kotlin:S6624")
 dependencies {
     // https://github.com/JetBrains/kotlin
-    val kotlinVersion = "2.1.20"
+    val kotlinVersion = "2.1.21"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "8.10.0"
+    val agpVersion = "8.10.1"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
     implementation(kotlin("reflect", kotlinVersion))

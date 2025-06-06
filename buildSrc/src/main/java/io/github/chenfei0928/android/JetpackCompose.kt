@@ -57,7 +57,7 @@ fun Project.applyJetpackCompose(
 
     dependencies {
         // https://developer.android.com/jetpack/compose/bom/bom-mapping
-        val composeBom = platform("androidx.compose:compose-bom:2025.03.00")
+        val composeBom = platform("androidx.compose:compose-bom:2025.06.00")
         implementation(composeBom)
         androidTestImplementation(composeBom)
 
@@ -71,6 +71,7 @@ fun Project.applyJetpackCompose(
         // or only import the main APIs for the underlying toolkit systems,
         // such as input and measurement/layout
         implementation("androidx.compose.ui:ui")
+        implementation("androidx.compose.ui:ui-viewbinding")
 
         // Android Studio Preview support
         implementation("androidx.compose.ui:ui-tooling-preview")
@@ -87,13 +88,14 @@ fun Project.applyJetpackCompose(
         // Optional - Add full set of material icons
         implementation("androidx.compose.material:material-icons-extended")
         // Optional - Add window size utils
-        implementation("androidx.compose.material3:material3-window-size-class")
+        implementation("androidx.compose.material3.adaptive:adaptive")
 
+        // Optional - Integration with activities
+        implementation("androidx.activity:activity-compose")
+        // Optional - Integration with ViewModels
+        implementation("androidx.lifecycle:lifecycle-viewmodel-compose")
         // Optional - Integration with LiveData
         implementation("androidx.compose.runtime:runtime-livedata")
-        // Optional - Integration with RxJava
-        implementation("androidx.compose.runtime:runtime-rxjava2")
-
 
         // Integration with activities
         // https://dl.google.com/dl/android/maven2/androidx/activity/activity-compose/maven-metadata.xml
