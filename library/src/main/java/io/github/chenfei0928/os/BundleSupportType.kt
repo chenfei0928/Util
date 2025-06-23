@@ -83,21 +83,23 @@ abstract class BundleSupportType<T>(
      * @param defaultValue 如果数据源[bundle]中没有数据时，且[isMarkedNullable]为false不可空时返回的默认值
      */
     fun getValue(
-        bundle: Bundle, property: KProperty<*>, name: String, defaultValue: T?
+        bundle: Bundle?, property: KProperty<*>, name: String, defaultValue: T?
     ): T = if (isMarkedNullable ?: property.returnType.isMarkedNullable)
-        getNullable(bundle, property, name)!!
-    else getNonnull(bundle, property, name, defaultValue)
+        bundle?.let { getNullable(bundle, property, name) }!!
+    else if (bundle != null)
+        getNonnull(bundle, property, name, defaultValue)
+    else defaultValue ?: nonnullValue(property)
 
     /**
      * 获取[Intent]的扩展数据，并返回可空数据。如果数据中没有存储该数据，则返回null
      */
-    open fun getNullable(bundle: Bundle, property: KProperty<*>, name: String): T? =
+    protected open fun getNullable(bundle: Bundle, property: KProperty<*>, name: String): T? =
         if (!bundle.containsKey(name)) null else getNonnull(bundle, property, name, null)
 
     /**
      * 获取[Intent]的扩展数据，并返回非空数据。如果数据中没有存储该数据，则返回默认数据
      */
-    open fun getNonnull(
+    protected open fun getNonnull(
         bundle: Bundle, property: KProperty<*>, name: String, defaultValue: T?
     ): T = if (!bundle.containsKey(name)) defaultValue ?: nonnullValue(property) else
         getNullable(bundle, property, name) ?: defaultValue ?: nonnullValue(property)

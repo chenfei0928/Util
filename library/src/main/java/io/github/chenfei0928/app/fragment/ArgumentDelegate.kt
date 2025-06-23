@@ -27,9 +27,9 @@ class ArgumentDelegate<V>(
     private val defaultValue: V? = null,
 ) : ReadOnlyCacheDelegate<Fragment, V>(), ReadWriteProperty<Fragment, V> {
     override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): V {
-        return thisRef.requireArguments().run {
-            classLoader = thisRef.javaClass.classLoader
-            supportType.getValue(this, property, name ?: property.name, defaultValue)
+        return thisRef.arguments.let {
+            it?.classLoader = thisRef.javaClass.classLoader
+            supportType.getValue(it, property, name ?: property.name, defaultValue)
         }
     }
 
