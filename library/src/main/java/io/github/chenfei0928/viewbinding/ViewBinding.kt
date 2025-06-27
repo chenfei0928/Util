@@ -16,14 +16,12 @@ import java.lang.reflect.Method
 
 //<editor-fold desc="Activity的setContentViewBinding">
 inline fun <reified T : ViewBinding> Activity.setContentViewBinding(
-    @LayoutRes layoutId: Int
-): T {
-    return setContentViewBinding(layoutId, T::class.java.bindFunc())
-}
+    @LayoutRes layoutId: Int, applyBlock: T.() -> Unit = {}
+): T = setContentViewBinding(layoutId, T::class.java.bindFunc(), applyBlock)
 
 inline fun <T : ViewBinding> Activity.setContentViewBinding(
-    @LayoutRes layoutId: Int, bindBlock: (View) -> T
-): T = setContentViewAndGetView(layoutId).let(bindBlock)
+    @LayoutRes layoutId: Int, bindBlock: (View) -> T, applyBlock: T.() -> Unit = {}
+): T = setContentViewAndGetView(layoutId).let(bindBlock).apply(applyBlock)
 
 fun Activity.setContentViewAndGetView(@LayoutRes layoutId: Int): View {
     this.setContentView(layoutId)
@@ -35,14 +33,12 @@ fun Activity.setContentViewAndGetView(@LayoutRes layoutId: Int): View {
 
 //<editor-fold desc="Dialog的setContentViewBinding">
 inline fun <reified T : ViewBinding> Dialog.setContentViewBinding(
-    @LayoutRes layoutId: Int
-): T {
-    return setContentViewBinding(layoutId, T::class.java.bindFunc())
-}
+    @LayoutRes layoutId: Int, applyBlock: T.() -> Unit = {}
+): T = setContentViewBinding(layoutId, T::class.java.bindFunc(), applyBlock)
 
 inline fun <T : ViewBinding> Dialog.setContentViewBinding(
-    @LayoutRes layoutId: Int, bindBlock: (View) -> T
-): T = setContentViewAndGetView(layoutId).let(bindBlock)
+    @LayoutRes layoutId: Int, bindBlock: (View) -> T, applyBlock: T.() -> Unit = {}
+): T = setContentViewAndGetView(layoutId).let(bindBlock).apply(applyBlock)
 
 fun Dialog.setContentViewAndGetView(@LayoutRes layoutId: Int): View {
     this.setContentView(layoutId)
