@@ -14,7 +14,7 @@ import kotlinx.coroutines.channels.trySendBlocking
  * @author chenf()
  * @date 2025-02-08 15:16
  */
-internal abstract class CallbackFlowBindService<T>(
+abstract class CallbackFlowBindService<T>(
     context: Context,
     intent: Intent,
     flag: Int,

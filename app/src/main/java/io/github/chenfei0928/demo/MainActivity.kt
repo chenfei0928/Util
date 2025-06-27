@@ -1,7 +1,6 @@
 package io.github.chenfei0928.demo
 
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -86,9 +85,11 @@ class MainActivity : ComponentActivity() {
             )
             AlertDialog.Builder(this)
                 .setItems(items.mapToArray { it.first }) { _, which ->
-                    startActivity(Intent(this, PreferenceActivity::class.java).apply {
-                        putExtra("fragmentName", items[which].second.name)
-                    })
+                    startActivity(
+                        PreferenceActivity.newIntent(
+                            this, items[which].second, 7, Test.newBuilder().setInt(8).build()
+                        )
+                    )
                 }
                 .show()
         }

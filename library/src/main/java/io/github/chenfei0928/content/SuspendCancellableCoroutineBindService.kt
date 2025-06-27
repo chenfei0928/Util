@@ -13,7 +13,7 @@ import kotlin.coroutines.resumeWithException
  * @author chenf()
  * @date 2025-02-08 15:07
  */
-internal abstract class SuspendCancellableCoroutineBindService<T>(
+abstract class SuspendCancellableCoroutineBindService<T>(
     context: Context,
     intent: Intent,
     flag: Int,

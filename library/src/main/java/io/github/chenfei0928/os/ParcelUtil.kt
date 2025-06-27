@@ -50,6 +50,21 @@ object ParcelUtil {
         parcelable.writeToParcel(it, 0)
     }
 
+    fun <T> marshall(
+        value: T, parceler: Parceler<T>
+    ): ByteArray = marshall {
+        parceler.run {
+            value.write(it, 0)
+        }
+    }
+
+    fun <T> unmarshall(
+        bytes: ByteArray,
+        parceler: Parceler<T>
+    ): T = unmarshall(bytes) {
+        parceler.create(it)
+    }
+
     fun <T : Parcelable> unmarshall(
         bytes: ByteArray, creator: Parcelable.Creator<T>
     ): T = unmarshall(bytes) {
