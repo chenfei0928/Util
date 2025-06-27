@@ -45,80 +45,150 @@ operator fun Intent.set(property: KProperty<Char>, value: Char) =
 operator fun Intent.set(property: KProperty<Boolean>, value: Boolean) =
     putExtra(property.name, value)
 
-operator fun Intent.set(property: KProperty<ByteArray>, value: ByteArray) =
-    putExtra(property.name, value)
+operator fun Intent.set(
+    property: KProperty<ByteArray>, value: ByteArray?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
-operator fun Intent.set(property: KProperty<ShortArray>, value: ShortArray) =
-    putExtra(property.name, value)
+operator fun Intent.set(
+    property: KProperty<ShortArray>, value: ShortArray?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
-operator fun Intent.set(property: KProperty<IntArray>, value: IntArray) =
-    putExtra(property.name, value)
+operator fun Intent.set(
+    property: KProperty<IntArray>, value: IntArray?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
-operator fun Intent.set(property: KProperty<LongArray>, value: LongArray) =
-    putExtra(property.name, value)
+operator fun Intent.set(
+    property: KProperty<LongArray>, value: LongArray?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
-operator fun Intent.set(property: KProperty<FloatArray>, value: FloatArray) =
-    putExtra(property.name, value)
+operator fun Intent.set(
+    property: KProperty<FloatArray>, value: FloatArray?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
-operator fun Intent.set(property: KProperty<DoubleArray>, value: DoubleArray) =
-    putExtra(property.name, value)
+operator fun Intent.set(
+    property: KProperty<DoubleArray>, value: DoubleArray?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
-operator fun Intent.set(property: KProperty<CharArray>, value: CharArray) =
-    putExtra(property.name, value)
+operator fun Intent.set(
+    property: KProperty<CharArray>, value: CharArray?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
-operator fun Intent.set(property: KProperty<BooleanArray>, value: BooleanArray) =
-    putExtra(property.name, value)
+operator fun Intent.set(
+    property: KProperty<BooleanArray>, value: BooleanArray?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
-operator fun Intent.set(property: KProperty<CharSequence>, value: CharSequence) =
-    putExtra(property.name, value)
+operator fun Intent.set(
+    property: KProperty<CharSequence>, value: CharSequence?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
 @JvmName("setCharSequenceArray")
 operator fun Intent.set(
-    property: KProperty<Array<out CharSequence>>,
-    value: Array<out CharSequence>
-) =
-    putExtra(property.name, value)
+    property: KProperty<Array<out CharSequence>>, value: Array<out CharSequence>?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
 @JvmName("setCharSequenceArray")
 operator fun Intent.set(
-    property: KProperty<List<out CharSequence>>,
-    value: List<out CharSequence>
-) =
-    putExtra(property.name, value.asArrayList())
+    property: KProperty<List<out CharSequence>>, value: List<out CharSequence>?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value.asArrayList())
 
-operator fun Intent.set(property: KProperty<String>, value: String) =
-    putExtra(property.name, value)
+operator fun Intent.set(
+    property: KProperty<String>, value: String?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
 @JvmName("setStringArray")
-operator fun Intent.set(property: KProperty<Array<String>>, value: Array<String>) =
-    putExtra(property.name, value)
+operator fun Intent.set(
+    property: KProperty<Array<String>>, value: Array<String>?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
 @JvmName("setStringList")
-operator fun Intent.set(property: KProperty<Array<String>>, value: List<String>) =
-    putExtra(property.name, value.asArrayList())
+operator fun Intent.set(
+    property: KProperty<Array<String>>, value: List<String>?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value.asArrayList())
 
-operator fun Intent.set(property: KProperty<Bundle>, value: Bundle) =
-    putExtra(property.name, value)
+operator fun Intent.set(
+    property: KProperty<Bundle>, value: Bundle?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
 @JvmName("setParcelable")
-operator fun <V : Parcelable, V1 : V> Intent.set(property: KProperty<V>, value: V1?) =
-    putExtra(property.name, value)
+operator fun <V : Parcelable, V1 : V> Intent.set(
+    property: KProperty<V>, value: V1?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
 @JvmName("setParcelableArray")
-operator fun <V : Parcelable, V1 : V> Intent.set(property: KProperty<Array<V>>, value: Array<V1>?) =
-    putExtra(property.name, value)
+operator fun <V : Parcelable, V1 : V> Intent.set(
+    property: KProperty<Array<V>>, value: Array<V1>?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
 @JvmName("setParcelableList")
-operator fun <V : Parcelable, V1 : V> Intent.set(property: KProperty<List<V>>, value: List<V1>?) =
-    putExtra(property.name, value?.asArrayList())
+operator fun <V : Parcelable, V1 : V> Intent.set(
+    property: KProperty<List<V>>, value: List<V1>?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value.asArrayList())
 
 @JvmName("setEnum")
-operator fun <V : Enum<V>> Intent.set(property: KProperty<V>, value: V?) =
-    putExtra(property.name, value)
+operator fun <V : Enum<V>> Intent.set(
+    property: KProperty<V>, value: V?
+) = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, value)
 
 /**
  * Set
- * [io.github.chenfei0928.os.BundleSupportType.ProtoBufType]
+ * [io.github.chenfei0928.os.BundleSupportType.ProtoBufType.putNonnull]
  *
  * @param V
  * @param property
@@ -145,7 +215,7 @@ inline operator fun <reified V : MessageLite, V1 : V> Intent.set(
 
 /**
  * Set
- * [io.github.chenfei0928.os.BundleSupportType.ListProtoBufType]
+ * [io.github.chenfei0928.os.BundleSupportType.ListProtoBufType.parceler]
  *
  * @param V
  * @param property
@@ -156,7 +226,10 @@ inline operator fun <reified V : MessageLite, V1 : V> Intent.set(
     property: KProperty<List<V>>, value: List<V1>?
 ): Intent {
     val writeClassName = Modifier.FINAL !in V::class.java.modifiers
-    val parceler = if (writeClassName) {
+    val parceler = if (value == null) {
+        removeExtra(property.name)
+        return this
+    } else if (writeClassName) {
         ProtobufListParceler.Instance as Parceler<List<V?>?>
     } else {
         ProtobufListParceler(V::class.java.protobufParserForType)
@@ -165,6 +238,20 @@ inline operator fun <reified V : MessageLite, V1 : V> Intent.set(
     return this
 }
 
+/**
+ * Set
+ * [io.github.chenfei0928.os.BundleSupportType.ParcelerType.parseData]
+ *
+ * @param V
+ * @param V1
+ * @param property
+ * @param parceler
+ * @param value
+ * @return
+ */
 operator fun <V, V1 : V> Intent.set(
-    property: KProperty<V>, parceler: Parceler<V>, value: V1
-): Intent = putExtra(property.name, ParcelUtil.marshall(value, parceler))
+    property: KProperty<V>, parceler: Parceler<V>, value: V1?
+): Intent = if (value == null) {
+    removeExtra(property.name)
+    this
+} else putExtra(property.name, ParcelUtil.marshall(value, parceler))

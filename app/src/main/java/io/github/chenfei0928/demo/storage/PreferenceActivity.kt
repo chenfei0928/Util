@@ -16,6 +16,8 @@ import io.github.chenfei0928.app.activity.IntentDelegate.Companion.intentString
 import io.github.chenfei0928.app.activity.set
 import io.github.chenfei0928.demo.R
 import io.github.chenfei0928.demo.bean.Test
+import io.github.chenfei0928.demo.databinding.ActivityPreferenceBinding
+import io.github.chenfei0928.viewbinding.setContentViewBinding
 
 class PreferenceActivity : AppCompatActivity() {
     private val fragmentName: String by intentString()
@@ -25,8 +27,10 @@ class PreferenceActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_preference)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        val binding = setContentViewBinding<ActivityPreferenceBinding>(
+            R.layout.activity_preference
+        )
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets

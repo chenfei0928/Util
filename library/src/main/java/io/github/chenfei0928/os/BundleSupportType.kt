@@ -1092,19 +1092,14 @@ abstract class BundleSupportType<T>(
         protected abstract fun getParceler(property: KProperty<*>): Parceler<T?>
 
         private fun parseData(property: KProperty<*>, data: ByteArray?): T? =
-            if (data == null) null else ParcelUtil.unmarshall(data) {
-                getParceler(property).create(it)
-            }
+            if (data == null) null else ParcelUtil.unmarshall(data, getParceler(property))
 
         override fun nonnullValue(property: KProperty<*>): T & Any =
             property.getReturnTypeJClass<T & Any>().getDeclaredConstructor().newInstance()
 
         final override fun putNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, value: T & Any
-        ) = bundle.putByteArray(name, ParcelUtil.use { parcel ->
-            getParceler(property).run { value.write(parcel, 0) }
-            parcel.marshall()
-        })
+        ) = bundle.putByteArray(name, ParcelUtil.marshall(value, getParceler(property)))
 
         final override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
