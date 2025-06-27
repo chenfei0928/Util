@@ -2,6 +2,8 @@
  * @author chenf()
  * @date 2025-06-27 16:17
  */
+@file:Suppress("TooManyFunctions")
+
 package io.github.chenfei0928.app.activity
 
 import android.content.Intent
