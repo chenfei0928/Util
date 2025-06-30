@@ -43,6 +43,7 @@ class FileImportFileFragment : BasePermissionFileImportFragment<File>(
         }
         val implArg = arguments.getBundle(KEY_IMPL_ARG)
         // 创建implFragment
+        @Suppress("UNCHECKED_CAST")
         val implFragment = childFragmentManager.fragmentFactory.instantiate(
             this.javaClass.classLoader!!, implClass
         ) as BaseFileImportFragment<Uri>
@@ -72,7 +73,7 @@ class FileImportFileFragment : BasePermissionFileImportFragment<File>(
                 coroutineScope.launch {
                     val tmpFile = ProgressDialog(context).apply {
                         // 显示进度提示
-                        setMessage(this@FileImportFileFragment.getString(R.string.cf0928util_toast_extStrong_fileImporting))
+                        setMessage(getString(R.string.cf0928util_toast_extStrong_fileImporting))
                         setCanceledOnTouchOutside(false)
                         setCancelable(false)
                         // 在io线程中复制文件

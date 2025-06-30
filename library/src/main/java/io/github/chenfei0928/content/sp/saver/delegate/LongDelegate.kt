@@ -14,7 +14,7 @@ class LongDelegate<
 private constructor(
     key: String? = null,
     defaultValue: Long = 0L,
-    @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Long>(
     key, PreferenceType.Native.LONG, defaultValue
 ) {
@@ -40,7 +40,7 @@ private constructor(
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): LongDelegate<SpSaver, Sp, Ed> {
             return if (!key.isNullOrEmpty() || defaultValue != 0L || expireDurationInSecond > 0) {
-                LongDelegate<SpSaver, Sp, Ed>(key, defaultValue, expireDurationInSecond)
+                LongDelegate(key, defaultValue, expireDurationInSecond)
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? LongDelegate<SpSaver, Sp, Ed>

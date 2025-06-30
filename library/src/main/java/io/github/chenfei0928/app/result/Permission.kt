@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment
  * @param onDenied      当权限被拒绝，给予用户提示，是否重试
  * @param onNeverAskAgain   当权限被拒绝并不再提示，给予用户提示并取消操作
  */
+@Suppress("LongParameterList")
 inline fun Fragment.registerForPermission(
     permissions: Array<String>,
     showRationaleWhenFirst: Boolean = true,
@@ -52,6 +53,7 @@ inline fun Fragment.registerForPermission(
  * @param onDenied      当权限被拒绝，给予用户提示，是否重试
  * @param onNeverAskAgain   当权限被拒绝并不再提示，给予用户提示并取消操作
  */
+@Suppress("LongParameterList")
 inline fun ComponentActivity.registerForPermission(
     permissions: Array<String>,
     showRationaleWhenFirst: Boolean = true,
@@ -75,6 +77,7 @@ inline fun ComponentActivity.registerForPermission(
  * @param onDenied      当权限被拒绝，给予用户提示，是否重试
  * @param onNeverAskAgain   当权限被拒绝并不再提示，给予用户提示并取消操作
  */
+@Suppress("LongParameterList")
 inline fun ActivityResultCaller.registerForPermission(
     crossinline context: () -> Activity,
     permissions: Array<String>,

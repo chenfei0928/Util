@@ -20,7 +20,7 @@ protected constructor(
     gson: Gson = io.github.chenfei0928.json.gson.gson,
     type: TypeToken<V>,
 ) : BaseSpConvert<SpSaver, Sp, Ed, String?, V?>(saver), AbsSpSaver.DefaultValue<V?> {
-    override val spValueType: PreferenceType.Struct<V?> = PreferenceType.Struct<V?>(type.type)
+    override val spValueType: PreferenceType.Struct<V?> = PreferenceType.Struct(type.type)
     private val typeAdapter: TypeAdapter<V> = gson.getAdapter(type) as TypeAdapter<V>
 
     override fun onRead(value: String): V & Any = typeAdapter.fromJson(value)!!
@@ -45,7 +45,7 @@ protected constructor(
                 reified V> invoke(
             key: String? = null,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
-        ): AbsSpSaver.Delegate<SpSaver, V?> = ValueDefaultValue<SpSaver, Sp, Ed, V>(
+        ): AbsSpSaver.Delegate<SpSaver, V?> = ValueDefaultValue(
             saver = StringDelegate(key, expireDurationInSecond),
             type = object : TypeToken<V>() {}
         )

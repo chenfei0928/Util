@@ -73,8 +73,9 @@ fun <R> Iterable<*>.filterIsInstance(klass: TypeBoundsContract<R>): List<R> {
 fun <C : MutableCollection<in R>, R> Iterable<*>.filterIsInstanceTo(
     destination: C, klass: TypeBoundsContract<R>
 ): C {
-    @Suppress("UNCHECKED_CAST") for (element in this) {
+    for (element in this) {
         if (klass.isInstance(element)) {
+            @Suppress("UNCHECKED_CAST")
             destination.add(element as R)
         }
     }

@@ -23,7 +23,6 @@ suspend fun <T> LiveData<T>.nextValue(): T? {
     return suspendCancellableCoroutine { continuation ->
         val oldVersion = version
 
-        @Suppress("kotlin:S6516")
         val observer = object : Observer<T?> {
             override fun onChanged(value: T?) {
                 if (oldVersion != version) {

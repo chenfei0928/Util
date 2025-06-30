@@ -2,6 +2,7 @@ package io.github.chenfei0928.widget.recyclerview.listener
 
 import android.animation.ValueAnimator
 import android.view.MenuItem
+import io.github.chenfei0928.animation.ANIMATE_LAYOUT_CHANGES_DEFAULT_DURATION
 
 /**
  * RecyclerView 滑动时隐藏、显示menu
@@ -16,7 +17,7 @@ class RecyclerViewScrollPositionOutOfIndexMenuVisibleListener(
 
     private var targetSearchBarVisible: Boolean = false
     private val iconAnimator: ValueAnimator by lazy {
-        ValueAnimator.ofInt(0, 255).setDuration(300L).apply {
+        ValueAnimator.ofInt(0, 255).setDuration(ANIMATE_LAYOUT_CHANGES_DEFAULT_DURATION).apply {
             addUpdateListener {
                 val menu = menuGetter()
                     ?: return@addUpdateListener

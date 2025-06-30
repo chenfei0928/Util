@@ -10,6 +10,7 @@ import java.util.Arrays
 /**
  * [Arrays.deepEquals]
  */
+@Suppress("CyclomaticComplexMethod")
 fun Any?.deepEquals(b: Any?): Boolean = when {
     this === b -> true
     this == null || b == null -> false

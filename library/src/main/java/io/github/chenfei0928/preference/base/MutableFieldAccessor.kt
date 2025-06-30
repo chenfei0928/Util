@@ -67,7 +67,7 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
             vType: PreferenceType?,
         ): FieldAccessor.Field<T, V> {
             return if (redirectToMutableField && tProperty is KMutableProperty1) {
-                field<T, V>(tProperty, vType)
+                field(tProperty, vType)
             } else {
                 super.field(tCopyFunc, tProperty, vType)
             }

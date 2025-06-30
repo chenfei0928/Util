@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.widget.ImageView
 import androidx.annotation.ReturnThis
+import androidx.core.graphics.withSave
 import kotlin.math.roundToInt
 
 /**
@@ -50,12 +51,12 @@ class FixedScaleDrawable(
     }
 
     override fun draw(canvas: Canvas) {
-        val save = canvas.save()
-        if (drawMatrix != null) {
-            canvas.concat(drawMatrix)
+        canvas.withSave {
+            if (drawMatrix != null) {
+                canvas.concat(drawMatrix)
+            }
+            drawable.draw(canvas)
         }
-        drawable.draw(canvas)
-        canvas.restoreToCount(save)
     }
 
     //<editor-fold desc="像 ImageView 一样处理内容显示范围" defaultstatus="collapsed">
@@ -94,8 +95,8 @@ class FixedScaleDrawable(
                     // Center bitmap in view, no scaling.
                     drawMatrix = Matrix()
                     drawMatrix?.setTranslate(
-                        ((vwidth - dwidth) * 0.5f).roundToInt().toFloat(),
-                        ((vheight - dheight) * 0.5f).roundToInt().toFloat()
+                        ((vwidth - dwidth) / 2f).roundToInt().toFloat(),
+                        ((vheight - dheight) / 2f).roundToInt().toFloat()
                     )
                 }
                 ImageView.ScaleType.CENTER_CROP == scaleType -> {
@@ -105,10 +106,10 @@ class FixedScaleDrawable(
                     var dy = 0f
                     if (dwidth * vheight > vwidth * dheight) {
                         scale = vheight.toFloat() / dheight.toFloat()
-                        dx = (vwidth - dwidth * scale) * 0.5f
+                        dx = (vwidth - dwidth * scale) / 2f
                     } else {
                         scale = vwidth.toFloat() / dwidth.toFloat()
-                        dy = (vheight - dheight * scale) * 0.5f
+                        dy = (vheight - dheight * scale) / 2f
                     }
                     drawMatrix?.setScale(scale, scale)
                     drawMatrix?.postTranslate(dx.roundToInt().toFloat(), dy.roundToInt().toFloat())
@@ -123,8 +124,8 @@ class FixedScaleDrawable(
                             vheight.toFloat() / dheight.toFloat()
                         )
                     }
-                    val dx: Float = ((vwidth - dwidth * scale) * 0.5f).roundToInt().toFloat()
-                    val dy: Float = ((vheight - dheight * scale) * 0.5f).roundToInt().toFloat()
+                    val dx: Float = ((vwidth - dwidth * scale) / 2f).roundToInt().toFloat()
+                    val dy: Float = ((vheight - dheight * scale) / 2f).roundToInt().toFloat()
                     drawMatrix?.setScale(scale, scale)
                     drawMatrix?.postTranslate(dx, dy)
                 }

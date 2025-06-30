@@ -34,7 +34,7 @@ constructor(
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, ByteArray?> {
             return if (!key.isNullOrEmpty() || expireDurationInSecond > 0) {
-                Base64StringConvert<SpSaver, Sp, Ed>(StringDelegate(key, expireDurationInSecond))
+                Base64StringConvert(StringDelegate(key, expireDurationInSecond))
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? Base64StringConvert<SpSaver, Sp, Ed>

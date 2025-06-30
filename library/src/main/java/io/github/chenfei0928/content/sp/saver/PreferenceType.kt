@@ -111,7 +111,7 @@ sealed interface PreferenceType {
 
         companion object {
             inline operator fun <reified E : Enum<E>> invoke() =
-                EnumNameString<E>(E::class.java, enumValues<E>())
+                EnumNameString(E::class.java, enumValues<E>())
         }
 
         /**
@@ -205,7 +205,7 @@ sealed interface PreferenceType {
             fun <E : Enum<E>> forEnumDescriptor(
                 enumDescriptor: Descriptors.EnumDescriptor, eClass: Class<E>?
             ): BaseEnumNameStringCollection<E, MutableList<E>> {
-                val eClass = eClass ?: enumDescriptor.enumClass<E>()
+                val eClass: Class<E> = eClass ?: enumDescriptor.enumClass()
                 return object : BaseEnumNameStringCollection<E, MutableList<E>>(
                     EnumNameString(eClass)
                 ) {
@@ -303,8 +303,8 @@ sealed interface PreferenceType {
 
         companion object {
             inline operator fun <reified E : Enum<E>, reified C : Collection<E>> invoke(): EnumNameStringCollection<E> =
-                EnumNameStringCollection<E>(
-                    EnumNameString<E>(E::class.java, enumValues<E>()), C::class.java
+                EnumNameStringCollection(
+                    EnumNameString(E::class.java, enumValues<E>()), C::class.java
                 )
 
             fun forType(type: ParameterizedType): EnumNameStringCollection<*> {

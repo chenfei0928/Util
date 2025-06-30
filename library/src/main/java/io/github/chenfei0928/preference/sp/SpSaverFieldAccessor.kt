@@ -205,7 +205,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
                         )
                     }
                     @Suppress("UNCHECKED_CAST")
-                    return SpSaverPropertyDelegateField<SpSaver, Any?>(
+                    return SpSaverPropertyDelegateField(
                         outDelegate = outDelegate as AbsSpSaver.Delegate<SpSaver, Any?>,
                         spAccessDelegate = spAccessDelegate as AbsSpAccessDefaultValueDelegate<SpSaver, *, *, Any?>,
                         property = property,

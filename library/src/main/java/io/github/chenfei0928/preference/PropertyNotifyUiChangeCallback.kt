@@ -42,8 +42,8 @@ class PropertyNotifyUiChangeCallback(
     }
 
     private fun PreferenceGroup.forEach(block: (Preference) -> Unit) {
-        for (i in 0 until preferenceScreen.preferenceCount) {
-            val p = preferenceScreen.getPreference(i)
+        for (i in 0 until preferenceCount) {
+            val p = getPreference(i)
             block(p)
             if (p is PreferenceGroup) {
                 p.forEach(block)

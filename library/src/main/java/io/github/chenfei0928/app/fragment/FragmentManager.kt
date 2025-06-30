@@ -2,6 +2,8 @@
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2019-10-31 11:03
  */
+@file:Suppress("TooManyFunctions")
+
 package io.github.chenfei0928.app.fragment
 
 import androidx.annotation.IdRes

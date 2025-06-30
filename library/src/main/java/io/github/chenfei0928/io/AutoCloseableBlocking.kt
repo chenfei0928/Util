@@ -13,9 +13,9 @@ import kotlin.coroutines.CoroutineContext
 suspend inline fun <T : AutoCloseable> T.launchBlocking(
     context: CoroutineContext = Dispatchers.IO,
     crossinline block: CoroutineScope.(T) -> Unit
-) = CoroutineScope(currentCoroutineContext()).run {
+): Unit = CoroutineScope(currentCoroutineContext()).run {
     this@run.launch(context) {
-        suspendCancellableCoroutine<Unit> {
+        suspendCancellableCoroutine {
             this@run.launch(context) {
                 block(this@launchBlocking)
             }

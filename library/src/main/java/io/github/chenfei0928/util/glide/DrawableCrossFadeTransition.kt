@@ -2,10 +2,10 @@ package io.github.chenfei0928.util.glide
 
 import android.graphics.Color
 import android.graphics.Matrix
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.widget.ImageView
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.values
 import com.bumptech.glide.request.transition.Transition
 import io.github.chenfei0928.graphics.drawable.FixedScaleDrawable
@@ -24,7 +24,7 @@ class DrawableCrossFadeTransition(
     override fun transition(current: Drawable, adapter: Transition.ViewAdapter): Boolean {
         val currentDrawable = adapter.currentDrawable
         val previous = if (currentDrawable == null) {
-            ColorDrawable(Color.TRANSPARENT)
+            Color.TRANSPARENT.toDrawable()
         } else {
             val imageView = adapter.view as? ImageView
             // 使用当前正在显示的drawable尺寸构建目标图片尺寸的drawable，并传入想要的ScaleType缩放方式

@@ -32,6 +32,7 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.egl.EGLContext
 import javax.microedition.khronos.egl.EGLDisplay
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.max
 import kotlin.math.min
 
 /**
@@ -50,8 +51,8 @@ import kotlin.math.min
  * Created by MrFeng on 2018/3/2.
  */
 abstract class GlideLongImageGroupTarget(
-    @Px
-    @IntRange(from = 1, to = 4096)
+    @param:Px
+    @param:IntRange(from = 1, to = 4096)
     private val pageHeight: Int,
     private val inPreferredConfig: Bitmap.Config = Bitmap.Config.RGB_565,
 ) : CustomTarget<File>(), CoroutineScope {
@@ -82,6 +83,7 @@ abstract class GlideLongImageGroupTarget(
     }
 
     @WorkerThread
+    @Suppress("ReturnCount")
     private fun splitBitmaps(resource: File): List<Bitmap> {
         val tmpBitmapOptions = BitmapFactory.Options()
         // 只进行获取尺寸的解码以获取其高度
@@ -205,7 +207,7 @@ abstract class GlideLongImageGroupTarget(
             //Release
             egl.eglTerminate(display)
             //Return largest texture size found, or default
-            return Math.max(maximumTextureSize, IMAGE_MAX_BITMAP_DIMENSION)
+            return max(maximumTextureSize, IMAGE_MAX_BITMAP_DIMENSION)
         }
 
         /**

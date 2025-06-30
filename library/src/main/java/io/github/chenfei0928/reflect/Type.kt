@@ -30,13 +30,13 @@ fun <T> Type.jvmErasureClassOrNull(base: Class<T>): Class<out T>? = when (this) 
         // 泛型擦除，只获取其原始类型信息，不获取其泛型
         rawType.jvmErasureClassOrNull(base)
     }
-    is WildcardType -> upperBounds.firstOrNull {
-        val mustClass = it.jvmErasureClassOrNull<T>(base)
+    is WildcardType -> upperBounds.firstOrNull { upperBound ->
+        val mustClass = upperBound.jvmErasureClassOrNull(base)
         // kotlin.reflect.jvm.jvmErasure
         mustClass != null && Modifier.INTERFACE !in mustClass.modifiers && !mustClass.isAnnotation
     }
-    is TypeVariable<*> -> bounds.firstOrNull {
-        val mustClass = it.jvmErasureClassOrNull<T>(base)
+    is TypeVariable<*> -> bounds.firstOrNull { bound ->
+        val mustClass = bound.jvmErasureClassOrNull(base)
         // kotlin.reflect.jvm.jvmErasure
         mustClass != null && Modifier.INTERFACE !in mustClass.modifiers && !mustClass.isAnnotation
     }

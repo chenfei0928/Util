@@ -10,7 +10,7 @@ import kotlin.reflect.KProperty
  * 字段委托类，通过viewTag来实现为viewHolder扩展字段
  */
 class ViewHolderTagValDelegate<VH : RecyclerView.ViewHolder, R>(
-    @IdRes private val id: Int,
+    @param:IdRes private val id: Int,
     private val creator: (VH) -> R
 ) : ReadOnlyProperty<VH, R> {
 

@@ -18,7 +18,7 @@ import kotlin.math.max
  */
 class BadgeDrawableBackgroundSpan(
     private val drawableLeft: Drawable?,
-    @Px
+    @param:Px
     private val drawablePadding: Int,
     private val background: Drawable,
 ) : ReplacementSpan() {

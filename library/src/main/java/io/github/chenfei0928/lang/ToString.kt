@@ -25,6 +25,7 @@ import kotlin.reflect.jvm.jvmName
 //<editor-fold desc="对任意对象进行toString支持" defaultstatus="collapsed">
 fun Any?.toStringByReflect(): String = StringBuilder().appendByReflect(this).toString()
 
+@Suppress("CyclomaticComplexMethod", "LongMethod")
 fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
     null -> append("null")
     // Java类对象
@@ -241,7 +242,7 @@ private sealed interface FieldsCache<T> {
 }
 
 private fun StringBuilder.appendObjectByReflectImpl(any: Any) = apply {
-    var thisClass: Class<*> = any.javaClass
+    val thisClass: Class<*> = any.javaClass
     if (thisClass.isWriteByKotlin) {
         // 如果当前实例的类是kotlin类，且当前对象是伴生对象，尝试打印伴生对象的字段
         val kClass = thisClass.kotlin

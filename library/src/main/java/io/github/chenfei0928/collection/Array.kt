@@ -15,21 +15,23 @@ inline fun <reified T> Array<T?>.filterNotNull(): Array<T> {
         return arrayOf()
     }
     val count = count { it != null }
-    return if (count == size) {
-        @Suppress("UNCHECKED_CAST")
-        this as Array<T>
-    } else if (count == 0) {
-        arrayOf()
-    } else {
-        val array = arrayOfNulls<T>(count)
-        var i = 0
-        forEach {
-            if (it != null) {
-                array[i] = it
-                i++
-            }
+    return when (count) {
+        size -> {
+            @Suppress("UNCHECKED_CAST")
+            this as Array<T>
         }
-        @Suppress("UNCHECKED_CAST")
-        array as Array<T>
+        0 -> arrayOf()
+        else -> {
+            val array = arrayOfNulls<T>(count)
+            var i = 0
+            forEach {
+                if (it != null) {
+                    array[i] = it
+                    i++
+                }
+            }
+            @Suppress("UNCHECKED_CAST")
+            array as Array<T>
+        }
     }
 }

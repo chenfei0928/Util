@@ -150,12 +150,12 @@ public abstract class ViewBackgroundTarget<T extends View, Z> implements Target<
         }
         attachStateListener = new View.OnAttachStateChangeListener() {
             @Override
-            public void onViewAttachedToWindow(View v) {
+            public void onViewAttachedToWindow(@NonNull View v) {
                 resumeMyRequest();
             }
 
             @Override
-            public void onViewDetachedFromWindow(View v) {
+            public void onViewDetachedFromWindow(@NonNull View v) {
                 pauseMyRequest();
             }
         };

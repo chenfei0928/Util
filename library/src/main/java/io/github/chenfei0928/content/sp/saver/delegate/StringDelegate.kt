@@ -14,7 +14,7 @@ open class StringDelegate<
 private constructor(
     key: String? = null,
     defaultValue: String? = null,
-    @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, String?>(
     key, PreferenceType.Native.STRING, defaultValue
 ) {
@@ -57,7 +57,7 @@ private constructor(
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, String?> {
             return if (!key.isNullOrEmpty() || expireDurationInSecond > 0) {
-                StringDelegate<SpSaver, Sp, Ed>(key, null, expireDurationInSecond)
+                StringDelegate(key, null, expireDurationInSecond)
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? StringDelegate<SpSaver, Sp, Ed>

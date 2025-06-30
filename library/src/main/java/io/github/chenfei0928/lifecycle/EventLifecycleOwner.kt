@@ -1,5 +1,6 @@
 package io.github.chenfei0928.lifecycle
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.State
 import androidx.lifecycle.LifecycleObserver
@@ -28,6 +29,7 @@ class EventLifecycleOwner(
     }
 
     override val lifecycle: Lifecycle = object : Lifecycle() {
+        @SuppressLint("RestrictedApi")
         override fun addObserver(observer: LifecycleObserver) {
             if (events.isEmpty())
                 return

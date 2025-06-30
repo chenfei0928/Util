@@ -16,14 +16,14 @@ private constructor(
     key: String? = null,
     private val defaultEntry: String? = null,
     defaultValue: Set<String?>? = null,
-    @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Set<String?>?>(
     key, PreferenceType.Native.STRING_SET, defaultValue
 ) {
     override fun getValueImpl(sp: Sp, key: String): Set<String?> = if (defaultEntry == null) {
         sp.getStringSet(key, defaultValue)!!
     } else sp.getStringSet(key, defaultValue)!!.let {
-        it.mapTo(ArraySet<String>(it.size)) { e -> e ?: defaultEntry }
+        it.mapTo(ArraySet(it.size)) { e -> e ?: defaultEntry }
     }
 
     override fun putValue(editor: Ed, key: String, value: Set<String?>) {
@@ -69,7 +69,7 @@ private constructor(
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, Set<String?>?> {
             return if (!key.isNullOrEmpty() || expireDurationInSecond > 0) {
-                StringSetDelegate<SpSaver, Sp, Ed>(key, null, null, expireDurationInSecond)
+                StringSetDelegate(key, null, null, expireDurationInSecond)
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? StringSetDelegate<SpSaver, Sp, Ed>

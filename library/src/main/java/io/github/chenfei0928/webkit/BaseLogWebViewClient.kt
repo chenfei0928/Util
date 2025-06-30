@@ -1,6 +1,5 @@
 package io.github.chenfei0928.webkit
 
-import android.annotation.TargetApi
 import android.graphics.Bitmap
 import android.net.http.SslError
 import android.os.Build
@@ -8,6 +7,7 @@ import android.webkit.SslErrorHandler
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
+import androidx.annotation.RequiresApi
 import androidx.webkit.SafeBrowsingResponseCompat
 import androidx.webkit.WebResourceErrorCompat
 import androidx.webkit.WebResourceRequestCompat
@@ -27,7 +27,7 @@ open class BaseLogWebViewClient : WebViewClientCompat() {
      *
      * Added in API level 23
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onReceivedError(
         view: WebView, request: WebResourceRequest, error: WebResourceErrorCompat
     ) {
@@ -45,7 +45,7 @@ open class BaseLogWebViewClient : WebViewClientCompat() {
      *
      * Added in API level 27
      */
-    @TargetApi(Build.VERSION_CODES.O_MR1)
+    @RequiresApi(Build.VERSION_CODES.O_MR1)
     override fun onSafeBrowsingHit(
         view: WebView,
         request: WebResourceRequest,
@@ -66,7 +66,7 @@ open class BaseLogWebViewClient : WebViewClientCompat() {
      *
      * Added in API level 23
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onReceivedHttpError(
         view: WebView, request: WebResourceRequest, errorResponse: WebResourceResponse
     ) {
@@ -209,7 +209,11 @@ open class BaseLogWebViewClient : WebViewClientCompat() {
         /**
          * release 下如果想忽略日志输出，将参数会设置为为false，即不会输出debug日志。
          * 同时也可以添加以下混淆规则：
-         * `-assumevalues class io.github.chenfei0928.webkit.BaseLogWebViewClient$Companion { boolean getDebugLog() return false; }`
+         * ```Proguard rules:
+         * -assumevalues class io.github.chenfei0928.webkit.BaseLogWebViewClient$Companion {
+         *      boolean getDebugLog() return false;
+         * }
+         * ```
          */
         var debugLog = false
     }

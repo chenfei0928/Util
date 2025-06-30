@@ -99,7 +99,7 @@ class KtxsJsonSpConvert<
             key: String? = null,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
             json: Json = Json,
-        ): AbsSpSaver.Delegate<SpSaver, V?> = KtxsJsonSpConvert<SpSaver, Sp, Ed, V>(
+        ): AbsSpSaver.Delegate<SpSaver, V?> = KtxsJsonSpConvert(
             key = key,
             expireDurationInSecond = expireDurationInSecond,
             json = json,
@@ -116,12 +116,12 @@ class KtxsJsonSpConvert<
             key: String? = null,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
             json: Json = Json,
-        ): AbsSpSaver.Delegate<SpSaver, V?> = KtxsJsonSpConvert<SpSaver, Sp, Ed, V>(
+        ): AbsSpSaver.Delegate<SpSaver, V?> = KtxsJsonSpConvert(
             key = key,
             expireDurationInSecond = expireDurationInSecond,
             json = json,
             serializer = serializer,
-            spValueType = if (type != null) PreferenceType.Struct<V?>(type) else PreferenceType.Struct<V?>()
+            spValueType = if (type != null) PreferenceType.Struct(type) else PreferenceType.Struct<V?>()
         )
 
         inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,

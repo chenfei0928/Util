@@ -88,6 +88,6 @@ private class SafeHandler(
  *     - [Fragment.onDestroy]
  *     - [Fragment.onDetach]
  */
-val LifecycleOwner.safeHandler: Handler by LifecycleCacheDelegate<LifecycleOwner, SafeHandler>(
+val LifecycleOwner.safeHandler: Handler by LifecycleCacheDelegate(
     SafeHandler(EventLifecycleOwner.dead, null), ::SafeHandler
 )

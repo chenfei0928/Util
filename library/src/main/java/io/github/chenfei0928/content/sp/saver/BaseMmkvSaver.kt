@@ -77,8 +77,8 @@ open class BaseMmkvSaver<SpSaver : BaseMmkvSaver<SpSaver>>(
         }
         val observable = field.observable
             ?: return
-        privateAnyPropertySetCallback.addSource(observable) {
-            val callbackValue = field to it
+        privateAnyPropertySetCallback.addSource(observable) { anyPropertySetCallback ->
+            val callbackValue = field to anyPropertySetCallback
             privateAnyPropertySetCallback.forEach { it(callbackValue) }
         }
     }

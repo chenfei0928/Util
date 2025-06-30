@@ -23,7 +23,7 @@ class LocalSerializerSpConvert<
 private constructor(
     private val serializer: LocalSerializer<V>,
     saver: AbsSpSaver.Delegate<SpSaver, ByteArray?>,
-    override val spValueType: PreferenceType.Struct<V> = PreferenceType.Struct<V>(serializer.defaultValue.javaClass)
+    override val spValueType: PreferenceType.Struct<V> = PreferenceType.Struct(serializer.defaultValue.javaClass)
 ) : BaseSpConvert<SpSaver, Sp, Ed, ByteArray?, V>(saver), AbsSpSaver.DefaultValue<V> {
     override val defaultValue: V = serializer.defaultValue
 
@@ -52,10 +52,10 @@ private constructor(
                 V : Any> invoke(
             serializer: LocalSerializer<V>,
             saver: AbsSpSaver.Delegate<SpSaver, ByteArray?>,
-            spValueType: PreferenceType.Struct<V> = PreferenceType.Struct<V>(serializer.defaultValue.javaClass)
+            spValueType: PreferenceType.Struct<V> = PreferenceType.Struct(serializer.defaultValue.javaClass)
         ): AbsSpSaver.Delegate<SpSaver, V> {
             @Suppress("UNCHECKED_CAST")
-            return LocalSerializerSpConvert<SpSaver, Sp, Ed, V>(
+            return LocalSerializerSpConvert(
                 serializer, saver, spValueType
             ) as AbsSpSaver.Delegate<SpSaver, V>
         }
@@ -68,10 +68,10 @@ private constructor(
             serializer: LocalSerializer<V>,
             key: String? = null,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
-            spValueType: PreferenceType.Struct<V> = PreferenceType.Struct<V>(serializer.defaultValue.javaClass)
-        ): AbsSpSaver.Delegate<SpSaver, V> = invoke<SpSaver, Sp, Ed, V>(
+            spValueType: PreferenceType.Struct<V> = PreferenceType.Struct(serializer.defaultValue.javaClass)
+        ): AbsSpSaver.Delegate<SpSaver, V> = invoke(
             serializer,
-            Base64StringConvert<SpSaver, Sp, Ed>(key, expireDurationInSecond),
+            Base64StringConvert(key, expireDurationInSecond),
             spValueType
         )
 
@@ -80,10 +80,10 @@ private constructor(
             serializer: LocalSerializer<V>,
             key: String? = null,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
-            spValueType: PreferenceType.Struct<V> = PreferenceType.Struct<V>(serializer.defaultValue.javaClass)
-        ): AbsSpSaver.Delegate<SpSaver, V> = invoke<SpSaver, Sp, Sp, V>(
+            spValueType: PreferenceType.Struct<V> = PreferenceType.Struct(serializer.defaultValue.javaClass)
+        ): AbsSpSaver.Delegate<SpSaver, V> = invoke(
             serializer,
-            ByteArrayDelegate<SpSaver, Sp>(key, expireDurationInSecond),
+            ByteArrayDelegate(key, expireDurationInSecond),
             spValueType
         )
     }

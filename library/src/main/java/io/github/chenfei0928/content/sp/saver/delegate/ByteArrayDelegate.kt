@@ -13,7 +13,7 @@ class ByteArrayDelegate<SpSaver : AbsSpSaver<SpSaver, Sp, Sp>, Sp : MMKV>
 private constructor(
     key: String? = null,
     defaultValue: ByteArray? = null,
-    @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Sp, ByteArray?>(
     key, spValueType, defaultValue
 ) {
@@ -54,7 +54,7 @@ private constructor(
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): AbsSpSaver.Delegate<SpSaver, ByteArray?> {
             return if (!key.isNullOrEmpty() || expireDurationInSecond > 0) {
-                ByteArrayDelegate<SpSaver, Sp>(key, null, expireDurationInSecond)
+                ByteArrayDelegate(key, null, expireDurationInSecond)
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? ByteArrayDelegate<SpSaver, Sp>

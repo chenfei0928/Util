@@ -21,11 +21,11 @@ import kotlin.math.max
  */
 class AdvanceBadgeDrawableBackgroundSpan(
     private val drawableLeft: Drawable?,
-    @Px private val drawablePadding: Int,
+    @param:Px private val drawablePadding: Int,
     private val background: Drawable,
-    @Px private val textSize: Float,
-    @ColorInt private val textColor: Int,
-    @GravityInt private val gravity: Int,
+    @param:Px private val textSize: Float,
+    @param:ColorInt private val textColor: Int,
+    @param:GravityInt private val gravity: Int,
 ) : ReplacementSpan() {
     private val bgPaddingRect = Rect().apply {
         background.getPadding(this)

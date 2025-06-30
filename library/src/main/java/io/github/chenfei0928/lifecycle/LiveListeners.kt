@@ -44,20 +44,20 @@ open class LiveListeners<Observer> : Iterable<Observer>, ILiveListener<Observer>
         owner.lifecycle.addObserver(eventObserver)
     }
 
-    override fun observeForever(observer: Observer) {
-        if (map.containsKey(observer)) {
+    override fun observeForever(element: Observer) {
+        if (map.containsKey(element)) {
             return
         }
-        map.put(observer, ForeverBind(observer))
+        map.put(element, ForeverBind(element))
     }
 
-    override fun removeObserver(observer: Observer) {
-        map.remove(observer)?.let { eventObserver ->
+    override fun removeObserver(element: Observer) {
+        map.remove(element)?.let { eventObserver ->
             if (eventObserver is LiveListeners.ObserveLifecycleBind) {
                 eventObserver.owner.lifecycle.removeObserver(eventObserver)
             }
             eventObserver.onRemoved()
-            onObserverRemoved(observer)
+            onObserverRemoved(element)
         }
     }
 

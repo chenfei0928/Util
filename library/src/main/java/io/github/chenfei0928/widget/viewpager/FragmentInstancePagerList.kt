@@ -130,7 +130,7 @@ internal class FragmentInstancePagerListImpl : FragmentInstancePagerList {
 
     /**
      * 获取指定位置的fragment类型
-     * （非实例，获取实例请根据其位置下标使用[com.yikelive.util.kotlin.findFragmentWithType]来获取实例）
+     * （非实例，获取实例请根据其位置下标使用[io.github.chenfei0928.app.fragment.findFragmentWithType]来获取实例）
      */
     override fun getTypeByIndex(index: Int): Class<out Fragment> {
         return list[index].clazz

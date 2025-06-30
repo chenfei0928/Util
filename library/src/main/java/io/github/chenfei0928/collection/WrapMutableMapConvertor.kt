@@ -62,7 +62,7 @@ interface WrapMutableMapConvertor {
                     return
                 }
                 protectFromCheckedChange = true
-                var x = queue.poll()
+                val x = queue.poll()
                 while (x != null) {
                     hostMap.map.entries.removeAll { it.value == x }
                 }

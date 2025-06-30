@@ -23,11 +23,11 @@ import java.security.MessageDigest
  * @date 2022-05-12 11:00
  */
 class GravityCropTransformation(
-    @Px
+    @param:Px
     private val width: Int,
-    @Px
+    @param:Px
     private val height: Int,
-    @GravityInt
+    @param:GravityInt
     private val gravity: Int = Gravity.CENTER,
 ) : BitmapTransformation() {
 

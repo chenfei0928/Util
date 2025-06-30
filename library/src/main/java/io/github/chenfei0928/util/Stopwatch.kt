@@ -40,6 +40,7 @@ class Stopwatch(
      * 并将完全重复区间、部分重复区间合并后返回（不包括未记录完成的）
      */
     @Synchronized
+    @Suppress("ReturnCount")
     private fun trim(): List<Node> {
         if (data.isEmpty()) {
             return emptyList()

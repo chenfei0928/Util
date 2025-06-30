@@ -11,7 +11,6 @@ import androidx.lifecycle.LiveData
 /**
  * 宿主生命周期联动取消监听的sp变更监听器
  *
- * @param owner 绑定到的生命周期宿主
  * @param filterKey sp变化时的过滤器，如果不为null，则在回调中会验证变化的key是否与传入的一致
  * （sp被清空[SharedPreferences.Editor.clear]时总会回调[onChangedOrClear]）
  *

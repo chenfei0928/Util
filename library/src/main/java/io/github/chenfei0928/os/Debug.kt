@@ -131,7 +131,7 @@ object Debug {
         ) : StopWatch, LogCountTime {
             override var nextIndex = 0
             override val nanoTimestamps: LongArray = LongArray(size)
-            override val names: Array<String?> = Array<String?>(size) { null }
+            override val names: Array<String?> = Array(size) { null }
             abstract fun start()
             abstract fun stop()
         }

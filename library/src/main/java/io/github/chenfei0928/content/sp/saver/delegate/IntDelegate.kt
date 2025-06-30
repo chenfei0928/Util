@@ -14,7 +14,7 @@ class IntDelegate<
 private constructor(
     key: String? = null,
     defaultValue: Int = 0,
-    @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Int>(
     key, PreferenceType.Native.INT, defaultValue
 ) {
@@ -40,7 +40,7 @@ private constructor(
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): IntDelegate<SpSaver, Sp, Ed> {
             return if (!key.isNullOrEmpty() || defaultValue != 0 || expireDurationInSecond > 0) {
-                IntDelegate<SpSaver, Sp, Ed>(key, defaultValue, expireDurationInSecond)
+                IntDelegate(key, defaultValue, expireDurationInSecond)
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? IntDelegate<SpSaver, Sp, Ed>

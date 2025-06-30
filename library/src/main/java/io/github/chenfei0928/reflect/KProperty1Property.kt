@@ -18,7 +18,7 @@ inline fun <T, reified V> KMutableProperty1<T, V>.toProperty(
 }
 
 inline fun <T, reified V> KMutableProperty1<T, V>.toProperty(): Property<T, V> =
-    KProperty1Property<T, V>(this, false, V::class.java)
+    KProperty1Property(this, false, V::class.java)
 
 open class KProperty1Property<T, V>(
     private val property: KProperty1<T, V>,

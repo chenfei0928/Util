@@ -933,7 +933,7 @@ abstract class BundleSupportType<T>(
         isMarkedNullable: Boolean? = false
     ) : BundleSupportType<Array<T>>(isMarkedNullable) {
         override fun nonnullValue(property: KProperty<*>): Array<T> =
-            (clazz ?: property.returnType.argument0TypeJClass<T>())
+            (clazz ?: property.returnType.argument0TypeJClass())
                 .PARCELABLE_CREATOR.newArray(0)
 
         override fun putNonnull(
@@ -1077,9 +1077,9 @@ abstract class BundleSupportType<T>(
             /**
              * 通过 reified inline 获取 [T] 的类对象
              */
-            inline operator fun <reified E : Enum<E>> invoke() = EnumType<E>(enumValues<E>(), false)
+            inline operator fun <reified E : Enum<E>> invoke() = EnumType(enumValues<E>(), false)
             inline fun <reified E : Enum<E>> nullable(): BundleSupportType<E?> =
-                EnumType<E?>(enumValues<E>(), true)
+                EnumType(enumValues<E>(), true)
         }
     }
 
@@ -1125,11 +1125,11 @@ abstract class BundleSupportType<T>(
         }
 
         companion object {
-            operator fun <T> invoke(parceler: Parceler<T?>) = ByParceler<T>(parceler, false)
+            operator fun <T> invoke(parceler: Parceler<T?>) = ByParceler(parceler, false)
 
             @Suppress("UNCHECKED_CAST")
             fun <T> nullable(parceler: Parceler<T?>): BundleSupportType<T?> =
-                ByParceler<T>(parceler, true) as BundleSupportType<T?>
+                ByParceler(parceler, true) as BundleSupportType<T?>
         }
     }
 
@@ -1203,11 +1203,11 @@ abstract class BundleSupportType<T>(
              * 通过 reified inline 获取 [T] 的类对象
              */
             inline operator fun <reified T : MessageLite> invoke() =
-                ProtoBufType<T>(T::class.java, isMarkedNullable = false)
+                ProtoBufType(T::class.java, isMarkedNullable = false)
 
             @Suppress("UNCHECKED_CAST")
             inline fun <reified T : MessageLite> nullable(): BundleSupportType<T?> =
-                ProtoBufType<T>(T::class.java, isMarkedNullable = true) as BundleSupportType<T?>
+                ProtoBufType(T::class.java, isMarkedNullable = true) as BundleSupportType<T?>
         }
     }
 
@@ -1260,11 +1260,11 @@ abstract class BundleSupportType<T>(
              * 通过 reified inline 获取 [T] 的类对象
              */
             inline operator fun <reified T : MessageLite> invoke() =
-                ListProtoBufType<T>(T::class.java, false)
+                ListProtoBufType(T::class.java, false)
 
             @Suppress("UNCHECKED_CAST")
             inline fun <reified T : MessageLite> nullable(): BundleSupportType<List<T>?> =
-                ListProtoBufType<T>(T::class.java, true) as BundleSupportType<List<T>?>
+                ListProtoBufType(T::class.java, true) as BundleSupportType<List<T>?>
         }
     }
     //</editor-fold>
@@ -1335,7 +1335,7 @@ abstract class BundleSupportType<T>(
 
         @Suppress("kotlin:S6530")
         private fun findType(property: KProperty<*>): BundleSupportType<Any> = findByType(
-            TypeInfo.ByKProperty(property), NullableCheck.DEFAULT_INSTANCE
+            TypeInfo.ByKProperty(property), DEFAULT_INSTANCE
         )
 
         inline fun <reified T> findByType(
@@ -1404,10 +1404,10 @@ abstract class BundleSupportType<T>(
             }
             @Suppress("UNCHECKED_CAST")
             return when (checkNullable) {
-                NullableCheck.NONNULL -> creator.byType(type, false)
-                NullableCheck.NULLABLE -> creator.byType(type, true)
-                NullableCheck.CHECK_NOW -> creator.byType(type, type.isMarkedNullable)
-                NullableCheck.DEFAULT_INSTANCE -> creator.default
+                NONNULL -> creator.byType(type, false)
+                NULLABLE -> creator.byType(type, true)
+                CHECK_NOW -> creator.byType(type, type.isMarkedNullable)
+                DEFAULT_INSTANCE -> creator.default
             } as BundleSupportType<T>
         }
 
@@ -1483,10 +1483,7 @@ abstract class BundleSupportType<T>(
                 @field:Volatile
                 final override var kType: KType
                     field : KType? = null
-                    @Suppress("RedundantVisibilityModifier")
                     private set
-                    // 不知道这里为何它会显示无需 ?: 逻辑，前方语句是有可能返回null的
-                    @Suppress("kotlin:S6619")
                     get() = field ?: synchronized(this) {
                         field ?: run {
                             val type = kType()
@@ -1511,8 +1508,7 @@ abstract class BundleSupportType<T>(
                 }
             }
 
-            // 不知道这里为何它会显示无需 ?: 逻辑，前方语句是有可能返回null的
-            @Suppress("UNCHECKED_CAST", "kotlin:S6619")
+            @Suppress("UNCHECKED_CAST")
             internal fun <T> tClass(): Class<T> =
                 (jClass ?: jType?.jvmErasureClassOrNull<Any>() ?: kType.jvmErasure.java) as Class<T>
 
@@ -1520,7 +1516,7 @@ abstract class BundleSupportType<T>(
             internal fun <T : Any> argument0TypeClass(): Class<T> = if (jClass?.isArray == true) {
                 jClass.componentType as Class<T>
             } else if (jType == null) {
-                kType.argument0TypeJClass<T>()
+                kType.argument0TypeJClass()
             } else when (val tType = jType) {
                 is ParameterizedType -> {
                     // List<Xxx>

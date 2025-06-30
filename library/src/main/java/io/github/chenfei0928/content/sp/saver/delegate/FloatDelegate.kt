@@ -14,7 +14,7 @@ class FloatDelegate<
 private constructor(
     key: String? = null,
     defaultValue: Float = 0f,
-    @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Float>(
     key, PreferenceType.Native.FLOAT, defaultValue
 ) {
@@ -40,7 +40,7 @@ private constructor(
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): FloatDelegate<SpSaver, Sp, Ed> {
             return if (!key.isNullOrEmpty() || defaultValue != 0f || expireDurationInSecond > 0) {
-                FloatDelegate<SpSaver, Sp, Ed>(key, defaultValue, expireDurationInSecond)
+                FloatDelegate(key, defaultValue, expireDurationInSecond)
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? FloatDelegate<SpSaver, Sp, Ed>

@@ -36,7 +36,7 @@ class FragmentInstancePagerAdapter
 
     override fun getItemPosition(pageFragment: Any): Int {
         if (pageFragment !is Fragment || pagerList !is FragmentInstancePagerListImpl) {
-            return PagerAdapter.POSITION_NONE
+            return POSITION_NONE
         }
         val indexOfFirst = pagerList.list.indexOfFirst {
             checkPageFragmentInfo(pageFragment, it)

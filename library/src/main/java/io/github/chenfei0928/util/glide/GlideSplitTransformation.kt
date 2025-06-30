@@ -17,7 +17,7 @@ import kotlin.math.min
  */
 class GlideSplitTransformation(
     private val page: Int,
-    @Px
+    @param:Px
     private val pageHeight: Int
 ) : BitmapTransformation() {
 

@@ -2,7 +2,6 @@ package io.github.chenfei0928.repository.storage
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
@@ -140,10 +139,10 @@ class FileExportFragment : BaseFragment() {
         /**
          * 用于在高版本系统中使用，用于指定保存路径
          */
-        @TargetApi(Build.VERSION_CODES.Q)
+        @RequiresApi(Build.VERSION_CODES.Q)
         private const val KEY_CONTENT_TYPE = "contentType"
 
-        @TargetApi(Build.VERSION_CODES.Q)
+        @RequiresApi(Build.VERSION_CODES.Q)
         private const val KEY_CONTENT_VALUES = "contentValues"
 
         /**
@@ -191,6 +190,7 @@ class FileExportFragment : BaseFragment() {
          * @param displayName 文件名
          * @param relativePath 文件保存相对父路径（通常用于标示不同的应用区分）
          */
+        @Suppress("LongParameterList")
         fun <Writer : ContentValuesWriter> newInstanceForImage(
             writerClass: Class<Writer>,
             writerBundle: Bundle?,
@@ -233,6 +233,7 @@ class FileExportFragment : BaseFragment() {
          * @param displayName 文件名
          * @param relativePath 文件保存相对父路径（通常用于标示不同的应用区分）
          */
+        @Suppress("LongParameterList")
         fun <Writer : ContentValuesWriter> newInstanceForVideo(
             writerClass: Class<Writer>,
             writerBundle: Bundle?,

@@ -9,6 +9,7 @@ import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.util.Property
 import androidx.annotation.Keep
+import androidx.core.graphics.withScale
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import io.github.chenfei0928.reflect.KProperty1Property
 import kotlin.reflect.KMutableProperty1
@@ -21,16 +22,16 @@ import kotlin.reflect.KMutableProperty1
 open class AnimatedDrawable(
     dr: Drawable
 ) : DrawableWrapper(dr), Animatable, Animatable2Compat {
-    var scaleX = 1f
-    var scaleY = 1f
-    var translateX = 0f
-    var translateY = 0f
+    var scaleX = DEFAULT_SCALE
+    var scaleY = DEFAULT_SCALE
+    var translateX = DEFAULT_TRANSLATE
+    var translateY = DEFAULT_TRANSLATE
 
     var pivotXRel = true
-    var pivotX = 0.5f
+    var pivotX = DEFAULT_PIVOT
     var pivotYRel = true
-    var pivotY = 0.5f
-    var degrees = 0.0f
+    var pivotY = DEFAULT_PIVOT
+    var degrees = DEFAULT_DEGREES
 
     override fun draw(canvas: Canvas) {
         val bounds = wrappedDrawable.bounds
@@ -39,12 +40,11 @@ open class AnimatedDrawable(
         val px: Float = if (pivotXRel) w * pivotX else pivotX
         val py: Float = if (pivotYRel) h * pivotY else pivotY
 
-        val saveCount = canvas.save()
-        canvas.scale(scaleX, scaleY)
-        canvas.translate(translateX, translateY)
-        canvas.rotate(degrees, px + bounds.left, py + bounds.top)
-        super.draw(canvas)
-        canvas.restoreToCount(saveCount)
+        canvas.withScale(scaleX, scaleY) {
+            canvas.translate(translateX, translateY)
+            canvas.rotate(degrees, px + bounds.left, py + bounds.top)
+            super.draw(canvas)
+        }
     }
 
     private val callbacksSet = arrayListOf<Animatable2Compat.AnimationCallback>()
@@ -94,6 +94,11 @@ open class AnimatedDrawable(
     }
 
     companion object {
+        const val DEFAULT_PIVOT = 0.5f
+        const val DEFAULT_SCALE = 1f
+        const val DEFAULT_TRANSLATE = 0f
+        const val DEFAULT_DEGREES = 0f
+
         val SCALE_X = AnimatedDrawable::scaleX.toProperty()
         val SCALE_Y = AnimatedDrawable::scaleY.toProperty()
         val TRANSLATE_X = AnimatedDrawable::translateX.toProperty()

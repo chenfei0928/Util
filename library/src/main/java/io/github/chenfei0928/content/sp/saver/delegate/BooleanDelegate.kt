@@ -14,7 +14,7 @@ class BooleanDelegate<
 private constructor(
     key: String? = null,
     defaultValue: Boolean = false,
-    @IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Boolean>(
     key, PreferenceType.Native.BOOLEAN, defaultValue
 ) {
@@ -39,8 +39,9 @@ private constructor(
             defaultValue: Boolean = false,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         ): BooleanDelegate<SpSaver, Sp, Ed> {
+            @Suppress("SimplifyBooleanWithConstants")
             return if (!key.isNullOrEmpty() || defaultValue != false || expireDurationInSecond > 0) {
-                BooleanDelegate<SpSaver, Sp, Ed>(key, defaultValue, expireDurationInSecond)
+                BooleanDelegate(key, defaultValue, expireDurationInSecond)
             } else {
                 @Suppress("UNCHECKED_CAST")
                 defaultInstance as? BooleanDelegate<SpSaver, Sp, Ed>

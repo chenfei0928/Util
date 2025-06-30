@@ -19,9 +19,9 @@ import androidx.annotation.RequiresApi
  */
 abstract class AbstractAudioFocusRequester
 constructor(
-    @StreamType
+    @param:StreamType
     private val streamType: Int,
-    @FocusGain
+    @param:FocusGain
     private val focusGain: Int,
 ) : OnAudioFocusChangeListener {
     @get:RequiresApi(api = Build.VERSION_CODES.O)
@@ -45,6 +45,7 @@ constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             am.requestAudioFocus(audioFocusRequest)
         } else {
+            @Suppress("DEPRECATION")
             am.requestAudioFocus(this, streamType, focusGain)
         }
     }
@@ -57,6 +58,7 @@ constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             am.abandonAudioFocusRequest(audioFocusRequest)
         } else {
+            @Suppress("DEPRECATION")
             am.abandonAudioFocus(this)
         }
     }
