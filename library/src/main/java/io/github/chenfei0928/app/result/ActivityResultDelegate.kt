@@ -7,6 +7,8 @@ package io.github.chenfei0928.app.result
 import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import java.util.WeakHashMap
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
@@ -36,6 +38,9 @@ fun ActivityResultCaller.registerAllActivityResultLauncher() {
 /**
  * 用于[Fragment]等，会在生命周期重启时注销[ActivityResultLauncher]的场景，使用委托提供[ActivityResultLauncher]。
  * 使用此方法注册创建[ActivityResultLauncher]，并在[Fragment.onCreate]中调用[registerAllActivityResultLauncher]方法注册。
+ *
+ * 不可使用 [LifecycleOwner] 来自动重注册，因为[androidx.lifecycle.LifecycleRegistry.moveToState]
+ * 中在 [Lifecycle.Event.ON_DESTROY] 状态时会清空注册的所有的监听器 `observerMap = FastSafeIterableMap()`。
  */
 inline fun <Host : ActivityResultCaller, I> Host.registerForActivityResultDelegate(
     crossinline register: () -> ActivityResultLauncher<I>,
