@@ -106,6 +106,22 @@ abstract class BundleSupportType<T>(
         getNullable(bundle, property, name) ?: defaultValue ?: nonnullValue(property)
     //</editor-fold>
 
+    //<editor-fold desc="Intent的put" defaultstatus="collapsed">
+    /**
+     * 填充数据，如果[value]是null，将数据直接[Intent.removeExtra]，否则调用[putExtraNonnull]存放数据
+     */
+    fun putExtraNullable(
+        intent: Intent, property: KProperty<*>, name: String, value: T?
+    ): Intent = if (value == null) {
+        intent.removeExtra(name)
+        intent
+    } else putExtraNonnull(intent, property, name, value)
+
+    protected abstract fun putExtraNonnull(
+        intent: Intent, property: KProperty<*>, name: String, value: T & Any
+    ): Intent
+    //</editor-fold>
+
     //<editor-fold desc="Intent的get" defaultstatus="collapsed">
     /**
      * 对外暴露的对[Intent]获取值的方法
@@ -152,6 +168,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Byte?
         ): Byte = bundle.getByte(name, 0)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Byte
+        ) = intent.putExtra(name, value)
+
         override fun getExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Byte?
         ): Byte = intent.getByteExtra(name, 0)
@@ -175,6 +195,10 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): ByteArray? = bundle.getByteArray(name)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: ByteArray
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -200,6 +224,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Short?
         ): Short = bundle.getShort(name, defaultValue ?: 0)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Short
+        ): Intent = intent.putExtra(name, value)
+
         override fun getExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Short?
         ): Short = intent.getShortExtra(name, defaultValue ?: 0)
@@ -223,6 +251,10 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): ShortArray? = bundle.getShortArray(name)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: ShortArray
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -248,6 +280,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Int?
         ): Int = bundle.getInt(name, defaultValue ?: 0)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Int
+        ): Intent = intent.putExtra(name, value)
+
         override fun getExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Int?
         ): Int = intent.getIntExtra(name, defaultValue ?: 0)
@@ -271,6 +307,10 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): IntArray? = bundle.getIntArray(name)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: IntArray
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -296,6 +336,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Long?
         ): Long = bundle.getLong(name, 0)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Long
+        ): Intent = intent.putExtra(name, value)
+
         override fun getExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Long?
         ): Long = intent.getLongExtra(name, 0)
@@ -319,6 +363,10 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): LongArray? = bundle.getLongArray(name)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: LongArray
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -346,6 +394,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Float?
         ): Float = bundle.getFloat(name, defaultValue ?: 0f)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Float
+        ): Intent = intent.putExtra(name, value)
+
         override fun getExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Float?
         ): Float = intent.getFloatExtra(name, defaultValue ?: 0f)
@@ -369,6 +421,10 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): FloatArray? = bundle.getFloatArray(name)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: FloatArray
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -394,6 +450,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Double?
         ): Double = bundle.getDouble(name, defaultValue ?: 0.0)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Double
+        ): Intent = intent.putExtra(name, value)
+
         override fun getExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Double?
         ): Double = intent.getDoubleExtra(name, defaultValue ?: 0.0)
@@ -417,6 +477,10 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): DoubleArray? = bundle.getDoubleArray(name)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: DoubleArray
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -443,6 +507,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Boolean?
         ): Boolean = bundle.getBoolean(name, defaultValue == true)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Boolean
+        ): Intent = intent.putExtra(name, value)
+
         override fun getExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Boolean?
         ): Boolean = intent.getBooleanExtra(name, defaultValue == true)
@@ -466,6 +534,10 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): BooleanArray? = bundle.getBooleanArray(name)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: BooleanArray
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -491,6 +563,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Char?
         ): Char = bundle.getChar(name, defaultValue ?: ' ')
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Char
+        ): Intent = intent.putExtra(name, value)
+
         override fun getExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Char?
         ): Char = intent.getCharExtra(name, defaultValue ?: ' ')
@@ -514,6 +590,10 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): CharArray? = bundle.getCharArray(name)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: CharArray
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -541,6 +621,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String
         ): String? = bundle.getString(name)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: String
+        ): Intent = intent.putExtra(name, value)
+
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): String? = intent.getStringExtra(name)
@@ -564,6 +648,10 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): Bundle? = bundle.getBundle(name)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Bundle
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -592,6 +680,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String
         ): Size? = bundle.getSize(name)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Size
+        ): Intent = throw IllegalArgumentException("Not support return type: $property")
+
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): Size? = throw IllegalArgumentException("Not support return type: $property")
@@ -618,6 +710,10 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): SizeF? = bundle.getSizeF(name)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: SizeF
+        ): Intent = throw IllegalArgumentException("Not support return type: $property")
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -651,6 +747,10 @@ abstract class BundleSupportType<T>(
         ): T? = BundleCompat.getParcelable(
             bundle, name, clazz ?: property.getReturnTypeJClass()
         )
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: T & Any
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -689,6 +789,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String
         ): CharSequence? = bundle.getCharSequence(name)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: CharSequence
+        ): Intent = intent.putExtra(name, value)
+
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): CharSequence? = intent.getCharSequenceExtra(name)
@@ -715,6 +819,10 @@ abstract class BundleSupportType<T>(
         ): SparseArray<T>? = BundleCompat.getSparseParcelableArray(
             bundle, name, clazz ?: property.returnType.argument0TypeJClass<T>()
         )
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: SparseArray<T>
+        ): Intent = throw IllegalArgumentException("Not support return type: $property")
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -755,6 +863,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String
         ): T? = bundle.getBinder(name) as T
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: T
+        ): Intent = throw IllegalArgumentException("Not support return type: $property")
+
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): T? = throw IllegalArgumentException("Not support return type: $property")
@@ -785,6 +897,10 @@ abstract class BundleSupportType<T>(
         ): T? = BundleCompat.getSerializable(
             bundle, name, clazz ?: property.getReturnTypeJClass()
         )
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: T & Any
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -828,6 +944,10 @@ abstract class BundleSupportType<T>(
             bundle, name, clazz ?: property.returnType.argument0TypeJClass<T>()
         )
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: List<T>
+        ): Intent = intent.putExtra(name, value.asArrayList())
+
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): List<T>? = IntentCompat.getParcelableArrayListExtra(
@@ -866,6 +986,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String
         ): List<String>? = bundle.getStringArrayList(name)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: List<String>
+        ): Intent = intent.putExtra(name, value.asArrayList())
+
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): List<String>? = intent.getStringArrayListExtra(name)
@@ -891,6 +1015,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String
         ): List<T>? = bundle.getCharSequenceArrayList(name) as List<T>
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: List<T>
+        ): Intent = intent.putExtra(name, value.asArrayList())
+
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): List<T>? = intent.getCharSequenceArrayListExtra(name) as List<T>
@@ -914,6 +1042,10 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): List<Int>? = bundle.getIntegerArrayList(name)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: List<Int>
+        ): Intent = intent.putExtra(name, value.asArrayList())
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -951,6 +1083,10 @@ abstract class BundleSupportType<T>(
             System.arraycopy(array, 0, out, 0, array.size)
             return out
         }
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Array<T>
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -995,6 +1131,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String
         ): Array<String>? = bundle.getStringArray(name)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Array<String>
+        ): Intent = intent.putExtra(name, value)
+
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): Array<String>? = intent.getStringArrayExtra(name)
@@ -1009,25 +1149,29 @@ abstract class BundleSupportType<T>(
 
     class ArrayCharSequenceType(
         isMarkedNullable: Boolean? = false
-    ) : BundleSupportType<Array<CharSequence>>(isMarkedNullable) {
-        override fun nonnullValue(property: KProperty<*>): Array<CharSequence> = arrayOf()
+    ) : BundleSupportType<Array<out CharSequence>>(isMarkedNullable) {
+        override fun nonnullValue(property: KProperty<*>): Array<out CharSequence> = arrayOf()
         override fun putNonnull(
-            bundle: Bundle, property: KProperty<*>, name: String, value: Array<CharSequence>
+            bundle: Bundle, property: KProperty<*>, name: String, value: Array<out CharSequence>
         ) = bundle.putCharSequenceArray(name, value)
 
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
-        ): Array<CharSequence>? = bundle.getCharSequenceArray(name)
+        ): Array<out CharSequence>? = bundle.getCharSequenceArray(name)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Array<out CharSequence>
+        ): Intent = intent.putExtra(name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): Array<CharSequence>? = intent.getCharSequenceArrayExtra(name)
+        ): Array<out CharSequence>? = intent.getCharSequenceArrayExtra(name)
 
-        companion object : AutoFind.Creator<Array<CharSequence>> {
+        companion object : AutoFind.Creator<Array<out CharSequence>> {
             override val default = ArrayCharSequenceType(null)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
-            ): BundleSupportType<Array<CharSequence>> = ArrayCharSequenceType(isMarkedNullable)
+            ): BundleSupportType<Array<out CharSequence>> = ArrayCharSequenceType(isMarkedNullable)
         }
     }
     //</editor-fold>
@@ -1054,6 +1198,10 @@ abstract class BundleSupportType<T>(
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): T? = forName(property, bundle.getString(name)!!)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: T & Any
+        ): Intent = intent.putExtra(name, value.name)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
@@ -1110,14 +1258,6 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String, value: T & Any
         ) = bundle.putByteArray(name, ParcelUtil.marshall(value, getParceler(property)))
 
-        final override fun getExtraNullable(
-            intent: Intent, property: KProperty<*>, name: String
-        ): T? = parseData(property, intent.getByteArrayExtra(name))
-
-        final override fun getExtraNonnull(
-            intent: Intent, property: KProperty<*>, name: String, defaultValue: T?
-        ): T = super.getExtraNonnull(intent, property, name, defaultValue)
-
         final override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): T? = parseData(property, bundle.getByteArray(name))
@@ -1125,6 +1265,18 @@ abstract class BundleSupportType<T>(
         final override fun getNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: T?
         ): T = super.getNonnull(bundle, property, name, defaultValue)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: T & Any
+        ): Intent = intent.putExtra(name, ParcelUtil.marshall(value, getParceler(property)))
+
+        final override fun getExtraNullable(
+            intent: Intent, property: KProperty<*>, name: String
+        ): T? = parseData(property, intent.getByteArrayExtra(name))
+
+        final override fun getExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, defaultValue: T?
+        ): T = super.getExtraNonnull(intent, property, name, defaultValue)
         //</editor-fold>
 
         class ByParceler<T>(
@@ -1166,24 +1318,30 @@ abstract class BundleSupportType<T>(
         override fun putNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, value: T & Any
         ) {
-            val byteArray = if (parser == null && writeClassName) {
-                // 如果没有传入反序列化器，并要求写入类名，以让反序列化时能找到对应的类型
-                val className = value.javaClass.name.toByteArray()
-                className.size.toByteArray() + className + value.toByteArray()
-            } else {
-                // 否则直接序列化数据即可，不需要写入类名信息
-                value.toByteArray()
-            }
-            bundle.putByteArray(name, byteArray)
+            bundle.putByteArray(name, value.toByteArrayExt())
         }
 
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
         ): T? = bundle.getByteArray(name)?.parseData(property)
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: T & Any
+        ): Intent = intent.putExtra(name, value.toByteArrayExt())
+
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): T? = intent.getByteArrayExtra(name)?.parseData(property)
+
+        private fun <TA : T & Any> TA.toByteArrayExt(): ByteArray =
+            if (parser == null && writeClassName) {
+                // 如果没有传入反序列化器，并要求写入类名，以让反序列化时能找到对应的类型
+                val className = javaClass.name.toByteArray()
+                className.size.toByteArray() + className + toByteArray()
+            } else {
+                // 否则直接序列化数据即可，不需要写入类名信息
+                toByteArray()
+            }
 
         private fun ByteArray.parseData(
             property: KProperty<*>
@@ -1309,6 +1467,10 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Any?
         ): Any = throw IllegalArgumentException("Not support return type: $property")
 
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Any
+        ): Intent = throw IllegalArgumentException("Not support return type: $property")
+
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): Any? = throw IllegalArgumentException("Not support return type: $property")
@@ -1346,6 +1508,10 @@ abstract class BundleSupportType<T>(
         override fun getNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Any?
         ): Any = findType(property).getNonnull(bundle, property, name, defaultValue)
+
+        override fun putExtraNonnull(
+            intent: Intent, property: KProperty<*>, name: String, value: Any
+        ): Intent = findType(property).putExtraNonnull(intent, property, name, value)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String

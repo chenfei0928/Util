@@ -1,6 +1,7 @@
 package io.github.chenfei0928.app.activity
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Parcelable
 import com.google.protobuf.MessageLite
 import com.google.protobuf.protobufDefaultInstance
@@ -33,6 +34,10 @@ class IntentDelegate<V>(
         }
     }
 
+    fun putValue(intent: Intent, property: KProperty<*>, value: V?) {
+        supportType.putExtraNullable(intent, property, name ?: property.name, value)
+    }
+
     companion object {
         inline operator fun <reified V> invoke(
             isMarkedNullable: Boolean = false, name: String? = null, defaultValue: V? = null
@@ -45,7 +50,7 @@ class IntentDelegate<V>(
             name: String? = null,
             defaultValue: V? = null
         ): ReadOnlyProperty<Activity, V> = IntentDelegate(
-            BundleSupportType.ParcelerType<V>(parceler), name, defaultValue
+            BundleSupportType.ParcelerType(parceler), name, defaultValue
         )
 
         inline operator fun <reified V : MessageLite> invoke(

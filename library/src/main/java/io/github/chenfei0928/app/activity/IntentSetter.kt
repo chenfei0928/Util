@@ -13,7 +13,6 @@ import androidx.annotation.ReturnThis
 import com.google.protobuf.MessageLite
 import com.google.protobuf.ProtobufListParceler
 import com.google.protobuf.protobufParserForType
-import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.lang.toByteArray
 import io.github.chenfei0928.os.BundleSupportType
@@ -49,148 +48,112 @@ operator fun Intent.set(property: KProperty<Boolean>, value: Boolean) =
 
 operator fun Intent.set(
     property: KProperty<ByteArray>, value: ByteArray?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.ByteArrayType.default
+    .putExtraNullable(this, property, property.name, value)
 
 operator fun Intent.set(
     property: KProperty<ShortArray>, value: ShortArray?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.ShortArrayType.default
+    .putExtraNullable(this, property, property.name, value)
 
 operator fun Intent.set(
     property: KProperty<IntArray>, value: IntArray?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.IntArrayType.default
+    .putExtraNullable(this, property, property.name, value)
 
 operator fun Intent.set(
     property: KProperty<LongArray>, value: LongArray?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.LongArrayType.default
+    .putExtraNullable(this, property, property.name, value)
 
 operator fun Intent.set(
     property: KProperty<FloatArray>, value: FloatArray?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.FloatArrayType.default
+    .putExtraNullable(this, property, property.name, value)
 
 operator fun Intent.set(
     property: KProperty<DoubleArray>, value: DoubleArray?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.DoubleArrayType.default
+    .putExtraNullable(this, property, property.name, value)
 
 operator fun Intent.set(
     property: KProperty<CharArray>, value: CharArray?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.CharArrayType.default
+    .putExtraNullable(this, property, property.name, value)
 
 operator fun Intent.set(
     property: KProperty<BooleanArray>, value: BooleanArray?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.BooleanArrayType.default
+    .putExtraNullable(this, property, property.name, value)
 
 operator fun Intent.set(
     property: KProperty<CharSequence>, value: CharSequence?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.CharSequenceType.default
+    .putExtraNullable(this, property, property.name, value)
 
 @JvmName("setCharSequenceArray")
 operator fun Intent.set(
     property: KProperty<Array<out CharSequence>>, value: Array<out CharSequence>?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.ArrayCharSequenceType.default
+    .putExtraNullable(this, property, property.name, value)
 
 @JvmName("setCharSequenceArray")
 operator fun Intent.set(
     property: KProperty<List<out CharSequence>>, value: List<out CharSequence>?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value.asArrayList())
+) = BundleSupportType.ListCharSequenceType.default
+    .putExtraNullable(this, property, property.name, value)
 
 operator fun Intent.set(
     property: KProperty<String>, value: String?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.StringType.default
+    .putExtraNullable(this, property, property.name, value)
 
 @JvmName("setStringArray")
 operator fun Intent.set(
     property: KProperty<Array<String>>, value: Array<String>?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.ArrayStringType.default
+    .putExtraNullable(this, property, property.name, value)
 
 @JvmName("setStringList")
 operator fun Intent.set(
     property: KProperty<Array<String>>, value: List<String>?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value.asArrayList())
+) = BundleSupportType.ListStringType.default
+    .putExtraNullable(this, property, property.name, value)
 
 operator fun Intent.set(
     property: KProperty<Bundle>, value: Bundle?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.BundleType.default
+    .putExtraNullable(this, property, property.name, value)
 
 @JvmName("setParcelable")
 operator fun <V : Parcelable, V1 : V> Intent.set(
     property: KProperty<V>, value: V1?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.ParcelableType.default
+    .putExtraNullable(this, property, property.name, value)
 
 @JvmName("setParcelableArray")
 operator fun <V : Parcelable, V1 : V> Intent.set(
     property: KProperty<Array<V>>, value: Array<V1>?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = (BundleSupportType.ArrayParcelableType.default as BundleSupportType<Array<V1>>)
+    .putExtraNullable(this, property, property.name, value)
 
 @JvmName("setParcelableList")
 operator fun <V : Parcelable, V1 : V> Intent.set(
     property: KProperty<List<V>>, value: List<V1>?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value.asArrayList())
+) = BundleSupportType.ListParcelableType.default
+    .putExtraNullable(this, property, property.name, value)
 
 @JvmName("setEnum")
 operator fun <V : Enum<V>> Intent.set(
     property: KProperty<V>, value: V?
-) = if (value == null) {
-    removeExtra(property.name)
-    this
-} else putExtra(property.name, value)
+) = BundleSupportType.EnumType.default
+    .putExtraNullable(this, property, property.name, value)
 //</editor-fold>
 
 /**
- * 实现与 [BundleSupportType.ProtoBufType.putNonnull] 一致
+ * 实现与 [IntentDelegate.invoke] 或 [BundleSupportType.ProtoBufType.invoke] 一致
+ *
+ * [BundleSupportType.ProtoBufType.toByteArrayExt]
  *
  * 在 [V] 为具体类型时，行为与 [io.github.chenfei0928.content.putExtra] 一致，并兼容
  * [io.github.chenfei0928.content.getProtobufExtra]
@@ -224,7 +187,9 @@ operator fun <V : MessageLite, V1 : V> Intent.set(
 }
 
 /**
- * 实现与 [BundleSupportType.ListProtoBufType.parceler] 的逆操作一致
+ * 实现与 [IntentDelegate.invoke] 或 [BundleSupportType.ListProtoBufType.invoke] 一致
+ *
+ * [BundleSupportType.ListProtoBufType.parceler]
  *
  * @param V
  * @param property
@@ -254,7 +219,7 @@ operator fun <V : MessageLite, V1 : V> Intent.set(
 }
 
 /**
- * 实现与 [BundleSupportType.ParcelerType.parseData] 的逆操作一致
+ * 实现与 [BundleSupportType.ParcelerType.putExtraNonnull] 的操作一致
  *
  * @param V
  * @param V1
