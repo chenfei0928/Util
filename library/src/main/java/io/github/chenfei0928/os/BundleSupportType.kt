@@ -3,12 +3,15 @@ package io.github.chenfei0928.os
 import android.content.Intent
 import android.os.Bundle
 import android.os.IBinder
+import android.os.Parcel
 import android.os.Parcelable
 import android.util.Size
 import android.util.SizeF
 import android.util.SparseArray
 import androidx.core.content.IntentCompat
 import androidx.core.os.BundleCompat
+import androidx.core.os.ParcelCompat
+import androidx.core.util.size
 import com.google.protobuf.MessageLite
 import com.google.protobuf.Parser
 import com.google.protobuf.ProtobufListParceler
@@ -49,7 +52,7 @@ import kotlin.reflect.typeOf
  * @author chenf()
  * @date 2024-12-05 11:01
  */
-@Suppress("unused")
+@Suppress("unused", "TooManyFunctions")
 abstract class BundleSupportType<T>(
     private val isMarkedNullable: Boolean?
 ) {
@@ -682,17 +685,25 @@ abstract class BundleSupportType<T>(
 
         override fun putExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, value: Size
-        ): Intent = throw IllegalArgumentException("Not support return type: $property")
+        ): Intent = intent.putExtra(name, ParcelUtil.marshall(value, parceler))
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): Size? = throw IllegalArgumentException("Not support return type: $property")
+        ): Size? = intent.getByteArrayExtra(name)?.let { ParcelUtil.unmarshall(it, parceler) }
 
         companion object : AutoFind.Creator<Size> {
             override val default = SizeType(null)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Size> = SizeType(isMarkedNullable)
+
+            private val parceler = object : Parceler<Size> {
+                override fun create(parcel: Parcel): Size = Size(parcel.readInt(), parcel.readInt())
+                override fun Size.write(parcel: Parcel, flags: Int) {
+                    parcel.writeInt(width)
+                    parcel.writeInt(height)
+                }
+            }
         }
     }
 
@@ -713,17 +724,27 @@ abstract class BundleSupportType<T>(
 
         override fun putExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, value: SizeF
-        ): Intent = throw IllegalArgumentException("Not support return type: $property")
+        ): Intent = intent.putExtra(name, ParcelUtil.marshall(value, parceler))
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): SizeF? = throw IllegalArgumentException("Not support return type: $property")
+        ): SizeF? = intent.getByteArrayExtra(name)?.let { ParcelUtil.unmarshall(it, parceler) }
 
         companion object : AutoFind.Creator<SizeF> {
             override val default = SizeFType(null)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<SizeF> = SizeFType(isMarkedNullable)
+
+            private val parceler = object : Parceler<SizeF> {
+                override fun create(parcel: Parcel): SizeF =
+                    SizeF(parcel.readFloat(), parcel.readFloat())
+
+                override fun SizeF.write(parcel: Parcel, flags: Int) {
+                    parcel.writeFloat(width)
+                    parcel.writeFloat(height)
+                }
+            }
         }
     }
     //</editor-fold>
@@ -822,11 +843,53 @@ abstract class BundleSupportType<T>(
 
         override fun putExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, value: SparseArray<T>
-        ): Intent = throw IllegalArgumentException("Not support return type: $property")
+        ): Intent = intent.putExtra(name, ParcelUtil.marshall(value, getParceler(property)))
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): SparseArray<T>? = throw IllegalArgumentException("Not support return type: $property")
+        ): SparseArray<T>? = intent.getByteArrayExtra(name)?.let {
+            ParcelUtil.unmarshall(it, getParceler(property))
+        }
+
+        //<editor-fold desc="SparseArray的Parceler序列化支持" defaultstatus="collapsed">
+        private fun getParceler(property: KProperty<*>): Parceler<SparseArray<T>> =
+            parceler ?: SparseArrayParcelableParceler(property.returnType.argument0TypeJClass())
+
+        private val parceler: SparseArrayParcelableParceler<T>? =
+            clazz?.let { SparseArrayParcelableParceler(clazz) }
+
+        private class SparseArrayParcelableParceler<T : Parcelable>(
+            private val clazz: Class<T>,
+        ) : Parceler<SparseArray<T>> {
+            override fun SparseArray<T>.write(parcel: Parcel, flags: Int) {
+                val size = size
+                parcel.writeInt(size)
+                for (i in 0 until size) {
+                    parcel.writeInt(keyAt(i))
+                    val item = valueAt(i)
+                    if (item != null) {
+                        ParcelCompat.writeBoolean(parcel, true)
+                        parcel.writeParcelable(item, flags)
+                    } else {
+                        ParcelCompat.writeBoolean(parcel, false)
+                    }
+                }
+            }
+
+            override fun create(parcel: Parcel): SparseArray<T> {
+                val size = parcel.readInt()
+                val array = SparseArray<T>(size)
+                for (i in 0 until size) {
+                    val key = parcel.readInt()
+                    val item: T? = if (ParcelCompat.readBoolean(parcel)) {
+                        ParcelCompat.readParcelable(parcel, clazz.classLoader, clazz)
+                    } else null
+                    array.put(key, item)
+                }
+                return array
+            }
+        }
+        //</editor-fold>
 
         companion object : AutoFind.Creator<SparseArray<Parcelable>> {
             override val default = SparseArrayType<Parcelable>(null, null)
