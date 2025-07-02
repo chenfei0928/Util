@@ -16,13 +16,13 @@ val Descriptors.GenericDescriptor.jvmFullyQualifiedName: String
             is Descriptors.MethodDescriptor,
             is Descriptors.EnumValueDescriptor,
             is Descriptors.OneofDescriptor,
-                -> "." + name!!
+                -> ".$name"
             is Descriptors.EnumDescriptor,
             is Descriptors.Descriptor,
-                -> "$" + name!!
+                -> "$$name"
             is Descriptors.ServiceDescriptor,
             is Descriptors.FileDescriptor,
-                -> name!!
+                -> name
             // PackageDescriptor 访问权限是private的，无法引用
             // is Descriptors.PackageDescriptor,
             else -> return if (fileOptions.hasJavaPackage()) {

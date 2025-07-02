@@ -26,12 +26,11 @@ fun <T : GeneratedMessageLite<T, *>> Class<T>.getProtobufLiteParserForType(): Pa
 //<editor-fold desc="ProtobufFull获取DefaultInstance" defaultstatus="collapsed">
 private val protobufDefaultInstanceCache =
     MapCache.Basic<Class<out Message>, Message> {
-        @Suppress("kotlin:S6531")
         it.getMethod("getDefaultInstance").invoke(null) as Message
     }
 
 fun <T : Message> Class<T>.getProtobufV3DefaultInstance(): T {
-    @Suppress("UNCHECKED_CAST", "kotlin:S6531")
+    @Suppress("UNCHECKED_CAST")
     return protobufDefaultInstanceCache[this] as T
 }
 

@@ -16,11 +16,13 @@ import com.google.protobuf.protobufParserForType
 import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.lang.toByteArray
+import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.ParcelUtil
 import kotlinx.parcelize.Parceler
 import java.lang.reflect.Modifier
 import kotlin.reflect.KProperty
 
+//<editor-fold desc="Intent所原生支持的类型" defaultstatus="collapsed">
 operator fun Intent.set(property: KProperty<Byte>, value: Byte) =
     putExtra(property.name, value)
 
@@ -185,21 +187,29 @@ operator fun <V : Enum<V>> Intent.set(
     removeExtra(property.name)
     this
 } else putExtra(property.name, value)
+//</editor-fold>
 
 /**
- * Set
- * [io.github.chenfei0928.os.BundleSupportType.ProtoBufType.putNonnull]
+ * 实现与 [BundleSupportType.ProtoBufType.putNonnull] 一致
+ *
+ * 在 [V] 为具体类型时，行为与 [io.github.chenfei0928.content.putExtra] 一致，并兼容
+ * [io.github.chenfei0928.content.getProtobufExtra]
  *
  * @param V
  * @param property
  * @param value
  */
-@ReturnThis
 @JvmName("setProtobuf")
 inline operator fun <reified V : MessageLite, V1 : V> Intent.set(
     property: KProperty<V>, value: V1?
+): Intent = set(property, V::class.java, value)
+
+@ReturnThis
+@JvmName("setProtobuf")
+operator fun <V : MessageLite, V1 : V> Intent.set(
+    property: KProperty<V>, vClass: Class<V>, value: V1?
 ): Intent {
-    val writeClassName = Modifier.FINAL !in V::class.java.modifiers
+    val writeClassName = Modifier.FINAL !in vClass.modifiers
     val byteArray = if (value == null) {
         removeExtra(property.name)
         return this
@@ -214,8 +224,7 @@ inline operator fun <reified V : MessageLite, V1 : V> Intent.set(
 }
 
 /**
- * Set
- * [io.github.chenfei0928.os.BundleSupportType.ListProtoBufType.parceler]
+ * 实现与 [BundleSupportType.ListProtoBufType.parceler] 的逆操作一致
  *
  * @param V
  * @param property
@@ -224,23 +233,28 @@ inline operator fun <reified V : MessageLite, V1 : V> Intent.set(
 @JvmName("setProtobufList")
 inline operator fun <reified V : MessageLite, V1 : V> Intent.set(
     property: KProperty<List<V>>, value: List<V1>?
+): Intent = set(property, V::class.java, value)
+
+@ReturnThis
+@JvmName("setProtobufList")
+operator fun <V : MessageLite, V1 : V> Intent.set(
+    property: KProperty<List<V>>, vClass: Class<V>, value: List<V1>?
 ): Intent {
-    val writeClassName = Modifier.FINAL !in V::class.java.modifiers
+    val writeClassName = Modifier.FINAL !in vClass.modifiers
     val parceler = if (value == null) {
         removeExtra(property.name)
         return this
     } else if (writeClassName) {
         ProtobufListParceler.Instance as Parceler<List<V?>?>
     } else {
-        ProtobufListParceler(V::class.java.protobufParserForType)
+        ProtobufListParceler(vClass.protobufParserForType)
     }
     putExtra(property.name, ParcelUtil.marshall(value, parceler))
     return this
 }
 
 /**
- * Set
- * [io.github.chenfei0928.os.BundleSupportType.ParcelerType.parseData]
+ * 实现与 [BundleSupportType.ParcelerType.parseData] 的逆操作一致
  *
  * @param V
  * @param V1

@@ -46,21 +46,26 @@ open class ProtobufParceler<MessageType : MessageLite> : Parceler<MessageType?> 
 
     override fun create(parcel: Parcel): MessageType? {
         return if (parser != null) {
+            // 有提供反序列化器，直接序列化数据字节数组
             parcel.createByteArray()?.let(parser::parseFrom)
         } else {
             val className = parcel.readString()
                 ?: return null
+            // 没有提供反序列化器，根据读取到的类型信息获取反序列化器
             val parser = MessageParserCache.getParser<MessageType>(className)
+            // 读取数据字节数组，并反序列化
             parcel.createByteArray().let(parser::parseFrom)
         }
     }
 
     override fun MessageType?.write(parcel: Parcel, flags: Int) {
         if (parser != null) {
+            // 有提供反序列化器，不会写入类型信息，直接序列化数据字节数组
             parcel.writeByteArray(this?.toByteArray())
         } else if (this == null) {
             parcel.writeString(null)
         } else {
+            // 没有提供反序列化器，写入类型信息和数据字节数组
             parcel.writeString(this.javaClass.name)
             parcel.writeByteArray(this.toByteArray())
         }
@@ -75,6 +80,7 @@ open class ProtobufParceler<MessageType : MessageLite> : Parceler<MessageType?> 
     }
 
     companion object Instance : Parceler<MessageLite?> by ProtobufParceler() {
+
         inline operator fun <reified MessageType : MessageLite> invoke(): Parceler<MessageType?> =
             ProtobufParceler(MessageType::class.java.protobufParserForType)
     }

@@ -22,6 +22,7 @@ import io.github.chenfei0928.os.BundleSupportType.AutoFind.NullableCheck.DEFAULT
 import io.github.chenfei0928.os.BundleSupportType.AutoFind.NullableCheck.NONNULL
 import io.github.chenfei0928.os.BundleSupportType.AutoFind.NullableCheck.NULLABLE
 import io.github.chenfei0928.os.BundleSupportType.AutoFind.findByType
+import io.github.chenfei0928.os.BundleSupportType.Companion.getReturnTypeJClass
 import io.github.chenfei0928.reflect.LazyTypeToken
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.jvmErasureClassOrNull
@@ -1089,6 +1090,13 @@ abstract class BundleSupportType<T>(
     abstract class ParcelerType<T>(
         isMarkedNullable: Boolean?
     ) : BundleSupportType<T>(isMarkedNullable) {
+        /**
+         * 获取反序列化器，如有必要可通过 [property] 来获取，
+         * 例如通过 [KProperty.getReturnTypeJClass] 来获取泛型参数的类型
+         *
+         * @param property
+         * @return
+         */
         protected abstract fun getParceler(property: KProperty<*>): Parceler<T?>
 
         private fun parseData(property: KProperty<*>, data: ByteArray?): T? =
@@ -1097,6 +1105,7 @@ abstract class BundleSupportType<T>(
         override fun nonnullValue(property: KProperty<*>): T & Any =
             property.getReturnTypeJClass<T & Any>().getDeclaredConstructor().newInstance()
 
+        //<editor-fold desc="覆写父类的读写方法" defaultstatus="collapsed">
         final override fun putNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, value: T & Any
         ) = bundle.putByteArray(name, ParcelUtil.marshall(value, getParceler(property)))
@@ -1116,6 +1125,7 @@ abstract class BundleSupportType<T>(
         final override fun getNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: T?
         ): T = super.getNonnull(bundle, property, name, defaultValue)
+        //</editor-fold>
 
         class ByParceler<T>(
             private val parceler: Parceler<T?>,
@@ -1157,9 +1167,11 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String, value: T & Any
         ) {
             val byteArray = if (parser == null && writeClassName) {
+                // 如果没有传入反序列化器，并要求写入类名，以让反序列化时能找到对应的类型
                 val className = value.javaClass.name.toByteArray()
                 className.size.toByteArray() + className + value.toByteArray()
             } else {
+                // 否则直接序列化数据即可，不需要写入类名信息
                 value.toByteArray()
             }
             bundle.putByteArray(name, byteArray)
@@ -1176,7 +1188,9 @@ abstract class BundleSupportType<T>(
         private fun ByteArray.parseData(
             property: KProperty<*>
         ): T & Any = if (!writeClassName) {
+            // 如果没有要求写入类名，则直接使用传入的反序列化器
             val parser = parser ?: run {
+                // 如果也没有传入反序列化器，通过反射获取字段类型的反序列化器
                 val returnJClass = property.getReturnTypeJClass<T & Any>()
                 require(Modifier.FINAL in returnJClass.modifiers) {
                     "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
@@ -1185,6 +1199,7 @@ abstract class BundleSupportType<T>(
             }
             parser.parseFrom(this)
         } else DataInputStream(ByteArrayInputStream(this)).use { input ->
+            // 读取类名长度，然后读取类名字符串，最后使用该类的反序列化器解析数据
             val size = input.readInt()
             val className = String(input.readNBytesCompat(size))
             @Suppress("UNCHECKED_CAST")
@@ -1219,25 +1234,32 @@ abstract class BundleSupportType<T>(
      */
     class ListProtoBufType<T : MessageLite>(
         parser: Parser<T>?,
-        private val writeClassName: Boolean,
+        writeClassName: Boolean,
         isMarkedNullable: Boolean? = false
     ) : ParcelerType<List<T?>>(isMarkedNullable) {
         // Protobuf生成的类都是final的，如果是最终生成的实体类则不需要存储类名
         constructor(
             clazz: Class<T>, isMarkedNullable: Boolean?
         ) : this(
-            clazz.protobufParserForType, Modifier.FINAL !in clazz.modifiers, isMarkedNullable
+            if (Modifier.FINAL !in clazz.modifiers)
+                null else clazz.protobufParserForType,
+            Modifier.FINAL !in clazz.modifiers,
+            isMarkedNullable
         )
 
         private val parceler: Parceler<List<T?>?>? = if (parser != null) {
+            // 如果传入 parser 反序列化器，则直接使用 ProtobufListParceler
             ProtobufListParceler(parser)
         } else if (writeClassName) {
+            // 如果需要存储类名，则使用 ProtobufListParceler.Instance
             @Suppress("UNCHECKED_CAST", "kotlin:S6531")
             ProtobufListParceler.Instance as Parceler<List<T?>?>
         } else null
 
         override fun getParceler(property: KProperty<*>): Parceler<List<T?>?> {
             return parceler ?: run {
+                // 如果没有根据 parceler 获取到反序列化器（即没有传入 parser 且不要写入类名）
+                // 则反射获取 T 的类型并通过 T 的类型获取反序列化器，并包装为 ProtobufListParceler
                 val arg0JClass = property.returnType.argument0TypeJClass<T>()
                 require(Modifier.FINAL in arg0JClass.modifiers) {
                     "对于没有传入 parser 且字段类型未精确到实体类的Protobuf字段委托，需要设置 writeClassName 为true"
