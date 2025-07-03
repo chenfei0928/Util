@@ -20,11 +20,6 @@ import io.github.chenfei0928.collection.asArrayList
 import io.github.chenfei0928.io.readNBytesCompat
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.lang.toByteArray
-import io.github.chenfei0928.os.BundleSupportType.AutoFind.NullableCheck.CHECK_NOW
-import io.github.chenfei0928.os.BundleSupportType.AutoFind.NullableCheck.DEFAULT_INSTANCE
-import io.github.chenfei0928.os.BundleSupportType.AutoFind.NullableCheck.NONNULL
-import io.github.chenfei0928.os.BundleSupportType.AutoFind.NullableCheck.NULLABLE
-import io.github.chenfei0928.os.BundleSupportType.AutoFind.findByType
 import io.github.chenfei0928.os.BundleSupportType.Companion.getReturnTypeJClass
 import io.github.chenfei0928.reflect.LazyTypeToken
 import io.github.chenfei0928.reflect.isSubclassOf
@@ -48,6 +43,8 @@ import kotlin.reflect.typeOf
  * 子类实现要求重写[nonnullValue]提供默认值，重写[putNonnull]来对[Bundle]进行写入数据，
  * 并根据获取值get方法获取数据返回值的可空性重写[getNonnull]、[getExtraNonnull]
  * 或[getNullable]、[getExtraNullable]来返回数据。
+ *
+ * @param isMarkedNullable 标记是否可空，如果为null则根据[KProperty]的可空性判断
  *
  * @author chenf()
  * @date 2024-12-05 11:01
@@ -180,7 +177,8 @@ abstract class BundleSupportType<T>(
         ): Byte = intent.getByteExtra(name, 0)
 
         companion object : AutoFind.Creator<Byte> {
-            override val default = ByteType(null)
+            override val checkByReflectWhenCall = ByteType(null)
+            override val commonCase = ByteType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Byte> = ByteType(isMarkedNullable)
@@ -208,7 +206,8 @@ abstract class BundleSupportType<T>(
         ): ByteArray? = intent.getByteArrayExtra(name)
 
         companion object : AutoFind.Creator<ByteArray> {
-            override val default = ByteArrayType(null)
+            override val checkByReflectWhenCall = ByteArrayType(null)
+            override val commonCase = ByteArrayType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<ByteArray> = ByteArrayType(isMarkedNullable)
@@ -236,7 +235,8 @@ abstract class BundleSupportType<T>(
         ): Short = intent.getShortExtra(name, defaultValue ?: 0)
 
         companion object : AutoFind.Creator<Short> {
-            override val default = ShortType(null)
+            override val checkByReflectWhenCall = ShortType(null)
+            override val commonCase = ShortType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Short> = ShortType(isMarkedNullable)
@@ -264,7 +264,8 @@ abstract class BundleSupportType<T>(
         ): ShortArray? = intent.getShortArrayExtra(name)
 
         companion object : AutoFind.Creator<ShortArray> {
-            override val default = ShortArrayType(null)
+            override val checkByReflectWhenCall = ShortArrayType(null)
+            override val commonCase = ShortArrayType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<ShortArray> = ShortArrayType(isMarkedNullable)
@@ -292,7 +293,8 @@ abstract class BundleSupportType<T>(
         ): Int = intent.getIntExtra(name, defaultValue ?: 0)
 
         companion object : AutoFind.Creator<Int> {
-            override val default = IntType(null)
+            override val checkByReflectWhenCall = IntType(null)
+            override val commonCase = IntType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Int> = IntType(isMarkedNullable)
@@ -320,7 +322,8 @@ abstract class BundleSupportType<T>(
         ): IntArray? = intent.getIntArrayExtra(name)
 
         companion object : AutoFind.Creator<IntArray> {
-            override val default = IntArrayType(null)
+            override val checkByReflectWhenCall = IntArrayType(null)
+            override val commonCase = IntArrayType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<IntArray> = IntArrayType(isMarkedNullable)
@@ -348,7 +351,8 @@ abstract class BundleSupportType<T>(
         ): Long = intent.getLongExtra(name, 0)
 
         companion object : AutoFind.Creator<Long> {
-            override val default = LongType(null)
+            override val checkByReflectWhenCall = LongType(null)
+            override val commonCase = LongType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Long> = LongType(isMarkedNullable)
@@ -376,7 +380,8 @@ abstract class BundleSupportType<T>(
         ): LongArray? = intent.getLongArrayExtra(name)
 
         companion object : AutoFind.Creator<LongArray> {
-            override val default = LongArrayType(null)
+            override val checkByReflectWhenCall = LongArrayType(null)
+            override val commonCase = LongArrayType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<LongArray> = LongArrayType(isMarkedNullable)
@@ -406,7 +411,8 @@ abstract class BundleSupportType<T>(
         ): Float = intent.getFloatExtra(name, defaultValue ?: 0f)
 
         companion object : AutoFind.Creator<Float> {
-            override val default = FloatType(null)
+            override val checkByReflectWhenCall = FloatType(null)
+            override val commonCase = FloatType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Float> = FloatType(isMarkedNullable)
@@ -434,7 +440,8 @@ abstract class BundleSupportType<T>(
         ): FloatArray? = intent.getFloatArrayExtra(name)
 
         companion object : AutoFind.Creator<FloatArray> {
-            override val default = FloatArrayType(null)
+            override val checkByReflectWhenCall = FloatArrayType(null)
+            override val commonCase = FloatArrayType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<FloatArray> = FloatArrayType(isMarkedNullable)
@@ -462,7 +469,8 @@ abstract class BundleSupportType<T>(
         ): Double = intent.getDoubleExtra(name, defaultValue ?: 0.0)
 
         companion object : AutoFind.Creator<Double> {
-            override val default = DoubleType(null)
+            override val checkByReflectWhenCall = DoubleType(null)
+            override val commonCase = DoubleType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Double> = DoubleType(isMarkedNullable)
@@ -490,7 +498,8 @@ abstract class BundleSupportType<T>(
         ): DoubleArray? = intent.getDoubleArrayExtra(name)
 
         companion object : AutoFind.Creator<DoubleArray> {
-            override val default = DoubleArrayType(null)
+            override val checkByReflectWhenCall = DoubleArrayType(null)
+            override val commonCase = DoubleArrayType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<DoubleArray> = DoubleArrayType(isMarkedNullable)
@@ -519,7 +528,8 @@ abstract class BundleSupportType<T>(
         ): Boolean = intent.getBooleanExtra(name, defaultValue == true)
 
         companion object : AutoFind.Creator<Boolean> {
-            override val default = BooleanType(null)
+            override val checkByReflectWhenCall = BooleanType(null)
+            override val commonCase = BooleanType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Boolean> = BooleanType(isMarkedNullable)
@@ -547,7 +557,8 @@ abstract class BundleSupportType<T>(
         ): BooleanArray? = intent.getBooleanArrayExtra(name)
 
         companion object : AutoFind.Creator<BooleanArray> {
-            override val default = BooleanArrayType(null)
+            override val checkByReflectWhenCall = BooleanArrayType(null)
+            override val commonCase = BooleanArrayType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<BooleanArray> = BooleanArrayType(isMarkedNullable)
@@ -575,7 +586,8 @@ abstract class BundleSupportType<T>(
         ): Char = intent.getCharExtra(name, defaultValue ?: ' ')
 
         companion object : AutoFind.Creator<Char> {
-            override val default = CharType(null)
+            override val checkByReflectWhenCall = CharType(null)
+            override val commonCase = CharType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Char> = CharType(isMarkedNullable)
@@ -603,7 +615,8 @@ abstract class BundleSupportType<T>(
         ): CharArray? = intent.getCharArrayExtra(name)
 
         companion object : AutoFind.Creator<CharArray> {
-            override val default = CharArrayType(null)
+            override val checkByReflectWhenCall = CharArrayType(null)
+            override val commonCase = CharArrayType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<CharArray> = CharArrayType(isMarkedNullable)
@@ -633,7 +646,8 @@ abstract class BundleSupportType<T>(
         ): String? = intent.getStringExtra(name)
 
         companion object : AutoFind.Creator<String> {
-            override val default = StringType(null)
+            override val checkByReflectWhenCall = StringType(null)
+            override val commonCase = StringType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<String> = StringType(isMarkedNullable)
@@ -661,7 +675,8 @@ abstract class BundleSupportType<T>(
         ): Bundle? = intent.getBundleExtra(name)
 
         companion object : AutoFind.Creator<Bundle> {
-            override val default = BundleType(null)
+            override val checkByReflectWhenCall = BundleType(null)
+            override val commonCase = BundleType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Bundle> = BundleType(isMarkedNullable)
@@ -692,7 +707,8 @@ abstract class BundleSupportType<T>(
         ): Size? = intent.getByteArrayExtra(name)?.let { ParcelUtil.unmarshall(it, parceler) }
 
         companion object : AutoFind.Creator<Size> {
-            override val default = SizeType(null)
+            override val checkByReflectWhenCall = SizeType(null)
+            override val commonCase = SizeType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Size> = SizeType(isMarkedNullable)
@@ -731,7 +747,8 @@ abstract class BundleSupportType<T>(
         ): SizeF? = intent.getByteArrayExtra(name)?.let { ParcelUtil.unmarshall(it, parceler) }
 
         companion object : AutoFind.Creator<SizeF> {
-            override val default = SizeFType(null)
+            override val checkByReflectWhenCall = SizeFType(null)
+            override val commonCase = SizeFType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<SizeF> = SizeFType(isMarkedNullable)
@@ -780,7 +797,8 @@ abstract class BundleSupportType<T>(
         )
 
         companion object : AutoFind.Creator<Parcelable> {
-            override val default = ParcelableType<Parcelable>(null)
+            override val checkByReflectWhenCall = ParcelableType<Parcelable>(null)
+            override val commonCase = ParcelableType<Parcelable>(null, false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Parcelable> = ParcelableType(
@@ -819,7 +837,8 @@ abstract class BundleSupportType<T>(
         ): CharSequence? = intent.getCharSequenceExtra(name)
 
         companion object : AutoFind.Creator<CharSequence> {
-            override val default = CharSequenceType(null)
+            override val checkByReflectWhenCall = CharSequenceType(null)
+            override val commonCase = CharSequenceType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<CharSequence> = CharSequenceType(isMarkedNullable)
@@ -892,7 +911,8 @@ abstract class BundleSupportType<T>(
         //</editor-fold>
 
         companion object : AutoFind.Creator<SparseArray<Parcelable>> {
-            override val default = SparseArrayType<Parcelable>(null, null)
+            override val checkByReflectWhenCall = SparseArrayType<Parcelable>(null, null)
+            override val commonCase = SparseArrayType<Parcelable>(null, false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<SparseArray<Parcelable>> = SparseArrayType(
@@ -935,7 +955,8 @@ abstract class BundleSupportType<T>(
         ): T? = throw IllegalArgumentException("Not support return type: $property")
 
         companion object : AutoFind.Creator<IBinder> {
-            override val default = IBinderType<IBinder>(null)
+            override val checkByReflectWhenCall = IBinderType<IBinder>(null)
+            override val commonCase = IBinderType<IBinder>(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<IBinder> = IBinderType(isMarkedNullable)
@@ -972,7 +993,8 @@ abstract class BundleSupportType<T>(
         )
 
         companion object : AutoFind.Creator<Serializable> {
-            override val default = SerializableType<Serializable>(null, null)
+            override val checkByReflectWhenCall = SerializableType<Serializable>(null, null)
+            override val commonCase = SerializableType<Serializable>(null, false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Serializable> = SerializableType(
@@ -1018,7 +1040,8 @@ abstract class BundleSupportType<T>(
         )
 
         companion object : AutoFind.Creator<List<Parcelable>> {
-            override val default = ListParcelableType<Parcelable>(null, null)
+            override val checkByReflectWhenCall = ListParcelableType<Parcelable>(null, null)
+            override val commonCase = ListParcelableType<Parcelable>(null, false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<List<Parcelable>> = ListParcelableType(
@@ -1058,7 +1081,8 @@ abstract class BundleSupportType<T>(
         ): List<String>? = intent.getStringArrayListExtra(name)
 
         companion object : AutoFind.Creator<List<String>> {
-            override val default = ListStringType(null)
+            override val checkByReflectWhenCall = ListStringType(null)
+            override val commonCase = ListStringType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<List<String>> = ListStringType(isMarkedNullable)
@@ -1087,7 +1111,8 @@ abstract class BundleSupportType<T>(
         ): List<T>? = intent.getCharSequenceArrayListExtra(name) as List<T>
 
         companion object : AutoFind.Creator<List<out CharSequence>> {
-            override val default = ListCharSequenceType<CharSequence>(null)
+            override val checkByReflectWhenCall = ListCharSequenceType<CharSequence>(null)
+            override val commonCase = ListCharSequenceType<CharSequence>(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<List<out CharSequence>> = ListCharSequenceType(isMarkedNullable)
@@ -1115,7 +1140,8 @@ abstract class BundleSupportType<T>(
         ): List<Int>? = intent.getIntegerArrayListExtra(name)
 
         companion object : AutoFind.Creator<List<Int>> {
-            override val default = ListIntegerType(null)
+            override val checkByReflectWhenCall = ListIntegerType(null)
+            override val commonCase = ListIntegerType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<List<Int>> = ListIntegerType(isMarkedNullable)
@@ -1163,7 +1189,8 @@ abstract class BundleSupportType<T>(
         }
 
         companion object : AutoFind.Creator<Array<Parcelable>> {
-            override val default = ArrayParcelableType<Parcelable>(null, null)
+            override val checkByReflectWhenCall = ArrayParcelableType<Parcelable>(null, null)
+            override val commonCase = ArrayParcelableType<Parcelable>(null, false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Array<Parcelable>> = ArrayParcelableType(
@@ -1203,7 +1230,8 @@ abstract class BundleSupportType<T>(
         ): Array<String>? = intent.getStringArrayExtra(name)
 
         companion object : AutoFind.Creator<Array<String>> {
-            override val default = ArrayStringType(null)
+            override val checkByReflectWhenCall = ArrayStringType(null)
+            override val commonCase = ArrayStringType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Array<String>> = ArrayStringType(isMarkedNullable)
@@ -1231,7 +1259,8 @@ abstract class BundleSupportType<T>(
         ): Array<out CharSequence>? = intent.getCharSequenceArrayExtra(name)
 
         companion object : AutoFind.Creator<Array<out CharSequence>> {
-            override val default = ArrayCharSequenceType(null)
+            override val checkByReflectWhenCall = ArrayCharSequenceType(null)
+            override val commonCase = ArrayCharSequenceType(false)
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<Array<out CharSequence>> = ArrayCharSequenceType(isMarkedNullable)
@@ -1277,7 +1306,8 @@ abstract class BundleSupportType<T>(
 
         @Suppress("UNCHECKED_CAST")
         companion object : AutoFind.Creator<Enum<*>> {
-            override val default = EnumType(null, null) as BundleSupportType<Enum<*>>
+            override val checkByReflectWhenCall = EnumType(null, null) as BundleSupportType<Enum<*>>
+            override val commonCase = EnumType(null, false) as BundleSupportType<Enum<*>>
 
             @Suppress("kotlin:S6531")
             override fun byType(
@@ -1372,9 +1402,13 @@ abstract class BundleSupportType<T>(
     ) : BundleSupportType<T>(isMarkedNullable) {
         // Protobuf生成的类都是final的，如果是最终生成的实体类则不需要存储类名
         constructor(clazz: Class<T & Any>, isMarkedNullable: Boolean?) : this(
-            clazz.protobufParserForType, Modifier.FINAL !in clazz.modifiers, isMarkedNullable
+            if (Modifier.FINAL !in clazz.modifiers)
+                null else clazz.protobufParserForType,
+            Modifier.FINAL !in clazz.modifiers,
+            isMarkedNullable
         )
 
+        //<editor-fold desc="重写父类实现" defaultstatus="collapsed">
         override fun nonnullValue(property: KProperty<*>): T & Any =
             byteArrayOf().parseData(property)
 
@@ -1395,6 +1429,7 @@ abstract class BundleSupportType<T>(
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
         ): T? = intent.getByteArrayExtra(name)?.parseData(property)
+        //</editor-fold>
 
         private fun <TA : T & Any> TA.toByteArrayExt(): ByteArray =
             if (parser == null && writeClassName) {
@@ -1428,7 +1463,11 @@ abstract class BundleSupportType<T>(
         }
 
         companion object : AutoFind.Creator<MessageLite> {
-            override val default = ProtoBufType<MessageLite>(null, true, null)
+            override val checkByReflectWhenCall = ProtoBufType<MessageLite>(null, true, null)
+            override val commonCase = ProtoBufType<MessageLite>(
+                null, writeClassName = false, isMarkedNullable = false
+            )
+
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<MessageLite> = ProtoBufType(
@@ -1492,7 +1531,11 @@ abstract class BundleSupportType<T>(
         override fun nonnullValue(property: KProperty<*>): List<T?> = emptyList()
 
         companion object : AutoFind.Creator<List<MessageLite?>> {
-            override val default = ListProtoBufType<MessageLite>(null, true, null)
+            override val checkByReflectWhenCall = ListProtoBufType<MessageLite>(null, true, null)
+            override val commonCase = ListProtoBufType<MessageLite>(
+                null, writeClassName = false, isMarkedNullable = false
+            )
+
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
             ): BundleSupportType<List<MessageLite?>> = ListProtoBufType(
@@ -1543,10 +1586,11 @@ abstract class BundleSupportType<T>(
         ): Any = throw IllegalArgumentException("Not support return type: $property")
 
         companion object : AutoFind.Creator<Any> {
-            override val default = NotSupportType()
+            override val checkByReflectWhenCall = NotSupportType()
+            override val commonCase = checkByReflectWhenCall
             override fun byType(
                 type: AutoFind.TypeInfo, isMarkedNullable: Boolean
-            ): BundleSupportType<Any> = default
+            ): BundleSupportType<Any> = checkByReflectWhenCall
         }
     }
 
@@ -1586,7 +1630,7 @@ abstract class BundleSupportType<T>(
 
         @Suppress("kotlin:S6530")
         private fun findType(property: KProperty<*>): BundleSupportType<Any> = findByType(
-            TypeInfo.ByKProperty(property), DEFAULT_INSTANCE
+            TypeInfo.ByKProperty(property), NullableCheck.CHECK_BY_REFLECT_WHEN_CALL
         )
 
         inline fun <reified T> findByType(
@@ -1655,27 +1699,27 @@ abstract class BundleSupportType<T>(
             }
             @Suppress("UNCHECKED_CAST")
             return when (checkNullable) {
-                NONNULL -> creator.byType(type, false)
-                NULLABLE -> creator.byType(type, true)
-                CHECK_NOW -> creator.byType(type, type.isMarkedNullable)
-                DEFAULT_INSTANCE -> creator.default
+                NullableCheck.NONNULL -> creator.byType(type, false)
+                NullableCheck.NULLABLE -> creator.byType(type, true)
+                NullableCheck.CHECK_NOW -> creator.byType(type, type.isMarkedNullable)
+                NullableCheck.CHECK_BY_REFLECT_WHEN_CALL -> creator.checkByReflectWhenCall
             } as BundleSupportType<T>
         }
 
         /**
-         * 值的空安全检查处理类型，用于获取 [Creator.default] 或传入 [Creator.byType] 中使用
+         * 值的空安全检查处理类型，用于获取 [Creator.checkByReflectWhenCall] 或传入 [Creator.byType] 中使用
          *
-         * - [NONNULL] ：值非空，不为null
-         * - [NULLABLE] ：值可空
-         * - [CHECK_NOW] ：立即检查值的nullable信息，通过调用 [TypeInfo.isMarkedNullable] 来检查 nullable 信息，
+         * - [NullableCheck.NONNULL] ：值非空，不为null
+         * - [NullableCheck.NULLABLE] ：值可空
+         * - [NullableCheck.CHECK_NOW] ：立即检查值的nullable信息，通过调用 [TypeInfo.isMarkedNullable] 来检查 nullable 信息，
          * 该过程可能会调用到Kotlin反射
-         * - [DEFAULT_INSTANCE] ：调用 [Creator.default] 来获取默认实现，并在调用读写时访问
+         * - [NullableCheck.CHECK_BY_REFLECT_WHEN_CALL] ：调用 [Creator.checkByReflectWhenCall] 来获取默认实现，并在调用读写时访问
          * [KProperty.returnType] 的 [KType.isMarkedNullable] 来获取nullable信息。
-         * 不对外使用，仅在 [AutoFind] 中使用，即 [findByType] 方法中，用于提供通用实现中的读写委托。
+         * 不对外使用，仅在 [AutoFind] 中使用，即 [AutoFind.findByType] 方法中，用于提供通用实现中的读写委托。
          */
         enum class NullableCheck {
             NONNULL, NULLABLE, CHECK_NOW,
-            /* internal */ DEFAULT_INSTANCE;
+            /* internal */ CHECK_BY_REFLECT_WHEN_CALL;
 
             companion object {
                 fun formBoolean(
@@ -1697,7 +1741,14 @@ abstract class BundleSupportType<T>(
             /**
              * 用于提供其默认实例（需要通过反射 [KProperty] 解析 nullable 并提供读写支持）
              */
-            val default: BundleSupportType<T>
+            val checkByReflectWhenCall: BundleSupportType<T>
+
+            /**
+             * 通用用例，非空的（[isMarkedNullable] 为false）
+             *
+             * 仅用于 IntentSetter
+             */
+            /* internal */ val commonCase: BundleSupportType<T & Any>
 
             /**
              * 通过给定 [type] 与 [isMarkedNullable] 信息返回一个新实例用于处理该类型 [T] 的读写支持。
