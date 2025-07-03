@@ -20,6 +20,13 @@ import kotlinx.parcelize.Parceler
 import java.lang.reflect.Modifier
 import kotlin.reflect.KProperty
 
+operator fun <V, V1 : V> Intent.set(
+    property: KProperty<V>, delegate: IntentDelegate<V>, value: V1?
+): Intent {
+    delegate.putValue(this, property, value)
+    return this
+}
+
 //<editor-fold desc="Intent所原生支持的类型" defaultstatus="collapsed">
 operator fun Intent.set(property: KProperty<Byte>, value: Byte) =
     putExtra(property.name, value)
