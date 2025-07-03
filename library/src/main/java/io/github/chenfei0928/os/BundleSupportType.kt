@@ -1556,8 +1556,8 @@ abstract class BundleSupportType<T>(
     //</editor-fold>
     //</editor-fold>
 
-    //<editor-fold desc="对外暴露自动寻找类型接口" defaultstatus="collapsed>
-    //<editor-fold desc="占位用于不支持的类型的报错信息反馈">
+    //<editor-fold desc="对外暴露自动寻找类型接口" defaultstatus="collapsed">
+    //<editor-fold desc="占位用于不支持的类型的报错信息反馈" defaultstatus="collapsed">
     class NotSupportType : BundleSupportType<Any>(false) {
         override fun nonnullValue(property: KProperty<*>): Any =
             throw IllegalArgumentException("Not support return type: $property")
