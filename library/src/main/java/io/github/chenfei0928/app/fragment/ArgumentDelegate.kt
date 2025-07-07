@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment
 import com.google.protobuf.MessageLite
 import com.google.protobuf.protobufDefaultInstance
 import io.github.chenfei0928.os.BundleSupportType
-import io.github.chenfei0928.os.ReadOnlyCacheDelegate
 import kotlinx.parcelize.Parceler
+import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -25,8 +25,8 @@ class ArgumentDelegate<V>(
     private val supportType: BundleSupportType<V>,
     private val name: String? = null,
     private val defaultValue: V? = null,
-) : ReadOnlyCacheDelegate<Fragment, V>(), ReadWriteProperty<Fragment, V> {
-    override fun getValueImpl(thisRef: Fragment, property: KProperty<*>): V {
+) : ReadOnlyProperty<Fragment, V>, ReadWriteProperty<Fragment, V> {
+    override fun getValue(thisRef: Fragment, property: KProperty<*>): V {
         return thisRef.arguments.let {
             it?.classLoader = thisRef.javaClass.classLoader
             supportType.getValue(it, property, name ?: property.name, defaultValue)
@@ -34,7 +34,6 @@ class ArgumentDelegate<V>(
     }
 
     override fun setValue(thisRef: Fragment, property: KProperty<*>, value: V) {
-        this.value = value
         thisRef.applyArgumentBundle {
             supportType.putNullable(this, property, name ?: property.name, value)
         }

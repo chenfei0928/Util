@@ -4,7 +4,7 @@
  */
 @file:Suppress("TooManyFunctions")
 
-package io.github.chenfei0928.app.activity
+package io.github.chenfei0928.content
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,15 +13,23 @@ import androidx.annotation.ReturnThis
 import com.google.protobuf.MessageLite
 import com.google.protobuf.ProtobufListParceler
 import com.google.protobuf.protobufParserForType
+import io.github.chenfei0928.app.activity.ActivityDelegate
+import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.os.BundleSupportType
 import io.github.chenfei0928.os.ParcelUtil
 import kotlinx.parcelize.Parceler
 import java.lang.reflect.Modifier
 import kotlin.reflect.KProperty
+import kotlin.reflect.KProperty0
+import kotlin.reflect.jvm.isAccessible
+
+interface IntentSetter<V> {
+    fun putValue(intent: Intent, property: KProperty<*>, value: V?)
+}
 
 operator fun <V, V1 : V> Intent.set(
-    property: KProperty<V>, delegate: IntentDelegate<V>, value: V1?
+    property: KProperty<V>, delegate: IntentSetter<V>, value: V1?
 ): Intent {
     delegate.putValue(this, property, value)
     return this
@@ -54,117 +62,120 @@ operator fun Intent.set(property: KProperty<Boolean>, value: Boolean) =
 
 operator fun Intent.set(
     property: KProperty<ByteArray>, value: ByteArray?
-) = BundleSupportType.ByteArrayType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.ByteArrayType.commonCase, value)
 
 operator fun Intent.set(
     property: KProperty<ShortArray>, value: ShortArray?
-) = BundleSupportType.ShortArrayType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.ShortArrayType.commonCase, value)
 
 operator fun Intent.set(
     property: KProperty<IntArray>, value: IntArray?
-) = BundleSupportType.IntArrayType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.IntArrayType.commonCase, value)
 
 operator fun Intent.set(
     property: KProperty<LongArray>, value: LongArray?
-) = BundleSupportType.LongArrayType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.LongArrayType.commonCase, value)
 
 operator fun Intent.set(
     property: KProperty<FloatArray>, value: FloatArray?
-) = BundleSupportType.FloatArrayType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.FloatArrayType.commonCase, value)
 
 operator fun Intent.set(
     property: KProperty<DoubleArray>, value: DoubleArray?
-) = BundleSupportType.DoubleArrayType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.DoubleArrayType.commonCase, value)
 
 operator fun Intent.set(
     property: KProperty<CharArray>, value: CharArray?
-) = BundleSupportType.CharArrayType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.CharArrayType.commonCase, value)
 
 operator fun Intent.set(
     property: KProperty<BooleanArray>, value: BooleanArray?
-) = BundleSupportType.BooleanArrayType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.BooleanArrayType.commonCase, value)
 
 operator fun Intent.set(
     property: KProperty<CharSequence>, value: CharSequence?
-) = BundleSupportType.CharSequenceType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.CharSequenceType.commonCase, value)
 
 @JvmName("setCharSequenceArray")
 operator fun Intent.set(
     property: KProperty<Array<out CharSequence>>, value: Array<out CharSequence>?
-) = BundleSupportType.ArrayCharSequenceType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.ArrayCharSequenceType.commonCase, value)
 
 @JvmName("setCharSequenceArray")
 operator fun Intent.set(
     property: KProperty<List<out CharSequence>>, value: List<out CharSequence>?
-) = BundleSupportType.ListCharSequenceType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.ListCharSequenceType.commonCase, value)
 
 operator fun Intent.set(
     property: KProperty<String>, value: String?
-) = BundleSupportType.StringType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.StringType.commonCase, value)
 
 @JvmName("setStringArray")
 operator fun Intent.set(
     property: KProperty<Array<String>>, value: Array<String>?
-) = BundleSupportType.ArrayStringType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.ArrayStringType.commonCase, value)
 
 @JvmName("setStringList")
 operator fun Intent.set(
     property: KProperty<Array<String>>, value: List<String>?
-) = BundleSupportType.ListStringType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(
+    property,
+    BundleSupportType.ListStringType.commonCase as BundleSupportType<Any?>,
+    value
+)
 
 operator fun Intent.set(
     property: KProperty<Bundle>, value: Bundle?
-) = BundleSupportType.BundleType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.BundleType.commonCase, value)
 
 @JvmName("setParcelable")
 operator fun <V : Parcelable, V1 : V> Intent.set(
     property: KProperty<V>, value: V1?
-) = BundleSupportType.ParcelableType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.ParcelableType.commonCase, value)
 
 @JvmName("setParcelableArray")
 operator fun <V : Parcelable, V1 : V> Intent.set(
     property: KProperty<Array<V>>, value: Array<V1>?
-) = (BundleSupportType.ArrayParcelableType.commonCase as BundleSupportType<Array<V1>>)
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(
+    property,
+    BundleSupportType.ArrayParcelableType.commonCase as BundleSupportType<Any>,
+    value
+)
 
 @JvmName("setParcelableList")
 operator fun <V : Parcelable, V1 : V> Intent.set(
     property: KProperty<List<V>>, value: List<V1>?
-) = BundleSupportType.ListParcelableType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.ListParcelableType.commonCase, value)
 
 @JvmName("setEnum")
 operator fun <V : Enum<V>> Intent.set(
     property: KProperty<V>, value: V?
-) = BundleSupportType.EnumType.commonCase
-    .putExtraNullable(this, property, property.name, value)
+) = setImpl(property, BundleSupportType.EnumType.commonCase, value)
 //</editor-fold>
 
+private fun <V, V1 : V> Intent.setImpl(
+    property: KProperty<V>,
+    bundleSupportType: BundleSupportType<V>,
+    value: V1?
+): Intent = if (
+    UtilInitializer.sdkDependency.kotlinKPropertyCompiledDelegate && property is KProperty0
+) {
+    property.isAccessible = true
+    (property.getDelegate() as IntentSetter<V>).putValue(this, property, value)
+    this
+} else {
+    bundleSupportType.putExtraNullable(this, property, property.name, value)
+}
+
 /**
- * 实现与 [IntentDelegate.invoke]、[BundleSupportType.ProtoBufType.invoke] 一致
+ * 实现与 [ActivityDelegate.Companion.invoke]、[BundleSupportType.ProtoBufType.invoke] 一致
  *
  * 即在 [V] 为抽象类型时，行为与 [BundleSupportType.ProtoBufType.checkByReflectWhenCall] 一致，
  * [V] 为具体类型时，行为与 [BundleSupportType.ProtoBufType.commonCase] 一致
  *
  * [BundleSupportType.ProtoBufType.toByteArrayExt]
  *
- * 在 [V] 为具体类型时，行为与 [io.github.chenfei0928.content.putExtra] 一致，并兼容
+ * 在 [V] 为具体类型时，行为与 [putExtra] 一致，并兼容
  * [io.github.chenfei0928.content.getProtobufExtra]
  *
  * @param V
@@ -184,11 +195,11 @@ operator fun <V : MessageLite, V1 : V> Intent.set(
     val type = if (writeClassName)
         BundleSupportType.ProtoBufType.checkByReflectWhenCall
     else BundleSupportType.ProtoBufType.commonCase
-    return type.putExtraNullable(this, property, property.name, value)
+    return setImpl(property, type as BundleSupportType<V?>, value)
 }
 
 /**
- * 实现与 [IntentDelegate.invoke] 或 [BundleSupportType.ListProtoBufType.invoke] 一致
+ * 实现与 [ActivityDelegate.Companion.invoke] 或 [BundleSupportType.ListProtoBufType.invoke] 一致
  *
  * [BundleSupportType.ListProtoBufType.parceler]
  *

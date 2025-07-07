@@ -1750,7 +1750,7 @@ abstract class BundleSupportType<T>(
             /**
              * 通用用例，非空的（[isMarkedNullable] 为false）
              *
-             * 仅用于 IntentSetter [io.github.chenfei0928.app.activity.set]
+             * 仅用于 IntentSetter [io.github.chenfei0928.content.set]
              */
             internal abstract val commonCase: BundleSupportType<T & Any>
 

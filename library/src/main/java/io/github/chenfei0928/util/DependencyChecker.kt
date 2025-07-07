@@ -36,6 +36,22 @@ interface DependencyChecker {
     //  https://github.com/Tencent/MMKV
     val mmkv: Boolean
 
+    /**
+     * Kotlin 编译器是否将 [kotlin.reflect.KProperty.returnType] 编译进二进制文件
+     *
+     * 为 true 时获取成本将变低
+     */
+    val kotlinKPropertyCompiledKType: Boolean
+
+    /**
+     * Kotlin 编译器是否将 [kotlin.reflect.KProperty0.getDelegate]、
+     * [kotlin.reflect.KProperty1.getDelegate]、
+     * [kotlin.reflect.KProperty2.getDelegate] 编译进二进制文件
+     *
+     * 为 true 时获取成本将变低
+     */
+    val kotlinKPropertyCompiledDelegate: Boolean
+
     companion object : DependencyChecker {
         override val material: Boolean get() = UtilInitializer.sdkDependency.material
         override val guavaListenableFuture: Boolean get() = UtilInitializer.sdkDependency.guavaListenableFuture
@@ -46,6 +62,10 @@ interface DependencyChecker {
         override val protobufLite: Boolean get() = UtilInitializer.sdkDependency.protobufLite
         override val gson: Boolean get() = UtilInitializer.sdkDependency.gson
         override val mmkv: Boolean get() = UtilInitializer.sdkDependency.mmkv
+        override val kotlinKPropertyCompiledKType: Boolean
+            get() = UtilInitializer.sdkDependency.kotlinKPropertyCompiledKType
+        override val kotlinKPropertyCompiledDelegate: Boolean
+            get() = UtilInitializer.sdkDependency.kotlinKPropertyCompiledDelegate
     }
 
     /**
@@ -61,6 +81,8 @@ interface DependencyChecker {
         override val protobufLite: Boolean,
         override val gson: Boolean,
         override val mmkv: Boolean,
+        override val kotlinKPropertyCompiledKType: Boolean,
+        override val kotlinKPropertyCompiledDelegate: Boolean,
     ) : DependencyChecker {
         init {
             require(!(protobufFull && !protobufLite)) {
@@ -217,6 +239,8 @@ interface DependencyChecker {
             override val protobufLite: Boolean by PROTOBUF_LITE
             override val gson: Boolean by GSON
             override val mmkv: Boolean by MMKV
+            override val kotlinKPropertyCompiledKType: Boolean = false
+            override val kotlinKPropertyCompiledDelegate: Boolean = false
         }
     }
 }

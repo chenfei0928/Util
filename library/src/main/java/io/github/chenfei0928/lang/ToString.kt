@@ -246,6 +246,7 @@ private fun StringBuilder.appendObjectByReflectImpl(any: Any) = apply {
     if (thisClass.isWriteByKotlin) {
         // 如果当前实例的类是kotlin类，且当前对象是伴生对象，尝试打印伴生对象的字段
         val kClass = thisClass.kotlin
+        // slow call, 判断当前对象是不是伴生对象的实例
         if (kClass.isCompanion) {
             // 获取该伴生对象的宿主类
             val outerClass = thisClass.declaringClass
