@@ -29,7 +29,7 @@ class ArgumentDelegate<V>(
     override fun getValue(thisRef: Fragment, property: KProperty<*>): V {
         return thisRef.arguments.let {
             it?.classLoader = thisRef.javaClass.classLoader
-            supportType.getValue(it, property, name ?: property.name, defaultValue)
+            supportType.getValue(it, property, name ?: property.name, defaultValue) as V
         }
     }
 

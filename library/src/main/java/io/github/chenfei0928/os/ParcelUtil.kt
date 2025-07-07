@@ -95,7 +95,10 @@ object ParcelUtil {
         it.createTypedArrayList(creator)
     }
 
-    fun <T : Parcelable> copy(obj: T, creator: Parcelable.Creator<T>? = null): T = use { parcel ->
+    fun <T : Parcelable> copy(
+        obj: T,
+        creator: Parcelable.Creator<T>? = null
+    ): T = use { parcel ->
         if (creator == null) {
             parcel.writeParcelable(obj, 0)
             parcel.setDataPosition(0)

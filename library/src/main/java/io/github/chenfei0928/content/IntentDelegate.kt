@@ -27,7 +27,7 @@ class IntentDelegate<V>(
     private val defaultValue: V? = null,
 ) : ReadOnlyProperty<Intent, V>, ReadWriteProperty<Intent, V>, IntentSetter<V> {
     override fun getValue(thisRef: Intent, property: KProperty<*>): V {
-        return supportType.getValue(thisRef, property, name ?: property.name, defaultValue)
+        return supportType.getValue(thisRef, property, name ?: property.name, defaultValue) as V
     }
 
     override fun setValue(thisRef: Intent, property: KProperty<*>, value: V) {

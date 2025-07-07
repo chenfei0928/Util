@@ -41,7 +41,7 @@ interface DependencyChecker {
      *
      * 为 true 时获取成本将变低
      */
-    val kotlinKPropertyCompiledKType: Boolean
+    val ktKPropertyCompiledKType: Boolean
 
     /**
      * Kotlin 编译器是否将 [kotlin.reflect.KProperty0.getDelegate]、
@@ -50,7 +50,7 @@ interface DependencyChecker {
      *
      * 为 true 时获取成本将变低
      */
-    val kotlinKPropertyCompiledDelegate: Boolean
+    val ktKPropertyCompiledDelegate: Boolean
 
     companion object : DependencyChecker {
         override val material: Boolean get() = UtilInitializer.sdkDependency.material
@@ -62,10 +62,10 @@ interface DependencyChecker {
         override val protobufLite: Boolean get() = UtilInitializer.sdkDependency.protobufLite
         override val gson: Boolean get() = UtilInitializer.sdkDependency.gson
         override val mmkv: Boolean get() = UtilInitializer.sdkDependency.mmkv
-        override val kotlinKPropertyCompiledKType: Boolean
-            get() = UtilInitializer.sdkDependency.kotlinKPropertyCompiledKType
-        override val kotlinKPropertyCompiledDelegate: Boolean
-            get() = UtilInitializer.sdkDependency.kotlinKPropertyCompiledDelegate
+        override val ktKPropertyCompiledKType: Boolean
+            get() = UtilInitializer.sdkDependency.ktKPropertyCompiledKType
+        override val ktKPropertyCompiledDelegate: Boolean
+            get() = UtilInitializer.sdkDependency.ktKPropertyCompiledDelegate
     }
 
     /**
@@ -81,8 +81,8 @@ interface DependencyChecker {
         override val protobufLite: Boolean,
         override val gson: Boolean,
         override val mmkv: Boolean,
-        override val kotlinKPropertyCompiledKType: Boolean,
-        override val kotlinKPropertyCompiledDelegate: Boolean,
+        override val ktKPropertyCompiledKType: Boolean = false,
+        override val ktKPropertyCompiledDelegate: Boolean = false,
     ) : DependencyChecker {
         init {
             require(!(protobufFull && !protobufLite)) {
@@ -239,8 +239,8 @@ interface DependencyChecker {
             override val protobufLite: Boolean by PROTOBUF_LITE
             override val gson: Boolean by GSON
             override val mmkv: Boolean by MMKV
-            override val kotlinKPropertyCompiledKType: Boolean = false
-            override val kotlinKPropertyCompiledDelegate: Boolean = false
+            override val ktKPropertyCompiledKType: Boolean = false
+            override val ktKPropertyCompiledDelegate: Boolean = false
         }
     }
 }

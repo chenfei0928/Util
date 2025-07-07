@@ -22,8 +22,6 @@ class App : Application() {
             protobufLite = true,
             gson = true,
             mmkv = true,
-            kotlinKPropertyCompiledKType = false,
-            kotlinKPropertyCompiledDelegate = false,
         )
     }
 }

@@ -85,8 +85,8 @@ abstract class BundleSupportType<T>(
      */
     fun getValue(
         bundle: Bundle?, property: KProperty<*>, name: String, defaultValue: T?
-    ): T = if (isMarkedNullable ?: property.returnType.isMarkedNullable)
-        bundle?.let { getNullable(bundle, property, name) }!!
+    ): T? = if (isMarkedNullable ?: property.returnType.isMarkedNullable)
+        bundle?.let { getNullable(bundle, property, name) }
     else if (bundle != null)
         getNonnull(bundle, property, name, defaultValue)
     else defaultValue ?: nonnullValue(property)
@@ -134,20 +134,20 @@ abstract class BundleSupportType<T>(
      */
     fun getValue(
         intent: Intent, property: KProperty<*>, name: String, defaultValue: T?
-    ): T = if (isMarkedNullable ?: property.returnType.isMarkedNullable)
-        getExtraNullable(intent, property, name)!!
+    ): T? = if (isMarkedNullable ?: property.returnType.isMarkedNullable)
+        getExtraNullable(intent, property, name)
     else getExtraNonnull(intent, property, name, defaultValue)
 
     /**
      * 获取[Intent]的扩展数据，并返回可空数据。如果数据中没有存储该数据，则返回null
      */
-    open fun getExtraNullable(intent: Intent, property: KProperty<*>, name: String): T? =
+    protected open fun getExtraNullable(intent: Intent, property: KProperty<*>, name: String): T? =
         if (!intent.hasExtra(name)) null else getExtraNonnull(intent, property, name, null)
 
     /**
      * 获取[Intent]的扩展数据，并返回非空数据。如果数据中没有存储该数据，则返回默认数据
      */
-    open fun getExtraNonnull(
+    protected open fun getExtraNonnull(
         intent: Intent, property: KProperty<*>, name: String, defaultValue: T?
     ): T = if (!intent.hasExtra(name)) defaultValue ?: nonnullValue(property) else
         getExtraNullable(intent, property, name) ?: defaultValue ?: nonnullValue(property)
@@ -1289,7 +1289,7 @@ abstract class BundleSupportType<T>(
 
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
-        ): T? = forName(property, bundle.getString(name)!!)
+        ): T? = bundle.getString(name)?.let { forName(property, it) }
 
         override fun putExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, value: T & Any
@@ -1297,7 +1297,7 @@ abstract class BundleSupportType<T>(
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): T? = forName(property, intent.getStringExtra(name)!!)
+        ): T? = intent.getStringExtra(name)?.let { forName(property, it) }
 
         private fun forName(
             property: KProperty<*>, name: String

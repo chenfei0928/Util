@@ -28,7 +28,7 @@ class HostIntentDelegate<V>(
     override fun getValue(thisRef: Fragment, property: KProperty<*>): V {
         return thisRef.requireActivity().intent.run {
             setExtrasClassLoader(thisRef.requireActivity().classLoader)
-            supportType.getValue(this, property, name ?: property.name, defaultValue)
+            supportType.getValue(this, property, name ?: property.name, defaultValue) as V
         }
     }
 

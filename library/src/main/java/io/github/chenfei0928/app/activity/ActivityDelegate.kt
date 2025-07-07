@@ -30,7 +30,7 @@ class ActivityDelegate<V>(
     override fun getValue(thisRef: Activity, property: KProperty<*>): V {
         return thisRef.intent.run {
             setExtrasClassLoader(thisRef.classLoader)
-            supportType.getValue(this, property, name ?: property.name, defaultValue)
+            supportType.getValue(this, property, name ?: property.name, defaultValue) as V
         }
     }
 

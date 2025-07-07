@@ -52,7 +52,7 @@ constructor(
     internal fun <V> findFieldOrNullByProperty(
         property: KProperty<V>
     ): Field<SpSaver, V>? = spSaverPropertyDelegateFields.find {
-        it.property == property
+        it.property.name == property.name
     } as? Field<SpSaver, V>
 
     /**

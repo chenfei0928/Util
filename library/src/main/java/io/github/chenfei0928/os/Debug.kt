@@ -164,7 +164,7 @@ object Debug {
             }
 
             override fun stop() {
-                names[nextIndex / 2] = ""
+                names[nextIndex / 2] = null
                 nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
             }
@@ -194,7 +194,7 @@ object Debug {
             }
 
             override fun stop() {
-                names[nextIndex / 2] = ""
+                names[nextIndex / 2] = null
                 nanoTimestamps[nextIndex] = System.nanoTime()
                 nextIndex++
                 Debug.stopMethodTracing()

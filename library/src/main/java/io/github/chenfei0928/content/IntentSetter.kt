@@ -154,11 +154,9 @@ operator fun <V : Enum<V>> Intent.set(
 //</editor-fold>
 
 private fun <V, V1 : V> Intent.setImpl(
-    property: KProperty<V>,
-    bundleSupportType: BundleSupportType<V>,
-    value: V1?
+    property: KProperty<V>, bundleSupportType: BundleSupportType<V>, value: V1?
 ): Intent = if (
-    UtilInitializer.sdkDependency.kotlinKPropertyCompiledDelegate && property is KProperty0
+    UtilInitializer.sdkDependency.ktKPropertyCompiledDelegate && property is KProperty0
 ) {
     property.isAccessible = true
     (property.getDelegate() as IntentSetter<V>).putValue(this, property, value)

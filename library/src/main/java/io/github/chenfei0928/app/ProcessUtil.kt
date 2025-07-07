@@ -46,7 +46,8 @@ object ProcessUtil {
                 method.invoke(null) as String
             } catch (_: ReflectiveOperationException) {
                 val myPid = Process.myPid()
-                val am = context.getSystemService<ActivityManager>()!!
+                val am = context.getSystemService<ActivityManager>()
+                    ?: throw IllegalStateException("Unable to get ActivityManager")
                 am.runningAppProcesses.find { it.pid == myPid }!!.processName
             }
         }

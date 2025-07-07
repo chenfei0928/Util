@@ -24,8 +24,9 @@ abstract class BaseViewBindingFragment<VB : ViewBinding> : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        viewBinding = inflateFun(inflater, container, false)
-        return viewBinding!!.root
+        val viewBinding = inflateFun(inflater, container, false)
+        this.viewBinding = viewBinding
+        return viewBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
