@@ -18,13 +18,6 @@ import androidx.lifecycle.Lifecycle
 import com.google.protobuf.ProtobufParceler
 import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.app.fragment.ArgumentDelegate
-import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argBoolean
-import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argInt
-import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelable
-import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelableList
-import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argParcelableNull
-import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argString
-import io.github.chenfei0928.app.fragment.ArgumentDelegate.Companion.argStringNull
 import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.bean.Bean
@@ -220,21 +213,21 @@ class MainActivity : ComponentActivity() {
     }
 
     class Frag : Fragment() {
-        var a: Int by argInt()
-        var b: String by argString()
+        var a: Int by ArgumentDelegate.int()
+        var b: String by ArgumentDelegate.string()
         var c: List<String> by ArgumentDelegate(BundleSupportType.ListStringType())
         var d: Array<String> by ArgumentDelegate(BundleSupportType.ArrayStringType())
         var e: Lifecycle.State by ArgumentDelegate(BundleSupportType.EnumType())
-        var f: Boolean by argBoolean()
+        var f: Boolean by ArgumentDelegate.boolean()
         var g: Array<Bean> by ArgumentDelegate(BundleSupportType.ArrayParcelableType())
-        var h: Bean by argParcelable()
-        var i: List<Bean> by argParcelableList()
-        var j: String? by argStringNull()
-        var k: Bean? by argParcelableNull()
-        var l: Bean? by ArgumentDelegate<Bean?>(true)
-        var m: Bean by ArgumentDelegate<Bean>()
-        var n: Test by ArgumentDelegate(ProtobufParceler())
-        var o: Test by ArgumentDelegate()
+        var h: Bean by ArgumentDelegate.parcelable()
+        var i: List<Bean> by ArgumentDelegate.parcelableList()
+        var j: String? by ArgumentDelegate.stringNullable()
+        var k: Bean? by ArgumentDelegate.parcelableNullable()
+        var l: Bean? by ArgumentDelegate(true)
+        var m: Bean by ArgumentDelegate()
+        var n: Test by ArgumentDelegate.parceler(ProtobufParceler())
+        var o: Test by ArgumentDelegate.protobuf()
         var p: Test? by ArgumentDelegate(BundleSupportType.ProtoBufType.nullable())
         var q: Lifecycle.State? by ArgumentDelegate(BundleSupportType.EnumType.nullable())
 

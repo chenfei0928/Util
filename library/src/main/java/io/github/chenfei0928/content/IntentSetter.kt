@@ -166,7 +166,7 @@ private fun <V, V1 : V> Intent.setImpl(
 }
 
 /**
- * 实现与 [ActivityDelegate.Companion.invoke]、[BundleSupportType.ProtoBufType.invoke] 一致
+ * 实现与 [ActivityDelegate.Companion.protobuf]、[BundleSupportType.ProtoBufType.invoke] 一致
  *
  * 即在 [V] 为抽象类型时，行为与 [BundleSupportType.ProtoBufType.checkByReflectWhenCall] 一致，
  * [V] 为具体类型时，行为与 [BundleSupportType.ProtoBufType.commonCase] 一致
@@ -197,7 +197,7 @@ operator fun <V : MessageLite, V1 : V> Intent.set(
 }
 
 /**
- * 实现与 [ActivityDelegate.Companion.invoke] 或 [BundleSupportType.ListProtoBufType.invoke] 一致
+ * 实现与 [ActivityDelegate.Companion.protobuf] 或 [BundleSupportType.ListProtoBufType.invoke] 一致
  *
  * [BundleSupportType.ListProtoBufType.parceler]
  *

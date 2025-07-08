@@ -44,7 +44,7 @@ class IntentDelegate<V>(
             BundleSupportType.AutoFind.findByType<V>(isMarkedNullable), name, defaultValue
         )
 
-        operator fun <V> invoke(
+        fun <V> parceler(
             parceler: Parceler<V?>,
             name: String? = null,
             defaultValue: V? = null
@@ -52,39 +52,39 @@ class IntentDelegate<V>(
             BundleSupportType.ParcelerType(parceler), name, defaultValue
         )
 
-        inline operator fun <reified V : MessageLite> invoke(
+        inline fun <reified V : MessageLite> protobuf(
             name: String? = null,
         ): ReadWriteProperty<Intent, V> = IntentDelegate(
             BundleSupportType.ProtoBufType<V>(), name, V::class.java.protobufDefaultInstance
         )
 
-        fun intentInt(name: String? = null): ReadWriteProperty<Intent, Int> =
+        fun int(name: String? = null): ReadWriteProperty<Intent, Int> =
             IntentDelegate(BundleSupportType.IntType(false), name)
 
-        fun intentBoolean(name: String? = null): ReadWriteProperty<Intent, Boolean> =
+        fun boolean(name: String? = null): ReadWriteProperty<Intent, Boolean> =
             IntentDelegate(BundleSupportType.BooleanType(false), name)
 
-        fun intentString(name: String? = null): ReadWriteProperty<Intent, String> =
+        fun string(name: String? = null): ReadWriteProperty<Intent, String> =
             IntentDelegate(BundleSupportType.StringType(false), name)
 
-        fun intentStringNull(name: String? = null): ReadWriteProperty<Intent, String?> =
+        fun stringNullable(name: String? = null): ReadWriteProperty<Intent, String?> =
             IntentDelegate(
                 BundleSupportType.StringType(true), name
             ) as ReadWriteProperty<Intent, String?>
 
-        inline fun <reified V : Parcelable> intentParcelable(
+        inline fun <reified V : Parcelable> parcelable(
             name: String? = null
         ): ReadWriteProperty<Intent, V> = IntentDelegate(
             BundleSupportType.ParcelableType(V::class.java, false), name
         )
 
-        inline fun <reified T : Parcelable> intentParcelableNull(
+        inline fun <reified T : Parcelable> parcelableNullable(
             name: String? = null
         ): ReadWriteProperty<Intent, T?> = IntentDelegate(
             BundleSupportType.ParcelableType(T::class.java, true), name
         )
 
-        inline fun <reified V : Parcelable> intentParcelableList(
+        inline fun <reified V : Parcelable> parcelableList(
             name: String? = null
         ): ReadWriteProperty<Intent, List<V>> = IntentDelegate(
             BundleSupportType.ListParcelableType(V::class.java, false), name

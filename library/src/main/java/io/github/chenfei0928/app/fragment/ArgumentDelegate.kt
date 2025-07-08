@@ -45,47 +45,47 @@ class ArgumentDelegate<V>(
             BundleSupportType.AutoFind.findByType<V>(isMarkedNullable), name, defaultValue
         )
 
-        operator fun <V> invoke(
+        fun <V> parceler(
             parceler: Parceler<V?>,
             name: String? = null,
             defaultValue: V? = null
-        ): ReadWriteProperty<Fragment, V> = ArgumentDelegate<V>(
+        ): ReadWriteProperty<Fragment, V> = ArgumentDelegate(
             BundleSupportType.ParcelerType(parceler), name, defaultValue
         )
 
-        inline operator fun <reified V : MessageLite> invoke(
+        inline fun <reified V : MessageLite> protobuf(
             name: String? = null,
         ): ReadWriteProperty<Fragment, V> = ArgumentDelegate(
             BundleSupportType.ProtoBufType<V>(), name, V::class.java.protobufDefaultInstance
         )
 
-        fun Fragment.argInt(name: String? = null): ReadWriteProperty<Fragment, Int> =
+        fun int(name: String? = null): ReadWriteProperty<Fragment, Int> =
             ArgumentDelegate(BundleSupportType.IntType(false), name)
 
-        fun Fragment.argBoolean(name: String? = null): ReadWriteProperty<Fragment, Boolean> =
+        fun boolean(name: String? = null): ReadWriteProperty<Fragment, Boolean> =
             ArgumentDelegate(BundleSupportType.BooleanType(false), name)
 
-        fun Fragment.argString(name: String? = null): ReadWriteProperty<Fragment, String> =
+        fun string(name: String? = null): ReadWriteProperty<Fragment, String> =
             ArgumentDelegate(BundleSupportType.StringType(false), name)
 
         @Suppress("UNCHECKED_CAST")
-        fun Fragment.argStringNull(name: String? = null): ReadWriteProperty<Fragment, String?> =
+        fun stringNullable(name: String? = null): ReadWriteProperty<Fragment, String?> =
             ArgumentDelegate(BundleSupportType.StringType(true) as BundleSupportType<String?>, name)
 
-        inline fun <reified V : Parcelable> Fragment.argParcelable(
+        inline fun <reified V : Parcelable> parcelable(
             name: String? = null
         ): ReadWriteProperty<Fragment, V> = ArgumentDelegate(
             BundleSupportType.ParcelableType(V::class.java, false), name
         )
 
         @Suppress("UNCHECKED_CAST")
-        inline fun <reified V : Parcelable> Fragment.argParcelableNull(
+        inline fun <reified V : Parcelable> parcelableNullable(
             name: String? = null
-        ): ReadWriteProperty<Fragment, V?> = ArgumentDelegate<V?>(
+        ): ReadWriteProperty<Fragment, V?> = ArgumentDelegate(
             BundleSupportType.ParcelableType(V::class.java, true) as BundleSupportType<V?>, name
         )
 
-        inline fun <reified V : Parcelable> Fragment.argParcelableList(
+        inline fun <reified V : Parcelable> parcelableList(
             name: String? = null
         ): ReadWriteProperty<Fragment, List<V>> = ArgumentDelegate(
             BundleSupportType.ListParcelableType(V::class.java, false), name

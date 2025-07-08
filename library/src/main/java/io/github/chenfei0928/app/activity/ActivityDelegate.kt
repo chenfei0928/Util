@@ -45,7 +45,7 @@ class ActivityDelegate<V>(
             BundleSupportType.AutoFind.findByType<V>(isMarkedNullable), name, defaultValue
         )
 
-        operator fun <V> invoke(
+        fun <V> parceler(
             parceler: Parceler<V?>,
             name: String? = null,
             defaultValue: V? = null
@@ -53,37 +53,37 @@ class ActivityDelegate<V>(
             BundleSupportType.ParcelerType(parceler), name, defaultValue
         )
 
-        inline operator fun <reified V : MessageLite> invoke(
+        inline fun <reified V : MessageLite> protobuf(
             name: String? = null,
         ): ReadOnlyProperty<Activity, V> = ActivityDelegate(
             BundleSupportType.ProtoBufType<V>(), name, V::class.java.protobufDefaultInstance
         )
 
-        fun Activity.intentInt(name: String? = null): ReadOnlyProperty<Activity, Int> =
+        fun int(name: String? = null): ReadOnlyProperty<Activity, Int> =
             ActivityDelegate(BundleSupportType.IntType(false), name)
 
-        fun Activity.intentBoolean(name: String? = null): ReadOnlyProperty<Activity, Boolean> =
+        fun boolean(name: String? = null): ReadOnlyProperty<Activity, Boolean> =
             ActivityDelegate(BundleSupportType.BooleanType(false), name)
 
-        fun Activity.intentString(name: String? = null): ReadOnlyProperty<Activity, String> =
+        fun string(name: String? = null): ReadOnlyProperty<Activity, String> =
             ActivityDelegate(BundleSupportType.StringType(false), name)
 
-        fun Activity.intentStringNull(name: String? = null): ReadOnlyProperty<Activity, String?> =
+        fun stringNullable(name: String? = null): ReadOnlyProperty<Activity, String?> =
             ActivityDelegate(BundleSupportType.StringType(true), name)
 
-        inline fun <reified V : Parcelable> Activity.intentParcelable(
+        inline fun <reified V : Parcelable> parcelable(
             name: String? = null
         ): ReadOnlyProperty<Activity, V> = ActivityDelegate(
             BundleSupportType.ParcelableType(V::class.java, false), name
         )
 
-        inline fun <reified T : Parcelable> Activity.intentParcelableNull(
+        inline fun <reified T : Parcelable> parcelableNullable(
             name: String? = null
         ): ReadOnlyProperty<Activity, T?> = ActivityDelegate(
             BundleSupportType.ParcelableType(T::class.java, true), name
         )
 
-        inline fun <reified V : Parcelable> Activity.intentParcelableList(
+        inline fun <reified V : Parcelable> parcelableList(
             name: String? = null
         ): ReadOnlyProperty<Activity, List<V>> = ActivityDelegate(
             BundleSupportType.ListParcelableType(V::class.java, false), name

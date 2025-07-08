@@ -11,8 +11,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import io.github.chenfei0928.app.activity.ActivityDelegate
-import io.github.chenfei0928.app.activity.ActivityDelegate.Companion.intentInt
-import io.github.chenfei0928.app.activity.ActivityDelegate.Companion.intentString
 import io.github.chenfei0928.content.set
 import io.github.chenfei0928.demo.R
 import io.github.chenfei0928.demo.bean.Test
@@ -20,9 +18,9 @@ import io.github.chenfei0928.demo.databinding.ActivityPreferenceBinding
 import io.github.chenfei0928.viewbinding.setContentViewBinding
 
 class PreferenceActivity : AppCompatActivity() {
-    private val fragmentName: String by intentString()
-    private val intValue: Int by intentInt()
-    private val protobuf: Test by ActivityDelegate()
+    private val fragmentName: String by ActivityDelegate.string()
+    private val intValue: Int by ActivityDelegate.int()
+    private val protobuf: Test by ActivityDelegate.protobuf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
