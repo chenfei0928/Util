@@ -13,6 +13,9 @@ import com.google.protobuf.PROTOBUF_ENUM_UNRECOGNIZED_NAME
 import com.google.protobuf.ProtocolMessageEnum
 import com.google.protobuf.enumClass
 import com.google.protobuf.isUnrecognized
+import io.github.chenfei0928.content.sp.saver.PreferenceType.Companion.forElseTypeInlineOnly
+import io.github.chenfei0928.content.sp.saver.PreferenceType.Companion.forType
+import io.github.chenfei0928.content.sp.saver.PreferenceType.Companion.forTypeOrNullInlineOnly
 import io.github.chenfei0928.content.sp.saver.convert.BaseSpConvert
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.preference.DataStoreFieldAccessorCache
@@ -46,8 +49,8 @@ sealed interface PreferenceType {
      * [PreferenceDataStore] 的原生类型支持，同时也是 [SharedPreferences] 的原生类型支持
      */
     enum class Native(
-        val type: Type,
-        val primitiveType: Class<*>?,
+        internal val type: Type,
+        internal val primitiveType: Class<*>?,
     ) : PreferenceType {
         STRING(String::class.java, null),
         STRING_SET(
@@ -62,27 +65,9 @@ sealed interface PreferenceType {
         LONG(Long::class.javaObjectType, Long::class.javaPrimitiveType),
         FLOAT(Float::class.javaObjectType, Float::class.javaPrimitiveType),
         BOOLEAN(Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType);
-
-        companion object {
-            fun forTypeOrNull(tClass: Class<*>): Native? =
-                entries.find { it.type == tClass || it.primitiveType == tClass }
-
-            inline fun forTypeOrNull(
-                tClass: Class<*>, tTypeProvider: () -> Type
-            ): Native? = forTypeOrNull(tClass)
-                ?: if (tTypeProvider().isSubtypeOf(STRING_SET.type))
-                    STRING_SET else null
-
-            fun forType(tClass: Class<*>, tTypeProvider: () -> Type): Native {
-                return forTypeOrNull(tClass, tTypeProvider)
-                    ?: throw IllegalArgumentException("Not support type: ${tTypeProvider()}")
-            }
-
-            inline fun <reified T> forType(): Native =
-                forType(T::class.java, LazyTypeToken.Lazy<T>())
-        }
     }
 
+    //<editor-fold desc="枚举与枚举集合" defaultstatus="collapsed">
     /**
      * 用于 [DataStoreFieldAccessorCache] 的 [Field] 的数据类型，
      * 在[DataStoreFieldAccessorCache]中对该类型进行判断
@@ -339,6 +324,7 @@ sealed interface PreferenceType {
             }
         }
     }
+    //</editor-fold>
 
     /**
      * 其它平台未原生支持的复杂类型，在当前类的各个 forType 中均不会返回该类型，
@@ -381,33 +367,41 @@ sealed interface PreferenceType {
     companion object {
         private const val TAG = "PreferenceType"
 
-        fun forTypeOrNull(
+        //<editor-fold desc="通过 Class 或 Type 获取类型" defaultstatus="collapsed">
+        /**
+         * 仅用于与 [forElseTypeInlineOnly] 配合，对外不开放，对外使用 [forType] 方法
+         */
+        fun forTypeOrNullInlineOnly(
             tClass: Class<*>
         ): PreferenceType? = if (tClass.isSubclassOf(Enum::class.java)) {
             @Suppress("UNCHECKED_CAST")
             EnumNameString(tClass as Class<out Enum<*>>)
-        } else Native.forTypeOrNull(tClass)
+        } else Native.entries.find { it.type == tClass || it.primitiveType == tClass }
 
-        inline fun forType(
-            tClass: Class<*>,
-            tTypeProvider: () -> Type
-        ): PreferenceType = forTypeOrNull(tClass) ?: tTypeProvider().let { tType ->
-            if (tType.isSubtypeOf(Native.STRING_SET.type)) {
-                Native.STRING_SET
-            } else {
-                require(tType is ParameterizedType) { "Not support type: $tClass, $tType" }
-                EnumNameStringCollection.forType(tType)
-            }
+        /**
+         * 仅用于与 [forTypeOrNullInlineOnly] 配合，对外不开放，对外使用 [forType] 方法
+         */
+        fun forElseTypeInlineOnly(
+            tType: Type
+        ): PreferenceType = if (tType.isSubtypeOf(Native.STRING_SET.type)) {
+            Native.STRING_SET
+        } else {
+            require(tType is ParameterizedType) { "Not support type: $tType" }
+            EnumNameStringCollection.forType(tType)
         }
 
+        inline fun forType(tClass: Class<*>, tTypeProvider: () -> Type): PreferenceType =
+            forTypeOrNullInlineOnly(tClass) ?: forElseTypeInlineOnly(tTypeProvider())
+
         inline fun <reified T> forType(): PreferenceType =
-            forType(tClass = T::class.java, LazyTypeToken.Lazy<T>())
+            forType(T::class.java, LazyTypeToken.Lazy<T>())
 
         /**
          * 用于给 [kotlin.reflect.KProperty] 的场景中获取其类型信息
          */
         fun forType(kType: KType): PreferenceType =
-            forType(tClass = kType.jvmErasure.java) { kType.javaType }
+            forType(kType.jvmErasure.java) { kType.javaType }
+        //</editor-fold>
 
         /**
          * 为 Protobuf full 的字段 fieldNumber 来获取类型信息
