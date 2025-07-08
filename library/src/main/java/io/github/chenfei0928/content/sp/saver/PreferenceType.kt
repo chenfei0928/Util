@@ -13,9 +13,6 @@ import com.google.protobuf.PROTOBUF_ENUM_UNRECOGNIZED_NAME
 import com.google.protobuf.ProtocolMessageEnum
 import com.google.protobuf.enumClass
 import com.google.protobuf.isUnrecognized
-import io.github.chenfei0928.content.sp.saver.PreferenceType.Companion.forElseTypeInlineOnly
-import io.github.chenfei0928.content.sp.saver.PreferenceType.Companion.forType
-import io.github.chenfei0928.content.sp.saver.PreferenceType.Companion.forTypeOrNullInlineOnly
 import io.github.chenfei0928.content.sp.saver.convert.BaseSpConvert
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.preference.DataStoreFieldAccessorCache
@@ -369,7 +366,8 @@ sealed interface PreferenceType {
 
         //<editor-fold desc="通过 Class 或 Type 获取类型" defaultstatus="collapsed">
         /**
-         * 仅用于与 [forElseTypeInlineOnly] 配合，对外不开放，对外使用 [forType] 方法
+         * 仅用于与 [PreferenceType.forElseTypeInlineOnly] 配合使用，
+         * 对外不开放，对外使用 [PreferenceType.forType] 方法
          */
         fun forTypeOrNullInlineOnly(
             tClass: Class<*>
@@ -379,7 +377,8 @@ sealed interface PreferenceType {
         } else Native.entries.find { it.type == tClass || it.primitiveType == tClass }
 
         /**
-         * 仅用于与 [forTypeOrNullInlineOnly] 配合，对外不开放，对外使用 [forType] 方法
+         * 仅用于与 [PreferenceType.forTypeOrNullInlineOnly] 配合使用，
+         * 对外不开放，对外使用 [PreferenceType.forType] 方法
          */
         fun forElseTypeInlineOnly(
             tType: Type

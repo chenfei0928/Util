@@ -100,7 +100,7 @@ class ProtobufMessageField<T : Message, V>(
     companion object {
         inline operator fun <reified T : Message, reified V> invoke(
             fieldNumber: Int
-        ) = ProtobufMessageField<T, V>(
+        ): ProtobufMessageField<T, V> = ProtobufMessageField(
             T::class.java.getProtobufV3DefaultInstance(), fieldNumber, V::class.java
         )
 
