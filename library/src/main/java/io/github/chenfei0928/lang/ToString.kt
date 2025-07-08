@@ -163,7 +163,7 @@ private sealed interface StaticFieldsCache {
     ) : StaticFieldsCache {
         override val clazzName: String = any.qualifiedName!!
 
-        // 获取这个类自身定义的非扩展字段
+        // 获取这个类自身定义的非扩展字段，slow call
         // https://github.com/JetBrains/kotlin/blob/db825efc9f8cf648f33d30fb730d47a484519497/core/reflection.jvm/src/kotlin/reflect/full/KClasses.kt#L159
         private val fields = companionKls.declaredMemberProperties.mapToArray {
             it.isAccessible = true
