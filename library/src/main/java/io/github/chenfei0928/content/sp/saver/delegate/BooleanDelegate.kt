@@ -14,7 +14,7 @@ class BooleanDelegate<
 private constructor(
     key: String? = null,
     defaultValue: Boolean = false,
-    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @all:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Boolean>(
     key, PreferenceType.Native.BOOLEAN, defaultValue
 ) {

@@ -19,9 +19,9 @@ import androidx.annotation.Px
  */
 class RoundBackgroundColorSpan(
     // 圆角的半径
-    @param:Px var radius: Int = 15,
-    @param:ColorInt private val bgColor: Int,
-    @param:ColorInt private val textColor: Int,
+    @all:Px var radius: Int = 15,
+    @all:ColorInt private val bgColor: Int,
+    @all:ColorInt private val textColor: Int,
     // 文本内容相对圆角背景水平方向的内边距
     private val paddingHorizontal: Int = 20,
     // 文本内容相对圆角背景垂直方向的内边距

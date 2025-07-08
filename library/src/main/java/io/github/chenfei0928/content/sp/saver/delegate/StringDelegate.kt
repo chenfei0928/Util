@@ -14,7 +14,7 @@ open class StringDelegate<
 private constructor(
     key: String? = null,
     defaultValue: String? = null,
-    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @all:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, String?>(
     key, PreferenceType.Native.STRING, defaultValue
 ) {

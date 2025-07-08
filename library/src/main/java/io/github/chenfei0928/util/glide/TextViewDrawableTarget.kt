@@ -18,7 +18,7 @@ import io.github.chenfei0928.widget.ext.applyIntrinsicBounds
 open class TextViewDrawableTarget
 @JvmOverloads constructor(
     view: TextView,
-    @param:GravityInt
+    @all:GravityInt
     private val direction: Int = Gravity.TOP,
 ) : CustomViewTarget<TextView, Drawable>(view) {
     override fun onLoadFailed(errorDrawable: Drawable?) {

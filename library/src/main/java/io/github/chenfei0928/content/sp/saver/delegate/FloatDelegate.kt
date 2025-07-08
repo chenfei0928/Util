@@ -14,7 +14,7 @@ class FloatDelegate<
 private constructor(
     key: String? = null,
     defaultValue: Float = 0f,
-    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @all:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Float>(
     key, PreferenceType.Native.FLOAT, defaultValue
 ) {

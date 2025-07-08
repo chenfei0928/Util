@@ -14,7 +14,7 @@ import kotlin.reflect.KProperty
  */
 open class ReadOnlyCacheDelegate<Host : Any, V>(
     private val delegate: ReadOnlyProperty<Host, V>,
-    @param:CacheMode
+    @all:CacheMode
     protected val cacheMode: Int = CACHE_MODE_DELEGATE,
 ) : ReadOnlyProperty<Host, V> {
     protected var caches: Any? = when (cacheMode) {

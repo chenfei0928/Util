@@ -84,13 +84,17 @@ fun Project.applyKotlin(
                 if (Env.containsReleaseBuild) {
                     // Release编译时禁止参数非空检查
                     listOf(
-                        "-Xno-call-assertions", "-Xno-param-assertions", "-Xno-receiver-assertions"
+                        "-Xno-call-assertions",
+                        "-Xno-param-assertions",
+                        "-Xno-receiver-assertions",
+                        "-Xannotation-target-all"
                     )
                 } else {
                     // Debug编译时启用debug编译，以优化断点支持与断点时变量捕获
                     // https://kotlinlang.org/docs/whatsnew18.html#a-new-compiler-option-for-disabling-optimizations
                     listOf(
-//                    "-Xdebug"
+//                    "-Xdebug",
+                        "-Xannotation-target-all"
                     )
                 }
             )

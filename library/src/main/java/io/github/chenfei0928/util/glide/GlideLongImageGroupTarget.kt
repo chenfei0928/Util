@@ -51,8 +51,8 @@ import kotlin.math.min
  * Created by MrFeng on 2018/3/2.
  */
 abstract class GlideLongImageGroupTarget(
-    @param:Px
-    @param:IntRange(from = 1, to = 4096)
+    @all:Px
+    @all:IntRange(from = 1, to = 4096)
     private val pageHeight: Int,
     private val inPreferredConfig: Bitmap.Config = Bitmap.Config.RGB_565,
 ) : CustomTarget<File>(), CoroutineScope {

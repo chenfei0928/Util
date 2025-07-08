@@ -14,7 +14,7 @@ class DoubleDelegate<
 private constructor(
     key: String? = null,
     defaultValue: Double = 0.0,
-    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @all:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Double>(
     key, PreferenceType.Struct<Double>(Double::class.java), defaultValue
 ) {

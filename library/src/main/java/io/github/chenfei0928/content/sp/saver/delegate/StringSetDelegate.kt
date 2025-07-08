@@ -16,7 +16,7 @@ private constructor(
     key: String? = null,
     private val defaultEntry: String? = null,
     defaultValue: Set<String?>? = null,
-    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @all:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Set<String?>?>(
     key, PreferenceType.Native.STRING_SET, defaultValue
 ) {

@@ -14,7 +14,7 @@ class IntDelegate<
 private constructor(
     key: String? = null,
     defaultValue: Int = 0,
-    @param:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
+    @all:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Int>(
     key, PreferenceType.Native.INT, defaultValue
 ) {

@@ -11,7 +11,7 @@ import androidx.annotation.Px
  * Created by MrFeng on 2017/6/1.
  */
 class HorizontalSpaceSpan(
-    @param:Px private val mHorizontalSpace: Int
+    @all:Px private val mHorizontalSpace: Int
 ) : ReplacementSpan() {
 
     override fun getSize(
