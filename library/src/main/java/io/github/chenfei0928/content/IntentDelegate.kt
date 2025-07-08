@@ -6,7 +6,6 @@ import com.google.protobuf.MessageLite
 import com.google.protobuf.protobufDefaultInstance
 import io.github.chenfei0928.os.BundleSupportType
 import kotlinx.parcelize.Parceler
-import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -25,7 +24,7 @@ class IntentDelegate<V>(
     private val supportType: BundleSupportType<V>,
     private val name: String? = null,
     private val defaultValue: V? = null,
-) : ReadOnlyProperty<Intent, V>, ReadWriteProperty<Intent, V>, IntentSetter<V> {
+) : ReadWriteProperty<Intent, V>, IntentSetter<V> {
     override fun getValue(thisRef: Intent, property: KProperty<*>): V {
         return supportType.getValue(thisRef, property, name ?: property.name, defaultValue) as V
     }
@@ -41,7 +40,7 @@ class IntentDelegate<V>(
     companion object {
         inline operator fun <reified V> invoke(
             isMarkedNullable: Boolean = false, name: String? = null, defaultValue: V? = null
-        ): ReadOnlyProperty<Intent, V> = IntentDelegate(
+        ): ReadWriteProperty<Intent, V> = IntentDelegate(
             BundleSupportType.AutoFind.findByType<V>(isMarkedNullable), name, defaultValue
         )
 
@@ -49,43 +48,45 @@ class IntentDelegate<V>(
             parceler: Parceler<V?>,
             name: String? = null,
             defaultValue: V? = null
-        ): ReadOnlyProperty<Intent, V> = IntentDelegate(
+        ): ReadWriteProperty<Intent, V> = IntentDelegate(
             BundleSupportType.ParcelerType(parceler), name, defaultValue
         )
 
         inline operator fun <reified V : MessageLite> invoke(
             name: String? = null,
-        ): ReadOnlyProperty<Intent, V> = IntentDelegate(
+        ): ReadWriteProperty<Intent, V> = IntentDelegate(
             BundleSupportType.ProtoBufType<V>(), name, V::class.java.protobufDefaultInstance
         )
 
-        fun intentInt(name: String? = null): ReadOnlyProperty<Intent, Int> =
+        fun intentInt(name: String? = null): ReadWriteProperty<Intent, Int> =
             IntentDelegate(BundleSupportType.IntType(false), name)
 
-        fun intentBoolean(name: String? = null): ReadOnlyProperty<Intent, Boolean> =
+        fun intentBoolean(name: String? = null): ReadWriteProperty<Intent, Boolean> =
             IntentDelegate(BundleSupportType.BooleanType(false), name)
 
-        fun intentString(name: String? = null): ReadOnlyProperty<Intent, String> =
+        fun intentString(name: String? = null): ReadWriteProperty<Intent, String> =
             IntentDelegate(BundleSupportType.StringType(false), name)
 
-        fun intentStringNull(name: String? = null): ReadOnlyProperty<Intent, String?> =
-            IntentDelegate(BundleSupportType.StringType(true), name)
+        fun intentStringNull(name: String? = null): ReadWriteProperty<Intent, String?> =
+            IntentDelegate(
+                BundleSupportType.StringType(true), name
+            ) as ReadWriteProperty<Intent, String?>
 
         inline fun <reified V : Parcelable> intentParcelable(
             name: String? = null
-        ): ReadOnlyProperty<Intent, V> = IntentDelegate(
+        ): ReadWriteProperty<Intent, V> = IntentDelegate(
             BundleSupportType.ParcelableType(V::class.java, false), name
         )
 
         inline fun <reified T : Parcelable> intentParcelableNull(
             name: String? = null
-        ): ReadOnlyProperty<Intent, T?> = IntentDelegate(
+        ): ReadWriteProperty<Intent, T?> = IntentDelegate(
             BundleSupportType.ParcelableType(T::class.java, true), name
         )
 
         inline fun <reified V : Parcelable> intentParcelableList(
             name: String? = null
-        ): ReadOnlyProperty<Intent, List<V>> = IntentDelegate(
+        ): ReadWriteProperty<Intent, List<V>> = IntentDelegate(
             BundleSupportType.ListParcelableType(V::class.java, false), name
         )
     }

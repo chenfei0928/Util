@@ -6,7 +6,6 @@ import com.google.protobuf.MessageLite
 import com.google.protobuf.protobufDefaultInstance
 import io.github.chenfei0928.os.BundleSupportType
 import kotlinx.parcelize.Parceler
-import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -25,7 +24,7 @@ class ArgumentDelegate<V>(
     private val supportType: BundleSupportType<V>,
     private val name: String? = null,
     private val defaultValue: V? = null,
-) : ReadOnlyProperty<Fragment, V>, ReadWriteProperty<Fragment, V> {
+) : ReadWriteProperty<Fragment, V> {
     override fun getValue(thisRef: Fragment, property: KProperty<*>): V {
         return thisRef.arguments.let {
             it?.classLoader = thisRef.javaClass.classLoader
