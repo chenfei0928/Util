@@ -19,7 +19,7 @@ import java.lang.reflect.Type
  */
 @WithChildInObfuscation
 @KeepAllowObfuscation
-open class LazyTypeToken<T> : () -> Type, Lazy<Type> {
+open class LazyTypeToken<T> {
     private val actualTypeIndex: Int
 
     @Volatile
@@ -34,7 +34,7 @@ open class LazyTypeToken<T> : () -> Type, Lazy<Type> {
         this.type = type
     }
 
-    final override fun invoke(): Type = this.type ?: synchronized(this) {
+    fun getType(): Type = this.type ?: synchronized(this) {
         this.type ?: run {
             val type = (javaClass.genericSuperclass as ParameterizedType)
                 .actualTypeArguments[0]
@@ -43,19 +43,33 @@ open class LazyTypeToken<T> : () -> Type, Lazy<Type> {
         }
     }
 
-    final override val value: Type
-        get() = invoke()
-
-    final override fun isInitialized(): Boolean =
+    open fun isInitialized(): Boolean =
         type != null
 
     override fun toString(): String {
+        val value = getType()
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             value.typeName
         } else if (value is Class<*>) {
             (value as Class<*>).name
         } else {
             value.toString()
+        }
+    }
+
+    open class Lazy<T> : LazyTypeToken<T>, () -> Type, kotlin.Lazy<Type> {
+        protected constructor(actualTypeIndex: Int) : super(actualTypeIndex)
+        constructor(type: Type) : super(type)
+
+        final override fun invoke(): Type = getType()
+
+        final override val value: Type
+            get() = invoke()
+
+        final override fun isInitialized(): Boolean = super.isInitialized()
+
+        companion object {
+            inline operator fun <reified T> invoke() = object : Lazy<T>(0) {}
         }
     }
 

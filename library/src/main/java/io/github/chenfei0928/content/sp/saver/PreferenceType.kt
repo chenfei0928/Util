@@ -46,8 +46,8 @@ sealed interface PreferenceType {
      * [PreferenceDataStore] 的原生类型支持，同时也是 [SharedPreferences] 的原生类型支持
      */
     enum class Native(
-        private val type: Type,
-        private val primitiveType: Class<*>?,
+        val type: Type,
+        val primitiveType: Class<*>?,
     ) : PreferenceType {
         STRING(String::class.java, null),
         STRING_SET(
@@ -64,11 +64,14 @@ sealed interface PreferenceType {
         BOOLEAN(Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType);
 
         companion object {
-            fun forTypeOrNull(tClass: Class<*>, tTypeProvider: () -> Type): Native? {
-                return entries.find { it.type == tClass || it.primitiveType == tClass }
-                    ?: if (tTypeProvider().isSubtypeOf(STRING_SET.type))
-                        STRING_SET else null
-            }
+            fun forTypeOrNull(tClass: Class<*>): Native? =
+                entries.find { it.type == tClass || it.primitiveType == tClass }
+
+            inline fun forTypeOrNull(
+                tClass: Class<*>, tTypeProvider: () -> Type
+            ): Native? = forTypeOrNull(tClass)
+                ?: if (tTypeProvider().isSubtypeOf(STRING_SET.type))
+                    STRING_SET else null
 
             fun forType(tClass: Class<*>, tTypeProvider: () -> Type): Native {
                 return forTypeOrNull(tClass, tTypeProvider)
@@ -76,7 +79,7 @@ sealed interface PreferenceType {
             }
 
             inline fun <reified T> forType(): Native =
-                forType(T::class.java, LazyTypeToken<T>())
+                forType(T::class.java, LazyTypeToken.Lazy<T>())
         }
     }
 
@@ -346,9 +349,9 @@ sealed interface PreferenceType {
         constructor(type: Type) : super(type)
 
         override fun toString(): String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            "Struct<${value.typeName}>"
+            "Struct<${getType().typeName}>"
         } else {
-            "Struct<$value>"
+            "Struct<${getType()}>"
         }
 
         companion object {
@@ -356,22 +359,49 @@ sealed interface PreferenceType {
         }
     }
 
+    open class LazyPreferenceType<T>
+    protected constructor(
+        private val tClass: Class<*>,
+    ) : LazyTypeToken<T>(0) {
+        private var preferenceType: PreferenceType? = null
+
+        fun getPreferenceType(): PreferenceType = preferenceType ?: synchronized(this) {
+            preferenceType ?: run {
+                val vType = forType(tClass, ::getType)
+                this.preferenceType = vType
+                vType
+            }
+        }
+
+        final override fun isInitialized(): Boolean {
+            return preferenceType != null
+        }
+    }
+
     companion object {
         private const val TAG = "PreferenceType"
 
-        fun forType(tClass: Class<*>, tTypeProvider: () -> Type): PreferenceType {
-            return if (tClass.isSubclassOf(Enum::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                EnumNameString(tClass as Class<out Enum<*>>)
-            } else Native.forTypeOrNull(tClass, tTypeProvider) ?: run {
-                val type = tTypeProvider()
-                require(type is ParameterizedType) { "Not support type: $type" }
-                EnumNameStringCollection.forType(type)
+        fun forTypeOrNull(
+            tClass: Class<*>
+        ): PreferenceType? = if (tClass.isSubclassOf(Enum::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            EnumNameString(tClass as Class<out Enum<*>>)
+        } else Native.forTypeOrNull(tClass)
+
+        inline fun forType(
+            tClass: Class<*>,
+            tTypeProvider: () -> Type
+        ): PreferenceType = forTypeOrNull(tClass) ?: tTypeProvider().let { tType ->
+            if (tType.isSubtypeOf(Native.STRING_SET.type)) {
+                Native.STRING_SET
+            } else {
+                require(tType is ParameterizedType) { "Not support type: $tClass, $tType" }
+                EnumNameStringCollection.forType(tType)
             }
         }
 
         inline fun <reified T> forType(): PreferenceType =
-            forType(tClass = T::class.java, LazyTypeToken<T>())
+            forType(tClass = T::class.java, LazyTypeToken.Lazy<T>())
 
         /**
          * 用于给 [kotlin.reflect.KProperty] 的场景中获取其类型信息

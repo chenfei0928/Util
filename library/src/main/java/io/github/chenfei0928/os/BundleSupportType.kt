@@ -1809,7 +1809,7 @@ abstract class BundleSupportType<T>(
                         isMarkedNullable: Boolean?
                     ) = object : ByInline(T::class.java, isMarkedNullable) {
                         override fun kType(): KType = typeOf<T>()
-                        override val jType: Type by LazyTypeToken<T>()
+                        override val jType: Type by LazyTypeToken.Lazy<T>()
                     }
                 }
             }

@@ -210,12 +210,11 @@ interface FieldAccessor<T> {
             name: String,
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: T, value: V) -> T,
-        ): Field<T, V> = object : Field<T, V>, () -> PreferenceType {
+        ): Field<T, V> = object : Field<T, V>, PreferenceType.LazyPreferenceType<V>(V::class.java) {
             override val pdsKey: String = name
-            override val vType by lazy(LazyThreadSafetyMode.NONE, this)
+            override val vType: PreferenceType get() = getPreferenceType()
             override fun get(data: T): V = getter(data)
             override fun set(data: T, value: V): T = setter(data, value)
-            override fun invoke(): PreferenceType = PreferenceType.forType<V>()
             override fun toString(): String = "field($pdsKey:$vType)"
         }
         //</editor-fold>
