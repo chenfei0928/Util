@@ -26,7 +26,7 @@ constructor(
     //<editor-fold desc="字段委托" defaultstatus="collapsed">
     interface Delegate<SpSaver : AbsSpSaver<SpSaver, *, *>, V> : ReadWriteProperty<SpSaver, V> {
         // 被序列化后的数据的类型
-        val spValueType: PreferenceType
+        val spValueType: PreferenceType<V & Any>
         fun getLocalStorageKey(property: KProperty<*>): String
     }
 

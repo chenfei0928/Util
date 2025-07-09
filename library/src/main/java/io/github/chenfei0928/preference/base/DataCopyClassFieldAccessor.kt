@@ -49,7 +49,7 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
     fun <V> property(
         tCopyFunc: KFunction<T>,
         tProperty: KProperty1<T, V>,
-        vType: PreferenceType,
+        vType: PreferenceType<V>,
     ): FieldAccessor.Field<T, V>
 
     /**
@@ -67,7 +67,7 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
         tProperty: KProperty1<T, T1>,
         t1CopyFunc: KFunction<T1>,
         t1Property: KProperty1<T1, V>,
-        vType: PreferenceType,
+        vType: PreferenceType<V>,
     ): FieldAccessor.Field<T, V>
 
     /**
@@ -88,7 +88,7 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
         t1Property: KProperty1<T1, T2>,
         t2CopyFunc: KFunction<T2>,
         t2Property: KProperty1<T2, V>,
-        vType: PreferenceType,
+        vType: PreferenceType<V>,
     ): FieldAccessor.Field<T, V>
     //</editor-fold>
 
@@ -138,7 +138,7 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
         protected open fun <T, V> field(
             tCopyFunc: KFunction<T>,
             tProperty: KProperty1<T, V>,
-            vType: PreferenceType? = null,
+            vType: PreferenceType<V>? = null,
         ): FieldAccessor.Field<T, V> = KPropertyDataCopyField<T, V>(
             tCopyFunc, tProperty, vType
         )
@@ -154,7 +154,7 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
         override fun <V> property(
             tCopyFunc: KFunction<T>,
             tProperty: KProperty1<T, V>,
-            vType: PreferenceType,
+            vType: PreferenceType<V>,
         ): FieldAccessor.Field<T, V> = field(
             tCopyFunc, tProperty, vType
         ).let(::property)
@@ -173,7 +173,7 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
             tProperty: KProperty1<T, T1>,
             t1CopyFunc: KFunction<T1>,
             t1Property: KProperty1<T1, V>,
-            vType: PreferenceType,
+            vType: PreferenceType<V>,
         ): FieldAccessor.Field<T, V> = property(
             field(tCopyFunc, tProperty),
             field(t1CopyFunc, t1Property, vType),
@@ -196,7 +196,7 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
             t1Property: KProperty1<T1, T2>,
             t2CopyFunc: KFunction<T2>,
             t2Property: KProperty1<T2, V>,
-            vType: PreferenceType,
+            vType: PreferenceType<V>,
         ): FieldAccessor.Field<T, V> = property(
             field(tCopyFunc, tProperty),
             field(t1CopyFunc, t1Property),
@@ -214,10 +214,10 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
         private class KPropertyDataCopyField<T, V>(
             private val copyFunc: KFunction<T>,
             private val property: KProperty1<T, V>,
-            vType: PreferenceType? = null,
+            vType: PreferenceType<V>? = null,
         ) : FieldAccessor.Field<T, V> {
             override val pdsKey: String = property.name
-            override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE) {
+            override val vType: PreferenceType<V> by lazy(LazyThreadSafetyMode.NONE) {
                 vType ?: PreferenceType.forType(property.returnType)
             }
 

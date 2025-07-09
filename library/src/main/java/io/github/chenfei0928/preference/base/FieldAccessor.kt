@@ -56,7 +56,7 @@ interface FieldAccessor<T> {
         /**
          * 业务层数据类型与其到持久化后数据类型信息
          */
-        val vType: PreferenceType
+        val vType: PreferenceType<V>
         fun get(data: T): V
         fun set(data: T, value: V): T
 
@@ -141,7 +141,7 @@ interface FieldAccessor<T> {
             private val propertyField: Field<T1, V>,
         ) : Field<T, V>, FieldWrapper<Field<T, T1>, T, V> {
             override val pdsKey: String = localField.pdsKey + "_" + propertyField.pdsKey
-            override val vType: PreferenceType = propertyField.vType
+            override val vType: PreferenceType<V> = propertyField.vType
             override fun get(data: T): V = propertyField.get(localField.get(data))
             override fun set(data: T, value: V): T =
                 localField.set(data, propertyField.set(localField.get(data), value))
@@ -182,10 +182,10 @@ interface FieldAccessor<T> {
 
     abstract class Inline<T, V>(
         final override val pdsKey: String,
-        vClass: Class<*>,
+        vClass: Class<V>,
         actualTypeIndex: Int = 1,
     ) : PreferenceType.LazyPreferenceType<V>(vClass, actualTypeIndex), Field<T, V> {
-        final override val vType: PreferenceType get() = getPreferenceType()
+        final override val vType: PreferenceType<V> get() = getPreferenceType()
         final override fun toString(): String = "field($pdsKey:$vType)"
     }
 

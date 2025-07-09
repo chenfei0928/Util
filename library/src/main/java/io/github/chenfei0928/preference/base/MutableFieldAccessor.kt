@@ -23,7 +23,7 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
      */
     fun <V> property(
         property: KMutableProperty1<T, V>,
-        vType: PreferenceType,
+        vType: PreferenceType<V>,
     ): FieldAccessor.Field<T, V>
 
     /**
@@ -37,7 +37,7 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
     fun <T1, V> property(
         property0: KMutableProperty1<T, T1>,
         property1: KMutableProperty1<T1, V>,
-        vType: PreferenceType,
+        vType: PreferenceType<V>,
     ): FieldAccessor.Field<T, V>
 
     /**
@@ -53,7 +53,7 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
         property0: KMutableProperty1<T, T1>,
         property1: KMutableProperty1<T1, T2>,
         property2: KMutableProperty1<T2, V>,
-        vType: PreferenceType,
+        vType: PreferenceType<V>,
     ): FieldAccessor.Field<T, V>
     //</editor-fold>
 
@@ -64,7 +64,7 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
         override fun <T, V> field(
             tCopyFunc: KFunction<T>,
             tProperty: KProperty1<T, V>,
-            vType: PreferenceType?,
+            vType: PreferenceType<V>?,
         ): FieldAccessor.Field<T, V> {
             return if (redirectToMutableField && tProperty is KMutableProperty1) {
                 field(tProperty, vType)
@@ -76,7 +76,7 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
         //<editor-fold desc="KMutableProperty的访问方法" defaultstatus="collapsed">
         protected open fun <T, V> field(
             property: KMutableProperty1<T, V>,
-            vType: PreferenceType? = null
+            vType: PreferenceType<V>? = null
         ): FieldAccessor.Field<T, V> = KMutablePropertyField(
             property, vType
         )
@@ -90,7 +90,7 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
          */
         override fun <V> property(
             property: KMutableProperty1<T, V>,
-            vType: PreferenceType,
+            vType: PreferenceType<V>,
         ): FieldAccessor.Field<T, V> = field(
             property, vType
         ).let(this::property)
@@ -106,7 +106,7 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
         override fun <T1, V> property(
             property0: KMutableProperty1<T, T1>,
             property1: KMutableProperty1<T1, V>,
-            vType: PreferenceType,
+            vType: PreferenceType<V>,
         ): FieldAccessor.Field<T, V> = property(
             field(property0),
             field(property1, vType),
@@ -125,7 +125,7 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
             property0: KMutableProperty1<T, T1>,
             property1: KMutableProperty1<T1, T2>,
             property2: KMutableProperty1<T2, V>,
-            vType: PreferenceType,
+            vType: PreferenceType<V>,
         ): FieldAccessor.Field<T, V> = property(
             field(property0),
             field(property1),
@@ -141,13 +141,13 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
          */
         private class KMutablePropertyField<T, V>(
             private val property: KMutableProperty1<T, V>,
-            private val vTypeOrNull: PreferenceType? = null,
-        ) : FieldAccessor.Field<T, V>, () -> PreferenceType {
+            private val vTypeOrNull: PreferenceType<V>? = null,
+        ) : FieldAccessor.Field<T, V>, () -> PreferenceType<V> {
             override val pdsKey: String = property.name
-            override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE, this)
+            override val vType: PreferenceType<V> by lazy(LazyThreadSafetyMode.NONE, this)
             override fun get(data: T): V = property.get(data)
             override fun set(data: T, value: V): T = data.apply { property.set(data, value) }
-            override fun invoke(): PreferenceType =
+            override fun invoke(): PreferenceType<V> =
                 vTypeOrNull ?: PreferenceType.forType(property.returnType)
 
             override fun toString(): String = "KMutablePropertyField($pdsKey:$vType)"

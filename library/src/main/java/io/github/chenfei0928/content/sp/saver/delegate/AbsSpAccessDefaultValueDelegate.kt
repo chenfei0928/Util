@@ -19,7 +19,7 @@ sealed class AbsSpAccessDefaultValueDelegate<SpSaver : AbsSpSaver<SpSaver, Sp, E
         V>
 constructor(
     private val key: String?,
-    final override val spValueType: PreferenceType,
+    final override val spValueType: PreferenceType<V & Any>,
     final override val defaultValue: V,
 ) : AbsSpSaver.AbsSpDelegate<SpSaver, Sp, Ed, V>, AbsSpSaver.DefaultValue<V> {
     final override fun getLocalStorageKey(property: KProperty<*>): String =

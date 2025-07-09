@@ -40,28 +40,38 @@ import kotlin.reflect.jvm.jvmErasure
  * @author chenf()
  * @date 2024-12-18 15:51
  */
-sealed interface PreferenceType {
+sealed interface PreferenceType<T> {
 
     /**
      * [PreferenceDataStore] 的原生类型支持，同时也是 [SharedPreferences] 的原生类型支持
      */
-    enum class Native(
+    class Native<T>
+    private constructor(
         internal val type: Type,
-        internal val primitiveType: Class<*>?,
-    ) : PreferenceType {
-        STRING(String::class.java, null),
-        STRING_SET(
-            // 经测试此与 jTypeOf<Set<String>>() 类型一致，直接构建类型以减少一次类创建与反射开销
-            // 因为 Set 接口的泛型参数声明为 out V ，所以第三个参数不是 String，而是 subtypeOf String
-            // 为它和它的子类型
-            GoogleTypes.newParameterizedTypeWithOwner(
-                null, Set::class.java, GoogleTypes.subtypeOf(String::class.java)
-            ), null
-        ),
-        INT(Int::class.javaObjectType, Int::class.javaPrimitiveType),
-        LONG(Long::class.javaObjectType, Long::class.javaPrimitiveType),
-        FLOAT(Float::class.javaObjectType, Float::class.javaPrimitiveType),
-        BOOLEAN(Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType);
+        internal val primitiveType: Class<T>?,
+    ) : PreferenceType<T> {
+        companion object {
+            val INT = Native<Int>(Int::class.javaObjectType, Int::class.javaPrimitiveType)
+            val LONG = Native<Long>(Long::class.javaObjectType, Long::class.javaPrimitiveType)
+            val FLOAT = Native<Float>(Float::class.javaObjectType, Float::class.javaPrimitiveType)
+            val BOOLEAN =
+                Native<Boolean>(Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType)
+            val STRING = Native<String>(String::class.java, null)
+            val STRING_SET = Native<Set<String>>(
+                // 经测试此与 jTypeOf<Set<String>>() 类型一致，直接构建类型以减少一次类创建与反射开销
+                // 因为 Set 接口的泛型参数声明为 out V ，所以第三个参数不是 String，而是 subtypeOf String
+                // 为它和它的子类型
+                GoogleTypes.newParameterizedTypeWithOwner(
+                    null, Set::class.java, GoogleTypes.subtypeOf(String::class.java)
+                ), null
+            )
+
+            val entries = listOf(INT, LONG, FLOAT, BOOLEAN, STRING, STRING_SET)
+
+            @Suppress("UNCHECKED_CAST")
+            internal fun <T> forTypeOrNull(tClass: Class<T>): PreferenceType<T>? =
+                entries.find { it.type == tClass || it.primitiveType == tClass } as? PreferenceType<T>
+        }
     }
 
     //<editor-fold desc="枚举与枚举集合" defaultstatus="collapsed">
@@ -72,7 +82,7 @@ sealed interface PreferenceType {
     open class EnumNameString<E : Enum<E>>(
         val eClass: Class<E>,
         protected val values: Array<E>,
-    ) : PreferenceType {
+    ) : PreferenceType<E> {
         constructor(eClass: Class<E>) : this(eClass, eClass.enumConstants)
 
         //<editor-fold desc="枚举值转换与重写Object的方法" defaultstatus="collapsed">
@@ -145,7 +155,7 @@ sealed interface PreferenceType {
 
     abstract class BaseEnumNameStringCollection<E : Enum<E>, C : Collection<E>>(
         protected val type: EnumNameString<E>,
-    ) : PreferenceType {
+    ) : PreferenceType<C> {
         //<editor-fold desc="枚举值转换与重写Object的方法" defaultstatus="collapsed">
         open fun forNames(
             names: Collection<String?>,
@@ -327,7 +337,7 @@ sealed interface PreferenceType {
      * 其它平台未原生支持的复杂类型，在当前类的各个 forType 中均不会返回该类型，
      * 仅用作 [BaseSpConvert] 的子类中使用
      */
-    open class Struct<T> : LazyTypeToken<T>, PreferenceType {
+    open class Struct<T> : LazyTypeToken<T>, PreferenceType<T> {
         protected constructor(actualTypeIndex: Int) : super(actualTypeIndex)
         constructor(type: Type) : super(type)
 
@@ -344,12 +354,12 @@ sealed interface PreferenceType {
 
     open class LazyPreferenceType<T>
     protected constructor(
-        private val tClass: Class<*>,
+        private val tClass: Class<T>,
         actualTypeIndex: Int
     ) : LazyTypeToken<T>(actualTypeIndex) {
-        private var preferenceType: PreferenceType? = null
+        private var preferenceType: PreferenceType<T>? = null
 
-        fun getPreferenceType(): PreferenceType = preferenceType ?: synchronized(this) {
+        fun getPreferenceType(): PreferenceType<T> = preferenceType ?: synchronized(this) {
             preferenceType ?: run {
                 val vType = forType(tClass, ::getType)
                 this.preferenceType = vType
@@ -370,37 +380,43 @@ sealed interface PreferenceType {
          * 仅用于与 [PreferenceType.forElseTypeInlineOnly] 配合使用，
          * 对外不开放，对外使用 [PreferenceType.forType] 方法
          */
-        fun forTypeOrNullInlineOnly(
-            tClass: Class<*>
-        ): PreferenceType? = if (tClass.isSubclassOf(Enum::class.java)) {
+        fun <T> forTypeOrNullInlineOnly(
+            tClass: Class<T>
+        ): PreferenceType<T>? = if (tClass.isSubclassOf(Enum::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            EnumNameString(tClass as Class<out Enum<*>>)
-        } else Native.entries.find { it.type == tClass || it.primitiveType == tClass }
+            EnumNameString(tClass as Class<out Enum<*>>) as? PreferenceType<T>
+        } else {
+            Native.forTypeOrNull(tClass)
+        }
 
         /**
          * 仅用于与 [PreferenceType.forTypeOrNullInlineOnly] 配合使用，
          * 对外不开放，对外使用 [PreferenceType.forType] 方法
          */
-        fun forElseTypeInlineOnly(
+        fun <T> forElseTypeInlineOnly(
             tType: Type
-        ): PreferenceType = if (tType.isSubtypeOf(Native.STRING_SET.type)) {
-            Native.STRING_SET
+        ): PreferenceType<T> = if (tType.isSubtypeOf(Native.STRING_SET.type)) {
+            @Suppress("UNCHECKED_CAST")
+            Native.STRING_SET as PreferenceType<T>
         } else {
             require(tType is ParameterizedType) { "Not support type: $tType" }
-            EnumNameStringCollection.forType(tType)
+            @Suppress("UNCHECKED_CAST")
+            EnumNameStringCollection.forType(tType) as PreferenceType<T>
         }
 
-        inline fun forType(tClass: Class<*>, tTypeProvider: () -> Type): PreferenceType =
+        inline fun <T> forType(tClass: Class<T>, tTypeProvider: () -> Type): PreferenceType<T> =
             forTypeOrNullInlineOnly(tClass) ?: forElseTypeInlineOnly(tTypeProvider())
 
-        inline fun <reified T> forType(): PreferenceType =
+        inline fun <reified T> forType(): PreferenceType<T> =
             forType(T::class.java, LazyTypeToken.Lazy<T>())
 
         /**
          * 用于给 [kotlin.reflect.KProperty] 的场景中获取其类型信息
          */
-        fun forType(kType: KType): PreferenceType =
-            forType(kType.jvmErasure.java) { kType.javaType }
+        fun <T> forType(kType: KType): PreferenceType<T> {
+            @Suppress("UNCHECKED_CAST")
+            return forType(kType.jvmErasure.java) { kType.javaType } as PreferenceType<T>
+        }
         //</editor-fold>
 
         /**
@@ -408,28 +424,35 @@ sealed interface PreferenceType {
          */
         fun <T> forType(
             field: Descriptors.FieldDescriptor, tClass: Class<T>?
-        ): PreferenceType = if (field.isRepeated) {
+        ): PreferenceType<T> = if (field.isRepeated) {
             // protobuf 不支持 Set<String> 类型，只有 List<String> 类型，不处理 Native.StringSet
             require(field.type == Descriptors.FieldDescriptor.Type.ENUM) {
                 "Not support type: $field"
             }
-            BaseEnumNameStringCollection.forEnumDescriptor(field.enumType, null)
-        } else when (field.javaType) {
-            Descriptors.FieldDescriptor.JavaType.INT -> Native.INT
-            Descriptors.FieldDescriptor.JavaType.LONG -> Native.LONG
-            Descriptors.FieldDescriptor.JavaType.FLOAT -> Native.FLOAT
-            Descriptors.FieldDescriptor.JavaType.DOUBLE ->
-                throw IllegalArgumentException("Not support type: $field")
-            Descriptors.FieldDescriptor.JavaType.BOOLEAN -> Native.BOOLEAN
-            Descriptors.FieldDescriptor.JavaType.STRING -> Native.STRING
-            Descriptors.FieldDescriptor.JavaType.BYTE_STRING ->
-                throw IllegalArgumentException("Not support type: $field")
-            Descriptors.FieldDescriptor.JavaType.ENUM ->
-                @Suppress("UNCHECKED_CAST") EnumNameString(
-                    tClass as? Class<out Enum<*>> ?: field.enumType.enumClass()
-                )
-            Descriptors.FieldDescriptor.JavaType.MESSAGE ->
-                throw IllegalArgumentException("Not support type: $field")
+            @Suppress("UNCHECKED_CAST")
+            BaseEnumNameStringCollection.forEnumDescriptor(
+                field.enumType, null
+            ) as PreferenceType<T>
+        } else {
+            val preferenceType = when (field.javaType) {
+                Descriptors.FieldDescriptor.JavaType.INT -> Native.INT
+                Descriptors.FieldDescriptor.JavaType.LONG -> Native.LONG
+                Descriptors.FieldDescriptor.JavaType.FLOAT -> Native.FLOAT
+                Descriptors.FieldDescriptor.JavaType.DOUBLE ->
+                    throw IllegalArgumentException("Not support type: $field")
+                Descriptors.FieldDescriptor.JavaType.BOOLEAN -> Native.BOOLEAN
+                Descriptors.FieldDescriptor.JavaType.STRING -> Native.STRING
+                Descriptors.FieldDescriptor.JavaType.BYTE_STRING ->
+                    throw IllegalArgumentException("Not support type: $field")
+                Descriptors.FieldDescriptor.JavaType.ENUM ->
+                    @Suppress("UNCHECKED_CAST") EnumNameString(
+                        tClass as? Class<out Enum<*>> ?: field.enumType.enumClass()
+                    )
+                Descriptors.FieldDescriptor.JavaType.MESSAGE ->
+                    throw IllegalArgumentException("Not support type: $field")
+            }
+            @Suppress("UNCHECKED_CAST")
+            preferenceType as PreferenceType<T>
         }
     }
 }

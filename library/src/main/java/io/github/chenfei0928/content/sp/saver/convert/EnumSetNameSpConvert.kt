@@ -17,11 +17,12 @@ class EnumSetNameSpConvert<
         E : Enum<E>>
 constructor(
     saver: AbsSpSaver.Delegate<SpSaver, Set<String?>?>,
-    override val spValueType: PreferenceType.BaseEnumNameStringCollection<E, out Set<E>>,
+    private val spValueTypeImpl: PreferenceType.BaseEnumNameStringCollection<E, MutableSet<E>>,
     private val nameNotFoundDefaultValue: E? = null,
     override val defaultValue: Set<E>?,
 ) : BaseSpConvert<SpSaver, Sp, Ed, Set<String?>?, Set<E?>?>(saver),
     AbsSpSaver.DefaultValue<Set<E?>?> {
+    override val spValueType: PreferenceType<Set<E?>> = spValueTypeImpl as PreferenceType<Set<E?>>
 
     constructor(
         eClass: Class<E>,
@@ -32,18 +33,18 @@ constructor(
         defaultValue: Set<E>? = null,
     ) : this(
         saver = StringSetDelegate(key, expireDurationInSecond),
-        spValueType = EnumNameStringSet(PreferenceType.EnumNameString(eClass, enumValues)),
+        spValueTypeImpl = EnumNameStringSet(PreferenceType.EnumNameString(eClass, enumValues)),
         nameNotFoundDefaultValue = nameNotFoundDefaultValue,
         defaultValue = defaultValue
     )
 
     override fun onRead(value: Set<String?>): Set<E?> {
-        return spValueType.forNames(value, false, nameNotFoundDefaultValue)
+        return spValueTypeImpl.forNames(value, false, nameNotFoundDefaultValue)
     }
 
     override fun onSave(value: Set<E?>): Set<String?> {
         @Suppress("kotlin:S6531")
-        return spValueType.toNames(value, false) as Set<String?>
+        return spValueTypeImpl.toNames(value, false) as Set<String?>
     }
 
     override fun toString(): String = "EnumSetNameSpConvert(saver=$saver, spValueType=$spValueType)"
@@ -73,7 +74,7 @@ constructor(
         ): AbsSpSaver.Delegate<SpSaver, Set<E?>?> {
             return EnumSetNameSpConvert<SpSaver, Sp, Ed, E>(
                 saver = StringSetDelegate(key, expireDurationInSecond),
-                spValueType = EnumNameStringSet(),
+                spValueTypeImpl = EnumNameStringSet(),
                 nameNotFoundDefaultValue = nameNotFoundDefaultValue,
                 defaultValue = null,
             )
@@ -91,7 +92,7 @@ constructor(
             @Suppress("UNCHECKED_CAST")
             return EnumSetNameSpConvert<SpSaver, Sp, Ed, E>(
                 saver = StringSetDelegate(key, expireDurationInSecond),
-                spValueType = EnumNameStringSet(),
+                spValueTypeImpl = EnumNameStringSet(),
                 nameNotFoundDefaultValue = nameNotFoundDefaultValue,
                 defaultValue = defaultValue
             ) as AbsSpSaver.Delegate<SpSaver, Set<E>>
@@ -109,7 +110,7 @@ constructor(
             @Suppress("UNCHECKED_CAST")
             return EnumSetNameSpConvert<SpSaver, Sp, Ed, E>(
                 saver = StringSetDelegate(key, expireDurationInSecond),
-                spValueType = EnumNameStringSet(PreferenceType.EnumNameString.ProtobufEnumNumber()),
+                spValueTypeImpl = EnumNameStringSet(PreferenceType.EnumNameString.ProtobufEnumNumber()),
                 nameNotFoundDefaultValue = nameNotFoundDefaultValue,
                 defaultValue = defaultValue
             ) as AbsSpSaver.Delegate<SpSaver, Set<E>>

@@ -78,7 +78,7 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
                         FieldAccessor.SpLocalStorageKey {
                         override val pdsKey: String = "json_boolean"
                         override val localStorageKey: String = "json"
-                        override val vType: PreferenceType = PreferenceType.Native.BOOLEAN
+                        override val vType: PreferenceType<Boolean> = PreferenceType.Native.BOOLEAN
                         override fun get(data: TestMmkvSaver): Boolean = data.json?.boolean == true
                         override fun set(data: TestMmkvSaver, value: Boolean): TestMmkvSaver {
                             val json = data.json ?: JsonBean.InnerJsonBean()

@@ -35,7 +35,7 @@ abstract class BaseFieldAccessorCache<T : Any>(
             // forName时使用field的字段类型
             set(it, vType.forNames(value as Collection<String>, true) as V)
         }
-        is PreferenceType.Native -> {
+        is PreferenceType.Native<*> -> {
             // preference原生支持的类型，直接设置
             set(it, value)
         }
@@ -64,7 +64,7 @@ abstract class BaseFieldAccessorCache<T : Any>(
             @Suppress("kotlin:S6531")
             vType.toNames(enums, false) as V
         }
-        is PreferenceType.Native -> {
+        is PreferenceType.Native<*> -> {
             // preference原生支持的类型，直接返回
             get(data)
         }

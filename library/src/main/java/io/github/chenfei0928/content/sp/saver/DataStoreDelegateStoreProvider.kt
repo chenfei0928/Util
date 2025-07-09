@@ -29,7 +29,10 @@ constructor(
 
         @Suppress("UNCHECKED_CAST")
         val field = thisRef.fieldAccessorCache.property(
-            property as KProperty<V>, delegate.spValueType, findSpAccessorDelegateIfStruct, delegate
+            property as KProperty<V>,
+            delegate.spValueType as PreferenceType<V>,
+            findSpAccessorDelegateIfStruct,
+            delegate
         )
         thisRef.onPropertyAdded(field)
         return delegate

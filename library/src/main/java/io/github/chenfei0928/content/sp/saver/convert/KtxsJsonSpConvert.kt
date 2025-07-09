@@ -25,14 +25,14 @@ class KtxsJsonSpConvert<
     private val json: Json
     private val serializer: SerializationStrategy<V>
     private val deserializer: DeserializationStrategy<V>
-    override val spValueType: PreferenceType.Struct<V?>
+    override val spValueType: PreferenceType.Struct<V>
 
     constructor(
         saver: AbsSpSaver.Delegate<SpSaver, String?>,
         json: Json = Json,
         serializer: SerializationStrategy<V>,
         deserializer: DeserializationStrategy<V>,
-        spValueType: PreferenceType.Struct<V?>,
+        spValueType: PreferenceType.Struct<V>,
     ) : super(saver) {
         this.json = json
         this.serializer = serializer
@@ -42,7 +42,7 @@ class KtxsJsonSpConvert<
 
     constructor(
         serializer: KSerializer<V>,
-        spValueType: PreferenceType.Struct<V?>,
+        spValueType: PreferenceType.Struct<V>,
         key: String? = null,
         @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
         json: Json = Json,
@@ -64,7 +64,7 @@ class KtxsJsonSpConvert<
         this.json = json
         this.serializer = serializer
         this.deserializer = serializer
-        this.spValueType = PreferenceType.Struct<V?>(kType.javaType)
+        this.spValueType = PreferenceType.Struct<V>(kType.javaType)
     }
 
     constructor(
@@ -78,7 +78,7 @@ class KtxsJsonSpConvert<
         this.json = json
         this.serializer = serializer
         this.deserializer = serializer
-        this.spValueType = PreferenceType.Struct<V?>(type)
+        this.spValueType = PreferenceType.Struct<V>(type)
     }
 
     override fun onRead(value: String): V = json.decodeFromString(deserializer, value)
@@ -104,7 +104,7 @@ class KtxsJsonSpConvert<
             expireDurationInSecond = expireDurationInSecond,
             json = json,
             serializer = json.serializersModule.serializer<V>(),
-            spValueType = PreferenceType.Struct<V?>()
+            spValueType = PreferenceType.Struct<V>()
         )
 
         inline operator fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
@@ -121,7 +121,7 @@ class KtxsJsonSpConvert<
             expireDurationInSecond = expireDurationInSecond,
             json = json,
             serializer = serializer,
-            spValueType = if (type != null) PreferenceType.Struct(type) else PreferenceType.Struct<V?>()
+            spValueType = if (type != null) PreferenceType.Struct(type) else PreferenceType.Struct<V>()
         )
 
         inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
@@ -137,7 +137,7 @@ class KtxsJsonSpConvert<
             expireDurationInSecond = expireDurationInSecond,
             json = json,
             serializer = json.serializersModule.serializer<V>(),
-            spValueType = PreferenceType.Struct<V?>()
+            spValueType = PreferenceType.Struct<V>()
         ).defaultLazyValue(defaultValue)
 
         inline fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
@@ -153,7 +153,7 @@ class KtxsJsonSpConvert<
             expireDurationInSecond = expireDurationInSecond,
             json = json,
             serializer = json.serializersModule.serializer<V>(),
-            spValueType = PreferenceType.Struct<V?>()
+            spValueType = PreferenceType.Struct<V>()
         ).defaultValue(defaultValue)
     }
 }

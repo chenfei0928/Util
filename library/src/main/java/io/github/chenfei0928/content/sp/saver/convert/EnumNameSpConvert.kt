@@ -43,7 +43,7 @@ constructor(
                 reified E : Enum<E>> invoke(
             key: String? = null,
             @IntRange(from = 0) expireDurationInSecond: Int = MMKV.ExpireNever,
-        ): AbsSpSaver.Delegate<SpSaver, E?> = EnumNameSpConvert<SpSaver, Sp, Ed, E>(
+        ): AbsSpSaver.Delegate<SpSaver, E?> = EnumNameSpConvert(
             saver = StringDelegate(key, expireDurationInSecond),
             spValueType = PreferenceType.EnumNameString(),
             defaultValue = null,

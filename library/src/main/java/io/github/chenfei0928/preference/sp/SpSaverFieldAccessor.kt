@@ -35,7 +35,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
      */
     fun <V> property(
         property: KProperty<V>,
-        vType: PreferenceType,
+        vType: PreferenceType<V>,
         findSpAccessorDelegateIfStructAndHasDelegate: Boolean = true,
         delegate: AbsSpSaver.Delegate<SpSaver, V>? = null,
     ): Field<SpSaver, V>
@@ -67,7 +67,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
 
         override fun <V> property(
             property: KProperty<V>,
-            vType: PreferenceType,
+            vType: PreferenceType<V>,
             findSpAccessorDelegateIfStructAndHasDelegate: Boolean,
             delegate: AbsSpSaver.Delegate<SpSaver, V>?,
         ): Field<SpSaver, V> = propertyImpl(
@@ -77,7 +77,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
 
         private fun <V> propertyImpl(
             property: KProperty<V>,
-            vType: PreferenceType,
+            vType: PreferenceType<V>,
             findSpAccessorDelegateIfStructAndHasDelegate: Boolean,
             delegate: AbsSpSaver.Delegate<SpSaver, V>?,
         ): Field<SpSaver, V> = when {
@@ -123,7 +123,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
         private class RwByDelegateField<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
             override val property: KProperty<V>,
             override val outDelegate: AbsSpSaver.Delegate<SpSaver, V>,
-            override val vType: PreferenceType,
+            override val vType: PreferenceType<V>,
         ) : Field<SpSaver, V> {
             override val observable: SpValueObservable<SpSaver, V>? =
                 SpValueObservable.find(outDelegate)
@@ -156,7 +156,9 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
         ) : Field<SpSaver, V?> {
             override val pdsKey: String = property.name
             override val localStorageKey: String = spAccessDelegate.getLocalStorageKey(property)
-            override val vType: PreferenceType = spAccessDelegate.spValueType
+            override val vType: PreferenceType<V?> =
+                spAccessDelegate.spValueType as PreferenceType<V?>
+
             override fun get(data: SpSaver): V? =
                 spAccessDelegate.getValue(data, property) ?: defaultValue
 

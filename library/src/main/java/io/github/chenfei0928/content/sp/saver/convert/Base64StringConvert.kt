@@ -19,7 +19,7 @@ class Base64StringConvert<
 constructor(
     saver: AbsSpSaver.Delegate<SpSaver, String?>,
 ) : BaseSpConvert<SpSaver, Sp, Ed, String?, ByteArray>(saver) {
-    override val spValueType: PreferenceType = ByteArrayDelegate.spValueType
+    override val spValueType: PreferenceType<ByteArray> = ByteArrayDelegate.spValueType
     override fun onRead(value: String): ByteArray = value.toByteArray()
     override fun onSave(value: ByteArray): String = String(value)
     override fun toString(): String = "Base64StringConvert(saver=$saver)"

@@ -51,7 +51,7 @@ open class LazyTypeToken<T> {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             value.typeName
         } else if (value is Class<*>) {
-            (value as Class<*>).name
+            value.name
         } else {
             value.toString()
         }

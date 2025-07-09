@@ -21,7 +21,8 @@ private constructor(
 ) : AbsSpSaver.AbsSpDelegate<SpSaver, Sp, Ed, V & Any>,
     AbsSpSaver.DefaultValue<V & Any>,
     AbsSpSaver.Decorate<SpSaver, V?> {
-    final override val spValueType: PreferenceType = saver.spValueType
+    final override val spValueType: PreferenceType<V & Any> = saver.spValueType
+
     final override fun getLocalStorageKey(property: KProperty<*>): String =
         saver.getLocalStorageKey(property)
 

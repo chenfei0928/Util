@@ -18,7 +18,7 @@ private constructor(
     defaultValue: Set<String?>? = null,
     @all:IntRange(from = 0) private val expireDurationInSecond: Int = MMKV.ExpireNever,
 ) : AbsSpAccessDefaultValueDelegate<SpSaver, Sp, Ed, Set<String?>?>(
-    key, PreferenceType.Native.STRING_SET, defaultValue
+    key, PreferenceType.Native.STRING_SET as PreferenceType<Set<String?>>, defaultValue
 ) {
     override fun getValueImpl(sp: Sp, key: String): Set<String?> = if (defaultEntry == null) {
         sp.getStringSet(key, defaultValue)!!

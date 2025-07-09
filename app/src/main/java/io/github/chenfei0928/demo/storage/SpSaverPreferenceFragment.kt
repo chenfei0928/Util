@@ -83,7 +83,7 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
                     FieldAccessor.SpLocalStorageKey {
                     override val pdsKey: String = "json_boolean"
                     override val localStorageKey: String = "json"
-                    override val vType: PreferenceType = PreferenceType.Native.BOOLEAN
+                    override val vType: PreferenceType<Boolean> = PreferenceType.Native.BOOLEAN
                     override fun get(data: TestSpSaver): Boolean = data.json?.boolean == true
                     override fun set(data: TestSpSaver, value: Boolean): TestSpSaver {
                         val json = data.json ?: JsonBean.InnerJsonBean()

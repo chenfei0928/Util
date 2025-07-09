@@ -29,7 +29,7 @@ import kotlin.reflect.KFunction
 class ProtobufMessageField<T : Message, V>(
     private val fieldDescriptor: Descriptors.FieldDescriptor,
     private val vClass: Class<V>?,
-) : Field<T, V>, () -> PreferenceType {
+) : Field<T, V>, () -> PreferenceType<V> {
     constructor(
         defaultInstance: T, fieldNumber: Int, vClass: Class<V>?,
     ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1], vClass)
@@ -38,8 +38,8 @@ class ProtobufMessageField<T : Message, V>(
 
     // 此处不可直接forType vType实例，ProtobufMessageField 可能不会直接使用它的类型，而是用来获取内部字段使用，而导致 V 是个结构体
     // 包括 toString 或 get、set 方法中也不优先使用 vType 判断类型
-    override val vType: PreferenceType by lazy(LazyThreadSafetyMode.NONE, this)
-    override fun invoke(): PreferenceType = PreferenceType.forType(fieldDescriptor, vClass)
+    override val vType: PreferenceType<V> by lazy(LazyThreadSafetyMode.NONE, this)
+    override fun invoke(): PreferenceType<V> = PreferenceType.forType(fieldDescriptor, vClass)
 
     @Suppress("UNCHECKED_CAST", "kotlin:S6531")
     override fun get(
@@ -61,7 +61,7 @@ class ProtobufMessageField<T : Message, V>(
             // 因为当前get方法的返回值是给 BasePreferenceDataStore.getValue 使用的，它会再次进行mapTo
             vType.forProtobufEnumValueDescriptors(enum, false) as V
         }
-        is PreferenceType.Native,
+        is PreferenceType.Native<*>,
         is PreferenceType.EnumNameString<*>,
         is PreferenceType.Struct<*> -> {
             throw IllegalArgumentException("Protobuf 枚举字段 $fieldDescriptor 与vType信息 $vType 类型不匹配")
