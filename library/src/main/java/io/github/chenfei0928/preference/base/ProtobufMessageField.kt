@@ -120,16 +120,12 @@ class ProtobufMessageField<T : Message, V>(
             name: String,
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: Builder, value: V) -> Builder,
-        ): Field<T, V> = object : Field<T, V>, PreferenceType.LazyPreferenceType<V>(V::class.java) {
-            override val pdsKey: String = name
-            override val vType: PreferenceType get() = getPreferenceType()
+        ): Field<T, V> = object : FieldAccessor.Inline<T, V>(name, V::class.java) {
             override fun get(data: T): V = getter(data)
 
             @Suppress("UNCHECKED_CAST")
             override fun set(data: T, value: V): T =
                 setter(data.toBuilder() as Builder, value).build() as T
-
-            override fun toString(): String = "protobufField($pdsKey:$vType)"
         }
 
         /**
@@ -155,16 +151,12 @@ class ProtobufMessageField<T : Message, V>(
                 Getter : Function1<T, V>,
                 Setter : KFunction<Builder>,
                 Setter : Function2<Builder, V, Builder> {
-            return object : Field<T, V>, PreferenceType.LazyPreferenceType<V>(V::class.java) {
-                override val pdsKey: String = name
-                override val vType: PreferenceType get() = getPreferenceType()
+            return object : FieldAccessor.Inline<T, V>(name, V::class.java) {
                 override fun get(data: T): V = getter(data)
 
                 @Suppress("UNCHECKED_CAST")
                 override fun set(data: T, value: V): T =
                     setter(data.toBuilder() as Builder, value).build() as T
-
-                override fun toString(): String = "protobuf($pdsKey:$vType)"
             }
         }
         //</editor-fold>

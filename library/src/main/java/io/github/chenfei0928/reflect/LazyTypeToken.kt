@@ -37,7 +37,7 @@ open class LazyTypeToken<T> {
     fun getType(): Type = this.type ?: synchronized(this) {
         this.type ?: run {
             val type = (javaClass.genericSuperclass as ParameterizedType)
-                .actualTypeArguments[0]
+                .actualTypeArguments[actualTypeIndex]
             this.type = type
             type
         }

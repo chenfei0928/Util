@@ -180,6 +180,15 @@ interface FieldAccessor<T> {
         }
     }
 
+    abstract class Inline<T, V>(
+        final override val pdsKey: String,
+        vClass: Class<*>,
+        actualTypeIndex: Int = 1,
+    ) : PreferenceType.LazyPreferenceType<V>(vClass, actualTypeIndex), Field<T, V> {
+        final override val vType: PreferenceType get() = getPreferenceType()
+        final override fun toString(): String = "field($pdsKey:$vType)"
+    }
+
     companion object {
         //<editor-fold desc="对其他的访问" defaultstatus="collapsed">
         /**
@@ -210,12 +219,9 @@ interface FieldAccessor<T> {
             name: String,
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: T, value: V) -> T,
-        ): Field<T, V> = object : Field<T, V>, PreferenceType.LazyPreferenceType<V>(V::class.java) {
-            override val pdsKey: String = name
-            override val vType: PreferenceType get() = getPreferenceType()
+        ): Field<T, V> = object : Inline<T, V>(name, V::class.java) {
             override fun get(data: T): V = getter(data)
             override fun set(data: T, value: V): T = setter(data, value)
-            override fun toString(): String = "field($pdsKey:$vType)"
         }
         //</editor-fold>
     }

@@ -345,7 +345,8 @@ sealed interface PreferenceType {
     open class LazyPreferenceType<T>
     protected constructor(
         private val tClass: Class<*>,
-    ) : LazyTypeToken<T>(0) {
+        actualTypeIndex: Int
+    ) : LazyTypeToken<T>(actualTypeIndex) {
         private var preferenceType: PreferenceType? = null
 
         fun getPreferenceType(): PreferenceType = preferenceType ?: synchronized(this) {
