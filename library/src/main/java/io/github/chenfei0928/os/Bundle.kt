@@ -7,11 +7,21 @@ import android.os.Parcelable
 import android.util.SparseArray
 import androidx.core.content.IntentCompat
 import androidx.core.os.BundleCompat
+import io.github.chenfei0928.app.fragment.ArgumentDelegate
+import kotlin.reflect.KProperty
 
 /**
  * @author chenf()
  * @date 2024-07-03 11:28
  */
+
+/**
+ * 对于不设置 [ArgumentDelegate.name] 、 [BundleDelegate.name] 的委托属性上，
+ * 可以直接调用该方法获取其是否已经设置到 [Bundle] 中。
+ */
+operator fun Bundle.contains(property: KProperty<*>): Boolean =
+    containsKey(property.name)
+
 inline fun <reified T> Bundle.getParcelableCompat(key: String): T? {
     return BundleCompat.getParcelable(this, key, T::class.java)
 }

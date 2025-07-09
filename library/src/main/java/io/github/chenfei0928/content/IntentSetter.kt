@@ -14,6 +14,7 @@ import com.google.protobuf.MessageLite
 import com.google.protobuf.ProtobufListParceler
 import com.google.protobuf.protobufParserForType
 import io.github.chenfei0928.app.activity.ActivityDelegate
+import io.github.chenfei0928.app.fragment.HostIntentDelegate
 import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.lang.contains
 import io.github.chenfei0928.os.BundleSupportType
@@ -25,6 +26,7 @@ import kotlin.reflect.KProperty0
 import kotlin.reflect.jvm.isAccessible
 
 interface IntentSetter<V> {
+    fun contains(intent: Intent, property: KProperty<*>): Boolean
     fun putValue(intent: Intent, property: KProperty<*>, value: V?)
 }
 
@@ -33,6 +35,21 @@ operator fun <V, V1 : V> Intent.set(
 ): Intent {
     delegate.putValue(this, property, value)
     return this
+}
+
+/**
+ * 对于不设置 [ActivityDelegate.name] 、 [HostIntentDelegate.name] 与 [IntentDelegate.name] 的委托属性上，
+ * 可以直接调用该方法获取其是否已经设置到 [Intent] 中。
+ */
+operator fun Intent.contains(
+    property: KProperty<*>
+): Boolean = if (
+    UtilInitializer.sdkDependency.ktKPropertyCompiledDelegate && property is KProperty0
+) {
+    property.isAccessible = true
+    (property.getDelegate() as IntentSetter<*>).contains(this, property)
+} else {
+    hasExtra(property.name)
 }
 
 //<editor-fold desc="Intent所原生支持的类型" defaultstatus="collapsed">

@@ -38,6 +38,10 @@ class ActivityDelegate<V>(
         supportType.putExtraNullable(intent, property, name ?: property.name, value)
     }
 
+    override fun contains(intent: Intent, property: KProperty<*>): Boolean {
+        return intent.hasExtra(name ?: property.name)
+    }
+
     companion object {
         inline operator fun <reified V> invoke(
             isMarkedNullable: Boolean = false, name: String? = null, defaultValue: V? = null
