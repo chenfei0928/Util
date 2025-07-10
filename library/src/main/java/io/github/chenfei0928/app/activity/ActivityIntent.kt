@@ -13,19 +13,25 @@ import kotlin.reflect.KProperty1
  * @date 2025-07-08 18:37
  */
 fun <T> KMutableProperty1<Intent, T>.toActivity(): ReadWriteProperty<Activity, T> =
-    object : ReadWriteProperty<Activity, T> {
-        override fun getValue(thisRef: Activity, property: KProperty<*>): T =
-            this@toActivity.get(thisRef.intent)
-
-        override fun setValue(
-            thisRef: Activity, property: KProperty<*>, value: T
-        ) {
-            this@toActivity.set(thisRef.intent, value)
-        }
-    }
+    IntentPropertyDelegate(this, isReadOnly = false)
 
 fun <T> KProperty1<Intent, T>.toActivity(): ReadOnlyProperty<Activity, T> =
-    object : ReadOnlyProperty<Activity, T> {
-        override fun getValue(thisRef: Activity, property: KProperty<*>): T =
-            this@toActivity.get(thisRef.intent)
+    IntentPropertyDelegate(this, isReadOnly = true)
+
+private class IntentPropertyDelegate<T>(
+    private val otherProperty: KProperty1<Intent, T>,
+    private val isReadOnly: Boolean,
+) : ReadWriteProperty<Activity, T> {
+    override fun getValue(thisRef: Activity, property: KProperty<*>): T =
+        otherProperty.get(thisRef.intent)
+
+    override fun setValue(
+        thisRef: Activity, property: KProperty<*>, value: T
+    ) {
+        if (isReadOnly) {
+            throw UnsupportedOperationException("Cannot set value of read-only property")
+        } else {
+            (otherProperty as KMutableProperty1<Intent, T>).set(thisRef.intent, value)
+        }
     }
+}

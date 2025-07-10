@@ -12,20 +12,26 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 
-inline fun <reified F> FragmentManager.forEachFragmentWithChildByType(noinline block: (F) -> Unit) {
+inline fun <reified F> FragmentManager.forEachFragmentWithChildByType(block: (F) -> Unit) {
     forEachFragmentWithChildByType(F::class.java, block)
 }
 
 @Suppress("UNCHECKED_CAST")
-fun <F> FragmentManager.forEachFragmentWithChildByType(clazz: Class<F>, block: (F) -> Unit) {
-    fragments.forEach {
+inline fun <F> FragmentManager.forEachFragmentWithChildByType(clazz: Class<F>, block: (F) -> Unit) {
+    getAllChildFragment().forEach {
         if (clazz.isInstance(it)) {
             block(it as F)
-        } else if (it.host == null) {
-            return@forEach
         }
-        it.childFragmentManager.forEachFragmentWithChildByType(clazz, block)
     }
+}
+
+fun FragmentManager.getAllChildFragment(output: MutableList<Fragment> = ArrayList()): MutableList<Fragment> {
+    output.addAll(this.fragments)
+    for (fragment in this.fragments) {
+        if (fragment.host == null) continue
+        fragment.childFragmentManager.getAllChildFragment(output)
+    }
+    return output
 }
 
 inline fun <reified F> FragmentManager.findFragmentByType(): F? {
@@ -67,64 +73,52 @@ inline fun <reified F : Fragment> FragmentManager.findOrAddChild(
     @Size(min = 1) tag: String,
     commitNow: Boolean = false,
     noinline creator: () -> F
-): F {
-    return findOrAddChild(id, tag, F::class.java, commitNow, creator)
-}
+): F = findOrAddChild(id, tag, F::class.java, commitNow, creator)
 
 /**
  * 查找fragment或创建并加入fragment中
  */
-fun <F : Fragment> FragmentManager.findOrAddChild(
+inline fun <F : Fragment> FragmentManager.findOrAddChild(
     @IdRes id: Int,
     @Size(min = 1) tag: String,
     clazz: Class<F>,
     commitNow: Boolean = false,
     creator: () -> F
-): F {
-    return findOrOptionChild(tag, clazz, commitNow, creator) {
-        add(id, it, tag)
-    }
+): F = findOrOptionChild(tag, clazz, commitNow, creator) {
+    add(id, it, tag)
 }
 
 inline fun <reified F : Fragment> FragmentManager.findOrAddChild(
-    @Size(min = 1) tag: String, commitNow: Boolean = false, noinline creator: () -> F
-): F {
-    return findOrAddChild(tag, F::class.java, commitNow, creator)
-}
+    @Size(min = 1) tag: String, commitNow: Boolean = false, creator: () -> F
+): F = findOrAddChild(tag, F::class.java, commitNow, creator)
 
 /**
  * 查找fragment或创建并加入fragment中（不显示其）
  */
-fun <F : Fragment> FragmentManager.findOrAddChild(
+inline fun <F : Fragment> FragmentManager.findOrAddChild(
     @Size(min = 1) tag: String, clazz: Class<F>, commitNow: Boolean = false, creator: () -> F
-): F {
-    return findOrOptionChild(tag, clazz, commitNow, creator) {
-        add(it, tag)
-    }
+): F = findOrOptionChild(tag, clazz, commitNow, creator) {
+    add(it, tag)
 }
 
 inline fun <reified F : Fragment> FragmentManager.findOrReplaceChild(
     @IdRes containerViewId: Int,
     @Size(min = 1) tag: String,
     commitNow: Boolean = false,
-    noinline creator: () -> F
-): F {
-    return findOrReplaceChild(containerViewId, tag, F::class.java, commitNow, creator)
-}
+    creator: () -> F
+): F = findOrReplaceChild(containerViewId, tag, F::class.java, commitNow, creator)
 
 /**
  * 查找fragment或创建并替换到view中
  */
-fun <F : Fragment> FragmentManager.findOrReplaceChild(
+inline fun <F : Fragment> FragmentManager.findOrReplaceChild(
     @IdRes containerViewId: Int,
     @Size(min = 1) tag: String,
     clazz: Class<F>,
     commitNow: Boolean = false,
     creator: () -> F
-): F {
-    return findOrOptionChild(tag, clazz, commitNow, creator) {
-        replace(containerViewId, it, tag)
-    }
+): F = findOrOptionChild(tag, clazz, commitNow, creator) {
+    replace(containerViewId, it, tag)
 }
 
 /**
@@ -137,18 +131,7 @@ inline fun <F : Fragment> FragmentManager.findOrOptionChild(
     creator: () -> F,
     option: FragmentTransaction.(F) -> FragmentTransaction
 ): F {
-    // 先获取fragment是否已经加入host
-    val fragment = findFragmentByTag(tag)
-    // fragment不为空但不是该类实例，移除它
-    if (fragment != null && !clazz.isInstance(fragment)) {
-        beginTransaction()
-            .remove(fragment)
-            .commitNowAllowingStateLoss()
-    }
-    // 检查获取到的fragment
-    return if (clazz.isInstance(fragment)) {
-        clazz.cast(fragment)!!
-    } else {
+    return findAndCheckTypeByTagOrNullInlineOnly(tag, clazz) ?: run {
         // 如果不是该类实例，创建新的并加入host
         creator().also { f ->
             option(beginTransaction(), f).run {
@@ -160,4 +143,22 @@ inline fun <F : Fragment> FragmentManager.findOrOptionChild(
             }
         }
     }
+}
+
+fun <F : Fragment> FragmentManager.findAndCheckTypeByTagOrNullInlineOnly(
+    @Size(min = 1) tag: String,
+    clazz: Class<F>,
+): F? {
+    // 先获取fragment是否已经加入host
+    val fragment = findFragmentByTag(tag)
+    // fragment不为空但不是该类实例，移除它
+    if (fragment != null && !clazz.isInstance(fragment)) {
+        beginTransaction()
+            .remove(fragment)
+            .commitNowAllowingStateLoss()
+    }
+    // 检查获取到的fragment
+    return if (clazz.isInstance(fragment)) {
+        clazz.cast(fragment)!!
+    } else null
 }

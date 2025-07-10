@@ -11,6 +11,7 @@ import kotlinx.parcelize.Parceler
  *
  * Created by Tony Shen on 2017/6/20.
  */
+@Suppress("TooManyFunctions")
 object ParcelUtil {
     inline fun <T> use(
         block: (Parcel) -> T
