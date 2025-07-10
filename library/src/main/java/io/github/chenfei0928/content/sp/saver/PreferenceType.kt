@@ -50,6 +50,11 @@ sealed interface PreferenceType<T> {
         internal val type: Type,
         internal val primitiveType: Class<T>?,
     ) : PreferenceType<T> {
+
+        override fun toString(): String {
+            return type.toString()
+        }
+
         companion object {
             val INT = Native<Int>(Int::class.javaObjectType, Int::class.javaPrimitiveType)
             val LONG = Native<Long>(Long::class.javaObjectType, Long::class.javaPrimitiveType)
@@ -302,30 +307,33 @@ sealed interface PreferenceType<T> {
                     EnumNameString(E::class.java, enumValues<E>()), C::class.java
                 )
 
-            fun forType(type: ParameterizedType): EnumNameStringCollection<*> {
+            fun <E : Enum<E>> forTypeOrNull(type: ParameterizedType): EnumNameStringCollection<E>? {
                 //<editor-fold desc="通过反射获取returnType与eClass" defaultstatus="collapsed">
                 @Suppress("UNCHECKED_CAST")
-                val rawClass = type.rawType as Class<out Collection<*>>
+                val rawType = type.rawType
+                if (rawType !is Class<*> || !rawType.isSubclassOf(Collection::class.java)) {
+                    return null
+                }
+                @Suppress("UNCHECKED_CAST")
+                val rawClass = rawType as Class<out Collection<*>>
                 val arg0Type = type.actualTypeArguments[0]
-                if (arg0Type is Class<*> && arg0Type.isSubclassOf(Enum::class.java)) {
+                return if (arg0Type is Class<*> && arg0Type.isSubclassOf(Enum::class.java)) {
                     @Suppress("UNCHECKED_CAST")
-                    return EnumNameStringCollection(
-                        eClass = arg0Type as Class<out Enum<*>>,
-                        returnType = rawClass,
+                    EnumNameStringCollection(
+                        eClass = arg0Type as Class<E>, returnType = rawClass
                     )
                 } else if (arg0Type is WildcardType) {
                     val arg0Class = arg0Type.jvmErasureClassOrNull<Enum<*>>()
                     if (arg0Class?.isSubclassOf(Enum::class.java) == true) {
-                        return EnumNameStringCollection(
-                            eClass = arg0Class, returnType = rawClass,
+                        @Suppress("UNCHECKED_CAST")
+                        EnumNameStringCollection(
+                            eClass = arg0Class as Class<E>, returnType = rawClass,
                         )
                     } else {
-                        @Suppress("UseRequire")
-                        throw IllegalArgumentException("Not support type: $type")
+                        null
                     }
                 } else {
-                    @Suppress("UseRequire")
-                    throw IllegalArgumentException("Not support type: $type")
+                    null
                 }
                 //</editor-fold>
             }
@@ -355,13 +363,15 @@ sealed interface PreferenceType<T> {
     open class LazyPreferenceType<T>
     protected constructor(
         private val tClass: Class<T>,
-        actualTypeIndex: Int
+        actualTypeIndex: Int,
     ) : LazyTypeToken<T>(actualTypeIndex) {
         private var preferenceType: PreferenceType<T>? = null
 
         fun getPreferenceType(): PreferenceType<T> = preferenceType ?: synchronized(this) {
             preferenceType ?: run {
-                val vType = forType(tClass, ::getType)
+                val vType = forTypeOrNullInlineOnly(tClass) ?: getType().let { tType ->
+                    forElseTypeInlineOnly(tType) ?: Struct(tType)
+                }
                 this.preferenceType = vType
                 vType
             }
@@ -369,6 +379,10 @@ sealed interface PreferenceType<T> {
 
         final override fun isInitialized(): Boolean {
             return preferenceType != null
+        }
+
+        override fun toString(): String {
+            return getPreferenceType().toString()
         }
     }
 
@@ -395,17 +409,19 @@ sealed interface PreferenceType<T> {
          */
         fun <T> forElseTypeInlineOnly(
             tType: Type
-        ): PreferenceType<T> = if (tType.isSubtypeOf(Native.STRING_SET.type)) {
+        ): PreferenceType<T>? = if (tType.isSubtypeOf(Native.STRING_SET.type)) {
             @Suppress("UNCHECKED_CAST")
             Native.STRING_SET as PreferenceType<T>
-        } else {
-            require(tType is ParameterizedType) { "Not support type: $tType" }
+        } else if (tType is ParameterizedType) {
             @Suppress("UNCHECKED_CAST")
-            EnumNameStringCollection.forType(tType) as PreferenceType<T>
-        }
+            EnumNameStringCollection.forTypeOrNull(tType) as? PreferenceType<T>
+        } else null
 
         inline fun <T> forType(tClass: Class<T>, tTypeProvider: () -> Type): PreferenceType<T> =
-            forTypeOrNullInlineOnly(tClass) ?: forElseTypeInlineOnly(tTypeProvider())
+            forTypeOrNullInlineOnly(tClass) ?: tTypeProvider().let { tType ->
+                forElseTypeInlineOnly(tType)
+                    ?: throw IllegalArgumentException("Not support type: $tClass $tType")
+            }
 
         inline fun <reified T> forType(): PreferenceType<T> =
             forType(T::class.java, LazyTypeToken.Lazy<T>())

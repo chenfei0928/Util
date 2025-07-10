@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.lifecycle.isAlive
@@ -33,13 +34,11 @@ fun Context.findActivity(): Activity? {
 }
 
 val Context.packageInfo: PackageInfo
-    get() = this.packageManager.getPackageInfo(this.packageName, 0)
+    get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        this.packageManager.getPackageInfo(this.packageName, PackageManager.PackageInfoFlags.of(0L))
+    } else {
+        this.packageManager.getPackageInfo(this.packageName, 0)
+    }
 
 val PackageInfo.versionCodeLong: Long
     get() = PackageInfoCompat.getLongVersionCode(this)
-
-fun Context.getMetaDataString(name: String): String? {
-    return this.packageManager.getPackageInfo(
-        this.packageName, PackageManager.GET_META_DATA
-    ).applicationInfo?.metaData?.getString(name)
-}
