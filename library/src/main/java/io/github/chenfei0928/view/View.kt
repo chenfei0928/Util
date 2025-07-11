@@ -33,7 +33,7 @@ fun View?.removeSelfFromParent() {
 }
 
 /**
- * 根据view查找距离其最近的fragment
+ * 根据view查找距离其最近的fragment，参考自
  * [com.bumptech.glide.manager.RequestManagerRetriever.findSupportFragment]
  */
 @Suppress("ReturnCount")
@@ -94,7 +94,7 @@ inline fun <V : View, R> V.getTagOrPut(
  * 字段委托类，通过viewTag来实现为viewHolder扩展字段
  */
 class ViewTagDelegate<R>(
-    @IdRes private val id: Int
+    @all:IdRes private val id: Int
 ) : ReadWriteProperty<View, R> {
     override fun getValue(thisRef: View, property: KProperty<*>): R {
         @Suppress("UNCHECKED_CAST")
@@ -110,7 +110,7 @@ class ViewTagDelegate<R>(
  * 字段委托类，通过viewTag来实现为viewHolder扩展字段
  */
 class ViewTagValDelegate<V : View, R>(
-    @IdRes private val id: Int,
+    @all:IdRes private val id: Int,
     private val creator: (V) -> R
 ) : ReadOnlyProperty<V, R> {
 
