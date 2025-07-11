@@ -82,6 +82,7 @@ fun Message.toShortString() = buildString {
 }
 
 //<editor-fold desc="Protobuf获取枚举未注册值" defaultstatus="collapsed">
+const val PROTOBUF_ENUM_UNRECOGNIZED_NUMBER = -1
 const val PROTOBUF_ENUM_UNRECOGNIZED_NAME = "UNRECOGNIZED"
 
 /**
@@ -89,16 +90,16 @@ const val PROTOBUF_ENUM_UNRECOGNIZED_NAME = "UNRECOGNIZED"
  */
 fun <E> Class<E>.protobufEnumUnrecognized(): E
         where E : kotlin.Enum<E>, E : ProtocolMessageEnum =
-    enumConstants!!.find { it.name == PROTOBUF_ENUM_UNRECOGNIZED_NAME }!!
+    enumConstants!!.find { it.number == PROTOBUF_ENUM_UNRECOGNIZED_NUMBER }!!
 
 /**
  * 获取protobuf枚举的默认值实例
  */
 inline fun <reified E> protobufEnumUnrecognized(): E
         where E : kotlin.Enum<E>, E : ProtocolMessageEnum =
-    enumValues<E>().find { it.name == PROTOBUF_ENUM_UNRECOGNIZED_NAME }!!
+    enumValues<E>().find { it.number == PROTOBUF_ENUM_UNRECOGNIZED_NUMBER }!!
 
 val <E> E.isUnrecognized: Boolean
         where E : kotlin.Enum<E>, E : ProtocolMessageEnum
-    get() = this.name == PROTOBUF_ENUM_UNRECOGNIZED_NAME
+    get() = this.number == PROTOBUF_ENUM_UNRECOGNIZED_NUMBER
 //</editor-fold>

@@ -23,3 +23,5 @@
 -keep class io.github.chenfei0928.demo.bean.* {
     *;
 }
+
+-dontwarn com.bumptech.glide.util.Util

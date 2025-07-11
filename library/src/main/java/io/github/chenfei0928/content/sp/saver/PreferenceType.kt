@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.collection.ArraySet
 import androidx.collection.SparseArrayCompat
 import androidx.preference.PreferenceDataStore
-import com.bumptech.glide.util.Util
 import com.google.common.reflect.GoogleTypes
 import com.google.protobuf.Descriptors
 import com.google.protobuf.PROTOBUF_ENUM_UNRECOGNIZED_NAME
@@ -105,7 +104,12 @@ sealed interface PreferenceType<T> {
             } else false
         }
 
-        override fun hashCode(): Int = Util.hashCode(eClass.hashCode(), values.contentHashCode())
+        override fun hashCode(): Int {
+            var result = eClass.hashCode()
+            result = 31 * result + values.contentHashCode()
+            return result
+        }
+
         override fun toString(): String = "EnumNameString(eClass=$eClass)"
         //</editor-fold>
 
@@ -258,7 +262,9 @@ sealed interface PreferenceType<T> {
         }
 
         override fun hashCode(): Int {
-            return Util.hashCode(super.hashCode(), returnType.hashCode())
+            var result = super.hashCode()
+            result = 31 * result + returnType.hashCode()
+            return result
         }
 
         override fun toString(): String =
