@@ -1,5 +1,7 @@
 package io.github.chenfei0928
 
+import org.gradle.kotlin.dsl.DependencyHandlerScope
+
 /**
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-10-22 16:57
@@ -9,19 +11,19 @@ object Deps {
     object kotlin {
 
         // https://github.com/Kotlin/kotlinx-datetime
-        val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.2"
+        val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.7.1"
 
         // https://github.com/fengzhizi715/Lifecycle-Coroutines-Extension
         val coroutinesExt = "com.safframework.lifecycle:lifecycle-coroutine-ext:1.2.1"
 
         // Json序列化支持
         // https://github.com/Kotlin/kotlinx.serialization
-        val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0"
-        val protobuf = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.8.0"
+        val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0"
+        val protobuf = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.9.0"
 
         // Ktor
         // https://ktor.io/docs/client-create-multiplatform-application.html#ktor-dependencies
-        private const val ktor_version = "3.1.0"
+        private const val ktor_version = "3.2.2"
 
         val ktorClientCore = "io.ktor:ktor-client-core:$ktor_version"
         val ktorClientOkhttp = "io.ktor:ktor-client-okhttp:$ktor_version"
@@ -79,15 +81,22 @@ object Deps {
         // https://help.aliyun.com/document_detail/32042.html
         // https://github.com/aliyun/aliyun-oss-android-sdk
         // https://mvnrepository.com/artifact/com.aliyun.dpa/oss-android-sdk
-        val aliOss = "com.aliyun.dpa:oss-android-sdk:2.9.11"
+        val aliOss = "com.aliyun.dpa:oss-android-sdk:2.9.21"
 
         // https://github.com/qiniu/happy-dns-android
         val qiniuDns = "com.qiniu:happy-dns:2.0.1"
 
         // https://github.com/square/okhttp
         // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-        val okhttp = "com.squareup.okhttp3:okhttp:4.12.0"
-        val logging = "com.squareup.okhttp3:logging-interceptor:4.12.0"
+        object okhttp {
+            // define a BOM and its version
+            fun bom(dep: DependencyHandlerScope) =
+                dep.platform("com.squareup.okhttp3:okhttp-bom:5.1.0")
+
+            // define any required OkHttp artifacts without version
+            val okhttp = "com.squareup.okhttp3:okhttp"
+            val okhttpLogging = "com.squareup.okhttp3:logging-interceptor"
+        }
 
         // https://github.com/gildor/kotlin-coroutines-okhttp
         val okhttpExt = "ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0"
@@ -95,9 +104,9 @@ object Deps {
         // https://github.com/square/retrofit
         // http://mvnrepository.com/artifact/com.squareup.retrofit2
         object retrofit {
-            val core = "com.squareup.retrofit2:retrofit:2.11.0"
-            val rxjava2 = "com.squareup.retrofit2:adapter-rxjava2:2.11.0"
-            val gson = "com.squareup.retrofit2:converter-gson:2.11.0"
+            val core = "com.squareup.retrofit2:retrofit:3.0.0"
+            val rxjava2 = "com.squareup.retrofit2:adapter-rxjava2:3.0.0"
+            val gson = "com.squareup.retrofit2:converter-gson:3.0.0"
         }
 
         // https://github.com/franmontiel/PersistentCookieJar
@@ -138,7 +147,7 @@ object Deps {
         val okhttp3 = "com.github.bumptech.glide:okhttp3-integration:$glideVer@aar"
 
         // https://github.com/zjupure/GlideWebpDecoder
-        val webpDecoder = "com.zlc.glide:webpdecoder:2.6.$glideVer"
+        val webpDecoder = "com.zlc.glide:webpdecoder:2.7.$glideVer"
 
         // https://github.com/florent37/GlidePalette
         val glidePalette = "com.github.florent37:glidepalette:2.1.2"
@@ -177,15 +186,15 @@ object Deps {
         // protobuf 序列化框架
         object protobuf {
             // https://github.com/grpc/grpc-java
-            const val grpcVersion = "1.70.0"
+            const val grpcVersion = "1.73.0"
 
             // https://github.com/grpc/grpc-kotlin
-            const val grpcKotlinVersion = "1.4.1"
+            const val grpcKotlinVersion = "1.4.2"
 
             // https://github.com/protocolbuffers/protobuf
             // https://github.com/protocolbuffers/protobuf/blob/main/java/lite.md
             // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-javalite
-            const val protobufVersion = "4.29.3"
+            const val protobufVersion = "4.31.1"
 
             // https://github.com/protocolbuffers/protobuf/tree/master/java
             val java = "com.google.protobuf:protobuf-java:$protobufVersion"
@@ -239,10 +248,10 @@ object Deps {
         // Google工具类
         object google {
             // https://github.com/google/guava
-            val guavaAndroid = "com.google.guava:guava:33.4.0-android"
+            val guavaAndroid = "com.google.guava:guava:33.4.8-android"
 
             // https://github.com/google/gson
-            val gson = "com.google.code.gson:gson:2.12.1"
+            val gson = "com.google.code.gson:gson:2.13.1"
 
             // https://github.com/zxing/zxing
             // https://repo1.maven.org/maven2/com/google/zxing/core/
@@ -436,10 +445,10 @@ object Deps {
         val loadMoreWrapper = "com.github.nukc:LoadMoreWrapper:v1.9.1"
 
         // https://github.com/vanniktech/Emoji
-        val emoji = "com.vanniktech:emoji-google:0.16.0"
+        val emoji = "com.vanniktech:emoji-google:0.31.0"
 
         // https://github.com/H07000223/FlycoTabLayout/blob/master/README_CN.md
-        val flycoTabLayout = "com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar"
+        val flycoTabLayout = "io.github.h07000223:flycoTabLayout:3.0.0"
 
         // https://github.com/bingoogolapple/BGABanner-Android
         val bgaBanner = "com.github.bingoogolapple:BGABanner-Android:3.0.1@aar"
@@ -464,8 +473,8 @@ object Deps {
         val numberProgressBar = "com.daimajia.numberprogressbar:library:1.4@aar"
 
         // https://github.com/airbnb/lottie-android
-        val lottie = "com.airbnb.android:lottie:6.6.6"
-        val lottieCompose = "com.airbnb.android:lottie-compose:6.6.6"
+        val lottie = "com.airbnb.android:lottie:6.6.7"
+        val lottieCompose = "com.airbnb.android:lottie-compose:6.6.7"
 
         // https://github.com/akexorcist/Android-RoundCornerProgressBar
         val roundCornerProgressBar = "com.akexorcist:round-corner-progress-bar:2.2.1"
@@ -801,7 +810,7 @@ object Deps {
         // LeakCanary 内存泄漏检测工具
         // https://github.com/square/leakcanary
         // https://square.github.io/leakcanary/getting_started/
-        val leakcanary = "com.squareup.leakcanary:leakcanary-android:2.11"
+        val leakcanary = "com.squareup.leakcanary:leakcanary-android:2.14"
         val curtains = "com.squareup.curtains:curtains:1.2.3"
 
         // FaceBook的Stetho调试工具，可以在Chrome中直接调试APP，再次只作为Debug包时使用
@@ -817,14 +826,14 @@ object Deps {
         // Facebook的Flipper调试工具
         object flipper {
             // https://fbflipper.com/docs/getting-started/android-native
-            val core = "com.facebook.flipper:flipper:0.90.2"
-            val soloader = "com.facebook.soloader:soloader:0.10.1"
+            val core = "com.facebook.flipper:flipper:0.273.0"
+            val soloader = "com.facebook.soloader:soloader:0.10.5"
 
             // https://fbflipper.com/docs/setup/network-plugin/
-            val network = "com.facebook.flipper:flipper-network-plugin:0.90.2"
+            val network = "com.facebook.flipper:flipper-network-plugin:0.273.0"
 
             // https://fbflipper.com/docs/setup/layout-plugin/
-            val litho = "com.facebook.flipper:flipper-litho-plugin:0.90.2"
+            val litho = "com.facebook.flipper:flipper-litho-plugin:0.273.0"
             val lithoAnnotations = "com.facebook.litho:litho-annotations:0.19.0"
         }
 
@@ -843,7 +852,7 @@ object Deps {
     object framework {
         // Tinker热修复
         // https://github.com/Tencent/tinker
-        const val tinker = "com.tencent.tinker:tinker-android-lib:1.9.14.25.3"
+        const val tinker = "com.tencent.tinker:tinker-android-lib:1.9.15.2"
 
         // https://github.com/chachako/sweekt
         const val meowoolToolkit = "com.meowool.toolkit:sweekt:0.1.0-SNAPSHOT"

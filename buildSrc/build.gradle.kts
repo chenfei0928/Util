@@ -15,7 +15,7 @@ dependencies {
     val kotlinVersion = "2.2.0"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "8.11.0"
+    val agpVersion = "8.11.1"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
     implementation(kotlin("reflect", kotlinVersion))
@@ -39,7 +39,7 @@ dependencies {
     // 代码工具类库插件
     // GreenDao数据库
     // https://github.com/greenrobot/greenDAO
-    implementation("org.greenrobot:greendao-gradle-plugin:3.3.0")
+    implementation("org.greenrobot:greendao-gradle-plugin:3.3.1")
     // 反射
     // https://github.com/jOOQ/jOOR
     implementation("org.jooq:joor:0.9.15")
@@ -68,12 +68,12 @@ dependencies {
     implementation("com.github.CodingGay:BlackObfuscator-ASPlugin:3.9")
     // 增加 protobuf-gradle-plugin 插件
     // https://github.com/google/protobuf-gradle-plugin
-    implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
+    implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.5")
     // 美团打包工具
     // https://github.com/Meituan-Dianping/walle
     implementation("com.meituan.android.walle:plugin:1.1.7")
     // https://github.com/google/guava
-    implementation("com.google.guava:guava:33.4.0-jre")
+    implementation("com.google.guava:guava:33.4.8-jre")
     // https://github.com/didi/booster
     // https://juejin.cn/post/7504839725611728896
     implementation("com.didiglobal.booster:booster-gradle-plugin:5.1.0")
@@ -83,8 +83,8 @@ dependencies {
 //    implementation("com.tencent.bugly:symtabfileuploader:2.2.1")
     // 腾讯补丁包工具
     // https://github.com/Tencent/tinker
-    implementation("com.tencent.tinker:tinker-patch-gradle-plugin:1.9.15.1")
-    implementation("com.tencent.tinker:tinker-patch-lib:1.9.14.26.3") {
+    implementation("com.tencent.tinker:tinker-patch-gradle-plugin:1.9.15.2")
+    implementation("com.tencent.tinker:tinker-patch-lib:1.9.15.2") {
         exclude(group = "com.google.guava")
     }
     // 操作系统和硬件架构判断工具，tinker依赖

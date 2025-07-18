@@ -23,6 +23,8 @@ import com.drakeet.multitype.MultiTypeAdapter
 import io.github.chenfei0928.os.getParcelableCompat
 
 /**
+ * copy from [FragmentStateAdapter]
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2023-03-01 18:09
  */
@@ -55,7 +57,7 @@ abstract class FragmentBinder<T> : ItemViewDelegate<T, MultiTypeFragmentViewHold
     // Fragment bookkeeping
     // to avoid creation of a synthetic accessor
     internal val mFragments = LongSparseArray<Fragment>()
-    private val mSavedStates = LongSparseArray<Fragment.SavedState>()
+    private val mSavedStates = LongSparseArray<Fragment.SavedState?>()
     private val mItemIdToViewHolder = LongSparseArray<Int>()
 
     private var mFragmentMaxLifecycleEnforcer: FragmentMaxLifecycleEnforcer? = null
@@ -431,7 +433,9 @@ abstract class FragmentBinder<T> : ItemViewDelegate<T, MultiTypeFragmentViewHold
     }
 
     override fun restoreState(savedState: Parcelable) {
-        check(!(!mSavedStates.isEmpty || !mFragments.isEmpty)) { "Expected the adapter to be 'fresh' while restoring state." }
+        check(!(!mSavedStates.isEmpty() || !mFragments.isEmpty())) {
+            "Expected the adapter to be 'fresh' while restoring state."
+        }
         val bundle = savedState as Bundle
         if (bundle.classLoader == null) {
             /** TODO(b/133752041): pass the class loader from [ViewPager2.SavedState]  */
@@ -440,7 +444,7 @@ abstract class FragmentBinder<T> : ItemViewDelegate<T, MultiTypeFragmentViewHold
         for (key in bundle.keySet()) {
             if (isValidKey(key, KEY_PREFIX_FRAGMENT)) {
                 val itemId = parseIdFromKey(key, KEY_PREFIX_FRAGMENT)
-                val fragment = mFragmentManager.getFragment(bundle, key)
+                val fragment = mFragmentManager.getFragment(bundle, key)!!
                 mFragments.put(itemId, fragment)
                 continue
             }
@@ -454,7 +458,7 @@ abstract class FragmentBinder<T> : ItemViewDelegate<T, MultiTypeFragmentViewHold
             }
             throw IllegalArgumentException("Unexpected key in savedState: $key")
         }
-        if (!mFragments.isEmpty) {
+        if (!mFragments.isEmpty()) {
             mHasStaleFragments = true
             mIsInGracePeriod = true
             gcFragments()
