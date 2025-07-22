@@ -189,7 +189,7 @@ object Deps {
             const val grpcVersion = "1.73.0"
 
             // https://github.com/grpc/grpc-kotlin
-            const val grpcKotlinVersion = "1.4.2"
+            const val grpcKotlinVersion = "1.4.1"
 
             // https://github.com/protocolbuffers/protobuf
             // https://github.com/protocolbuffers/protobuf/blob/main/java/lite.md
@@ -228,6 +228,10 @@ object Deps {
 
         // https://github.com/johncarl81/parceler
         val parceler = "org.parceler:parceler-api:1.1.13"
+
+        // Java标注
+        // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
+        val jsr305 = "com.google.code.findbugs:jsr305:3.0.2"
 
         // https://repo1.maven.org/maven2/org/glassfish/javax.annotation/
 //        val javax = "org.glassfish:javax.annotation:3.2-b06"
@@ -350,6 +354,12 @@ object Deps {
             val util = "com.baidu.lbsyun:BaiduMapSDK_Util:7.5.4"
             val search = "com.baidu.lbsyun:BaiduMapSDK_Search:7.5.4"
         }
+
+        // https://github.com/apache/commons-compress
+        const val apacheCompress = "org.apache.commons:commons-compress:1.27.1"
+        // https://tukaani.org/xz/java.html
+        // https://github.com/tukaani-project/xz-java
+        const val xz = "org.tukaani:xz:1.10"
     }
     //</editor-fold>
 

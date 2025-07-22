@@ -113,7 +113,7 @@ constructor(
      * 可能会造成读取结构体时输出反序列化前的原始信息而非结构体的 `toString` 方法。
      */
     internal fun toSpSaverPropertyString(): String =
-        saver.toStringAny(spSaverPropertyDelegateFields.toTypedArray())
+        saver.toStringAny(fields = spSaverPropertyDelegateFields.toTypedArray())
     //</editor-fold>
 
     /**

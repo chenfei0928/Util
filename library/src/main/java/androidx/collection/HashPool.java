@@ -31,9 +31,9 @@ public class HashPool implements Cloneable {
      */
     public HashPool(int initialCapacity) {
         if (initialCapacity == 0) {
-            mValues = ContainerHelpers.EMPTY_INTS;
+            mValues = AndroidXContainerHelpers.EMPTY_INTS;
         } else {
-            initialCapacity = ContainerHelpers.idealIntArraySize(initialCapacity);
+            initialCapacity = AndroidXContainerHelpers.idealIntArraySize(initialCapacity);
             mValues = new int[initialCapacity];
         }
         mSize = 0;
@@ -124,7 +124,7 @@ public class HashPool implements Cloneable {
      * key is not mapped.
      */
     public int indexOfValue(int value) {
-        return ContainerHelpers.binarySearch(mValues, mSize, value);
+        return AndroidXContainerHelpers.binarySearch(mValues, mSize, value);
     }
 
     /**
@@ -140,7 +140,7 @@ public class HashPool implements Cloneable {
      * was one.
      */
     public void put(int value) {
-        int i = ContainerHelpers.binarySearch(mValues, mSize, value);
+        int i = AndroidXContainerHelpers.binarySearch(mValues, mSize, value);
 
         if (i < 0) {
             i = ~i;

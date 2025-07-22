@@ -1,10 +1,10 @@
 package com.google.common.reflect
 
 import android.annotation.SuppressLint
+import com.google.gson.internal.GsonTypes
 import io.github.chenfei0928.util.DependencyChecker
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
-import com.google.gson.internal.`$Gson$Types` as GsonTypes
 
 /**
  * 使用 Google 开源库中的 [Type] 处理类来提供泛型构建
