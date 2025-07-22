@@ -73,8 +73,8 @@ abstract class BaseFieldAccessorCache<T : Any>(
         )
     }
 
-    val preferenceDataStore: PreferenceDataStore by lazy(mode = LazyThreadSafetyMode.NONE) {
-        object : PreferenceDataStore() {
+    val preferenceDataStore: PreferenceDataStore
+        get() = object : PreferenceDataStore() {
             //<editor-fold desc="put\get" defaultstatus="collapsed">
             override fun putString(key: String, value: String?) {
                 fieldAccessor.findByName<String?>(key).set(value)
@@ -129,5 +129,4 @@ abstract class BaseFieldAccessorCache<T : Any>(
             }
             //</editor-fold>
         }
-    }
 }
