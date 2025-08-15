@@ -12,8 +12,8 @@ object DepsAndroidx {
 
     // https://developer.android.com/jetpack/androidx/releases/core
     // https://dl.google.com/dl/android/maven2/androidx/core/core/maven-metadata.xml
-    const val core = "androidx.core:core:1.16.0"
-    const val ktx = "androidx.core:core-ktx:1.16.0"
+    const val core = "androidx.core:core:1.17.0"
+    const val ktx = "androidx.core:core-ktx:1.17.0"
 
     // https://dl.google.com/dl/android/maven2/androidx/activity/activity/maven-metadata.xml
     const val activity = "androidx.activity:activity:1.10.1"
@@ -23,9 +23,9 @@ object DepsAndroidx {
     const val activityCompose = "androidx.activity:activity-compose:1.10.1"
 
     // https://dl.google.com/dl/android/maven2/androidx/fragment/fragment/maven-metadata.xml
-    const val fragment = "androidx.fragment:fragment:1.8.8"
-    const val fragmentKtx = "androidx.fragment:fragment-ktx:1.8.8"
-    const val fragmentTest = "androidx.fragment:fragment-testing:1.8.8"
+    const val fragment = "androidx.fragment:fragment:1.8.9"
+    const val fragmentKtx = "androidx.fragment:fragment-ktx:1.8.9"
+    const val fragmentTest = "androidx.fragment:fragment-testing:1.8.9"
 
     // https://dl.google.com/dl/android/maven2/androidx/appcompat/appcompat/maven-metadata.xml
     const val appcompat = "androidx.appcompat:appcompat:1.7.1"
@@ -81,7 +81,7 @@ object DepsAndroidx {
 
     // https://developer.android.com/jetpack/androidx/releases/browser
     // https://dl.google.com/dl/android/maven2/androidx/browser/browser/maven-metadata.xml
-    const val browser = "androidx.browser:browser:1.8.0"
+    const val browser = "androidx.browser:browser:1.9.0"
 
     // https://developer.android.com/jetpack/androidx/releases/palette
     // https://dl.google.com/dl/android/maven2/androidx/palette/palette/maven-metadata.xml

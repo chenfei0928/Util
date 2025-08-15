@@ -1,12 +1,9 @@
 package io.github.chenfei0928.util
 
-import chenfei0928.normal.MainNoPackageSingleFile
-import chenfei0928.out.MainJavaOuter
 import com.google.protobuf.Descriptors
 import com.google.protobuf.jvmFullyQualifiedName
 import com.google.protobuf.parentForTesting
 import com.google.protobuf.toShortString
-import io.github.chenfei0928.demo.bean.single.MainSingleFile
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -21,20 +18,20 @@ class ExampleUnitTest {
         assertEquals(4, 2 + 2)
         println()
         logProto(
-            MainJavaOuter.Test.InnerEnum.getDescriptor(),
-            MainJavaOuter.Test.InnerEnum::class.java
+            chenfei0928.out.MainJavaOuter.Test.InnerEnum.getDescriptor(),
+            chenfei0928.out.MainJavaOuter.Test.InnerEnum::class.java
         )
         logProto(
             chenfei0928.outmulti.Test.InnerEnum.getDescriptor(),
             chenfei0928.outmulti.Test.InnerEnum::class.java
         )
         logProto(
-            MainSingleFile.Test.InnerEnum.getDescriptor(),
-            MainSingleFile.Test.InnerEnum::class.java
+            io.github.chenfei0928.demo.bean.single.MainSingleFile.Test.InnerEnum.getDescriptor(),
+            io.github.chenfei0928.demo.bean.single.MainSingleFile.Test.InnerEnum::class.java
         )
         logProto(
-            MainNoPackageSingleFile.Test.InnerEnum.getDescriptor(),
-            MainNoPackageSingleFile.Test.InnerEnum::class.java
+            chenfei0928.normal.MainNoPackageSingleFile.Test.InnerEnum.getDescriptor(),
+            chenfei0928.normal.MainNoPackageSingleFile.Test.InnerEnum::class.java
         )
         logProto(
             io.github.chenfei0928.demo.bean.Test.InnerEnum.getDescriptor(),
@@ -51,13 +48,13 @@ class ExampleUnitTest {
     }
 
     fun logProto(des: Descriptors.GenericDescriptor, clazz: Class<*>? = null) {
+        val jvmFullyQualifiedName = des.jvmFullyQualifiedName
         println(buildString {
             append("fileName: ")
             append(des.file.name)
             append(", options: ")
             append(des.file.options.toShortString())
-        })
-        println(buildString {
+            appendLine()
             append("name: ")
             append(des.name)
             append(", fullName: ")
@@ -72,8 +69,11 @@ class ExampleUnitTest {
             appendLine()
             append(clazz?.name)
             appendLine()
-            append(des.jvmFullyQualifiedName)
+            append(jvmFullyQualifiedName)
             appendLine()
         })
+        if (clazz != null) {
+            assertEquals(jvmFullyQualifiedName, clazz.name)
+        }
     }
 }
