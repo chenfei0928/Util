@@ -15,7 +15,7 @@ dependencies {
     val kotlinVersion = "2.2.10"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "8.12.0"
+    val agpVersion = "8.12.2"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
     implementation(kotlin("reflect", kotlinVersion))
@@ -46,7 +46,7 @@ dependencies {
     // ErrorProne
     // https://github.com/tbroyer/gradle-errorprone-plugin
     // https://github.com/google/error-prone
-    implementation("net.ltgt.gradle:gradle-errorprone-plugin:4.0.1")
+    implementation("net.ltgt.gradle:gradle-errorprone-plugin:4.3.0")
     // ARouter
     // https://github.com/alibaba/ARouter/blob/master/README_CN.md
     // https://github.com/jadepeakpoet/ARouter
