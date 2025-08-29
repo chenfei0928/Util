@@ -12,8 +12,8 @@ object DepsAndroidx {
 
     // https://developer.android.com/jetpack/androidx/releases/core
     // https://dl.google.com/dl/android/maven2/androidx/core/core/maven-metadata.xml
-    const val core = "androidx.core:core:1.17.0"
-    const val ktx = "androidx.core:core-ktx:1.17.0"
+    const val core = "androidx.core:core:1.16.0"
+    const val ktx = "androidx.core:core-ktx:1.16.0"
 
     // https://dl.google.com/dl/android/maven2/androidx/activity/activity/maven-metadata.xml
     const val activity = "androidx.activity:activity:1.10.1"
