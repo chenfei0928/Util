@@ -782,11 +782,9 @@ abstract class BundleSupportType<T>(
 
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
-        ): T? {
-            val clazz = clazz ?: property.getReturnTypeJClass()
-            bundle.setClassLoader(clazz.classLoader)
-            return BundleCompat.getParcelable(bundle, name, clazz)
-        }
+        ): T? = BundleCompat.getParcelable(
+            bundle, name, clazz ?: property.getReturnTypeJClass()
+        )
 
         override fun putExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, value: T & Any
@@ -794,11 +792,9 @@ abstract class BundleSupportType<T>(
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): T? {
-            val clazz = clazz ?: property.getReturnTypeJClass()
-            intent.setExtrasClassLoader(clazz.classLoader)
-            return IntentCompat.getParcelableExtra(intent, name, clazz)
-        }
+        ): T? = IntentCompat.getParcelableExtra(
+            intent, name, clazz ?: property.getReturnTypeJClass()
+        )
 
         companion object : AutoFind.Creator<Parcelable>() {
             override val checkByReflectWhenCall = ParcelableType<Parcelable>(null)
@@ -860,11 +856,9 @@ abstract class BundleSupportType<T>(
 
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
-        ): SparseArray<T>? {
-            val clazz = clazz ?: property.returnType.argument0TypeJClass<T>()
-            bundle.setClassLoader(clazz.classLoader)
-            return BundleCompat.getSparseParcelableArray(bundle, name, clazz)
-        }
+        ): SparseArray<T>? = BundleCompat.getSparseParcelableArray(
+            bundle, name, clazz ?: property.returnType.argument0TypeJClass<T>()
+        )
 
         override fun putExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, value: SparseArray<T>
@@ -984,11 +978,9 @@ abstract class BundleSupportType<T>(
 
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
-        ): T? {
-            val clazz = clazz ?: property.getReturnTypeJClass()
-            bundle.setClassLoader(clazz.classLoader)
-            return BundleCompat.getSerializable(bundle, name, clazz)
-        }
+        ): T? = BundleCompat.getSerializable(
+            bundle, name, clazz ?: property.getReturnTypeJClass()
+        )
 
         override fun putExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, value: T & Any
@@ -996,11 +988,9 @@ abstract class BundleSupportType<T>(
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): T? {
-            val clazz = clazz ?: property.getReturnTypeJClass()
-            intent.setExtrasClassLoader(clazz.classLoader)
-            return IntentCompat.getSerializableExtra(intent, name, clazz)
-        }
+        ): T? = IntentCompat.getSerializableExtra(
+            intent, name, clazz ?: property.getReturnTypeJClass()
+        )
 
         companion object : AutoFind.Creator<Serializable>() {
             override val checkByReflectWhenCall = SerializableType<Serializable>(null, null)
@@ -1035,11 +1025,9 @@ abstract class BundleSupportType<T>(
 
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
-        ): List<T>? {
-            val clazz = clazz ?: property.returnType.argument0TypeJClass<T>()
-            bundle.setClassLoader(clazz.classLoader)
-            return BundleCompat.getParcelableArrayList(bundle, name, clazz)
-        }
+        ): List<T>? = BundleCompat.getParcelableArrayList(
+            bundle, name, clazz ?: property.returnType.argument0TypeJClass<T>()
+        )
 
         override fun putExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, value: List<T>
@@ -1047,11 +1035,9 @@ abstract class BundleSupportType<T>(
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): List<T>? {
-            val clazz = clazz ?: property.returnType.argument0TypeJClass<T>()
-            intent.setExtrasClassLoader(clazz.classLoader)
-            return IntentCompat.getParcelableArrayListExtra(intent, name, clazz)
-        }
+        ): List<T>? = IntentCompat.getParcelableArrayListExtra(
+            intent, name, clazz ?: property.returnType.argument0TypeJClass<T>()
+        )
 
         companion object : AutoFind.Creator<List<Parcelable>>() {
             override val checkByReflectWhenCall = ListParcelableType<Parcelable>(null, null)
@@ -1180,7 +1166,6 @@ abstract class BundleSupportType<T>(
             bundle: Bundle, property: KProperty<*>, name: String
         ): Array<T>? {
             val clazz = clazz ?: property.returnType.argument0TypeJClass<T>()
-            bundle.classLoader = clazz.classLoader
             val array = BundleCompat.getParcelableArray(bundle, name, clazz)
                 ?: return null
             val out = clazz.PARCELABLE_CREATOR.newArray(array.size)
@@ -1196,7 +1181,6 @@ abstract class BundleSupportType<T>(
             intent: Intent, property: KProperty<*>, name: String
         ): Array<T>? {
             val clazz = clazz ?: property.returnType.argument0TypeJClass<T>()
-            intent.setExtrasClassLoader(clazz.classLoader)
             val array = IntentCompat.getParcelableArrayExtra(intent, name, clazz)
                 ?: return null
             val out = clazz.PARCELABLE_CREATOR.newArray(array.size)

@@ -23,12 +23,10 @@ operator fun Bundle.contains(property: KProperty<*>): Boolean =
     containsKey(property.name)
 
 inline fun <reified T> Bundle.getParcelableCompat(key: String): T? {
-    classLoader = T::class.java.classLoader
     return BundleCompat.getParcelable(this, key, T::class.java)
 }
 
 inline fun <reified T : Parcelable> Bundle.getParcelableArrayCompat(key: String): Array<T>? {
-    classLoader = T::class.java.classLoader
     return if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         getParcelableArray(key, T::class.java)
     } else BundleCompat.getParcelableArray(this, key, T::class.java)?.let { array ->
@@ -42,22 +40,18 @@ inline fun <reified T : Parcelable> Bundle.getParcelableArrayCompat(key: String)
 }
 
 inline fun <reified T> Bundle.getParcelableArrayListCompat(key: String): ArrayList<T>? {
-    classLoader = T::class.java.classLoader
     return BundleCompat.getParcelableArrayList(this, key, T::class.java)
 }
 
 inline fun <reified T> Bundle.getSparseParcelableArrayCompat(key: String): SparseArray<T>? {
-    classLoader = T::class.java.classLoader
     return BundleCompat.getSparseParcelableArray(this, key, T::class.java)
 }
 
 inline fun <reified T> Intent.getParcelableExtraCompat(key: String): T? {
-    setExtrasClassLoader(T::class.java.classLoader)
     return IntentCompat.getParcelableExtra(this, key, T::class.java)
 }
 
 inline fun <reified T : Parcelable> Intent.getParcelableArrayExtraCompat(key: String): Array<T>? {
-    setExtrasClassLoader(T::class.java.classLoader)
     return if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         getParcelableArrayExtra(key, T::class.java)
     } else IntentCompat.getParcelableArrayExtra(this, key, T::class.java)?.let { array ->
@@ -71,6 +65,5 @@ inline fun <reified T : Parcelable> Intent.getParcelableArrayExtraCompat(key: St
 }
 
 inline fun <reified T> Intent.getParcelableArrayListExtraCompat(key: String): ArrayList<T>? {
-    setExtrasClassLoader(T::class.java.classLoader)
     return IntentCompat.getParcelableArrayListExtra(this, key, T::class.java)
 }
