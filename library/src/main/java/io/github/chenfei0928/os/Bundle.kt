@@ -22,6 +22,10 @@ import kotlin.reflect.KProperty
 operator fun Bundle.contains(property: KProperty<*>): Boolean =
     containsKey(property.name)
 
+inline fun <reified T> Bundle.setClassLoader() {
+    classLoader = T::class.java.classLoader
+}
+
 inline fun <reified T> Bundle.getParcelableCompat(key: String): T? {
     return BundleCompat.getParcelable(this, key, T::class.java)
 }

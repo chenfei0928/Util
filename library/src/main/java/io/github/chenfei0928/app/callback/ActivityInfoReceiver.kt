@@ -31,6 +31,7 @@ object ActivityInfoReceiver : IntentFilterBroadcastReceiver(
         lifecycleLiveData.removeObservers(owner)
 
     override fun onReceive(context: Context, intent: Intent) {
+        intent.setExtrasClassLoader(ActivityInfo::class.java.classLoader)
         val activityInfo: ActivityInfo = intent.getParcelableExtraCompat(
             ProcessActivityLifecycleCallbackSender.ACTIVITY_INFO
         ) ?: return

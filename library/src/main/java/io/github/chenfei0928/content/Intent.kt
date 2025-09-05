@@ -14,6 +14,10 @@ import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
+inline fun <reified T> Intent.setExtrasClassLoader() {
+    setExtrasClassLoader(T::class.java.classLoader)
+}
+
 fun Intent.putExtra(name: String, value: MessageLite) {
     putExtra(name, value.toByteArray())
 }
