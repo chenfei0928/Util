@@ -22,16 +22,16 @@ import kotlin.coroutines.resume
  * 对已实现了[LifecycleOwner]的[Dialog]执行，
  * 启动协程块[block]并在其执行完毕后dismiss dialog
  *
- * @param D Dialog类型
+ * @param LifecycleOwnerDialog Dialog类型
  * @param parentLifecycleOwner 可附加的宿主生命周期
  * @param block 要执行的协程代码块
  * @receiver 将会在该dialog上启动
  */
 @MainThread
-inline fun <D> D.launchWithShow(
+inline fun <LifecycleOwnerDialog> LifecycleOwnerDialog.launchWithShow(
     parentLifecycleOwner: LifecycleOwner = EventLifecycleOwner.immortal,
-    crossinline block: suspend CoroutineScope.(D) -> Unit,
-) where D : Dialog, D : LifecycleOwner {
+    crossinline block: suspend CoroutineScope.(LifecycleOwnerDialog) -> Unit,
+) where LifecycleOwnerDialog : Dialog, LifecycleOwnerDialog : LifecycleOwner {
     val callback = LifecycleEventObserver { _, event ->
         if (event == Lifecycle.Event.ON_DESTROY) {
             cancel()
