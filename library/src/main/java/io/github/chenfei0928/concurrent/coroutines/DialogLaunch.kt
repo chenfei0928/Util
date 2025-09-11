@@ -37,6 +37,7 @@ inline fun <D> D.launchWithShow(
         }
     }
     parentLifecycleOwner.lifecycle.addObserver(callback)
+    show()
     // 此处不需要附加context，removeObserver需要在主线程上执行
     val job = coroutineScope.launch {
         try {
@@ -51,7 +52,6 @@ inline fun <D> D.launchWithShow(
             job.cancel()
         }
     }
-    show()
 }
 
 /**
