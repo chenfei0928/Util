@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.lifecycle.EventLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
@@ -39,7 +40,7 @@ inline fun <D> D.launchWithShow(
     parentLifecycleOwner.lifecycle.addObserver(callback)
     show()
     // 此处不需要附加context，removeObserver需要在主线程上执行
-    val job = coroutineScope.launch {
+    val job = coroutineScope.launch(start = CoroutineStart.LAZY) {
         try {
             block(this@launchWithShow)
         } finally {
@@ -52,6 +53,7 @@ inline fun <D> D.launchWithShow(
             job.cancel()
         }
     }
+    job.start()
 }
 
 /**
