@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
  */
 public class Log {
     private static LogInterface[] implList = {SystemLog.INSTANCE};
+    public static int SYSTEM_LOGCAT_SPLIT_LENGTH = 3000;
 
     private Log() {
     }
