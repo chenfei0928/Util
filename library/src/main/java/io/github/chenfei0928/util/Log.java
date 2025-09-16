@@ -8,7 +8,11 @@ import androidx.annotation.Nullable;
  */
 public class Log {
     private static LogInterface[] implList = {SystemLog.INSTANCE};
-    public static int SYSTEM_LOGCAT_SPLIT_LENGTH = 3000;
+    // log单行大小约4096字节，防止中文日志，此处limit设置为2000
+    // logcat -g指令可以读到各个分类的缓冲区上限、目前用量、每次读取量、单条日志长度的上限。
+    // system/core/liblog/include/log/log_read.h下的LOGGER_ENTRY_MAX_PAYLOAD和LOGGER_ENTRY_MAX_LEN
+    // https://blog.csdn.net/realDonaldTrump/article/details/128468204
+    public static int SYSTEM_LOGCAT_SPLIT_LENGTH = 2000;
 
     private Log() {
     }
