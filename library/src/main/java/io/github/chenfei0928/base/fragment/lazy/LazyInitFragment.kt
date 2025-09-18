@@ -39,6 +39,8 @@ abstract class LazyInitFragment(
             asyncLayoutInflater.inflate({ layoutInflater, vg ->
                 onCreateViewImpl(layoutInflater, vg, lazyLoadSavedInstanceState)
             }, layout, {
+                // 校验当前fragment是否被重创建
+                if (view !== layout) return@inflate
                 layout.addView(it)
                 onViewCreatedImpl(it, lazyLoadSavedInstanceState)
                 lazyLoadSavedInstanceState = null
