@@ -1,7 +1,10 @@
 package io.github.chenfei0928.lang
 
+import android.util.SparseArray
 import androidx.collection.ArrayMap
 import androidx.collection.LruCache
+import androidx.collection.SparseArrayCompat
+import androidx.core.util.size
 import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.collection.getOrPut
 import io.github.chenfei0928.collection.mapToArray
@@ -93,6 +96,27 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
         replace(length - 2, length, "]")
     }
     is Reference<*> -> appendByReflect(any.get())
+    // 非JDK的容器类型
+    is SparseArray<*> -> {
+        append('[')
+        for (i in 0 until any.size) {
+            if (i != 0) append(", ")
+            append(any.keyAt(i))
+            append("=")
+            appendByReflect(any.valueAt(i))
+        }
+        append(']')
+    }
+    is SparseArrayCompat<*> -> {
+        append('[')
+        for (i in 0 until any.size()) {
+            if (i != 0) append(", ")
+            append(any.keyAt(i))
+            append("=")
+            appendByReflect(any.valueAt(i))
+        }
+        append(']')
+    }
     // 判断该类有没有重写toString
     else -> if (toStringWasOverrideCache.getOrPut(any.javaClass) {
             any.javaClass.getMethod("toString").declaringClass != Any::class.java

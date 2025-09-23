@@ -12,10 +12,10 @@ tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
 @Suppress("kotlin:S6624")
 dependencies {
     // https://github.com/JetBrains/kotlin
-    val kotlinVersion = "2.2.10"
+    val kotlinVersion = "2.2.20"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "8.12.1"
+    val agpVersion = "8.13.0"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
     implementation(kotlin("reflect", kotlinVersion))
@@ -27,7 +27,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:compose-compiler-gradle-plugin:$kotlinVersion")
     // Kotlin Symbol Processing 符号处理器编译器插件，需伴随Kotlin版本一同升级
     // https://github.com/google/ksp
-    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-2.0.2")
+    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kotlinVersion-2.0.3")
     implementation(gradleApi())
 
     implementation(localGroovy())
