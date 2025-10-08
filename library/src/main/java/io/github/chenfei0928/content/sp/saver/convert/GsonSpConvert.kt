@@ -19,7 +19,7 @@ protected constructor(
     saver: AbsSpSaver.Delegate<SpSaver, String?>,
     gson: Gson = io.github.chenfei0928.json.gson.gson,
     type: TypeToken<V>,
-) : BaseSpConvert<SpSaver, Sp, Ed, String?, V?>(saver), AbsSpSaver.DefaultValue<V?> {
+) : BaseSpConvert<SpSaver, Sp, Ed, String?, V?>(saver) {
     override val spValueType: PreferenceType<V & Any> = PreferenceType.Struct(type.type)
     private val typeAdapter: TypeAdapter<V> = gson.getAdapter(type) as TypeAdapter<V>
 
@@ -36,7 +36,7 @@ protected constructor(
         gson: Gson = io.github.chenfei0928.json.gson.gson,
         type: TypeToken<V>,
         override val defaultValue: V? = null,
-    ) : GsonSpConvert<SpSaver, Sp, Ed, V>(saver, gson, type)
+    ) : GsonSpConvert<SpSaver, Sp, Ed, V>(saver, gson, type), AbsSpSaver.DefaultValue<V?>
 
     companion object {
         inline operator fun <SpSaver : AbsSpSaver<SpSaver, Sp, Ed>,
