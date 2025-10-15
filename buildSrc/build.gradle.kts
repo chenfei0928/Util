@@ -73,7 +73,7 @@ dependencies {
     // https://github.com/Meituan-Dianping/walle
     implementation("com.meituan.android.walle:plugin:1.1.7")
     // https://github.com/google/guava
-    implementation("com.google.guava:guava:33.4.8-jre")
+    implementation("com.google.guava:guava:33.5.0-jre")
     // https://github.com/didi/booster
     // https://juejin.cn/post/7504839725611728896
     implementation("com.didiglobal.booster:booster-gradle-plugin:5.1.0")

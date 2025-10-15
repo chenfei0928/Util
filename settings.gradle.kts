@@ -14,6 +14,11 @@ dependencyResolutionManagement {
         maven("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/") {
             name = "qCloudMirrors"
         }
+        // 网易云镜像
+        // https://mirrors.163.com/
+        maven("https://mirrors.163.com/maven/repository/maven-central/") {
+            name = "163Mirrors"
+        }
         // 阿里云镜像
         // https://help.aliyun.com/document_detail/102512.html
         maven("https://maven.aliyun.com/repository/central") {
