@@ -562,6 +562,13 @@ open class WebViewConfig {
         }
     //</editor-fold>
 
+    //<editor-fold desc="WebViewCompat 字段" defaultstatus="collapsed>
+    /**
+     * 如果 WebView 已处于静音状态，则返回 true，否则返回 false。
+     */
+    var isAudioMuted: Boolean = false
+    //</editor-fold>
+
     companion object {
         private const val TAG = "WebViewConfig"
         val USER_AGENT_METADATA: UserAgentMetadata = UserAgentMetadata.Builder().build()

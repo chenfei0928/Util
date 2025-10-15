@@ -142,6 +142,14 @@ var WebSettings.webAuthenticationSupportCompat: Int
         }
     }
 
+var WebSettings.speculativeLoadingStatus: Int
+    get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.SPECULATIVE_LOADING)) {
+        WebSettingsCompat.getSpeculativeLoadingStatus(this)
+    } else WebSettingsCompat.SPECULATIVE_LOADING_DISABLED
+    set(value) = if (WebViewFeature.isFeatureSupported(WebViewFeature.SPECULATIVE_LOADING)) {
+        WebSettingsCompat.setSpeculativeLoadingStatus(this, value)
+    }
+
 var WebView.webViewRenderProcessClientCompat: WebViewRenderProcessClient?
     get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
         WebViewCompat.getWebViewRenderProcessClient(this)
@@ -149,5 +157,15 @@ var WebView.webViewRenderProcessClientCompat: WebViewRenderProcessClient?
     set(value) {
         if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
             WebViewCompat.setWebViewRenderProcessClient(this, value)
+        }
+    }
+
+var WebView.isAudioMuted: Boolean
+    get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.MUTE_AUDIO)) {
+        WebViewCompat.isAudioMuted(this)
+    } else false
+    set(value) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.MUTE_AUDIO)) {
+            WebViewCompat.setAudioMuted(this, value)
         }
     }

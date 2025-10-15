@@ -230,6 +230,9 @@ object WebViewSettingsUtil {
     @Suppress("kotlin:S3776")
     private fun settingWebViewByConfigBase(webView: WebView, config: WebViewConfig) {
         config.webView = webView
+        WebSettingsConfig.webViewConfigField.forEach {
+            it.apply(webView, config)
+        }
         val settings = webView.settings
         WebSettingsConfig.settingsConfigField.forEach {
             it.apply(settings, config)

@@ -1,6 +1,7 @@
 package io.github.chenfei0928.webkit
 
 import android.webkit.WebSettings
+import android.webkit.WebView
 import kotlin.reflect.KMutableProperty1
 
 /**
@@ -56,6 +57,13 @@ internal interface WebSettingsConfig<T, V> {
             override val WebViewConfig.value: V
                 get() = configGet(this)
         }
+
+        val webViewConfigField: Array<WebSettingsConfig<WebView, *>> = arrayOf(
+            invoke(
+                WebView::isAudioMuted,
+                WebViewConfig::isAudioMuted
+            ),
+        )
 
         val settingsConfigField: Array<WebSettingsConfig<WebSettings, *>> = arrayOf(
             invoke(WebSettings::supportZoomCompat, WebViewConfig::supportZoom),
@@ -124,6 +132,11 @@ internal interface WebSettingsConfig<T, V> {
                 WebViewConfig::sansSerifFontFamily
             ),
             invoke(
+                WebSettings::getSerifFontFamily,
+                WebSettings::setSerifFontFamily,
+                WebViewConfig::serifFontFamily
+            ),
+            invoke(
                 WebSettings::getCursiveFontFamily,
                 WebSettings::setCursiveFontFamily,
                 WebViewConfig::cursiveFontFamily
@@ -137,6 +150,11 @@ internal interface WebSettingsConfig<T, V> {
                 WebSettings::getMinimumFontSize,
                 WebSettings::setMinimumFontSize,
                 WebViewConfig::minimumFontSize
+            ),
+            invoke(
+                WebSettings::getDefaultFontSize,
+                WebSettings::setDefaultFontSize,
+                WebViewConfig::defaultFontSize
             ),
             invoke(
                 WebSettings::getDefaultFixedFontSize,
