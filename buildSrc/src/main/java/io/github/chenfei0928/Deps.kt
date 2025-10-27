@@ -1,7 +1,5 @@
 package io.github.chenfei0928
 
-import org.gradle.kotlin.dsl.DependencyHandlerScope
-
 /**
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-10-22 16:57
@@ -89,13 +87,8 @@ object Deps {
         // https://github.com/square/okhttp
         // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
         object okhttp {
-            // define a BOM and its version
-            fun bom(dep: DependencyHandlerScope) =
-                dep.platform("com.squareup.okhttp3:okhttp-bom:5.1.0")
-
-            // define any required OkHttp artifacts without version
-            val okhttp = "com.squareup.okhttp3:okhttp"
-            val okhttpLogging = "com.squareup.okhttp3:logging-interceptor"
+            val okhttp = "com.squareup.okhttp3:okhttp:5.2.1"
+            val logging = "com.squareup.okhttp3:logging-interceptor:5.2.1"
         }
 
         // https://github.com/gildor/kotlin-coroutines-okhttp
@@ -107,6 +100,8 @@ object Deps {
             val core = "com.squareup.retrofit2:retrofit:3.0.0"
             val rxjava2 = "com.squareup.retrofit2:adapter-rxjava2:3.0.0"
             val gson = "com.squareup.retrofit2:converter-gson:3.0.0"
+            val ktxs = "com.squareup.retrofit2:converter-kotlinx-serialization:3.0.0"
+            val protobuf = "com.squareup.retrofit2:converter-protobuf:3.0.0"
         }
 
         // https://github.com/franmontiel/PersistentCookieJar
@@ -133,8 +128,7 @@ object Deps {
     //<editor-fold defaultstate="collapsed" desc="Glide 图片加载库">
     object glide {
         // https://github.com/bumptech/glide
-//        private const val glideVer = "4.16.0"
-        private const val glideVer = "5.0.0-rc01"
+        private const val glideVer = "5.0.5"
 
         val core = "com.github.bumptech.glide:glide:$glideVer"
         val apt = "com.github.bumptech.glide:compiler:$glideVer"
@@ -252,10 +246,10 @@ object Deps {
         // Google工具类
         object google {
             // https://github.com/google/guava
-            val guavaAndroid = "com.google.guava:guava:33.4.8-android"
+            val guavaAndroid = "com.google.guava:guava:33.5.0-android"
 
             // https://github.com/google/gson
-            val gson = "com.google.code.gson:gson:2.13.1"
+            val gson = "com.google.code.gson:gson:2.13.2"
 
             // https://github.com/zxing/zxing
             // https://repo1.maven.org/maven2/com/google/zxing/core/
@@ -271,7 +265,7 @@ object Deps {
 
         // https://github.com/Tencent/MMKV/blob/master/README_CN.md
 //        val mmkv = "com.tencent:mmkv:1.3.12"
-        val mmkv = "com.tencent:mmkv:2.1.0"
+        val mmkv = "com.tencent:mmkv:2.2.4"
 
         // https://github.com/eclipse-collections/eclipse-collections
         val eclipseCollectionsApi = "org.eclipse.collections:eclipse-collections-api:11.1.0"
@@ -357,6 +351,7 @@ object Deps {
 
         // https://github.com/apache/commons-compress
         const val apacheCompress = "org.apache.commons:commons-compress:1.27.1"
+
         // https://tukaani.org/xz/java.html
         // https://github.com/tukaani-project/xz-java
         const val xz = "org.tukaani:xz:1.10"
@@ -483,14 +478,41 @@ object Deps {
         val numberProgressBar = "com.daimajia.numberprogressbar:library:1.4@aar"
 
         // https://github.com/airbnb/lottie-android
-        val lottie = "com.airbnb.android:lottie:6.6.7"
-        val lottieCompose = "com.airbnb.android:lottie-compose:6.6.7"
+        val lottie = "com.airbnb.android:lottie:6.6.10"
+        val lottieCompose = "com.airbnb.android:lottie-compose:6.6.10"
 
         // https://github.com/akexorcist/Android-RoundCornerProgressBar
         val roundCornerProgressBar = "com.akexorcist:round-corner-progress-bar:2.2.1"
 
         // https://github.com/PhilJay/MPAndroidChart
         val MPAndroidChart = "com.github.PhilJay:MPAndroidChart:v3.1.0"
+
+        // https://github.com/patrykandpatrick/vico?tab=readme-ov-file
+        // https://www.patrykandpatrick.com/vico/guide/stable/getting-started
+        object vico {
+            private val version = "2.2.1"
+
+            // For Jetpack Compose.
+            val compose = "com.patrykandpatrick.vico:compose:$version"
+
+            // For Material 2 theming in Jetpack Compose.
+            val composeM2 = "com.patrykandpatrick.vico:compose-m2:$version"
+
+            // For Material 3 theming in Jetpack Compose.
+            val composeM3 = "com.patrykandpatrick.vico:compose-m3:$version"
+
+            // For Compose Multiplatform (Android, iOS, desktop).
+            val multiplatform = "com.patrykandpatrick.vico:multiplatform:$version"
+
+            // For Material 2 theming in Compose Multiplatform.
+            val multiplatformM2 = "com.patrykandpatrick.vico:multiplatform-m2:$version"
+
+            // For Material 3 theming in Compose Multiplatform.
+            val multiplatformM3 = "com.patrykandpatrick.vico:multiplatform-m3:$version"
+
+            // For the Android view system.
+            val views = "com.patrykandpatrick.vico:views:$version"
+        }
 
         // https://github.com/DreaminginCodeZH/MaterialProgressBar
         val materialProgressBar = "me.zhanghai.android.materialprogressbar:library:1.6.1"
@@ -537,9 +559,10 @@ object Deps {
         val edgeTranslucent = "ren.qinc.edgetranslucent:lib:0.0.3"
 
         // https://github.com/getActivity/ToastUtils
-        val toastUtil = "com.github.getActivity:ToastUtils:12.5"
+        val toastUtil = "com.github.getActivity:ToastUtils:13.6"
 
         // 仿iOS的UIVisualEffectView
+        // https://github.com/mmin18/RealtimeBlurView
         val realtimeBlurView = "com.github.mmin18:realtimeblurview:1.2.1"
     }
     //</editor-fold>

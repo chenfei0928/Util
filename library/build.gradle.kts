@@ -76,7 +76,6 @@ dependencies {
     compileOnly(Deps.lib.google.gson)
     testImplementation(Deps.lib.google.gson)
     compileOnly(Deps.lib.google.zxingCore)
-    compileOnly(Deps.network.okhttp.bom(this))
     compileOnly(Deps.network.okhttp.okhttp)
     compileOnly(Deps.network.retrofit.core)
     compileOnly(Deps.lib.protobuf.java)
