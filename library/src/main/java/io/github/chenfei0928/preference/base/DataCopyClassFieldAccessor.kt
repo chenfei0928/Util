@@ -3,6 +3,7 @@ package io.github.chenfei0928.preference.base
 import androidx.collection.ArrayMap
 import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.os.Debug
+import io.github.chenfei0928.util.DependencyChecker
 import io.github.chenfei0928.util.MapCache
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -104,11 +105,17 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
                 ) {
                     val parameters = kClass.primaryConstructor?.valueParameters
                     kClass.functions.find {
-                        !it.isSuspend
-                                && it.name == "copy"
-                                && it.returnType.classifier == kClass
-                                && !it.returnType.isMarkedNullable
-                                && it.valueParameters == parameters
+                        if (DependencyChecker.ktKPropertyCompiledKType) {
+                            !it.isSuspend
+                                    && it.name == "copy"
+                                    && it.returnType.classifier == kClass
+                                    && !it.returnType.isMarkedNullable
+                                    && it.valueParameters == parameters
+                        } else {
+                            !it.isSuspend
+                                    && it.name == "copy"
+                                    && it.valueParameters == parameters
+                        }
                     } ?: throw IllegalArgumentException(
                         "Cant found copy function in $kClass"
                     )

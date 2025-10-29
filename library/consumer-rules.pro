@@ -74,3 +74,9 @@
 ## 反射获取 FlexboxLayoutManager 依赖是否引入
 ## io.github.chenfei0928.util.DependencyChecker.FLEXBOX
 -keepnames class com.google.android.flexbox.FlexboxLayoutManager
+
+## 反射设置adapter字段
+## androidx.viewpager2.adapter.FragmentStateMultiTypes.Companion.getDelegateAdapterSetter
+-keepnames class com.drakeet.multitype.ItemViewDelegate {
+  com.drakeet.multitype.MultiTypeAdapter _adapter;
+}

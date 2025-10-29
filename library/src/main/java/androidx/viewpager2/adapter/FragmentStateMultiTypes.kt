@@ -59,8 +59,13 @@ class FragmentStateMultiTypes(
 
     companion object {
         private val delegateAdapterSetter: KMutableProperty1<ItemViewDelegate<*, *>, MultiTypeAdapter?> by lazy {
-            ItemViewDelegate::class.declaredMemberProperties
-                .filter { it.returnType.classifier == MultiTypeAdapter::class }
+            val properties = ItemViewDelegate::class.declaredMemberProperties
+            val property = properties.find { it.name == "_adapter" }?.apply {
+                isAccessible = true
+            } as? KMutableProperty1<ItemViewDelegate<*, *>, MultiTypeAdapter?>
+            if (property != null)
+                return@lazy property
+            properties.filter { it.returnType.classifier == MultiTypeAdapter::class }
                 .filterIsInstance<KMutableProperty1<ItemViewDelegate<*, *>, MultiTypeAdapter?>>()
                 .first()
                 .apply { isAccessible = true }
