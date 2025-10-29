@@ -42,6 +42,8 @@ interface DependencyChecker {
      * Kotlin 编译器是否将 [kotlin.reflect.KProperty.returnType] 编译进二进制文件
      *
      * 为 true 时获取成本将变低
+     *
+     * 实测 Kt2.2 时未默认提供该功能
      */
     val ktKPropertyCompiledKType: Boolean
 
@@ -51,9 +53,12 @@ interface DependencyChecker {
      * [kotlin.reflect.KProperty2.getDelegate] 编译进二进制文件
      *
      * 为 true 时获取成本将变低
+     *
+     * 实测 Kt2.2 时未默认提供该功能
      */
     val ktKPropertyCompiledDelegate: Boolean
 
+    //<editor-fold desc="Protobuf依赖信息" defaultstatus="collapsed">
     /**
      * Protobuf 依赖信息
      *
@@ -85,6 +90,7 @@ interface DependencyChecker {
          */
         FULL_ABOVE_4_28(true, true);
     }
+    //</editor-fold>
 
     companion object : DependencyChecker {
         override val material: Boolean get() = UtilInitializer.sdkDependency.material
@@ -117,6 +123,7 @@ interface DependencyChecker {
         override val ktKPropertyCompiledDelegate: Boolean = false,
     ) : DependencyChecker
 
+    //<editor-fold desc="使用反射获取" defaultstatus="collapsed">
     /**
      * 用于处理部分函数中对部分库有额外处理逻辑的判断逻辑
      *
@@ -256,7 +263,7 @@ interface DependencyChecker {
         //</editor-fold>
 
         companion object : DependencyChecker {
-            val PROTOBUF = lazy(LazyThreadSafetyMode.NONE) {
+            val PROTOBUF: Lazy<Protobuf?> = lazy(LazyThreadSafetyMode.NONE) {
                 if (!PROTOBUF_LITE.value) null
                 else if (!PROTOBUF_FULL.value) Protobuf.LITE
                 else if (
@@ -265,7 +272,7 @@ interface DependencyChecker {
                 else Protobuf.FULL
             }
 
-            val GOOGLE_TYPES = lazy(LazyThreadSafetyMode.NONE) {
+            val GOOGLE_TYPES: Lazy<GoogleTypes> = lazy(LazyThreadSafetyMode.NONE) {
                 if (GSON.value) GoogleTypes.Gson
                 else if (GUAVA.value) GoogleTypes.Guava
                 else GoogleTypes.NotImpl
@@ -283,4 +290,5 @@ interface DependencyChecker {
             override val ktKPropertyCompiledDelegate: Boolean = false
         }
     }
+    //</editor-fold>
 }

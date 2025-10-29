@@ -5,6 +5,7 @@ import com.google.gson.internal.GsonTypes
 import io.github.chenfei0928.util.DependencyChecker
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import java.lang.reflect.WildcardType
 
 /**
  * 使用 Google 开源库中的 [Type] 处理类来提供泛型构建
@@ -19,10 +20,11 @@ interface GoogleTypes {
         ownerType: Type?, rawType: Class<*>, vararg typeArguments: Type
     ): ParameterizedType
 
-    fun subtypeOf(bound: Type): Type
+    fun subtypeOf(bound: Type): WildcardType
 
     fun arrayOf(componentType: Type): Type
 
+    //<editor-fold desc="Gson的实现" defaultstatus="collapsed">
     object Gson : GoogleTypes {
         override fun newParameterizedTypeWithOwner(
             ownerType: Type?, rawType: Class<*>, vararg typeArguments: Type
@@ -30,7 +32,7 @@ interface GoogleTypes {
             ownerType, rawType, *typeArguments
         )
 
-        override fun subtypeOf(bound: Type): Type = GsonTypes.subtypeOf(
+        override fun subtypeOf(bound: Type): WildcardType = GsonTypes.subtypeOf(
             bound
         )
 
@@ -38,7 +40,9 @@ interface GoogleTypes {
             componentType
         )
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Guava的实现" defaultstatus="collapsed">
     object Guava : GoogleTypes {
         override fun newParameterizedTypeWithOwner(
             ownerType: Type?, rawType: Class<*>, vararg typeArguments: Type
@@ -47,7 +51,7 @@ interface GoogleTypes {
         )
 
         @SuppressLint("VisibleForTests")
-        override fun subtypeOf(bound: Type): Type = Types.subtypeOf(
+        override fun subtypeOf(bound: Type): WildcardType = Types.subtypeOf(
             bound
         )
 
@@ -55,7 +59,9 @@ interface GoogleTypes {
             componentType
         )
     }
+    //</editor-fold>
 
+    //<editor-fold desc="未实现" defaultstatus="collapsed">
     object NotImpl : GoogleTypes {
         override fun newParameterizedTypeWithOwner(
             ownerType: Type?, rawType: Class<*>, vararg typeArguments: Type
@@ -63,7 +69,7 @@ interface GoogleTypes {
             throw IllegalArgumentException("没有引入 Gson 或 Guava 依赖库")
         }
 
-        override fun subtypeOf(bound: Type): Type {
+        override fun subtypeOf(bound: Type): WildcardType {
             throw IllegalArgumentException("没有引入 Gson 或 Guava 依赖库")
         }
 
@@ -71,6 +77,7 @@ interface GoogleTypes {
             throw IllegalArgumentException("没有引入 Gson 或 Guava 依赖库")
         }
     }
+    //</editor-fold>
 
     companion object : GoogleTypes {
         override fun newParameterizedTypeWithOwner(
@@ -79,7 +86,7 @@ interface GoogleTypes {
             ownerType, rawType, *typeArguments
         )
 
-        override fun subtypeOf(bound: Type): Type =
+        override fun subtypeOf(bound: Type): WildcardType =
             DependencyChecker.googleTypes.subtypeOf(bound)
 
         override fun arrayOf(componentType: Type): Type =
