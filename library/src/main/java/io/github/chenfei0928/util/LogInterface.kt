@@ -8,79 +8,63 @@ import com.google.common.collect.Comparators.min
  * @date 2021-06-02 11:13
  */
 interface LogInterface {
-    fun v(tag: String, msg: String)
+    fun v(tag: String, msg: String) = v(tag, msg, null)
     fun v(tag: String, msg: String, tr: Throwable?)
-    fun d(tag: String, msg: String)
+    fun d(tag: String, msg: String) = d(tag, msg, null)
     fun d(tag: String, msg: String, tr: Throwable?)
-    fun i(tag: String, msg: String)
+    fun i(tag: String, msg: String) = i(tag, msg, null)
     fun i(tag: String, msg: String, tr: Throwable?)
-    fun w(tag: String, msg: String)
+    fun w(tag: String, msg: String) = w(tag, msg, null)
     fun w(tag: String, msg: String, tr: Throwable?)
-    fun e(tag: String, msg: String)
+    fun e(tag: String, msg: String) = e(tag, msg, null)
     fun e(tag: String, msg: String, tr: Throwable?)
 }
 
 internal object SystemLog : LogInterface {
 
-    private fun String.splitByLimit(
-        limit: Int = io.github.chenfei0928.util.Log.SYSTEM_LOGCAT_SPLIT_LENGTH
-    ) = if (length < limit) arrayOf(this) else
-        Array((length / limit) + (if (length % limit == 0) 0 else 1)) {
-            substring(it * limit, min((it + 1) * limit, length))
-        }
-
-    private inline fun Array<String>.forEachAndReturnLast(
+    private inline fun forEachAndReturnLast(
         block: (String, String) -> Unit,
         trBlock: (String, String, Throwable?) -> Unit,
         tag: String,
+        msg: String,
         tr: Throwable?,
     ) {
-        for (i in 0 until size) {
-            if (i < size - 1) {
-                block(tag, this[i])
+        val limit: Int = io.github.chenfei0928.util.Log.SYSTEM_LOGCAT_SPLIT_LENGTH
+        if (msg.length <= limit) {
+            if (tr == null) block(tag, msg)
+            else trBlock(tag, msg, tr)
+            return
+        }
+        val size = (msg.length / limit) + (if (msg.length % limit == 0) 0 else 1)
+        for (index in 0 until size) {
+            val limitMsg = msg.substring(index * limit, min((index + 1) * limit, msg.length))
+            if (tr == null) {
+                block(tag, limitMsg)
+            } else if (index < size - 1) {
+                block(tag, limitMsg)
             } else {
-                trBlock(tag, this[i], tr)
+                trBlock(tag, limitMsg, tr)
             }
         }
     }
 
-    override fun v(tag: String, msg: String) {
-        msg.splitByLimit().forEach { Log.v(tag, it) }
-    }
-
     override fun v(tag: String, msg: String, tr: Throwable?) {
-        msg.splitByLimit().forEachAndReturnLast(Log::v, Log::v, tag, tr)
-    }
-
-    override fun d(tag: String, msg: String) {
-        msg.splitByLimit().forEach { Log.d(tag, it) }
+        forEachAndReturnLast(Log::v, Log::v, tag, msg, tr)
     }
 
     override fun d(tag: String, msg: String, tr: Throwable?) {
-        msg.splitByLimit().forEachAndReturnLast(Log::d, Log::d, tag, tr)
-    }
-
-    override fun i(tag: String, msg: String) {
-        msg.splitByLimit().forEach { Log.i(tag, it) }
+        forEachAndReturnLast(Log::d, Log::d, tag, msg, tr)
     }
 
     override fun i(tag: String, msg: String, tr: Throwable?) {
-        msg.splitByLimit().forEachAndReturnLast(Log::i, Log::i, tag, tr)
-    }
-
-    override fun w(tag: String, msg: String) {
-        msg.splitByLimit().forEach { Log.w(tag, it) }
+        forEachAndReturnLast(Log::i, Log::i, tag, msg, tr)
     }
 
     override fun w(tag: String, msg: String, tr: Throwable?) {
-        msg.splitByLimit().forEachAndReturnLast(Log::w, Log::w, tag, tr)
-    }
-
-    override fun e(tag: String, msg: String) {
-        msg.splitByLimit().forEach { Log.e(tag, it) }
+        forEachAndReturnLast(Log::w, Log::w, tag, msg, tr)
     }
 
     override fun e(tag: String, msg: String, tr: Throwable?) {
-        msg.splitByLimit().forEachAndReturnLast(Log::e, Log::e, tag, tr)
+        forEachAndReturnLast(Log::e, Log::e, tag, msg, tr)
     }
 }
