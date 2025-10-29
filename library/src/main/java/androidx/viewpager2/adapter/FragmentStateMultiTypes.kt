@@ -59,12 +59,17 @@ class FragmentStateMultiTypes(
 
     companion object {
         private val delegateAdapterSetter: KMutableProperty1<ItemViewDelegate<*, *>, MultiTypeAdapter?> by lazy {
+//            ItemViewDelegate<*, *>::_adapter
             val properties = ItemViewDelegate::class.declaredMemberProperties
+            // 先尝试通过字段名查找
+            @Suppress("UNCHECKED_CAST")
             val property = properties.find { it.name == "_adapter" }?.apply {
                 isAccessible = true
             } as? KMutableProperty1<ItemViewDelegate<*, *>, MultiTypeAdapter?>
+            // 找到了的话直接返回
             if (property != null)
                 return@lazy property
+            // 找不到再通过类型查找
             properties.filter { it.returnType.classifier == MultiTypeAdapter::class }
                 .filterIsInstance<KMutableProperty1<ItemViewDelegate<*, *>, MultiTypeAdapter?>>()
                 .first()
