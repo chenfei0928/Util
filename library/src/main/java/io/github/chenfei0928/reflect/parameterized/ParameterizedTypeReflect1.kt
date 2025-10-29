@@ -18,8 +18,7 @@ import java.lang.reflect.WildcardType
  * Child : Parent<R-Impl>
  * ```
  *
- * 在使用当前类时确认引入了[Gson](https://github.com/google/gson)依赖，
- * 当前类有使用 `com.google.gson.internal.$Gson$Types` 类
+ * 在使用当前类时需要正确实现了 [GoogleTypes]
  *
  * 已知问题：
  * 1. 在获取Kotlin的类泛型定义时，List、Map的泛型子类继承后泛型约束会丢失，MutableList、MutableMap则没问题。

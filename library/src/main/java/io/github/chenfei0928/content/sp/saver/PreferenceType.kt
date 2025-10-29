@@ -19,7 +19,9 @@ import io.github.chenfei0928.preference.base.FieldAccessor.Field
 import io.github.chenfei0928.reflect.LazyTypeToken
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.isSubtypeOf
+import io.github.chenfei0928.reflect.jTypeOf
 import io.github.chenfei0928.reflect.jvmErasureClassOrNull
+import io.github.chenfei0928.util.DependencyChecker
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -62,12 +64,17 @@ sealed interface PreferenceType<T> {
                 Native<Boolean>(Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType)
             val STRING = Native<String>(String::class.java, null)
             val STRING_SET = Native<Set<String>>(
-                // 经测试此与 jTypeOf<Set<String>>() 类型一致，直接构建类型以减少一次类创建与反射开销
-                // 因为 Set 接口的泛型参数声明为 out V ，所以第三个参数不是 String，而是 subtypeOf String
-                // 为它和它的子类型
-                GoogleTypes.newParameterizedTypeWithOwner(
-                    null, Set::class.java, GoogleTypes.subtypeOf(String::class.java)
-                ), null
+                if (DependencyChecker.googleTypes !is GoogleTypes.NotImpl) {
+                    // 经测试此与 jTypeOf<Set<String>>() 类型一致，直接构建类型以减少一次类创建与反射开销
+                    // 因为 Set 接口的泛型参数声明为 out V ，所以第三个参数不是 String，而是 subtypeOf String
+                    // 为它和它的子类型
+                    GoogleTypes.newParameterizedTypeWithOwner(
+                        null, Set::class.java, GoogleTypes.subtypeOf(String::class.java)
+                    )
+                } else {
+                    // 如果没有实现 GoogleTypes，则使用 jTypeOf 通过反射获取类型
+                    jTypeOf<Set<String>>()
+                }, null
             )
 
             val entries = listOf(INT, LONG, FLOAT, BOOLEAN, STRING, STRING_SET)

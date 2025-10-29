@@ -1,6 +1,7 @@
 package io.github.chenfei0928.demo
 
 import android.app.Application
+import com.google.common.reflect.GoogleTypes
 import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.util.DependencyChecker
 
@@ -18,9 +19,8 @@ class App : Application() {
             guava = false,
             androidXListenableFuture = false,
             flexBox = false,
-            protobufFull = true,
-            protobufLite = true,
-            gson = true,
+            protobuf = DependencyChecker.Protobuf.FULL_ABOVE_4_28,
+            googleTypes = GoogleTypes.Gson,
             mmkv = true,
         )
     }

@@ -19,6 +19,7 @@ package io.github.chenfei0928.reflect.parameterized
 
 import androidx.annotation.IntRange
 import androidx.annotation.Keep
+import com.google.common.reflect.GoogleTypes
 import com.google.gson.reflect.TypeToken
 import io.github.chenfei0928.annotation.KeepAllowObfuscation
 import io.github.chenfei0928.annotation.KeepAllowOptimizationShrinkingObfuscation
@@ -30,6 +31,15 @@ inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeBoundsCont
     Parent::class.java, this::class.java, positionInParentParameter
 )
 
+/**
+ * 使用Java或Kotlin反射获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
+ *
+ * 如果 [useKtReflect] 为`true`时需要正确实现了 [GoogleTypes]
+ *
+ * 通常情况下（在没有缓存时），Java反射在性能方面比Kotlin好
+ *
+ * @param Parent 父类类型
+ */
 inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeClassDefinedImplInChild(
     @IntRange(from = 0) positionInParentParameter: Int, useKtReflect: Boolean = false
 ): Class<R> = if (useKtReflect) {
@@ -42,6 +52,13 @@ inline fun <reified Parent : Any, R> Parent.getParentParameterizedTypeClassDefin
     ).getParentParameterizedTypeDefinedImplInChild(positionInParentParameter)
 }
 
+/**
+ * 使用Java反射获取子类在父类中实现的指定下标的范型类型，可以在不添加抽象方法时获取子类所实现的范型类型
+ *
+ * 在使用当前类时需要正确实现了 [GoogleTypes]
+ *
+ * @param Parent 父类类型
+ */
 inline fun <reified Parent : Any> Parent.getParentParameterizedTypeDefinedImplInChild(
     @IntRange(from = 0) positionInParentParameter: Int
 ): Type = ParameterizedTypeReflect1(

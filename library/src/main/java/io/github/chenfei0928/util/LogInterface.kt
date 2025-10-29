@@ -22,9 +22,9 @@ interface LogInterface {
 
 internal object SystemLog : LogInterface {
 
-    private inline fun forEachAndReturnLast(
+    private inline fun splitAndLogLongMessage(
         block: (String, String) -> Unit,
-        trBlock: (String, String, Throwable?) -> Unit,
+        trBlock: (String, String, Throwable) -> Unit,
         tag: String,
         msg: String,
         tr: Throwable?,
@@ -49,22 +49,22 @@ internal object SystemLog : LogInterface {
     }
 
     override fun v(tag: String, msg: String, tr: Throwable?) {
-        forEachAndReturnLast(Log::v, Log::v, tag, msg, tr)
+        splitAndLogLongMessage(Log::v, Log::v, tag, msg, tr)
     }
 
     override fun d(tag: String, msg: String, tr: Throwable?) {
-        forEachAndReturnLast(Log::d, Log::d, tag, msg, tr)
+        splitAndLogLongMessage(Log::d, Log::d, tag, msg, tr)
     }
 
     override fun i(tag: String, msg: String, tr: Throwable?) {
-        forEachAndReturnLast(Log::i, Log::i, tag, msg, tr)
+        splitAndLogLongMessage(Log::i, Log::i, tag, msg, tr)
     }
 
     override fun w(tag: String, msg: String, tr: Throwable?) {
-        forEachAndReturnLast(Log::w, Log::w, tag, msg, tr)
+        splitAndLogLongMessage(Log::w, Log::w, tag, msg, tr)
     }
 
     override fun e(tag: String, msg: String, tr: Throwable?) {
-        forEachAndReturnLast(Log::e, Log::e, tag, msg, tr)
+        splitAndLogLongMessage(Log::e, Log::e, tag, msg, tr)
     }
 }

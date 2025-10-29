@@ -1684,7 +1684,7 @@ abstract class BundleSupportType<T>(
                         arg0Class == String::class.java -> ListStringType
                         arg0Class.isSubclassOf(CharSequence::class.java) -> ListCharSequenceType
                         arg0Class == Integer::class.java -> ListIntegerType
-                        DependencyChecker.protobufLite && arg0Class.isSubclassOf(MessageLite::class.java) ->
+                        DependencyChecker.protobuf != null && arg0Class.isSubclassOf(MessageLite::class.java) ->
                             ListProtoBufType
                         else -> NotSupportType
                     }
@@ -1695,7 +1695,7 @@ abstract class BundleSupportType<T>(
                 clazz.isSubclassOf(Array<CharSequence>::class.java) -> ArrayCharSequenceType
                 // 扩展支持
                 clazz.isSubclassOf(Enum::class.java) -> EnumType
-                DependencyChecker.protobufLite && clazz.isSubclassOf(MessageLite::class.java) ->
+                DependencyChecker.protobuf != null && clazz.isSubclassOf(MessageLite::class.java) ->
                     ProtoBufType
                 // 原生的非final类型（protobuf 标准版的实体类都实现了 Serializable 接口，避免使用其为protobuf序列化）
                 clazz.isSubclassOf(Serializable::class.java) -> SerializableType

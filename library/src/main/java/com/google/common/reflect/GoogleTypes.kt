@@ -13,39 +13,76 @@ import java.lang.reflect.Type
  * @author chenf()
  * @date 2025-01-14 11:28
  */
-object GoogleTypes {
+interface GoogleTypes {
+
     fun newParameterizedTypeWithOwner(
         ownerType: Type?, rawType: Class<*>, vararg typeArguments: Type
-    ): ParameterizedType = when {
-        DependencyChecker.gson -> GsonTypes.newParameterizedTypeWithOwner(
+    ): ParameterizedType
+
+    fun subtypeOf(bound: Type): Type
+
+    fun arrayOf(componentType: Type): Type
+
+    object Gson : GoogleTypes {
+        override fun newParameterizedTypeWithOwner(
+            ownerType: Type?, rawType: Class<*>, vararg typeArguments: Type
+        ): ParameterizedType = GsonTypes.newParameterizedTypeWithOwner(
             ownerType, rawType, *typeArguments
         )
-        DependencyChecker.guava -> Types.newParameterizedTypeWithOwner(
+
+        override fun subtypeOf(bound: Type): Type = GsonTypes.subtypeOf(
+            bound
+        )
+
+        override fun arrayOf(componentType: Type): Type = GsonTypes.arrayOf(
+            componentType
+        )
+    }
+
+    object Guava : GoogleTypes {
+        override fun newParameterizedTypeWithOwner(
+            ownerType: Type?, rawType: Class<*>, vararg typeArguments: Type
+        ): ParameterizedType = Types.newParameterizedTypeWithOwner(
             ownerType, rawType, *typeArguments
         )
-        else -> throw throwException()
-    }
 
-    @SuppressLint("VisibleForTests")
-    fun subtypeOf(bound: Type): Type = when {
-        DependencyChecker.gson -> GsonTypes.subtypeOf(
+        @SuppressLint("VisibleForTests")
+        override fun subtypeOf(bound: Type): Type = Types.subtypeOf(
             bound
         )
-        DependencyChecker.guava -> Types.subtypeOf(
-            bound
-        )
-        else -> throw throwException()
-    }
 
-    fun arrayOf(componentType: Type) = when {
-        DependencyChecker.gson -> GsonTypes.arrayOf(
+        override fun arrayOf(componentType: Type): Type = Types.newArrayType(
             componentType
         )
-        DependencyChecker.guava -> Types.newArrayType(
-            componentType
-        )
-        else -> throw throwException()
     }
 
-    private fun throwException() = IllegalArgumentException("没有引入 Gson 或 Guava 依赖库")
+    object NotImpl : GoogleTypes {
+        override fun newParameterizedTypeWithOwner(
+            ownerType: Type?, rawType: Class<*>, vararg typeArguments: Type
+        ): ParameterizedType {
+            throw IllegalArgumentException("没有引入 Gson 或 Guava 依赖库")
+        }
+
+        override fun subtypeOf(bound: Type): Type {
+            throw IllegalArgumentException("没有引入 Gson 或 Guava 依赖库")
+        }
+
+        override fun arrayOf(componentType: Type): Type {
+            throw IllegalArgumentException("没有引入 Gson 或 Guava 依赖库")
+        }
+    }
+
+    companion object : GoogleTypes {
+        override fun newParameterizedTypeWithOwner(
+            ownerType: Type?, rawType: Class<*>, vararg typeArguments: Type
+        ): ParameterizedType = DependencyChecker.googleTypes.newParameterizedTypeWithOwner(
+            ownerType, rawType, *typeArguments
+        )
+
+        override fun subtypeOf(bound: Type): Type =
+            DependencyChecker.googleTypes.subtypeOf(bound)
+
+        override fun arrayOf(componentType: Type): Type =
+            DependencyChecker.googleTypes.arrayOf(componentType)
+    }
 }

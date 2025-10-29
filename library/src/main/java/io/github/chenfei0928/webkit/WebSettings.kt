@@ -146,8 +146,10 @@ var WebSettings.speculativeLoadingStatus: Int
     get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.SPECULATIVE_LOADING)) {
         WebSettingsCompat.getSpeculativeLoadingStatus(this)
     } else WebSettingsCompat.SPECULATIVE_LOADING_DISABLED
-    set(value) = if (WebViewFeature.isFeatureSupported(WebViewFeature.SPECULATIVE_LOADING)) {
-        WebSettingsCompat.setSpeculativeLoadingStatus(this, value)
+    set(value) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.SPECULATIVE_LOADING)) {
+            WebSettingsCompat.setSpeculativeLoadingStatus(this, value)
+        }
     }
 
 var WebView.webViewRenderProcessClientCompat: WebViewRenderProcessClient?

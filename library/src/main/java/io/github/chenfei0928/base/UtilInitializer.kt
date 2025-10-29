@@ -3,6 +3,7 @@ package io.github.chenfei0928.base
 import android.app.Application
 import android.content.Context
 import androidx.startup.Initializer
+import com.google.common.reflect.GoogleTypes
 import io.github.chenfei0928.util.DependencyChecker
 
 /**
@@ -32,6 +33,7 @@ class UtilInitializer : Initializer<Unit> {
         var sdkDependency: DependencyChecker = DependencyChecker.ByReflectLazy
             set(value) {
                 require(value !is DependencyChecker.Companion) { "需要为 DependencyChecker.SdkDependency 的实例" }
+                require(value.googleTypes !is GoogleTypes.Companion) { "googleTypes 需要为 GoogleTypes 的实例" }
                 field = value
             }
     }

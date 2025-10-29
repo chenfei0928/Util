@@ -49,7 +49,7 @@ val <T : MessageLite> Class<T>.protobufDefaultInstance: T
         require(Modifier.FINAL in modifiers) {
             "Protobuf message must be final."
         }
-        return if (DependencyChecker.protobufFull && isSubclassOf(Message::class.java)) {
+        return if (DependencyChecker.protobuf?.hasFullDependency == true && isSubclassOf(Message::class.java)) {
             (this as Class<out Message>).getProtobufV3DefaultInstance() as T
         } else {
             (this as Class<out GeneratedMessageLite<*, *>>)
@@ -64,8 +64,12 @@ val <T : MessageLite> Class<T>.protobufDefaultInstance: T
 val <T : MessageLite> Class<T>.protobufParserForType: Parser<T>
     get() = protobufDefaultInstance.parserForType as Parser<T>
 
-private val shortDebugStringer by lazy(LazyThreadSafetyMode.NONE) {
-    TextFormat.printer().emittingSingleLine(true)
+private val shortDebugStringer: (MessageOrBuilder, Appendable) -> Unit by lazy(LazyThreadSafetyMode.NONE) {
+    if (DependencyChecker.protobuf?.useTextFormatPrinter == true) {
+        TextFormat.printer().emittingSingleLine(true)::print
+    } else { message, appendable ->
+        appendable.append(TextFormat.shortDebugString(message))
+    }
 }
 
 /**
@@ -77,7 +81,7 @@ fun Message.toShortString() = buildString {
     append('@')
     append(Integer.toHexString(hashCode()))
     append("(")
-    shortDebugStringer.print(this@toShortString, this)
+    shortDebugStringer(this@toShortString, this)
     append(')')
 }
 
