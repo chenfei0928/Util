@@ -148,7 +148,7 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
             override fun get(data: T): V = property.get(data)
             override fun set(data: T, value: V): T = data.apply { property.set(data, value) }
             override fun invoke(): PreferenceType<V> =
-                vTypeOrNull ?: PreferenceType.forType(property.returnType)
+                vTypeOrNull ?: PreferenceType.forKType(property.returnType)
 
             override fun toString(): String = "KMutablePropertyField($pdsKey:$vType)"
         }
@@ -160,14 +160,14 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
         inline fun <reified T : Any, reified V : Any> MutableFieldAccessor<T>.property(
             tProperty: KMutableProperty1<T, V>,
         ): FieldAccessor.Field<T, V> = property(
-            tProperty, PreferenceType.forType<V>()
+            tProperty, PreferenceType.forJType<V>()
         )
 
         inline fun <reified T : Any, reified T1 : Any, reified V> MutableFieldAccessor<T>.property(
             tProperty: KMutableProperty1<T, T1>,
             t1Property: KMutableProperty1<T1, V>,
         ): FieldAccessor.Field<T, V> = property(
-            tProperty, t1Property, PreferenceType.forType<V>()
+            tProperty, t1Property, PreferenceType.forJType<V>()
         )
 
         inline fun <reified T : Any, reified T1 : Any, reified T2 : Any, reified V>
@@ -176,7 +176,7 @@ interface MutableFieldAccessor<T> : DataCopyClassFieldAccessor<T> {
             t1Property: KMutableProperty1<T1, T2>,
             t2Property: KMutableProperty1<T2, V>,
         ): FieldAccessor.Field<T, V> = property(
-            tProperty, t1Property, t2Property, PreferenceType.forType<V>()
+            tProperty, t1Property, t2Property, PreferenceType.forJType<V>()
         )
         //</editor-fold>
     }

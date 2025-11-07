@@ -10,6 +10,9 @@ import androidx.annotation.DrawableRes
 import org.jetbrains.anko.append
 import java.text.FieldPosition
 import java.text.Format
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * [android.text.Html.startImg(Editable, org.xml.sax.Attributes, android.text.Html.ImageGetter)]
@@ -35,3 +38,10 @@ fun StringBuffer.appendFormat(
     data: Any,
     fieldPosition: FieldPosition = FieldPosition(0)
 ) = format.format(data, this, fieldPosition)
+
+fun StringBuffer.appendData(
+    pattern: String,
+    data: Date,
+    locale: Locale = Locale.US,
+    fieldPosition: FieldPosition = FieldPosition(0)
+) = SimpleDateFormat(pattern, locale).format(data, this, fieldPosition)

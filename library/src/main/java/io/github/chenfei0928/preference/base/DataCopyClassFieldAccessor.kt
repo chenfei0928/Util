@@ -225,7 +225,7 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
         ) : FieldAccessor.Field<T, V> {
             override val pdsKey: String = property.name
             override val vType: PreferenceType<V> by lazy(LazyThreadSafetyMode.NONE) {
-                vType ?: PreferenceType.forType(property.returnType)
+                vType ?: PreferenceType.forKType(property.returnType)
             }
 
             // 这两个方法要读取data class metadata元数据，耗时较久
@@ -259,7 +259,7 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
         inline fun <reified T : Any, reified V : Any> DataCopyClassFieldAccessor<T>.property(
             tProperty: KProperty1<T, V>,
         ): FieldAccessor.Field<T, V> = property(
-            T::class.copyFunc, tProperty, PreferenceType.forType<V>()
+            T::class.copyFunc, tProperty, PreferenceType.forJType<V>()
         )
 
         inline fun <reified T : Any, reified T1 : Any, reified V> DataCopyClassFieldAccessor<T>.property(
@@ -268,7 +268,7 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
         ): FieldAccessor.Field<T, V> = property(
             T::class.copyFunc, tProperty,
             T1::class.copyFunc, t1Property,
-            PreferenceType.forType<V>()
+            PreferenceType.forJType<V>()
         )
 
         inline fun <reified T : Any, reified T1 : Any, reified T2 : Any, reified V>
@@ -280,7 +280,7 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
             T::class.copyFunc, tProperty,
             T1::class.copyFunc, t1Property,
             T2::class.copyFunc, t2Property,
-            PreferenceType.forType<V>()
+            PreferenceType.forJType<V>()
         )
         //</editor-fold>
     }

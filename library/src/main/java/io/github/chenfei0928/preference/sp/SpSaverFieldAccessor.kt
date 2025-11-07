@@ -225,6 +225,6 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
 
         inline fun <SpSaver : AbsSpSaver<SpSaver, *, *>, reified V> SpSaverFieldAccessor<SpSaver>.property(
             property0: KMutableProperty0<V>
-        ): FieldAccessor.Field<SpSaver, V> = property(property0, PreferenceType.forType<V>())
+        ): FieldAccessor.Field<SpSaver, V> = property(property0, PreferenceType.forJType<V>())
     }
 }

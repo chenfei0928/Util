@@ -49,11 +49,11 @@ sealed interface PreferenceType<T> {
     class Native<T>
     private constructor(
         internal val type: Type,
-        internal val primitiveType: Class<T>?,
+        private val primitiveType: Class<T>?,
     ) : PreferenceType<T> {
 
         override fun toString(): String {
-            return type.toString()
+            return primitiveType?.toString() ?: type.toString()
         }
 
         companion object {
@@ -382,8 +382,8 @@ sealed interface PreferenceType<T> {
 
         fun getPreferenceType(): PreferenceType<T> = preferenceType ?: synchronized(this) {
             preferenceType ?: run {
-                val vType = forTypeOrNullInlineOnly(tClass) ?: getType().let { tType ->
-                    forElseTypeInlineOnly(tType) ?: Struct(tType)
+                val vType = forJTypeOrNullInlineOnly(tClass) ?: getType().let { tType ->
+                    forElseJTypeInlineOnly(tType) ?: Struct(tType)
                 }
                 this.preferenceType = vType
                 vType
@@ -404,10 +404,10 @@ sealed interface PreferenceType<T> {
 
         //<editor-fold desc="通过 Class 或 Type 获取类型" defaultstatus="collapsed">
         /**
-         * 仅用于与 [PreferenceType.forElseTypeInlineOnly] 配合使用，
-         * 对外不开放，对外使用 [PreferenceType.forType] 方法
+         * 仅用于与 [PreferenceType.forElseJTypeInlineOnly] 配合使用，
+         * 对外不开放，对外使用 [PreferenceType.forJType] 方法
          */
-        fun <T> forTypeOrNullInlineOnly(
+        fun <T> forJTypeOrNullInlineOnly(
             tClass: Class<T>
         ): PreferenceType<T>? = if (tClass.isSubclassOf(Enum::class.java)) {
             @Suppress("UNCHECKED_CAST")
@@ -417,10 +417,10 @@ sealed interface PreferenceType<T> {
         }
 
         /**
-         * 仅用于与 [PreferenceType.forTypeOrNullInlineOnly] 配合使用，
-         * 对外不开放，对外使用 [PreferenceType.forType] 方法
+         * 仅用于与 [PreferenceType.forJTypeOrNullInlineOnly] 配合使用，
+         * 对外不开放，对外使用 [PreferenceType.forJType] 方法
          */
-        fun <T> forElseTypeInlineOnly(
+        fun <T> forElseJTypeInlineOnly(
             tType: Type
         ): PreferenceType<T>? = if (tType.isSubtypeOf(Native.STRING_SET.type)) {
             @Suppress("UNCHECKED_CAST")
@@ -430,28 +430,29 @@ sealed interface PreferenceType<T> {
             EnumNameStringCollection.forTypeOrNull(tType) as? PreferenceType<T>
         } else null
 
-        inline fun <T> forType(tClass: Class<T>, tTypeProvider: () -> Type): PreferenceType<T> =
-            forTypeOrNullInlineOnly(tClass) ?: tTypeProvider().let { tType ->
-                forElseTypeInlineOnly(tType)
+        inline fun <T> forJType(tClass: Class<T>, tTypeProvider: () -> Type): PreferenceType<T> =
+            forJTypeOrNullInlineOnly(tClass) ?: tTypeProvider().let { tType ->
+                forElseJTypeInlineOnly(tType)
                     ?: throw IllegalArgumentException("Not support type: $tClass $tType")
             }
 
-        inline fun <reified T> forType(): PreferenceType<T> =
-            forType(T::class.java, LazyTypeToken.Lazy<T>())
+        inline fun <reified T> forJType(): PreferenceType<T> =
+            forJType(T::class.java, LazyTypeToken.Lazy<T>())
 
         /**
          * 用于给 [kotlin.reflect.KProperty] 的场景中获取其类型信息
          */
-        fun <T> forType(kType: KType): PreferenceType<T> {
+        fun <T> forKType(kType: KType): PreferenceType<T> {
             @Suppress("UNCHECKED_CAST")
-            return forType(kType.jvmErasure.java) { kType.javaType } as PreferenceType<T>
+            return forJType(kType.jvmErasure.java) { kType.javaType } as PreferenceType<T>
         }
         //</editor-fold>
 
+        //<editor-fold desc="通过 Protobuf Full 的字段表述信息获取类型" defaultstatus="collapsed">
         /**
          * 为 Protobuf full 的字段 fieldNumber 来获取类型信息
          */
-        fun <T> forType(
+        fun <T> forProtobufType(
             field: Descriptors.FieldDescriptor, tClass: Class<T>?
         ): PreferenceType<T> = if (field.isRepeated) {
             // protobuf 不支持 Set<String> 类型，只有 List<String> 类型，不处理 Native.StringSet
@@ -483,5 +484,6 @@ sealed interface PreferenceType<T> {
             @Suppress("UNCHECKED_CAST")
             preferenceType as PreferenceType<T>
         }
+        //</editor-fold>
     }
 }

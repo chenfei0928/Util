@@ -16,7 +16,7 @@ import kotlin.reflect.KFunction
  * 当前类 [get]、[set] 方法中对 [V] 类型的判断不要直接使用 [vType]，先判断是否是枚举型
  * [Descriptors.FieldDescriptor.Type.ENUM]，
  * 可能会涉及到 [Descriptors.FieldDescriptor.JavaType.MESSAGE] 类型，
- * 其在 [PreferenceType.forType] 获取类型时会抛出异常，因为[PreferenceType] 不支持对 [Message] 类型的描述。
+ * 其在 [PreferenceType.forProtobufType] 获取类型时会抛出异常，因为 [PreferenceType] 不支持对 [Message] 类型的描述。
  *
  * @param T 字段宿主对象类型
  * @param V 字段类型
@@ -39,7 +39,7 @@ class ProtobufMessageField<T : Message, V>(
     // 此处不可直接forType vType实例，ProtobufMessageField 可能不会直接使用它的类型，而是用来获取内部字段使用，而导致 V 是个结构体
     // 包括 toString 或 get、set 方法中也不优先使用 vType 判断类型
     override val vType: PreferenceType<V> by lazy(LazyThreadSafetyMode.NONE, this)
-    override fun invoke(): PreferenceType<V> = PreferenceType.forType(fieldDescriptor, vClass)
+    override fun invoke(): PreferenceType<V> = PreferenceType.forProtobufType(fieldDescriptor, vClass)
 
     @Suppress("UNCHECKED_CAST", "kotlin:S6531")
     override fun get(
