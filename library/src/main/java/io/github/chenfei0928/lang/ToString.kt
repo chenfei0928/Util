@@ -26,18 +26,21 @@ import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.jvmName
 
 //<editor-fold desc="对任意对象进行toString支持" defaultstatus="collapsed">
-fun Any?.toStringByReflect(): String = StringBuilder().appendByReflect(this).toString()
+fun Any?.toStringByReflect(useToString: Boolean = true): String =
+    StringBuilder().appendByReflect(this, useToString).toString()
 
 @Suppress("CyclomaticComplexMethod", "LongMethod")
-fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
+fun StringBuilder.appendByReflect(
+    any: Any?, useToString: Boolean = true
+): StringBuilder = when (any) {
     null -> append("null")
     // Java类对象
     is Class<*> -> if (any.isWriteByKotlin) {
-        appendByReflect(any.kotlin)
+        appendByReflect(any.kotlin, useToString)
     } else StaticFieldsCache.cache.getOrPut(any.name) {
         // java，打印当前类自身定义的static字段
         StaticFieldsCache.JavaClass(any)
-    }.appendTo(this)
+    }.appendTo(this, useToString)
     // Kotlin类对象
     is KClass<*> -> if (!any.java.isWriteByKotlin) {
         append(any.java)
@@ -50,7 +53,7 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
         } else {
             StaticFieldsCache.KotlinKClass(any)
         }
-    }.appendTo(this)
+    }.appendTo(this, useToString)
     // 数组
     is Array<*> -> {
         append('[')
@@ -58,7 +61,7 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
             if (i != 0) {
                 append(", ")
             }
-            appendByReflect(element)
+            appendByReflect(element, useToString)
         }
         append(']')
     }
@@ -78,7 +81,7 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
             if (i != 0) {
                 append(", ")
             }
-            appendByReflect(element)
+            appendByReflect(element, useToString)
         }
         append(']')
     }
@@ -88,14 +91,14 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
     } else {
         append('[')
         any.forEach {
-            appendByReflect(it.key)
+            appendByReflect(it.key, useToString)
             append('=')
-            appendByReflect(it.value)
+            appendByReflect(it.value, useToString)
             append(", ")
         }
         replace(length - 2, length, "]")
     }
-    is Reference<*> -> appendByReflect(any.get())
+    is Reference<*> -> appendByReflect(any.get(), useToString)
     // 非JDK的容器类型
     is SparseArray<*> -> {
         append('[')
@@ -103,7 +106,7 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
             if (i != 0) append(", ")
             append(any.keyAt(i))
             append("=")
-            appendByReflect(any.valueAt(i))
+            appendByReflect(any.valueAt(i), useToString)
         }
         append(']')
     }
@@ -113,17 +116,17 @@ fun StringBuilder.appendByReflect(any: Any?): StringBuilder = when (any) {
             if (i != 0) append(", ")
             append(any.keyAt(i))
             append("=")
-            appendByReflect(any.valueAt(i))
+            appendByReflect(any.valueAt(i), useToString)
         }
         append(']')
     }
     // 判断该类有没有重写toString
-    else -> if (toStringWasOverrideCache.getOrPut(any.javaClass) {
+    else -> if (useToString && toStringWasOverrideCache.getOrPut(any.javaClass) {
             any.javaClass.getMethod("toString").declaringClass != Any::class.java
         }) {
         // 如果该类的 toString 方法被重写过（包括其父类）直接调用toString方法输出
         append(any.toString())
-    } else appendObjectByReflectImpl(any)
+    } else appendObjectByReflectImpl(any, useToString)
 }
 
 /**
@@ -137,7 +140,7 @@ private val toStringWasOverrideCache: MutableMap<Class<*>, Boolean> = ArrayMap()
 private sealed interface StaticFieldsCache {
     val clazzName: String
 
-    fun appendTo(stringBuilder: StringBuilder): StringBuilder
+    fun appendTo(stringBuilder: StringBuilder, useToString: Boolean): StringBuilder
 
     /**
      * java，打印当前类自身定义的static字段
@@ -155,9 +158,11 @@ private sealed interface StaticFieldsCache {
             if (!Modifier.isFinal(it.modifiers)) it else it.name to it.get(null)
         }
 
-        override fun appendTo(stringBuilder: StringBuilder): StringBuilder = stringBuilder
+        override fun appendTo(
+            stringBuilder: StringBuilder, useToString: Boolean
+        ): StringBuilder = stringBuilder
             .append(clazzName)
-            .appendAnyFields(clazz, fields = fields)
+            .appendAnyFields(clazz, useToString, fields = fields)
     }
 
     /**
@@ -169,8 +174,9 @@ private sealed interface StaticFieldsCache {
         any: KClass<*>
     ) : StaticFieldsCache {
         override val clazzName: String = any.qualifiedName!!
-        override fun appendTo(stringBuilder: StringBuilder): StringBuilder =
-            stringBuilder.append(clazzName).append("{}")
+        override fun appendTo(
+            stringBuilder: StringBuilder, useToString: Boolean
+        ): StringBuilder = stringBuilder.append(clazzName).append("{}")
     }
 
     /**
@@ -194,9 +200,11 @@ private sealed interface StaticFieldsCache {
             if (!it.isFinal) it else it.name to it.get(companionObj)
         }
 
-        override fun appendTo(stringBuilder: StringBuilder): StringBuilder = stringBuilder
+        override fun appendTo(
+            stringBuilder: StringBuilder, useToString: Boolean
+        ): StringBuilder = stringBuilder
             .append(clazzName)
-            .appendAnyFields(companionObj, fields = fields)
+            .appendAnyFields(companionObj, useToString, fields = fields)
     }
 
     companion object {
@@ -206,7 +214,7 @@ private sealed interface StaticFieldsCache {
 
 private sealed interface FieldsCache<T> {
     val hasField: Boolean
-    fun appendTo(builder: StringBuilder, any: T): StringBuilder
+    fun appendTo(builder: StringBuilder, any: T, useToString: Boolean): StringBuilder
 
     class Java<T>(
         clazz: Class<T>
@@ -220,7 +228,9 @@ private sealed interface FieldsCache<T> {
         }
         override val hasField: Boolean = fields.isNotEmpty()
 
-        override fun appendTo(builder: StringBuilder, any: T): StringBuilder = builder.apply {
+        override fun appendTo(
+            builder: StringBuilder, any: T, useToString: Boolean
+        ): StringBuilder = builder.apply {
             fields.forEach { field ->
                 append(field.name)
                 append('=')
@@ -228,7 +238,7 @@ private sealed interface FieldsCache<T> {
                 if (value == any) {
                     append("this")
                 } else {
-                    appendByReflect(value)
+                    appendByReflect(value, useToString)
                 }
                 append(", ")
             }
@@ -245,7 +255,9 @@ private sealed interface FieldsCache<T> {
         }
         override val hasField: Boolean = fields.isNotEmpty()
 
-        override fun appendTo(builder: StringBuilder, any: T): StringBuilder = builder.apply {
+        override fun appendTo(
+            builder: StringBuilder, any: T, useToString: Boolean
+        ): StringBuilder = builder.apply {
             fields.forEach { field ->
                 append(field.name)
                 append('=')
@@ -253,7 +265,7 @@ private sealed interface FieldsCache<T> {
                 if (value == any) {
                     append("this")
                 } else {
-                    appendByReflect(value)
+                    appendByReflect(value, useToString)
                 }
                 append(", ")
             }
@@ -265,7 +277,7 @@ private sealed interface FieldsCache<T> {
     }
 }
 
-private fun StringBuilder.appendObjectByReflectImpl(any: Any) = apply {
+private fun StringBuilder.appendObjectByReflectImpl(any: Any, useToString: Boolean) = apply {
     val thisClass: Class<*> = any.javaClass
     if (thisClass.isWriteByKotlin) {
         // 如果当前实例的类是kotlin类，且当前对象是伴生对象，尝试打印伴生对象的字段
@@ -276,7 +288,7 @@ private fun StringBuilder.appendObjectByReflectImpl(any: Any) = apply {
             val outerClass = thisClass.declaringClass
             StaticFieldsCache.cache.getOrPut(outerClass.name) {
                 StaticFieldsCache.KotlinKClassComponentObject(outerClass.kotlin, kClass)
-            }.appendTo(this)
+            }.appendTo(this, useToString)
             return@apply
         }
     }
@@ -293,7 +305,7 @@ private fun StringBuilder.appendObjectByReflectImpl(any: Any) = apply {
             val cache: FieldsCache<Any> = FieldsCache.cache.getOrPut(thisOrSuperClass.name) {
                 FieldsCache.Kotlin(thisOrSuperClass.kotlin)
             } as FieldsCache<Any>
-            cache.appendTo(this, any)
+            cache.appendTo(this, any, useToString)
             hasAnyField = hasAnyField or cache.hasField
             break
         } else {
@@ -302,7 +314,7 @@ private fun StringBuilder.appendObjectByReflectImpl(any: Any) = apply {
             val cache: FieldsCache<Any> = FieldsCache.cache.getOrPut(thisOrSuperClass.name) {
                 FieldsCache.Java(thisOrSuperClass)
             } as FieldsCache<Any>
-            cache.appendTo(this, any)
+            cache.appendTo(this, any, useToString)
             hasAnyField = hasAnyField or cache.hasField
             thisOrSuperClass = thisOrSuperClass.getSuperclass()
         }
@@ -316,12 +328,14 @@ private fun StringBuilder.appendObjectByReflectImpl(any: Any) = apply {
 //</editor-fold>
 
 //<editor-fold desc="对实例toString字段支持" defaultstatus="collapsed">
-fun Any.toStringAny(vararg fields: Any): String = StringBuilder()
+fun Any.toStringAny(useToString: Boolean = true, vararg fields: Any): String = StringBuilder()
     .append(this.javaClass.simpleName)
-    .appendAnyFields(this, fields = fields)
+    .appendAnyFields(this, useToString, fields = fields)
     .toString()
 
-fun StringBuilder.appendAnyFields(any: Any, vararg fields: Any): StringBuilder = apply {
+fun StringBuilder.appendAnyFields(
+    any: Any, useToString: Boolean = true, vararg fields: Any
+): StringBuilder = apply {
     append('(')
     fields.forEachIndexed { index, field ->
         if (index != 0) {
@@ -333,28 +347,28 @@ fun StringBuilder.appendAnyFields(any: Any, vararg fields: Any): StringBuilder =
                 val (key, value) = field
                 append(key)
                 append('=')
-                appendByReflect(getValue(any, value))
+                appendByReflect(getValue(any, value), useToString)
             }
             // Kotlin 字段、方法
             is KCallable<*> -> {
                 append(field.name)
                 append('=')
-                appendByReflect(getValue(any, field))
+                appendByReflect(getValue(any, field), useToString)
             }
             // Jvm反射体系的field
             is Field -> {
                 append(field.name)
                 append('=')
-                appendByReflect(getValue(any, field))
+                appendByReflect(getValue(any, field), useToString)
             }
             // SpSaver preferenceDataStore的field
             is FieldAccessor.Field<*, *> -> {
                 append(field.pdsKey)
                 append('=')
-                appendByReflect(getValue(any, field))
+                appendByReflect(getValue(any, field), useToString)
             }
             else -> {
-                appendByReflect(field)
+                appendByReflect(field, useToString)
             }
         }
     }
