@@ -1,6 +1,7 @@
 package io.github.chenfei0928.util;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.Size;
 
 /**
  * @author ChenFei(chenfei0928 @ gmail.com)
@@ -24,67 +25,67 @@ public class Log {
         implList[implList.length - 1] = logger;
     }
 
-    public static void v(String tag, String msg) {
+    public static void v(@Size(max = 23) String tag, String msg) {
         for (LogInterface logInterface : implList) {
             logInterface.v(tag, msg);
         }
     }
 
-    public static void v(String tag, String msg, @Nullable Throwable tr) {
+    public static void v(@Size(max = 23) String tag, String msg, @Nullable Throwable tr) {
         for (LogInterface logInterface : implList) {
             logInterface.v(tag, msg, tr);
         }
     }
 
-    public static void d(String tag, String msg) {
+    public static void d(@Size(max = 23) String tag, String msg) {
         for (LogInterface logInterface : implList) {
             logInterface.d(tag, msg);
         }
     }
 
-    public static void d(String tag, String msg, @Nullable Throwable tr) {
+    public static void d(@Size(max = 23) String tag, String msg, @Nullable Throwable tr) {
         for (LogInterface logInterface : implList) {
             logInterface.d(tag, msg, tr);
         }
     }
 
-    public static void i(String tag, String msg) {
+    public static void i(@Size(max = 23) String tag, String msg) {
         for (LogInterface logInterface : implList) {
             logInterface.i(tag, msg);
         }
     }
 
-    public static void i(String tag, String msg, @Nullable Throwable tr) {
+    public static void i(@Size(max = 23) String tag, String msg, @Nullable Throwable tr) {
         for (LogInterface logInterface : implList) {
             logInterface.i(tag, msg, tr);
         }
     }
 
-    public static void w(String tag, String msg) {
+    public static void w(@Size(max = 23) String tag, String msg) {
         for (LogInterface logInterface : implList) {
             logInterface.w(tag, msg);
         }
     }
 
-    public static void w(String tag, String msg, @Nullable Throwable tr) {
+    public static void w(@Size(max = 23) String tag, String msg, @Nullable Throwable tr) {
         for (LogInterface logInterface : implList) {
             logInterface.w(tag, msg, tr);
         }
     }
 
-    public static void w(String tag, @Nullable Throwable tr) {
+    public static void w(@Size(max = 23) String tag, @Nullable Throwable tr) {
         for (LogInterface logInterface : implList) {
             logInterface.w(tag, "", tr);
         }
     }
 
-    public static void e(String tag, String msg) {
+    public static void e(@Size(max = 23) String tag, String msg) {
         for (LogInterface logInterface : implList) {
             logInterface.e(tag, msg);
         }
     }
 
-    public static void e(String tag, String msg, @Nullable Throwable tr) {
+    public static void e(@Size(max = 23) String tag, String msg, @Nullable Throwable tr) {
         for (LogInterface logInterface : implList) {
             logInterface.e(tag, msg, tr);
         }

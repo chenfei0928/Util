@@ -1,6 +1,7 @@
 package io.github.chenfei0928.util
 
 import android.util.Log
+import androidx.annotation.Size
 import com.google.common.collect.Comparators.min
 
 /**
@@ -8,16 +9,16 @@ import com.google.common.collect.Comparators.min
  * @date 2021-06-02 11:13
  */
 interface LogInterface {
-    fun v(tag: String, msg: String) = v(tag, msg, null)
-    fun v(tag: String, msg: String, tr: Throwable?)
-    fun d(tag: String, msg: String) = d(tag, msg, null)
-    fun d(tag: String, msg: String, tr: Throwable?)
-    fun i(tag: String, msg: String) = i(tag, msg, null)
-    fun i(tag: String, msg: String, tr: Throwable?)
-    fun w(tag: String, msg: String) = w(tag, msg, null)
-    fun w(tag: String, msg: String, tr: Throwable?)
-    fun e(tag: String, msg: String) = e(tag, msg, null)
-    fun e(tag: String, msg: String, tr: Throwable?)
+    fun v(@Size(max = 23) tag: String, msg: String) = v(tag, msg, null)
+    fun v(@Size(max = 23) tag: String, msg: String, tr: Throwable?)
+    fun d(@Size(max = 23) tag: String, msg: String) = d(tag, msg, null)
+    fun d(@Size(max = 23) tag: String, msg: String, tr: Throwable?)
+    fun i(@Size(max = 23) tag: String, msg: String) = i(tag, msg, null)
+    fun i(@Size(max = 23) tag: String, msg: String, tr: Throwable?)
+    fun w(@Size(max = 23) tag: String, msg: String) = w(tag, msg, null)
+    fun w(@Size(max = 23) tag: String, msg: String, tr: Throwable?)
+    fun e(@Size(max = 23) tag: String, msg: String) = e(tag, msg, null)
+    fun e(@Size(max = 23) tag: String, msg: String, tr: Throwable?)
 }
 
 internal object SystemLog : LogInterface {
