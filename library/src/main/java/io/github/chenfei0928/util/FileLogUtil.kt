@@ -143,11 +143,14 @@ private constructor(
 
         private fun getLogFile(context: Context): File {
             val logDir = createLogDir(context)
-            val logFileName = getFileName(context) + ".log"
+            val logFileName = getNoExtFileName(context) + ".log"
             return File(logDir, logFileName)
         }
 
-        private fun getFileName(context: Context): String {
+        /**
+         * 获取没有扩展名的文件名，使用日期时间并后缀进程名
+         */
+        fun getNoExtFileName(context: Context): String {
             val logTime = getDateEn().replace(' ', '_')
                 .replace(':', '-')
 
@@ -165,7 +168,7 @@ private constructor(
             logLine.length > it.length
         }.any {
             SimpleDateFormat(it, Locale.US).parse(
-                logLine.substring(0, it.length), ParsePosition(0)
+                logLine.take(it.length), ParsePosition(0)
             ) != null
         }
 
