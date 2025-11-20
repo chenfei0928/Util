@@ -7,18 +7,17 @@ val appData = System.getenv("APPDATA")
 arrayOf(
     File(appData, """\kingsoft\wps\addons\pool\win-i386"""),
     File(appData, """\kingsoft\wps\addons\pool\win-x64"""),
-).forEach { pool ->
-    if (!pool.exists()) {
-        return@forEach
-    }
-    pool.listFiles()?.let {
-        cleanPoolOldVersion(it)
-    }
+).flatMap { it.listFiles()?.toList() ?: emptyList() }.let {
+    cleanPoolOldVersion(it)
 }
 
-private fun cleanPoolOldVersion(files: Array<File>) {
+private fun cleanPoolOldVersion(files: List<File>) {
     val namesFile: MutableMap<String, MutableMap<ModuleDescriptor.Version, File>> = HashMap()
     files.forEach { file ->
+        if (file.listFiles().isNullOrEmpty()) {
+            file.deleteRecursively()
+            return@forEach
+        }
         val fileName = file.name
         val split = fileName.split("_")
         val name = if (split.size == 2) {
@@ -34,18 +33,7 @@ private fun cleanPoolOldVersion(files: Array<File>) {
         versionFileMap.remove(maxVersion)
         versionFileMap.values.forEach { file ->
             println("delete: $file")
-            deleteDir(file)
+            file.deleteRecursively()
         }
-    }
-}
-
-private fun deleteDir(dir: File) {
-    if (dir.isFile) {
-        dir.delete()
-    } else {
-        for (file in dir.listFiles()) {
-            deleteDir(file)
-        }
-        dir.delete()
     }
 }

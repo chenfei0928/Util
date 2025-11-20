@@ -28,6 +28,7 @@ class WPSCleanKt {
             versionFileMap.remove(maxVersion)
             versionFileMap.values.forEach { file ->
                 println("delete: $file")
+                file.deleteRecursively()
                 deleteDir(file)
             }
         }
