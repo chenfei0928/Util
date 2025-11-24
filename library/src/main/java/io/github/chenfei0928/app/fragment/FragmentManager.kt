@@ -131,7 +131,7 @@ inline fun <F : Fragment> FragmentManager.findOrOptionChild(
     creator: () -> F,
     option: FragmentTransaction.(F) -> FragmentTransaction
 ): F {
-    return findAndCheckTypeByTagOrNullInlineOnly(tag, clazz) ?: run {
+    return findAndCheckTypeByTagOrNull(tag, clazz) ?: run {
         // 如果不是该类实例，创建新的并加入host
         creator().also { f ->
             option(beginTransaction(), f).run {
@@ -145,7 +145,7 @@ inline fun <F : Fragment> FragmentManager.findOrOptionChild(
     }
 }
 
-fun <F : Fragment> FragmentManager.findAndCheckTypeByTagOrNullInlineOnly(
+fun <F : Fragment> FragmentManager.findAndCheckTypeByTagOrNull(
     @Size(min = 1) tag: String,
     clazz: Class<F>,
 ): F? {

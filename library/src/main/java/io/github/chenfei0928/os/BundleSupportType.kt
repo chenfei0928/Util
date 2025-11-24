@@ -1844,7 +1844,7 @@ abstract class BundleSupportType<T>(
     //</editor-fold>
 
     companion object {
-        private const val TAG = "BundleSupportType"
+        private const val TAG = "KW_BundleSupportType"
 
         @Suppress("UNCHECKED_CAST")
         private fun <T : Any> KProperty<*>.getReturnTypeJClass(): Class<T> =

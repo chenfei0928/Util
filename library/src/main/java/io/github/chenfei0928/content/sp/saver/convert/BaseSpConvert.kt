@@ -89,6 +89,6 @@ constructor(
         "${this.javaClass.simpleName}(saver=$saver, spValueType=$spValueType)"
 
     companion object {
-        private const val TAG = "BaseSpConvert"
+        private const val TAG = "KW_BaseSpConvert"
     }
 }

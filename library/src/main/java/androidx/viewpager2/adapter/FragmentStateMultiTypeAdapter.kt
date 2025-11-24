@@ -146,6 +146,6 @@ constructor(
     }
 
     companion object {
-        private const val TAG = "FragmentStateMultiTypeA"
+        private const val TAG = "KW_FragmentStatMultiTpA"
     }
 }

@@ -51,7 +51,7 @@ private constructor(
     }
 
     companion object {
-        private const val TAG = "CoroutineAndroidContext"
+        private const val TAG = "KW_CoroutineAndroidCtx"
         private val classTagMap = ArrayMap<Class<*>, String?>()
 
         fun Any.getStaticTag(

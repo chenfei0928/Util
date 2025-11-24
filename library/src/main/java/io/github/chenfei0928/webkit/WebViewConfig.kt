@@ -570,7 +570,7 @@ open class WebViewConfig {
     //</editor-fold>
 
     companion object {
-        private const val TAG = "WebViewConfig"
+        private const val TAG = "KW_WebViewConfig"
         val USER_AGENT_METADATA: UserAgentMetadata = UserAgentMetadata.Builder().build()
 
         @SuppressLint("RequiresFeature")

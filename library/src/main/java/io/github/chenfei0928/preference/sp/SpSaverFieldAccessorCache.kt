@@ -141,6 +141,6 @@ constructor(
         getValue(saver)
 
     companion object {
-        private const val TAG = "SpSaverPreferenceDataSt"
+        private const val TAG = "KW_SpSaverFieldAccCache"
     }
 }
