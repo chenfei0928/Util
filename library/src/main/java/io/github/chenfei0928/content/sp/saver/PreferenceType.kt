@@ -211,6 +211,10 @@ sealed interface PreferenceType<T> {
                 @Suppress("UNCHECKED_CAST")
                 override fun <MC : MutableCollection<E>> createCollection(size: Int): MC =
                     createCollection(size) as MC
+
+                override fun toString(): String {
+                    return "BaseEnumNameStringCollection.invoke(eClass=${type.eClass})"
+                }
             }
 
             fun <E : Enum<E>> forEnumDescriptor(
@@ -223,6 +227,10 @@ sealed interface PreferenceType<T> {
                     @Suppress("UNCHECKED_CAST")
                     override fun <MC : MutableCollection<E>> createCollection(size: Int): MC =
                         ArrayList<E>(size) as MC
+
+                    override fun toString(): String {
+                        return "ProtobufEnumNameStringCollection(eClass=${type.eClass})"
+                    }
                 }
             }
         }

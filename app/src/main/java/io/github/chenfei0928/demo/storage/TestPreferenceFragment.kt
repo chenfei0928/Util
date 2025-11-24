@@ -64,6 +64,7 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
                 bindEnum { it.name }
             }
             multiSelectListPreference<TestEnum>(dataStore.property(Test.ENUMLIST_FIELD_NUMBER)) {
+                Test.getDefaultInstance().enumListValueList
                 title = "enumList"
                 bindEnum { it.name }
             }

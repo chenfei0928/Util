@@ -35,11 +35,11 @@ class LocalStorageFieldAccessorCache<T : Any>(
         storage: Storage<T>, redirectToMutableField: Boolean, readCache: Boolean,
     ) : this(storage, MutableFieldAccessor.Impl(redirectToMutableField, readCache))
 
-    override fun <V> FieldAccessor.Field<T, V>.set(value: V) {
+    override fun <V> FieldAccessor.Field<T, V>.setToStorage(value: V) {
         storage.set(setValue(storage.get(), value))
     }
 
-    override fun <V> FieldAccessor.Field<T, V>.get(): V =
+    override fun <V> FieldAccessor.Field<T, V>.getFromStorage(): V =
         getValue(storage.get())
 
     interface Storage<T : Any> {

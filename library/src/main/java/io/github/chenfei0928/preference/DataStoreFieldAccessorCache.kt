@@ -44,7 +44,7 @@ class DataStoreFieldAccessorCache<T : Any>(
         null
     )
 
-    override fun <V> FieldAccessor.Field<T, V>.set(value: V) {
+    override fun <V> FieldAccessor.Field<T, V>.setToStorage(value: V) {
         if (blockingWrite) {
             runBlocking(coroutineScope.coroutineContext + Dispatchers.IO) {
                 suspendSet(value)
@@ -62,7 +62,7 @@ class DataStoreFieldAccessorCache<T : Any>(
         }
     }
 
-    override fun <V> FieldAccessor.Field<T, V>.get(): V {
+    override fun <V> FieldAccessor.Field<T, V>.getFromStorage(): V {
         val data = field.value ?: runBlocking(coroutineScope.coroutineContext + Dispatchers.IO) {
             field.filterNotNull().first()
         }

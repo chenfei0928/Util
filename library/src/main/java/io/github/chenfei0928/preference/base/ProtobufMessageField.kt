@@ -94,7 +94,7 @@ class ProtobufMessageField<T : Message, V>(
         } else {
             fieldDescriptor.enumType.fullName
         }
-        return "ProtobufMessageField($pdsKey:$type)"
+        return "ProtobufMessageField($pdsKey:$type, $vType)"
     }
 
     companion object {

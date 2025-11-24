@@ -232,6 +232,7 @@ class MainActivity : ComponentActivity() {
         var q: Lifecycle.State? by ArgumentDelegate(BundleSupportType.EnumType.nullable())
 
         override fun toString(): String = toStringAny(
+            true,
             ::a, ::b, ::c, ::d, ::e, ::f, ::g, ::h, ::i, ::j, ::k, ::l, ::m, ::n, ::o, ::p, ::q
         )
     }

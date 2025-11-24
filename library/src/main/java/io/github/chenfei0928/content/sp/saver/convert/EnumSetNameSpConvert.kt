@@ -57,6 +57,10 @@ constructor(
             return ArraySet<E>(size) as MC
         }
 
+        override fun toString(): String {
+            return "EnumSetNameSpConvertPreferenceType(eClass=${type.eClass})"
+        }
+
         companion object {
             inline operator fun <reified E : Enum<E>> invoke() =
                 EnumNameStringSet(PreferenceType.EnumNameString<E>())

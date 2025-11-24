@@ -29,19 +29,7 @@ class WPSCleanKt {
             versionFileMap.values.forEach { file ->
                 println("delete: $file")
                 file.deleteRecursively()
-                deleteDir(file)
             }
-        }
-    }
-
-    private fun deleteDir(dir: File) {
-        if (dir.isFile) {
-            dir.delete()
-        } else {
-            for (file in dir.listFiles()) {
-                deleteDir(file)
-            }
-            dir.delete()
         }
     }
 }

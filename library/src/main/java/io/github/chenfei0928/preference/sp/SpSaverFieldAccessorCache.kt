@@ -132,12 +132,12 @@ constructor(
         }
     }
 
-    override fun <V> FieldAccessor.Field<SpSaver, V>.set(value: V) {
+    override fun <V> FieldAccessor.Field<SpSaver, V>.setToStorage(value: V) {
         setValue(saver, value)
         saver.apply()
     }
 
-    override fun <V> FieldAccessor.Field<SpSaver, V>.get(): V =
+    override fun <V> FieldAccessor.Field<SpSaver, V>.getFromStorage(): V =
         getValue(saver)
 
     companion object {
