@@ -3,7 +3,7 @@ package io.github.chenfei0928.view
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.graphics.Point
+import android.graphics.Rect
 import android.os.Build
 
 /**
@@ -35,8 +35,8 @@ object DisplayUtil {
             && orient != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         ) {
             // 宽>高为横屏,反正为竖屏
-            val point = getDisplaySize(activity)
-            orient = if (point.x > point.y)
+            val point = getDisplayRect(activity)
+            orient = if (point.width() > point.height())
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
@@ -45,27 +45,16 @@ object DisplayUtil {
     }
 
     /**
-     * 通过API获得屏幕方向，如果是横屏或主动设置了屏幕方向为横屏的话，返回true
-     * SCREEN_ORIENTATION_PORTRAIT 为竖屏
-     * SCREEN_ORIENTATION_LANDSCAPE 为横屏
-     * 正方形返回竖屏、false
+     * 通过API获得当前activity所使用的屏幕物理像素尺寸
      */
-    fun getDisplaySize(activity: Activity): Point {
-        // 宽>高为横屏,反正为竖屏
-        val point = Point()
-        val display = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            activity.display
-        } else {
-            activity.windowManager.defaultDisplay
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    fun getDisplayRect(activity: Activity): Rect {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val currentWindowMetrics = activity.windowManager.currentWindowMetrics
-            val bounds = currentWindowMetrics.bounds
-            point.x = bounds.right - bounds.left
-            point.y = bounds.bottom - bounds.top
+            currentWindowMetrics.bounds
         } else {
-            display.getRealSize(point)
+            val point = Rect()
+            activity.windowManager.defaultDisplay.getRectSize(point)
+            point
         }
-        return point
     }
 }
