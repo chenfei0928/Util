@@ -26,13 +26,19 @@ interface DependencyChecker {
     // https://github.com/google/flexbox-layout
     val flexBox: Boolean
 
-    // 如果没有 protobuf 依赖，此字段返回null，否则返回其依赖信息
-    // https://github.com/protocolbuffers/protobuf
+    /**
+     * 如果没有 protobuf 依赖，此字段返回null，否则返回其依赖信息
+     *
+     * https://github.com/protocolbuffers/protobuf
+     */
     val protobuf: Protobuf?
 
-    // 返回 GoogleTypes 接口，用于内部生成Type使用
-    // Gson https://github.com/google/gson
-    // Google Guava 工具库 https://github.com/google/guava
+    /**
+     * 返回 GoogleTypes 接口，用于内部生成Type使用
+     *
+     * [Gson](https://github.com/google/gson)、
+     * [Google Guava 工具库](https://github.com/google/guava)
+     */
     val googleTypes: GoogleTypes
 
     //  https://github.com/Tencent/MMKV
@@ -60,7 +66,7 @@ interface DependencyChecker {
 
     //<editor-fold desc="Protobuf依赖信息" defaultstatus="collapsed">
     /**
-     * Protobuf 依赖信息
+     * Protobuf 依赖信息，如果没有依赖，使用处的值类型定义应该为nullable，以用于标记没有依赖Protobuf依赖的情况
      *
      * @property hasFullDependency 是否包含完整的 protobuf 依赖，即包含了 protobuf-lite 与 protobuf-java 的所有类
      * @property useTextFormatPrinter 是否使用在 Full 版 `4.28.0` 加入并成为推荐的 [TextFormat.Printer.emittingSingleLine]
