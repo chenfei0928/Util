@@ -11,10 +11,26 @@
         android:layout_height="match_parent" />
 
     <Button
-        android:id="@+id/btn_reload"
+        android:id="@+id/btn_replace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:text="RePlace"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_removeAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:text="Reload"
+        android:text="RemoveAdd"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_detachAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:text="DetachAdd"
         android:textAllCaps="false" />
 </FrameLayout>

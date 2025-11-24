@@ -37,10 +37,33 @@ class PreferenceActivity : AppCompatActivity() {
         }
         Log.v(TAG, "onCreate: $fragmentName $intValue $protobuf")
 
-        binding.btnReload.setOnClickListener {
+        binding.btnReplace.setOnClickListener {
+            Log.v(TAG, "onCreate: replace")
             supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace(R.id.main, Class.forName(fragmentName) as Class<out Fragment>, Bundle.EMPTY)
+            }
+        }
+        binding.btnDetachAdd.setOnClickListener {
+            Log.v(TAG, "onCreate: detachAdd")
+            val fragment = supportFragmentManager.findFragmentById(R.id.main)
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                fragment?.let {
+                    detach(it)
+                }
+                add(R.id.main, Class.forName(fragmentName) as Class<out Fragment>, Bundle.EMPTY)
+            }
+        }
+        binding.btnRemoveAdd.setOnClickListener {
+            Log.v(TAG, "onCreate: removeAdd")
+            val fragment = supportFragmentManager.findFragmentById(R.id.main)
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                fragment?.let {
+                    remove(it)
+                }
+                add(R.id.main, Class.forName(fragmentName) as Class<out Fragment>, Bundle.EMPTY)
             }
         }
         supportFragmentManager.registerFragmentLifecycleCallbacks(object :
