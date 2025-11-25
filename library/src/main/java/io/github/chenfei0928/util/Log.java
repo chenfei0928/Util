@@ -13,7 +13,7 @@ public class Log {
     // logcat -g指令可以读到各个分类的缓冲区上限、目前用量、每次读取量、单条日志长度的上限。
     // system/core/liblog/include/log/log_read.h下的LOGGER_ENTRY_MAX_PAYLOAD和LOGGER_ENTRY_MAX_LEN
     // https://blog.csdn.net/realDonaldTrump/article/details/128468204
-    public static int SYSTEM_LOGCAT_SPLIT_LENGTH = 2000;
+    public static int SYSTEM_LOGCAT_SPLIT_LENGTH = 1000;
 
     private Log() {
     }

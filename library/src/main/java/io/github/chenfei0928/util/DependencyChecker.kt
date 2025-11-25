@@ -158,7 +158,7 @@ interface DependencyChecker {
      * @date 2024-11-29 14:16
      */
     enum class ByReflectLazy : Lazy<Boolean> {
-        //<editor-fold desc="使用反射或直接引入类饼try-catch来判断对应的类是否已经依赖" defaultstatus="collapsed">
+        //<editor-fold desc="使用反射或直接引入类，并try-catch来判断对应的类是否已经依赖" defaultstatus="collapsed">
         /**
          * 判断Material依赖是否被引入了，调用一下它的方法避免class引用被编译器优化掉
          */

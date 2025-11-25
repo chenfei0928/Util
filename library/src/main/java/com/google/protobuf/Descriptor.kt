@@ -12,11 +12,13 @@ val Descriptors.GenericDescriptor.jvmFullyQualifiedName: String
     get() {
         val fileOptions = file.options
         var className = when (this) {
+            // 字段、方法定义
             is Descriptors.FieldDescriptor,
             is Descriptors.MethodDescriptor,
             is Descriptors.EnumValueDescriptor,
             is Descriptors.OneofDescriptor,
                 -> ".$name"
+            // 类、枚举定义
             is Descriptors.EnumDescriptor,
             is Descriptors.Descriptor,
                 -> "$$name"
@@ -25,7 +27,9 @@ val Descriptors.GenericDescriptor.jvmFullyQualifiedName: String
                 -> name
             // PackageDescriptor 访问权限是private的，无法引用
             // is Descriptors.PackageDescriptor,
-            else -> return if (fileOptions.hasJavaPackage()) {
+            else -> return if (!this.javaClass.name.endsWith("PackageDescriptor")) {
+                throw IllegalArgumentException("Not supported descriptor type: ${this.javaClass.name} $this")
+            } else if (fileOptions.hasJavaPackage()) {
                 fileOptions.javaPackage
             } else {
                 file.`package`
