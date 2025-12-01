@@ -381,11 +381,15 @@ sealed interface PreferenceType<T> {
         }
     }
 
+    /**
+     * 不立刻获取 [PreferenceType] 实例，而是在第一次调用 [getPreferenceType] 时才初始化它
+     */
     open class LazyPreferenceType<T>
     protected constructor(
         private val tClass: Class<T>,
         actualTypeIndex: Int,
     ) : LazyTypeToken<T>(actualTypeIndex) {
+        @Volatile
         private var preferenceType: PreferenceType<T>? = null
 
         fun getPreferenceType(): PreferenceType<T> = preferenceType ?: synchronized(this) {

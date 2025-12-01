@@ -8,5 +8,5 @@ import androidx.collection.LruCache
  */
 
 inline fun <K : Any, V : Any> LruCache<K, V>.getOrPut(key: K, creator: () -> V): V {
-    return this.get(key) ?: creator().also { put(key, it) }
+    return this[key] ?: creator().also { put(key, it) }
 }

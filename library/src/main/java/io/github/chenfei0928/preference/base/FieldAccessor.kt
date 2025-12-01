@@ -186,7 +186,7 @@ interface FieldAccessor<T> {
         actualTypeIndex: Int = 1,
     ) : PreferenceType.LazyPreferenceType<V>(vClass, actualTypeIndex), Field<T, V> {
         final override val vType: PreferenceType<V> get() = getPreferenceType()
-        final override fun toString(): String = "field($pdsKey:$vType)"
+        final override fun toString(): String = "InlineField($pdsKey:$vType)"
     }
 
     companion object {

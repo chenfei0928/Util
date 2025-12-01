@@ -48,12 +48,12 @@ abstract class LazyInitFragment(
         }
     }
 
-    override val isInflated: Boolean
+    final override val isInflated: Boolean
         get() = view.let { layout -> layout != null && layout.isNotEmpty() }
 
-    abstract fun onCreateViewImpl(
+    protected abstract fun onCreateViewImpl(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View
 
-    abstract fun onViewCreatedImpl(view: View, savedInstanceState: Bundle?)
+    protected abstract fun onViewCreatedImpl(view: View, savedInstanceState: Bundle?)
 }

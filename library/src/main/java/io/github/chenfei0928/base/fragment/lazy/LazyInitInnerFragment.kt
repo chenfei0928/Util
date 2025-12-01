@@ -34,7 +34,7 @@ open class LazyInitInnerFragment<F : Fragment>(
         }
     }
 
-    override val isInflated: Boolean
+    final override val isInflated: Boolean
         get() = fragment.isAdded
 
     protected open fun createFragment(): F? = null

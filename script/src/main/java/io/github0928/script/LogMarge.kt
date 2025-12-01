@@ -1,6 +1,7 @@
 package io.github0928.script
 
 import java.io.File
+import java.util.zip.GZIPInputStream
 
 /**
  * @author chenf()
@@ -13,13 +14,19 @@ fun main(args: Array<String>) {
         it.name != lastLogFile.name && it.name.startsWith("logcat.log")
     }
     File(logDir, "out.log").bufferedWriter().use { out ->
-        files?.forEach {
-            println(it.name)
-            it.bufferedReader().copyTo(out)
+        files?.forEach { file ->
+            println(file.name)
+            if (file.name.endsWith(".gz")) {
+                GZIPInputStream(file.inputStream()).bufferedReader()
+            } else {
+                file.bufferedReader()
+            }.use { it.copyTo(out) }
             out.flush()
         }
-        lastLogFile.bufferedReader().use {
-            it.copyTo(out)
+        if (lastLogFile.exists()) {
+            lastLogFile.bufferedReader().use {
+                it.copyTo(out)
+            }
         }
         out.flush()
     }
