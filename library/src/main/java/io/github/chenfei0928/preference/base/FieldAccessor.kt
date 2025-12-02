@@ -186,7 +186,27 @@ interface FieldAccessor<T> {
         actualTypeIndex: Int = 1,
     ) : PreferenceType.LazyPreferenceType<V>(vClass, actualTypeIndex), Field<T, V> {
         final override val vType: PreferenceType<V> get() = getPreferenceType()
+
+        //<editor-fold desc="重写Object方法" defaultstatus="collapsed">
         final override fun toString(): String = "InlineField($pdsKey:$vType)"
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Inline<*, *>) return false
+            if (!super.equals(other)) return false
+
+            if (pdsKey != other.pdsKey) return false
+            if (vType != other.vType) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = super.hashCode()
+            result = 31 * result + pdsKey.hashCode()
+            result = 31 * result + vType.hashCode()
+            return result
+        }
+        //</editor-fold>
     }
 
     companion object {

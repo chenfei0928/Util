@@ -57,6 +57,28 @@ open class LazyTypeToken<T> {
         }
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+
+        fun findNonLocalClass(clazz: Class<*>?): Class<*>? {
+            return if (clazz == null) null
+            else if (clazz.isLocalClass || clazz.isAnonymousClass || clazz.isSynthetic || clazz.isMemberClass) {
+                findNonLocalClass(clazz.superclass!!)
+            } else clazz
+        }
+
+        if (findNonLocalClass(this.javaClass) != findNonLocalClass(other?.javaClass)) {
+            return false
+        }
+        other as LazyTypeToken<*>
+
+        return getType() == other.getType()
+    }
+
+    override fun hashCode(): Int {
+        return getType().hashCode()
+    }
+
     open class Lazy<T> : LazyTypeToken<T>, () -> Type, kotlin.Lazy<Type> {
         protected constructor(actualTypeIndex: Int) : super(actualTypeIndex)
         constructor(type: Type) : super(type)

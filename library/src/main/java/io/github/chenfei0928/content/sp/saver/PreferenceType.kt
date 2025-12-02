@@ -402,13 +402,8 @@ sealed interface PreferenceType<T> {
             }
         }
 
-        final override fun isInitialized(): Boolean {
-            return preferenceType != null
-        }
-
-        override fun toString(): String {
-            return getPreferenceType().toString()
-        }
+        final override fun isInitialized(): Boolean = preferenceType != null
+        override fun toString(): String = getPreferenceType().toString()
     }
 
     companion object {

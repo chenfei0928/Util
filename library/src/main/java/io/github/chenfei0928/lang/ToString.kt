@@ -85,7 +85,7 @@ fun StringBuilder.appendByReflect(
         }
         append(']')
     }
-    is Map<*, *> -> if (isEmpty()) {
+    is Map<*, *> -> if (any.isEmpty()) {
         append(any.javaClass.simpleName)
         append("(empty)")
     } else {
