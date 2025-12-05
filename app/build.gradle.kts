@@ -48,6 +48,7 @@ dependencies {
     implementation(DepsAndroidx.preference)
     implementation(DepsAndroidx.lifecycle.service)
     implementation(DepsAndroidx.datastore.core)
+    implementation(DepsAndroidx.media)
 
     implementation(Deps.widget.recyclerView.multiType)
 

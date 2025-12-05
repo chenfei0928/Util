@@ -119,7 +119,7 @@ object DepsAndroidx {
 
     //<editor-fold defaultstate="collapsed" desc="Media">
     // https://dl.google.com/dl/android/maven2/androidx/media/media/maven-metadata.xml
-    const val media = "androidx.media:media:1.7.0"
+    const val media = "androidx.media:media:1.7.1"
 
     // https://dl.google.com/dl/android/maven2/androidx/mediarouter/mediarouter/maven-metadata.xml
     const val mediarouter = "androidx.mediarouter:mediarouter:1.8.1"
