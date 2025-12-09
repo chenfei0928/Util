@@ -64,12 +64,13 @@ class AsyncLayoutInflater(
         crossinline inflate: () -> V,
         crossinline callback: (V) -> Unit
     ) = executorOrScope.execute({
+        val l = System.currentTimeMillis()
         try {
             return@execute inflate()
         } catch (ex: RuntimeException) {
             // Probably a Looper failure, retry on the UI thread
             Log.w(TAG, run {
-                "Failed to inflate resource in the background! Retrying on the UI thread"
+                "Failed to inflate resource in the background! Retrying on the UI thread. countTimes: ${System.currentTimeMillis() - l}"
             }, ex)
             return@execute null
         }
