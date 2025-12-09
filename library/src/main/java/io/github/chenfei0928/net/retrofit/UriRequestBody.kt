@@ -22,9 +22,12 @@ class UriRequestBody(
     private val context: Context,
     private val uri: Uri
 ) : RequestBody() {
+    private val documentFile: DocumentFile? by lazy {
+        DocumentFile.fromSingleUri(context, uri)
+    }
 
     override fun contentType(): MediaType? {
-        return DocumentFile.fromSingleUri(context, uri)?.type?.toMediaTypeOrNull()
+        return documentFile?.type?.toMediaTypeOrNull()
             ?: MimeTypeMap.getSingleton()
                 .getMimeTypeFromExtension(FileUtil.getFileExtensionFromUrl(uri.toString()))
                 ?.toMediaTypeOrNull()
@@ -32,7 +35,8 @@ class UriRequestBody(
 
     @Throws(IOException::class)
     override fun contentLength(): Long {
-        return uri.getLength(context)
+        return documentFile?.length()?.takeIf { it > 0 }
+            ?: uri.getLength(context)
     }
 
     @Throws(IOException::class)

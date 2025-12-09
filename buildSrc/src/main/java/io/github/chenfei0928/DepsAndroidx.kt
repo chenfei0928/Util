@@ -15,6 +15,26 @@ object DepsAndroidx {
     const val core = "androidx.core:core:1.16.0"
     const val ktx = "androidx.core:core-ktx:1.16.0"
 
+    // https://dl.google.com/dl/android/maven2/androidx/core/core-animation/maven-metadata.xml
+    const val animation = "androidx.core:core-animation:1.0.0"
+    const val animationTest = "androidx.core:core-animation-testing:1.0.0"
+
+    // https://dl.google.com/dl/android/maven2/androidx/core/core-google-shortcuts/maven-metadata.xml
+    const val shortcuts = "androidx.core:core-google-shortcuts:1.1.0"
+
+    // https://dl.google.com/dl/android/maven2/androidx/core/core-performance/maven-metadata.xml
+    const val performance = "androidx.core:core-performance:1.0.0"
+
+    // https://dl.google.com/dl/android/maven2/androidx/core/core-remoteviews/maven-metadata.xml
+    const val remoteViews = "androidx.core:core-remoteviews:1.1.0"
+
+    // https://dl.google.com/dl/android/maven2/androidx/core/core-role/maven-metadata.xml
+    const val role = "androidx.core:core-role:1.1.0"
+
+    // https://dl.google.com/dl/android/maven2/androidx/core/core-splashscreen/maven-metadata.xml
+    const val splashScreen = "androidx.core:core-splashscreen:1.2.0"
+
+    // https://developer.android.com/jetpack/androidx/releases/activity?hl=zh-cn
     // https://dl.google.com/dl/android/maven2/androidx/activity/activity/maven-metadata.xml
     const val activity = "androidx.activity:activity:1.10.1"
     const val activityKtx = "androidx.activity:activity-ktx:1.10.1"
@@ -36,21 +56,6 @@ object DepsAndroidx {
     // https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/maven-metadata.xml
     const val annotation = "androidx.annotation:annotation:1.9.1"
     const val annotationExp = "androidx.annotation:annotation-experimental:1.9.1"
-
-    // https://dl.google.com/dl/android/maven2/androidx/core/core-role/maven-metadata.xml
-    const val role = "androidx.core:core-role:1.0.0"
-
-    // https://dl.google.com/dl/android/maven2/androidx/core/core-performance/maven-metadata.xml
-    const val performance = "androidx.core:core-performance:1.0.0"
-
-    // https://dl.google.com/dl/android/maven2/androidx/core/core-google-shortcuts/maven-metadata.xml
-    const val shortcuts = "androidx.core:core-google-shortcuts:1.1.0"
-
-    // https://dl.google.com/dl/android/maven2/androidx/core/core-remoteviews/maven-metadata.xml
-    const val remoteViews = "androidx.core:core-remoteviews:1.1.0"
-
-    // https://dl.google.com/dl/android/maven2/androidx/core/core-splashscreen/maven-metadata.xml
-    const val splashScreen = "androidx.core:core-splashscreen:1.0.1"
 
     // 多dex文件支持
     object multidex {
@@ -81,7 +86,7 @@ object DepsAndroidx {
 
     // https://developer.android.com/jetpack/androidx/releases/browser
     // https://dl.google.com/dl/android/maven2/androidx/browser/browser/maven-metadata.xml
-    const val browser = "androidx.browser:browser:1.9.0"
+    const val browser = "androidx.browser:browser:1.6.0"
 
     // https://developer.android.com/jetpack/androidx/releases/palette
     // https://dl.google.com/dl/android/maven2/androidx/palette/palette/maven-metadata.xml
@@ -95,8 +100,8 @@ object DepsAndroidx {
     // https://developer.android.com/jetpack/androidx/releases/datastore
     // https://dl.google.com/dl/android/maven2/androidx/datastore/datastore-core/maven-metadata.xml
     object datastore {
-        const val core = "androidx.datastore:datastore:1.1.7"
-        const val sp = "androidx.datastore:datastore-preferences:1.1.7"
+        const val core = "androidx.datastore:datastore:1.2.0"
+        const val sp = "androidx.datastore:datastore-preferences:1.2.0"
     }
 
     // https://developer.android.com/jetpack/androidx/releases/tracing
@@ -115,36 +120,41 @@ object DepsAndroidx {
     // https://developer.android.com/jetpack/androidx/releases/concurrent
     const val concurrentFutures = "androidx.concurrent:concurrent-futures:1.3.0"
     const val concurrentFuturesKtx = "androidx.concurrent:concurrent-futures-ktx:1.3.0"
+
+    // https://developer.android.com/jetpack/androidx/releases/localbroadcastmanager?hl=zh-cn
+    const val localBroadcastManager = "androidx.localbroadcastmanager:localbroadcastmanager:1.1.0"
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Media">
+    // https://developer.android.com/jetpack/androidx/releases/media?hl=zh-cn
     // https://dl.google.com/dl/android/maven2/androidx/media/media/maven-metadata.xml
     const val media = "androidx.media:media:1.7.1"
 
+    // https://developer.android.com/jetpack/androidx/releases/mediarouter?hl=zh-cn
     // https://dl.google.com/dl/android/maven2/androidx/mediarouter/mediarouter/maven-metadata.xml
     const val mediarouter = "androidx.mediarouter:mediarouter:1.8.1"
 
-    // https://dl.google.com/dl/android/maven2/androidx/media2/media2/maven-metadata.xml
-    object media2 {
-        const val core = "androidx.media2:media2:1.0.0-alpha04"
-//                exo : "androidx.media2:media2-exoplayer:1.0.0-alpha03",
-    }
-
     // https://developer.android.com/jetpack/androidx/releases/exifinterface
     // https://dl.google.com/dl/android/maven2/androidx/exifinterface/exifinterface/maven-metadata.xml
-    const val exifInfo = "androidx.exifinterface:exifinterface:1.4.1"
+    const val exifInfo = "androidx.exifinterface:exifinterface:1.4.2"
 
     // https://developer.android.com/jetpack/androidx/releases/camera
     object camera2 {
-        private const val camerax_version = "1.4.2"
-        val core = "androidx.camera:camera-core:$camerax_version"
-        val camera2 = "androidx.camera:camera-camera2:$camerax_version"
-        val lifecycle = "androidx.camera:camera-lifecycle:$camerax_version"
-        val video = "androidx.camera:camera-video:$camerax_version"
-
-        val view = "androidx.camera:camera-view:$camerax_version"
-        val mlKit = "androidx.camera:camera-mlkit-vision:$camerax_version"
-        val extensions = "androidx.camera:camera-extensions:$camerax_version"
+        private const val camerax_version = "1.5.2"
+        val camera2 = "androidx.camera:camera-camera2:${camerax_version}"
+        val core = "androidx.camera:camera-core:${camerax_version}"
+        val compose = "androidx.camera:camera-compose:${camerax_version}"
+        val effects = "androidx.camera:camera-effects:${camerax_version}"
+        val extensions = "androidx.camera:camera-extensions:${camerax_version}"
+        val featureCombinationQuery =
+            "androidx.camera:camera-feature-combination-query:1.5.0-alpha06"
+        val featureCombinationQueryPlayServices =
+            "androidx.camera:camera-feature-combination-query-play-services:1.5.0-alpha06"
+        val lifecycle = "androidx.camera:camera-lifecycle:${camerax_version}"
+        val mlKit = "androidx.camera:camera-mlkit-vision:${camerax_version}"
+        val view = "androidx.camera:camera-view:${camerax_version}"
+        val viewfinder = "androidx.camera:camera-viewfinder:1.4.0-alpha07"
+        val video = "androidx.camera:camera-video:${camerax_version}"
     }
     //</editor-fold>
 
@@ -161,6 +171,7 @@ object DepsAndroidx {
 
         // https://dl.google.com/dl/android/maven2/androidx/vectordrawable/vectordrawable-animated/maven-metadata.xml
         const val animated = "androidx.vectordrawable:vectordrawable-animated:1.2.0"
+        const val seekable = "androidx.vectordrawable:vectordrawable-seekable:1.2.0"
     }
 
     object navigation {
@@ -188,10 +199,6 @@ object DepsAndroidx {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Animation">
-    // https://dl.google.com/dl/android/maven2/androidx/core/core-animation/maven-metadata.xml
-    const val animation = "androidx.core:core-animation:1.0.0"
-    const val animationTest = "androidx.core:core-animation-testing:1.0.0"
-
     // https://dl.google.com/dl/android/maven2/androidx/transition/transition/maven-metadata.xml
     const val transition = "androidx.transition:transition:1.6.0"
 
@@ -203,8 +210,9 @@ object DepsAndroidx {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Widget">
+    // https://developer.android.com/jetpack/androidx/releases/window?hl=zh-cn
     // https://dl.google.com/dl/android/maven2/androidx/window/window/maven-metadata.xml
-    const val window = "androidx.window:window:1.4.0"
+    const val window = "androidx.window:window:1.5.1"
 
     // https://dl.google.com/dl/android/maven2/androidx/viewpager/viewpager/maven-metadata.xml
     const val viewpager = "androidx.viewpager:viewpager:1.1.0"
@@ -215,7 +223,7 @@ object DepsAndroidx {
 
     // https://developer.android.com/jetpack/androidx/releases/swiperefreshlayout
     // https://dl.google.com/dl/android/maven2/androidx/swiperefreshlayout/swiperefreshlayout/maven-metadata.xml
-    const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-beta01"
+    const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0"
 
     // https://developer.android.com/jetpack/androidx/releases/cardview
     // https://dl.google.com/dl/android/maven2/androidx/cardview/cardview/maven-metadata.xml
@@ -225,11 +233,12 @@ object DepsAndroidx {
     // https://dl.google.com/dl/android/maven2/androidx/coordinatorlayout/coordinatorlayout/maven-metadata.xml
     const val coordinatorLayout = "androidx.coordinatorlayout:coordinatorlayout:1.3.0"
 
+    // https://developer.android.com/jetpack/androidx/releases/gridlayout?hl=zh-cn
     // https://dl.google.com/dl/android/maven2/androidx/gridlayout/gridlayout/maven-metadata.xml
     const val gridlayout = "androidx.gridlayout:gridlayout:1.1.0"
 
     // https://dl.google.com/dl/android/maven2/com/google/android/material/material/maven-metadata.xml
-    const val material = "com.google.android.material:material:1.12.0"
+    const val material = "com.google.android.material:material:1.13.0"
 
     // https://developer.android.com/jetpack/androidx/releases/recyclerview
     object recyclerview {
@@ -272,14 +281,27 @@ object DepsAndroidx {
     // https://dl.google.com/dl/android/maven2/androidx/wear/wear/maven-metadata.xml
     const val wear = "androidx.wear:wear:$supportVer"
 
-    // https://dl.google.com/dl/android/maven2/androidx/car/car/maven-metadata.xml
-    const val car = "androidx.car:car:1.0.0-alpha7"
+    // https://developer.android.com/jetpack/androidx/releases/car-app?hl=zh-cn
+    // https://dl.google.com/dl/android/maven2/androidx/car/app/app/maven-metadata.xml
+    object car {
+        private const val carVer = "1.7.0"
+        const val app = "androidx.car.app:app:$carVer"
+
+        // For Android Auto specific functionality
+        const val projected = "androidx.car.app:app-projected:$carVer"
+
+        // For Android Automotive specific functionality
+        const val automotive = "androidx.car.app:app-automotive:$carVer"
+
+        // For testing
+        const val testing = "androidx.car.app:app-testing:$carVer"
+    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Loader and lifecycle">
     // Loader and lifecycle
-    // https://dl.google.com/dl/android/maven2/androidx/arch/core/core-common/maven-metadata.xml
     object arch {
+        // https://developer.android.com/jetpack/androidx/releases/arch-core?hl=zh-cn
         // https://dl.google.com/dl/android/maven2/androidx/arch/core/core-common/maven-metadata.xml
         private const val archVer = "2.2.0"
 
@@ -288,10 +310,10 @@ object DepsAndroidx {
         const val runtime = "androidx.arch.core:core-runtime:$archVer"
     }
 
-    // https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/maven-metadata.xml
     object lifecycle {
+        // https://developer.android.com/jetpack/androidx/releases/arch-core?hl=zh-cn
         // https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/maven-metadata.xml
-        private const val lifecycleVer = "2.9.2"
+        private const val lifecycleVer = "2.10.0"
 
         const val common = "androidx.lifecycle:lifecycle-common:$lifecycleVer"
         const val commonJ8 = "androidx.lifecycle:lifecycle-common-java8:$lifecycleVer"
@@ -323,8 +345,9 @@ object DepsAndroidx {
     // https://developer.android.com/training/data-storage/room
     // https://dl.google.com/dl/android/maven2/androidx/room/room-common/maven-metadata.xml
     object room {
+        // https://developer.android.com/jetpack/androidx/releases/room?hl=zh-cn
         // https://dl.google.com/dl/android/maven2/androidx/room/room-common/maven-metadata.xml
-        private const val roomVer = "2.7.2"
+        private const val roomVer = "2.8.4"
 
         const val common = "androidx.room:room-common:$roomVer"
         const val compiler = "androidx.room:room-compiler:$roomVer"
@@ -339,7 +362,7 @@ object DepsAndroidx {
     // https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite/maven-metadata.xml
     object sqlite {
         // https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite/maven-metadata.xml
-        private const val sqliteVer = "2.5.2"
+        private const val sqliteVer = "2.6.2"
 
         const val core = "androidx.sqlite:sqlite:$sqliteVer"
         const val framework = "androidx.sqlite:sqlite-framework:$sqliteVer"
@@ -347,6 +370,7 @@ object DepsAndroidx {
 
     // https://dl.google.com/dl/android/maven2/androidx/slice/slice-core/maven-metadata.xml
     object slice {
+        // https://developer.android.com/jetpack/androidx/releases/slice?hl=zh-cn
         // https://dl.google.com/dl/android/maven2/androidx/slice/slice-core/maven-metadata.xml
         private const val sliceVer = "1.1.0-alpha02"
 
