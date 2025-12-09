@@ -68,6 +68,7 @@ fun Project.applyProtobufDependencies(includeGrpc: Boolean = true) {
             api("io.grpc:grpc-android:$grpcVersion")
 
             // necessary for Java 9+
+            // https://mvnrepository.com/artifact/org.apache.tomcat/annotations-api
             compileOnly("org.apache.tomcat:annotations-api:6.0.53")
         }
 

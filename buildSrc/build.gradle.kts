@@ -27,7 +27,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:compose-compiler-gradle-plugin:$kotlinVersion")
     // Kotlin Symbol Processing 符号处理器编译器插件，需伴随Kotlin版本一同升级
     // https://github.com/google/ksp
-    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:2.3.2")
+    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:2.3.3")
     implementation(gradleApi())
 
     implementation(localGroovy())
