@@ -92,6 +92,7 @@ object Debug {
         Log.v(tag, StringBuffer().apply {
             append(msg)
             append(", countTimes: ")
+            // DebugTrace的start/stop耗时较久，为优化耗时计算，一律在record时记录两次耗时下标
             for (i in 0 until timeUsed.nextIndex step 2) {
                 timeUsed.names[i / 2]?.let {
                     append(it)

@@ -140,7 +140,7 @@ internal fun <TaskType : Task> Project.forEachTasks(
         } ?: return@all
         // 当前task的flavor名或空字符串（全flavor编译）
         val dimensionedFlavorName = dimensionedFlavorBuildTypeName
-            .substring(0, dimensionedFlavorBuildTypeName.length - buildType.length)
+            .dropLast(buildType.length)
             .replaceFirstCharToLowercase()
         val dimensionFlavorNames = run {
             var localDimensionedFlavorName = dimensionedFlavorName

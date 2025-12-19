@@ -10,11 +10,13 @@ import com.tencent.tinker.build.gradle.extension.TinkerPackageConfigExtension
 import com.tencent.tinker.build.gradle.extension.TinkerPatchExtension
 import com.tencent.tinker.build.gradle.extension.TinkerResourceExtension
 import com.tencent.tinker.build.gradle.extension.TinkerSevenZipExtension
+import io.github.chenfei0928.Env
 import io.github.chenfei0928.util.buildOutputsDir
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.getByType
 
 /**
  * 应用Tinker官方Plugin，其尚未兼容7.1的AS-Gradle构建系统，暂不使用
@@ -248,12 +250,12 @@ internal fun ExtensionAware.createAndConfigTinkerPatchExtension(project: Project
              * optional，default '7za'
              * the 7zip artifact path, it will use the right 7za with your platform
              */
-            zipArtifact = "com.tencent.mm:SevenZip:1.1.10"
+//            zipArtifact = "com.tencent.mm:SevenZip:1.1.10"
             /**
              * optional，default '7za'
              * you can specify the 7za path yourself, it will overwrite the zipArtifact value
              */
-//        path = "/usr/local/bin/7za"
+            path = if (Env.isWindows) "C:\\Program Files\\7-Zip\\7z.exe" else "/usr/local/bin/7za"
         }
     }
     return extensions.getByName("tinkerPatch") as TinkerPatchExtension
@@ -262,23 +264,44 @@ internal fun ExtensionAware.createAndConfigTinkerPatchExtension(project: Project
 private fun ExtensionAware.tinkerPatch(action: Action<TinkerPatchExtension>) =
     extensions.configure("tinkerPatch", action)
 
+internal val TinkerPatchExtension.buildConfig: TinkerBuildConfigExtension
+    get() = (this as ExtensionAware).extensions.getByType()
+
 internal fun TinkerPatchExtension.buildConfig(action: Action<TinkerBuildConfigExtension>) =
     (this as ExtensionAware).extensions.configure("buildConfig", action)
+
+internal val TinkerPatchExtension.dex: TinkerDexExtension
+    get() = (this as ExtensionAware).extensions.getByType()
 
 internal fun TinkerPatchExtension.dex(action: Action<TinkerDexExtension>) =
     (this as ExtensionAware).extensions.configure("dex", action)
 
+internal val TinkerPatchExtension.lib: TinkerLibExtension
+    get() = (this as ExtensionAware).extensions.getByType()
+
 internal fun TinkerPatchExtension.lib(action: Action<TinkerLibExtension>) =
     (this as ExtensionAware).extensions.configure("lib", action)
+
+internal val TinkerPatchExtension.res: TinkerResourceExtension
+    get() = (this as ExtensionAware).extensions.getByType()
 
 internal fun TinkerPatchExtension.res(action: Action<TinkerResourceExtension>) =
     (this as ExtensionAware).extensions.configure("res", action)
 
+internal val TinkerPatchExtension.arkHot: TinkerArkHotExtension
+    get() = (this as ExtensionAware).extensions.getByType()
+
 internal fun TinkerPatchExtension.arkHot(action: Action<TinkerArkHotExtension>) =
     (this as ExtensionAware).extensions.configure("arkHot", action)
 
+internal val TinkerPatchExtension.packageConfig: TinkerPackageConfigExtension
+    get() = (this as ExtensionAware).extensions.getByType()
+
 internal fun TinkerPatchExtension.packageConfig(action: Action<TinkerPackageConfigExtension>) =
     (this as ExtensionAware).extensions.configure("packageConfig", action)
+
+internal val TinkerPatchExtension.sevenZip: TinkerSevenZipExtension
+    get() = (this as ExtensionAware).extensions.getByType()
 
 internal fun TinkerPatchExtension.sevenZip(action: Action<TinkerSevenZipExtension>) =
     (this as ExtensionAware).extensions.configure("sevenZip", action)

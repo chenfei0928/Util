@@ -36,6 +36,8 @@ object Env {
         logger.lifecycle("Env环境初始化：$containsReleaseBuild, ${Instant.now()}")
     }
 
+    val isWindows: Boolean = System.getProperty("os.name").startsWith("Windows")
+
     /**
      * 此次存在正式编译，或非开发目标编译（如qaTest）
      * 开发阶段编译使用debug编译
