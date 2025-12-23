@@ -34,6 +34,7 @@ dependencyResolutionManagement {
     }
 }
 
+rootProject.name = "Util"
 include(
     ":app",
     "library",

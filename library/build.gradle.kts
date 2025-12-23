@@ -49,7 +49,7 @@ android {
 dependencies {
     implementation(DepsAndroidx.core)
     implementation(DepsAndroidx.ktx)
-    implementation(DepsAndroidx.webkit)
+    compileOnly(DepsAndroidx.webkit)
     implementation(DepsAndroidx.activity)
     implementation(DepsAndroidx.fragment)
     implementation(DepsAndroidx.startup)
