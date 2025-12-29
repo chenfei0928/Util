@@ -19,6 +19,7 @@ private fun cleanPoolOldVersion(files: List<File>) {
             return@forEach
         }
         val fileName = file.name
+        if (!fileName.contains("_")) return@forEach
         val split = fileName.split("_")
         val name = if (split.size == 2) {
             split[0]
