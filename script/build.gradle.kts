@@ -1,3 +1,5 @@
+import io.github.chenfei0928.Deps
+
 plugins {
     id("application")
     id("org.jetbrains.kotlin.jvm")
@@ -27,4 +29,6 @@ dependencies {
     // https://github.com/ajalt/clikt
     implementation("com.github.ajalt.clikt:clikt:5.0.1")
     implementation("com.github.ajalt.clikt:clikt-markdown:5.0.1")
+
+    implementation(Deps.lib.google.guavaJvm)
 }

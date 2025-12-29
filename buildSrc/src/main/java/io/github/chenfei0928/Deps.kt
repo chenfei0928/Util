@@ -246,6 +246,7 @@ object Deps {
         // Google工具类
         object google {
             // https://github.com/google/guava
+            val guavaJvm = "com.google.guava:guava:33.5.0-jre"
             val guavaAndroid = "com.google.guava:guava:33.5.0-android"
 
             // https://github.com/google/gson
