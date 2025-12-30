@@ -29,6 +29,9 @@ gradleCachesDir.listFiles().filter {
 }
 
 fun deleteIfNoneTransformed(file: File): Boolean {
+    if (!File(file, "metadata.bin").exists() || !File(file, "results.bin").exists()) {
+        return file.deleteRecursively()
+    }
     fun File.countFiles(): Int {
         if (isFile) return 1
         val list = listFiles()
