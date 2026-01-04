@@ -521,7 +521,7 @@ private fun getValue(
 fun Any.toStdString() = "${this::class.java.name}@${Integer.toHexString(this.hashCode())}"
 
 data class ToStringConfig(
-    var primitiveArrayContentToString: Boolean = true,
+    val primitiveArrayContentToString: Boolean,
     val reflectSkipPackages: Set<String>,
     val skipNodeTypes: Set<Class<*>>,
 ) {
