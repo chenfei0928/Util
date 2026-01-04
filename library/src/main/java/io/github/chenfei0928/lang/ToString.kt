@@ -12,6 +12,7 @@ import io.github.chenfei0928.collection.getOrPut
 import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.content.getAll
 import io.github.chenfei0928.preference.base.FieldAccessor
+import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.isWriteByKotlin
 import java.lang.ref.Reference
 import java.lang.reflect.Field
@@ -34,17 +35,32 @@ private const val TAG = "Ut_ToString"
 fun Any?.toStringByReflect(
     useToString: Boolean = true
 ): String = StringBuilder().appendByReflect(
-    this, useToString, ToStringStackRecord(this, "this@toStringByReflect")
+    this, useToString, ToStringStackRecord(this, "this@toStringByReflect", null)
 ).toString()
 
-@Suppress("CyclomaticComplexMethod", "LongMethod")
 fun StringBuilder.appendByReflect(
     any: Any?, useToString: Boolean = true, record: ToStringStackRecord
-): StringBuilder = if (any != null && record.findParentNodeNameByValue(any) != null) {
-    append(record.findParentNodeNameByValue(any))
-    this
-} else when (any) {
-    null -> append("null")
+): StringBuilder {
+    if (any == null) {
+        return append("null")
+    }
+    val parentNodeNameByValue = record.findParentNodeNameByValue(any)
+    if (parentNodeNameByValue != null) {
+        append(parentNodeNameByValue)
+        return this
+    }
+    val nodeRecord = record.findNodeRecord(any)
+    if (nodeRecord != null) {
+        append(nodeRecord)
+        return this
+    }
+    return appendByReflectImpl(any, useToString, record)
+}
+
+@Suppress("CyclomaticComplexMethod", "LongMethod")
+private fun StringBuilder.appendByReflectImpl(
+    any: Any, useToString: Boolean = true, record: ToStringStackRecord
+): StringBuilder = when (any) {
     // Java类对象
     is Class<*> -> if (any.isWriteByKotlin) {
         appendByReflect(any.kotlin, useToString, record)
@@ -390,7 +406,7 @@ private fun StringBuilder.appendObjectByReflectImpl(
 fun Any.toStringAny(useToString: Boolean = true, vararg fields: Any): String = StringBuilder()
     .append(this.javaClass.simpleName)
     .appendAnyFields(
-        this, useToString, ToStringStackRecord(this, "this@toStringAny"), fields = fields
+        this, useToString, ToStringStackRecord(this, "this@toStringAny", null), fields = fields
     )
     .toString()
 
@@ -409,7 +425,9 @@ fun StringBuilder.appendAnyFields(
                 append(key)
                 append('=')
                 appendByReflect(
-                    getValue(any, value), useToString, record.onChildNode(value, "[$index]-$key")
+                    getValue(any, value),
+                    useToString,
+                    record.onChildNode(value, key as? String ?: "[$index]-$key")
                 )
             }
             // Kotlin 字段、方法
@@ -420,7 +438,7 @@ fun StringBuilder.appendAnyFields(
                 appendByReflect(
                     value,
                     useToString,
-                    record.onChildNode(value, "[$index]-${field.name}")
+                    record.onChildNode(value, field.name)
                 )
             }
             // Jvm反射体系的field
@@ -431,7 +449,7 @@ fun StringBuilder.appendAnyFields(
                 appendByReflect(
                     value,
                     useToString,
-                    record.onChildNode(value, "[$index]-${field.name}")
+                    record.onChildNode(value, field.name)
                 )
             }
             // SpSaver preferenceDataStore的field
@@ -442,7 +460,7 @@ fun StringBuilder.appendAnyFields(
                 appendByReflect(
                     value,
                     useToString,
-                    record.onChildNode(value, "[$index]-${field.pdsKey}")
+                    record.onChildNode(value, field.pdsKey)
                 )
             }
             else -> {
@@ -505,9 +523,14 @@ fun Any.toStdString() = "${this::class.java.name}@${Integer.toHexString(this.has
 data class ToStringConfig(
     var primitiveArrayContentToString: Boolean = true,
     val reflectSkipPackages: Set<String>,
+    val skipNodeTypes: Set<Class<*>>,
 ) {
     fun isReflectSkip(clazz: Class<*>): Boolean {
         return reflectSkipPackages.any { clazz.name.startsWith(it) }
+    }
+
+    fun isSkipNodeType(clazz: Class<*>): Boolean {
+        return skipNodeTypes.any { clazz === it || clazz.isSubclassOf(it) }
     }
 
     companion object {
@@ -518,7 +541,22 @@ data class ToStringConfig(
                 "android.",
                 "kotlin.",
                 "kotlinx.",
-            )
+            ),
+            setOf(
+                java.lang.String::class.java,
+                java.lang.CharSequence::class.java,
+                java.lang.Number::class.java,
+                java.lang.Boolean::class.java,
+                java.lang.Byte::class.java,
+                java.lang.Short::class.java,
+                java.lang.Integer::class.java,
+                java.lang.Long::class.java,
+                java.lang.Float::class.java,
+                java.lang.Double::class.java,
+                java.lang.Character::class.java,
+                java.lang.Void::class.java,
+                java.util.Date::class.java,
+            ),
         )
     }
 }
@@ -526,12 +564,13 @@ data class ToStringConfig(
 data class ToStringStackRecord(
     val value: Any?,
     val nodeName: String,
-    var parentNode: ToStringStackRecord? = null,
+    val parentNode: ToStringStackRecord?,
 ) {
+    private val nodeRecords: MutableMap<Any, String> =
+        parentNode?.nodeRecords ?: mutableMapOf()
+
     fun onChildNode(value: Any?, name: String): ToStringStackRecord {
-        val child = ToStringStackRecord(value, this.nodeName + "." + name)
-        child.parentNode = this
-        return child
+        return ToStringStackRecord(value, this.nodeName + "." + name, this)
     }
 
     fun findParentNodeNameByValue(value: Any): String? {
@@ -542,5 +581,15 @@ data class ToStringStackRecord(
             currentNode = currentNode.parentNode
         }
         return null
+    }
+
+    fun findNodeRecord(value: Any): String? {
+        val record = nodeRecords[value]
+        if (record == null && value === this.value &&
+            !UtilInitializer.toStringByReflectConfig.isSkipNodeType(value.javaClass)
+        ) {
+            nodeRecords[value] = nodeName
+        }
+        return record
     }
 }
