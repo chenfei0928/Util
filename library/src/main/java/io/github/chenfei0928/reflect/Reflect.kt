@@ -1,8 +1,8 @@
 package io.github.chenfei0928.reflect
 
-import androidx.collection.ArrayMap
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
+import java.util.concurrent.ConcurrentHashMap
 
 @Throws(
     IllegalAccessException::class, IllegalArgumentException::class, InvocationTargetException::class
@@ -16,7 +16,7 @@ inline fun Method.safeInvoke(target: Any?, args: Array<Any?>?): Any? {
     }
 }
 
-private val classIsKotlin = ArrayMap<Class<*>, Boolean>()
+private val classIsKotlin = ConcurrentHashMap<Class<*>, Boolean>()
 
 /**
  * 如果这个类使用Kotlin编写，返回true

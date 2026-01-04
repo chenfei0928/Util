@@ -2,8 +2,10 @@ package io.github.chenfei0928.base
 
 import android.app.Application
 import android.content.Context
+import androidx.collection.arraySetOf
 import androidx.startup.Initializer
 import com.google.common.reflect.GoogleTypes
+import io.github.chenfei0928.lang.ToStringConfig
 import io.github.chenfei0928.util.DependencyChecker
 
 /**
@@ -36,5 +38,7 @@ class UtilInitializer : Initializer<Unit> {
                 require(value.googleTypes !is GoogleTypes.Companion) { "googleTypes 需要为 GoogleTypes 的实例" }
                 field = value
             }
+
+        var toStringByReflectConfig: ToStringConfig = ToStringConfig.Default
     }
 }
