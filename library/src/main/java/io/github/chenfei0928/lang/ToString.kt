@@ -32,14 +32,13 @@ import kotlin.reflect.jvm.jvmName
 private const val TAG = "Ut_ToString"
 
 //<editor-fold desc="对任意对象进行toString支持" defaultstatus="collapsed">
-fun Any?.toStringByReflect(
-    useToString: Boolean = true
-): String = StringBuilder().appendByReflect(
-    this, useToString, ToStringStackRecord(this, "this@toStringByReflect", null)
+fun Any?.toStringByReflect(): String = StringBuilder().appendByReflect(
+    this, ToStringStackRecord(this, "this@toStringByReflect", null)
 ).toString()
 
 fun StringBuilder.appendByReflect(
-    any: Any?, useToString: Boolean = true, record: ToStringStackRecord
+    any: Any?,
+    record: ToStringStackRecord = ToStringStackRecord(any, "this@toStringByReflect", null),
 ): StringBuilder {
     if (any == null) {
         return append("null")
@@ -49,25 +48,25 @@ fun StringBuilder.appendByReflect(
         append(parentNodeNameByValue)
         return this
     }
-    val nodeRecord = record.findNodeRecord(any)
+    val nodeRecord = record.findRecordedNodeName(any)
     if (nodeRecord != null) {
         append(nodeRecord)
         return this
     }
-    return appendByReflectImpl(any, useToString, record)
+    return appendByReflectImpl(any, record)
 }
 
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 private fun StringBuilder.appendByReflectImpl(
-    any: Any, useToString: Boolean = true, record: ToStringStackRecord
+    any: Any, record: ToStringStackRecord
 ): StringBuilder = when (any) {
     // Java类对象
     is Class<*> -> if (any.isWriteByKotlin) {
-        appendByReflect(any.kotlin, useToString, record)
+        appendByReflect(any.kotlin, record)
     } else StaticFieldsCache.cache.getOrPut(any.name) {
         // java，打印当前类自身定义的static字段
         StaticFieldsCache.JavaClass(any)
-    }.appendTo(this, useToString, record)
+    }.appendTo(this, record)
     // Kotlin类对象
     is KClass<*> -> if (!any.java.isWriteByKotlin) {
         append(any.java)
@@ -80,7 +79,7 @@ private fun StringBuilder.appendByReflectImpl(
         } else {
             StaticFieldsCache.KotlinKClass(any)
         }
-    }.appendTo(this, useToString, record)
+    }.appendTo(this, record)
     // 数组
     is Array<*> -> {
         append('[')
@@ -88,7 +87,7 @@ private fun StringBuilder.appendByReflectImpl(
             if (i != 0) {
                 append(", ")
             }
-            appendByReflect(element, useToString, record.onChildNode(element, "[$i]"))
+            appendByReflect(element, record.onChildNode(element, "[$i]"))
         }
         append(']')
     }
@@ -108,7 +107,7 @@ private fun StringBuilder.appendByReflectImpl(
             if (i != 0) {
                 append(", ")
             }
-            appendByReflect(element, useToString, record.onChildNode(element, "[$i]"))
+            appendByReflect(element, record.onChildNode(element, "[$i]"))
         }
         append(']')
     }
@@ -118,18 +117,14 @@ private fun StringBuilder.appendByReflectImpl(
     } else {
         append('[')
         any.onEachIndexed { i, it ->
-            appendByReflect(it.key, useToString, record.onChildNode(it.key, "[$i].key"))
+            appendByReflect(it.key, record.onChildNode(it.key, "[$i].key"))
             append('=')
-            appendByReflect(it.value, useToString, record.onChildNode(it.value, "[$i].value"))
+            appendByReflect(it.value, record.onChildNode(it.value, "[$i].value"))
             append(", ")
         }
         replace(length - 2, length, "]")
     }
-    is Reference<*> -> appendByReflect(
-        any.get(),
-        useToString,
-        record.onChildNode(any.get(), "get()")
-    )
+    is Reference<*> -> appendByReflect(any.get(), record.onChildNode(any.get(), "get()"))
     // 非JDK的容器类型
     is SparseArray<*> -> {
         append('[')
@@ -138,7 +133,7 @@ private fun StringBuilder.appendByReflectImpl(
             append(any.keyAt(i))
             append("=")
             val value = any.valueAt(i)
-            appendByReflect(value, useToString, record.onChildNode(value, "[$i].value"))
+            appendByReflect(value, record.onChildNode(value, "[$i].value"))
         }
         append(']')
     }
@@ -149,7 +144,7 @@ private fun StringBuilder.appendByReflectImpl(
             append(any.keyAt(i))
             append("=")
             val value = any.valueAt(i)
-            appendByReflect(value, useToString, record.onChildNode(value, "[$i].value"))
+            appendByReflect(value, record.onChildNode(value, "[$i].value"))
         }
         append(']')
     }
@@ -157,30 +152,22 @@ private fun StringBuilder.appendByReflectImpl(
         append(any.toString())
         append(',')
         val all = any.extras?.getAll()
-        appendByReflect(all, useToString = useToString, record.onChildNode(all, "extras"))
+        appendByReflect(all, record.onChildNode(all, "extras"))
     }
     is Bundle -> {
         val all = any.getAll()
-        appendByReflect(all, useToString = useToString, record.onChildNode(all, "getAll"))
+        appendByReflect(all, record.onChildNode(all, "getAll"))
     }
     // 判断该类有没有重写toString
-    else -> if (useToString && toStringWasOverrideCache.getOrPut(any.javaClass) {
-            any.javaClass.getMethod("toString").declaringClass != Any::class.java
-        }) {
+    else -> if (UtilInitializer.toStringConfig.useToStringMethod(any.javaClass)) {
         // 如果该类的 toString 方法被重写过（包括其父类）直接调用toString方法输出
         try {
             append(any.toString())
         } catch (e: Exception) {
             append("${any.toStdString()}($e)")
         }
-    } else appendObjectByReflectImpl(any, useToString, record)
+    } else appendObjectByReflectImpl(any, record)
 }
-
-/**
- * toString 方法是否被重写过的缓存
- */
-private val toStringWasOverrideCache: MutableMap<Class<*>, Boolean> =
-    java.util.concurrent.ConcurrentHashMap()
 
 /**
  * 类的静态字段缓存
@@ -189,7 +176,7 @@ private sealed interface StaticFieldsCache {
     val clazzName: String
 
     fun appendTo(
-        stringBuilder: StringBuilder, useToString: Boolean, record: ToStringStackRecord
+        stringBuilder: StringBuilder, record: ToStringStackRecord
     ): StringBuilder
 
     /**
@@ -209,10 +196,10 @@ private sealed interface StaticFieldsCache {
         }
 
         override fun appendTo(
-            stringBuilder: StringBuilder, useToString: Boolean, record: ToStringStackRecord
+            stringBuilder: StringBuilder, record: ToStringStackRecord
         ): StringBuilder = stringBuilder
             .append(clazzName)
-            .appendAnyFields(clazz, useToString, record, fields = fields)
+            .appendAnyFields(clazz, record, fields = fields)
     }
 
     /**
@@ -225,7 +212,7 @@ private sealed interface StaticFieldsCache {
     ) : StaticFieldsCache {
         override val clazzName: String = any.qualifiedName!!
         override fun appendTo(
-            stringBuilder: StringBuilder, useToString: Boolean, record: ToStringStackRecord
+            stringBuilder: StringBuilder, record: ToStringStackRecord
         ): StringBuilder = stringBuilder.append(clazzName).append("{}")
     }
 
@@ -251,10 +238,10 @@ private sealed interface StaticFieldsCache {
         }
 
         override fun appendTo(
-            stringBuilder: StringBuilder, useToString: Boolean, record: ToStringStackRecord
+            stringBuilder: StringBuilder, record: ToStringStackRecord
         ): StringBuilder = stringBuilder
             .append(clazzName)
-            .appendAnyFields(companionObj, useToString, record, fields = fields)
+            .appendAnyFields(companionObj, record, fields = fields)
     }
 
     companion object {
@@ -265,7 +252,7 @@ private sealed interface StaticFieldsCache {
 private sealed interface FieldsCache<T : Any> {
     val hasField: Boolean
     fun appendTo(
-        builder: StringBuilder, any: T, useToString: Boolean, record: ToStringStackRecord
+        builder: StringBuilder, any: T, record: ToStringStackRecord
     ): StringBuilder
 
     class Java<T : Any>(
@@ -287,7 +274,7 @@ private sealed interface FieldsCache<T : Any> {
         override val hasField: Boolean = fields.isNotEmpty()
 
         override fun appendTo(
-            builder: StringBuilder, any: T, useToString: Boolean, record: ToStringStackRecord
+            builder: StringBuilder, any: T, record: ToStringStackRecord
         ): StringBuilder = builder.apply {
             fields.forEach { field ->
                 append(field.name)
@@ -296,7 +283,7 @@ private sealed interface FieldsCache<T : Any> {
                 if (value == any) {
                     append("this")
                 } else {
-                    appendByReflect(value, useToString, record.onChildNode(value, field.name))
+                    appendByReflect(value, record.onChildNode(value, field.name))
                 }
                 append(", ")
             }
@@ -320,7 +307,7 @@ private sealed interface FieldsCache<T : Any> {
         override val hasField: Boolean = fields.isNotEmpty()
 
         override fun appendTo(
-            builder: StringBuilder, any: T, useToString: Boolean, record: ToStringStackRecord
+            builder: StringBuilder, any: T, record: ToStringStackRecord
         ): StringBuilder = builder.apply {
             fields.forEach { field ->
                 append(field.name)
@@ -329,7 +316,7 @@ private sealed interface FieldsCache<T : Any> {
                 if (value == any) {
                     append("this")
                 } else {
-                    appendByReflect(value, useToString, record.onChildNode(value, field.name))
+                    appendByReflect(value, record.onChildNode(value, field.name))
                 }
                 append(", ")
             }
@@ -342,7 +329,7 @@ private sealed interface FieldsCache<T : Any> {
 }
 
 private fun StringBuilder.appendObjectByReflectImpl(
-    any: Any, useToString: Boolean, record: ToStringStackRecord
+    any: Any, record: ToStringStackRecord
 ) = apply {
     val thisClass: Class<*> = any.javaClass
     if (thisClass.isWriteByKotlin) {
@@ -354,11 +341,11 @@ private fun StringBuilder.appendObjectByReflectImpl(
             val outerClass = thisClass.declaringClass
             StaticFieldsCache.cache.getOrPut(outerClass.name) {
                 StaticFieldsCache.KotlinKClassComponentObject(outerClass.kotlin, kClass)
-            }.appendTo(this, useToString, record)
+            }.appendTo(this, record)
             return@apply
         }
     }
-    // 如果类在反射黑名单中，不处理这个类
+    // 如果类在反射黑名单中，不使用反射处理这个类
     if (UtilInitializer.toStringConfig.isReflectSkip(thisClass)) {
         try {
             append(any.toString())
@@ -385,7 +372,7 @@ private fun StringBuilder.appendObjectByReflectImpl(
             val cache: FieldsCache<Any> = FieldsCache.cache.getOrPut(thisOrSuperClass.name) {
                 FieldsCache.Kotlin(thisOrSuperClass.kotlin)
             } as FieldsCache<Any>
-            cache.appendTo(this, any, useToString, record)
+            cache.appendTo(this, any, record)
             hasAnyField = hasAnyField or cache.hasField
             break
         } else {
@@ -394,7 +381,7 @@ private fun StringBuilder.appendObjectByReflectImpl(
             val cache: FieldsCache<Any> = FieldsCache.cache.getOrPut(thisOrSuperClass.name) {
                 FieldsCache.Java(thisOrSuperClass)
             } as FieldsCache<Any>
-            cache.appendTo(this, any, useToString, record)
+            cache.appendTo(this, any, record)
             hasAnyField = hasAnyField or cache.hasField
             thisOrSuperClass = thisOrSuperClass.getSuperclass()
         }
@@ -408,15 +395,17 @@ private fun StringBuilder.appendObjectByReflectImpl(
 //</editor-fold>
 
 //<editor-fold desc="对实例toString字段支持" defaultstatus="collapsed">
-fun Any.toStringAny(useToString: Boolean = true, vararg fields: Any): String = StringBuilder()
+fun Any.toStringAny(vararg fields: Any): String = StringBuilder()
     .append(this.javaClass.simpleName)
     .appendAnyFields(
-        this, useToString, ToStringStackRecord(this, "this@toStringAny", null), fields = fields
+        this, ToStringStackRecord(this, "this@toStringAny", null), fields = fields
     )
     .toString()
 
 fun StringBuilder.appendAnyFields(
-    any: Any, useToString: Boolean = true, record: ToStringStackRecord, vararg fields: Any
+    any: Any,
+    record: ToStringStackRecord = ToStringStackRecord(any, "this@toStringAny", null),
+    vararg fields: Any,
 ): StringBuilder = apply {
     append('(')
     fields.forEachIndexed { index, field ->
@@ -431,7 +420,6 @@ fun StringBuilder.appendAnyFields(
                 append('=')
                 appendByReflect(
                     getValue(any, value),
-                    useToString,
                     record.onChildNode(value, key as? String ?: "[$index]-$key")
                 )
             }
@@ -440,36 +428,24 @@ fun StringBuilder.appendAnyFields(
                 append(field.name)
                 append('=')
                 val value = getValue(any, field)
-                appendByReflect(
-                    value,
-                    useToString,
-                    record.onChildNode(value, field.name)
-                )
+                appendByReflect(value, record.onChildNode(value, field.name))
             }
             // Jvm反射体系的field
             is Field -> {
                 append(field.name)
                 append('=')
                 val value = getValue(any, field)
-                appendByReflect(
-                    value,
-                    useToString,
-                    record.onChildNode(value, field.name)
-                )
+                appendByReflect(value, record.onChildNode(value, field.name))
             }
             // SpSaver preferenceDataStore的field
             is FieldAccessor.Field<*, *> -> {
                 append(field.pdsKey)
                 append('=')
                 val value = getValue(any, field)
-                appendByReflect(
-                    value,
-                    useToString,
-                    record.onChildNode(value, field.pdsKey)
-                )
+                appendByReflect(value, record.onChildNode(value, field.pdsKey))
             }
             else -> {
-                appendByReflect(field, useToString, record.onChildNode(field, "[$index]"))
+                appendByReflect(field, record.onChildNode(field, "[$index]"))
             }
         }
     }
@@ -483,10 +459,8 @@ private fun getValue(
     // Kotlin字段
     is KProperty<*> -> try {
         when (field) {
-            is KProperty0<*> ->
-                field.get()
-            is KProperty1<*, *> ->
-                (field as KProperty1<Any, *>).get(thisRef)
+            is KProperty0<*> -> field.get()
+            is KProperty1<*, *> -> (field as KProperty1<Any, *>).get(thisRef)
             else -> field
         }
     } catch (e: Exception) {
@@ -495,11 +469,8 @@ private fun getValue(
     // Kotlin方法
     is KFunction<*> -> try {
         when (field) {
-            is Function0<*> ->
-                field()
-            is Function1<*, *> ->
-                (field as Any.() -> Any)(thisRef)
-
+            is Function0<*> -> field()
+            is Function1<*, *> -> (field as Any.() -> Any)(thisRef)
             else -> field
         }
     } catch (e: Exception) {
@@ -516,9 +487,7 @@ private fun getValue(
         "owner $thisRef's field: $field get failed: $e"
     }
     // SpSaver preferenceDataStore的field
-    is FieldAccessor.Field<*, *> -> {
-        (field as FieldAccessor.Field<Any, *>).get(thisRef)
-    }
+    is FieldAccessor.Field<*, *> -> (field as FieldAccessor.Field<Any, *>).get(thisRef)
     else -> field
 }
 //</editor-fold>
@@ -526,9 +495,22 @@ private fun getValue(
 fun Any.toStdString() = "${this::class.java.name}@${Integer.toHexString(this.hashCode())}"
 
 //<editor-fold desc="ToString配置与过程记录器" defaultstatus"collapsed">
+/**
+ * 配置ToStringByReflect的参数
+ *
+ * @property useToString 是否使用对象的toString方法
+ * @property toStringWasOverrideCache toString 方法是否被重写过的缓存，默认为 ConcurrentHashMap
+ * @property reflectSkipPackages 跳过反射处理字段的包名前缀，例如"java.lang."、"kotlin."等。
+ * 在列表中的类型哪怕[useToStringMethod]返回`false`也会直接调用 [Any.toString] 方法输出，否则使用反射输出字段。
+ * @property skipNodeTypes 跳过节点记录的类型，例如String、Int等，在列表中的类型每次都会 toString
+ */
 data class ToStringByReflectConfig(
+    private val useToString: Boolean,
+    private val toStringWasOverrideCache: MutableMap<Class<*>, Boolean> =
+        java.util.concurrent.ConcurrentHashMap(),
     private val reflectSkipPackages: Set<String>,
     private val skipNodeTypes: Set<Class<*>>,
+    // 8个原生数组类型的toString方式
     internal val byteArrayStringer: PrimitiveArrayStringer<ByteArray>,
     internal val shortArrayStringer: PrimitiveArrayStringer<ShortArray>,
     internal val intArrayStringer: PrimitiveArrayStringer<IntArray>,
@@ -538,10 +520,22 @@ data class ToStringByReflectConfig(
     internal val doubleArrayStringer: PrimitiveArrayStringer<DoubleArray>,
     internal val booleanArrayStringer: PrimitiveArrayStringer<BooleanArray>,
 ) {
+    internal fun useToStringMethod(clazz: Class<*>): Boolean =
+        useToString && toStringWasOverrideCache.getOrPut(clazz) {
+            clazz.getMethod("toString").declaringClass != Any::class.java
+        }
+
+    /**
+     * 是否跳过反射该类型的字段，如果跳过反射，则直接使用 [Any.toString] 方法
+     */
     internal fun isReflectSkip(clazz: Class<*>): Boolean {
         return reflectSkipPackages.any { clazz.name.startsWith(it) }
     }
 
+    /**
+     * 是否跳过该类型的节点记录，例如String、Int等。如果跳过则每次都会调用 [appendByReflectImpl] 方法输出。
+     * 如果不跳过，当某个对象重复出现时可能会在输出中见到其在其他节点的位置信息，而不是重复对其 toString。
+     */
     internal fun isSkipNodeType(clazz: Class<*>): Boolean {
         return skipNodeTypes.any { clazz === it || clazz.isSubclassOf(it) }
     }
@@ -703,13 +697,14 @@ data class ToStringByReflectConfig(
     companion object {
         //<editor-fold desc="默认配置" defaultstatus="collapsed">
         val Default = ToStringByReflectConfig(
-            setOf(
+            useToString = true,
+            reflectSkipPackages = setOf(
                 "java.",
                 "android.",
                 "kotlin.",
                 "kotlinx.",
             ),
-            setOf(
+            skipNodeTypes = setOf(
                 java.lang.String::class.java,
                 java.lang.CharSequence::class.java,
                 java.lang.Number::class.java,
@@ -724,24 +719,32 @@ data class ToStringByReflectConfig(
                 java.lang.Void::class.java,
                 java.util.Date::class.java,
             ),
-            PrimitiveArrayStringer.ContentToString.Byte,
-            PrimitiveArrayStringer.ContentToString.Short,
-            PrimitiveArrayStringer.ContentToString.Int,
-            PrimitiveArrayStringer.ContentToString.Long,
-            PrimitiveArrayStringer.ContentToString.Char,
-            PrimitiveArrayStringer.ContentToString.Float,
-            PrimitiveArrayStringer.ContentToString.Double,
-            PrimitiveArrayStringer.ContentToString.Boolean,
+            byteArrayStringer = PrimitiveArrayStringer.ContentToString.Byte,
+            shortArrayStringer = PrimitiveArrayStringer.ContentToString.Short,
+            intArrayStringer = PrimitiveArrayStringer.ContentToString.Int,
+            longArrayStringer = PrimitiveArrayStringer.ContentToString.Long,
+            charArrayStringer = PrimitiveArrayStringer.ContentToString.Char,
+            floatArrayStringer = PrimitiveArrayStringer.ContentToString.Float,
+            doubleArrayStringer = PrimitiveArrayStringer.ContentToString.Double,
+            booleanArrayStringer = PrimitiveArrayStringer.ContentToString.Boolean,
         )
         //</editor-fold>
     }
 }
 
+/**
+ * toStringByReflect 栈记录，用于记录对象到其之前出现过的位置的对应关系，避免无限递归。
+ *
+ * @property value 对象引用
+ * @property nodeName 节点名称，用于记录该对象到其位置的对应关系
+ * @property parentNode 父节点信息
+ */
 data class ToStringStackRecord(
     private val value: Any?,
     private val nodeName: String,
     private val parentNode: ToStringStackRecord?,
 ) {
+    // 节点记录，用于记录对象到其之前出现过的位置的对应关系
     private val nodeRecords: MutableMap<Any, String> =
         parentNode?.nodeRecords ?: mutableMapOf()
 
@@ -749,6 +752,9 @@ data class ToStringStackRecord(
         return ToStringStackRecord(value, this.nodeName + "." + name, this)
     }
 
+    /**
+     * 根据对象引用，查找其之前出现过的节点位置
+     */
     internal fun findParentNodeNameByValue(value: Any): String? {
         var currentNode: ToStringStackRecord? = parentNode
         while (currentNode != null) {
@@ -759,11 +765,15 @@ data class ToStringStackRecord(
         return null
     }
 
-    internal fun findNodeRecord(value: Any): String? {
+    /**
+     * 如果该对象在之前 toString 过，返回其之前出现过的节点位置，否则返回null
+     */
+    internal fun findRecordedNodeName(value: Any): String? {
         val record = nodeRecords[value]
         if (record == null && value === this.value &&
             !UtilInitializer.toStringConfig.isSkipNodeType(value.javaClass)
         ) {
+            // 如果该对象在之前未记录过，则将其加入到节点记录中
             nodeRecords[value] = nodeName
         }
         return record
