@@ -92,14 +92,14 @@ private fun StringBuilder.appendByReflectImpl(
         }
         append(']')
     }
-    is ByteArray -> append(if (UtilInitializer.toStringByReflectConfig.primitiveArrayContentToString) any.contentToString() else "size:${any.size}")
-    is ShortArray -> append(if (UtilInitializer.toStringByReflectConfig.primitiveArrayContentToString) any.contentToString() else "size:${any.size}")
-    is IntArray -> append(if (UtilInitializer.toStringByReflectConfig.primitiveArrayContentToString) any.contentToString() else "size:${any.size}")
-    is LongArray -> append(if (UtilInitializer.toStringByReflectConfig.primitiveArrayContentToString) any.contentToString() else "size:${any.size}")
-    is CharArray -> append(if (UtilInitializer.toStringByReflectConfig.primitiveArrayContentToString) any.contentToString() else "size:${any.size}")
-    is FloatArray -> append(if (UtilInitializer.toStringByReflectConfig.primitiveArrayContentToString) any.contentToString() else "size:${any.size}")
-    is DoubleArray -> append(if (UtilInitializer.toStringByReflectConfig.primitiveArrayContentToString) any.contentToString() else "size:${any.size}")
-    is BooleanArray -> append(if (UtilInitializer.toStringByReflectConfig.primitiveArrayContentToString) any.contentToString() else "size:${any.size}")
+    is ByteArray -> UtilInitializer.toStringConfig.byteArrayStringer.append(this, any)
+    is ShortArray -> UtilInitializer.toStringConfig.shortArrayStringer.append(this, any)
+    is IntArray -> UtilInitializer.toStringConfig.intArrayStringer.append(this, any)
+    is LongArray -> UtilInitializer.toStringConfig.longArrayStringer.append(this, any)
+    is CharArray -> UtilInitializer.toStringConfig.charArrayStringer.append(this, any)
+    is FloatArray -> UtilInitializer.toStringConfig.floatArrayStringer.append(this, any)
+    is DoubleArray -> UtilInitializer.toStringConfig.doubleArrayStringer.append(this, any)
+    is BooleanArray -> UtilInitializer.toStringConfig.booleanArrayStringer.append(this, any)
     // JDK类型
     is CharSequence -> append(any)
     is Iterable<*> -> {
@@ -359,7 +359,7 @@ private fun StringBuilder.appendObjectByReflectImpl(
         }
     }
     // 如果类在反射黑名单中，不处理这个类
-    if (UtilInitializer.toStringByReflectConfig.isReflectSkip(thisClass)) {
+    if (UtilInitializer.toStringConfig.isReflectSkip(thisClass)) {
         try {
             append(any.toString())
         } catch (e: Exception) {
@@ -520,22 +520,184 @@ private fun getValue(
 
 fun Any.toStdString() = "${this::class.java.name}@${Integer.toHexString(this.hashCode())}"
 
-data class ToStringConfig(
-    val primitiveArrayContentToString: Boolean,
-    val reflectSkipPackages: Set<String>,
-    val skipNodeTypes: Set<Class<*>>,
+//<editor-fold desc="ToString配置与过程记录器" defaultstatus"collapsed">
+data class ToStringByReflectConfig(
+    private val reflectSkipPackages: Set<String>,
+    private val skipNodeTypes: Set<Class<*>>,
+    internal val byteArrayStringer: PrimitiveArrayStringer<ByteArray>,
+    internal val shortArrayStringer: PrimitiveArrayStringer<ShortArray>,
+    internal val intArrayStringer: PrimitiveArrayStringer<IntArray>,
+    internal val longArrayStringer: PrimitiveArrayStringer<LongArray>,
+    internal val charArrayStringer: PrimitiveArrayStringer<CharArray>,
+    internal val floatArrayStringer: PrimitiveArrayStringer<FloatArray>,
+    internal val doubleArrayStringer: PrimitiveArrayStringer<DoubleArray>,
+    internal val booleanArrayStringer: PrimitiveArrayStringer<BooleanArray>,
 ) {
-    fun isReflectSkip(clazz: Class<*>): Boolean {
+    internal fun isReflectSkip(clazz: Class<*>): Boolean {
         return reflectSkipPackages.any { clazz.name.startsWith(it) }
     }
 
-    fun isSkipNodeType(clazz: Class<*>): Boolean {
+    internal fun isSkipNodeType(clazz: Class<*>): Boolean {
         return skipNodeTypes.any { clazz === it || clazz.isSubclassOf(it) }
     }
 
+    //<editor-fold desc="原生数组类型toString方式" defaultstatus="collapsed">
+    interface PrimitiveArrayStringer<T> {
+        fun append(sb: StringBuilder, array: T): StringBuilder
+
+        object StdToString : PrimitiveArrayStringer<Any> {
+            override fun append(sb: StringBuilder, array: Any): StringBuilder = sb.append(array)
+
+            @Suppress("UNCHECKED_CAST")
+            operator fun <T> invoke(): PrimitiveArrayStringer<T> =
+                StdToString as PrimitiveArrayStringer<T>
+        }
+
+        sealed interface ContentToString<T> : PrimitiveArrayStringer<T> {
+            object Byte : ContentToString<ByteArray> {
+                override fun append(sb: StringBuilder, array: ByteArray): StringBuilder =
+                    sb.append(array.contentToString())
+            }
+
+            object Short : ContentToString<ShortArray> {
+                override fun append(sb: StringBuilder, array: ShortArray): StringBuilder =
+                    sb.append(array.contentToString())
+            }
+
+            object Int : ContentToString<IntArray> {
+                override fun append(sb: StringBuilder, array: IntArray): StringBuilder =
+                    sb.append(array.contentToString())
+            }
+
+            object Long : ContentToString<LongArray> {
+                override fun append(sb: StringBuilder, array: LongArray): StringBuilder =
+                    sb.append(array.contentToString())
+            }
+
+            object Char : ContentToString<CharArray> {
+                override fun append(sb: StringBuilder, array: CharArray): StringBuilder =
+                    sb.append(array.contentToString())
+            }
+
+            object Float : ContentToString<FloatArray> {
+                override fun append(sb: StringBuilder, array: FloatArray): StringBuilder =
+                    sb.append(array.contentToString())
+            }
+
+            object Double : ContentToString<DoubleArray> {
+                override fun append(sb: StringBuilder, array: DoubleArray): StringBuilder =
+                    sb.append(array.contentToString())
+            }
+
+            object Boolean : ContentToString<BooleanArray> {
+                override fun append(sb: StringBuilder, array: BooleanArray): StringBuilder =
+                    sb.append(array.contentToString())
+            }
+        }
+
+        sealed interface SizeToString<T> : PrimitiveArrayStringer<T> {
+            object Byte : SizeToString<ByteArray> {
+                override fun append(sb: StringBuilder, array: ByteArray): StringBuilder =
+                    sb.append("size:").append(array.size)
+            }
+
+            object Short : SizeToString<ShortArray> {
+                override fun append(sb: StringBuilder, array: ShortArray): StringBuilder =
+                    sb.append("size:").append(array.size)
+            }
+
+            object Int : SizeToString<IntArray> {
+                override fun append(sb: StringBuilder, array: IntArray): StringBuilder =
+                    sb.append("size:").append(array.size)
+            }
+
+            object Long : SizeToString<LongArray> {
+                override fun append(sb: StringBuilder, array: LongArray): StringBuilder =
+                    sb.append("size:").append(array.size)
+            }
+
+            object Char : SizeToString<CharArray> {
+                override fun append(sb: StringBuilder, array: CharArray): StringBuilder =
+                    sb.append("size:").append(array.size)
+            }
+
+            object Float : SizeToString<FloatArray> {
+                override fun append(sb: StringBuilder, array: FloatArray): StringBuilder =
+                    sb.append("size:").append(array.size)
+            }
+
+            object Double : SizeToString<DoubleArray> {
+                override fun append(sb: StringBuilder, array: DoubleArray): StringBuilder =
+                    sb.append("size:").append(array.size)
+            }
+
+            object Boolean : SizeToString<BooleanArray> {
+                override fun append(sb: StringBuilder, array: BooleanArray): StringBuilder =
+                    sb.append("size:").append(array.size)
+            }
+        }
+
+        sealed class HexToString<T>(
+            private val bitCount: kotlin.Int
+        ) : PrimitiveArrayStringer<T> {
+            fun StringBuilder.appendHex(element: kotlin.Long): StringBuilder = apply {
+                for (i in 0 until (bitCount / 4)) {
+                    append(hexDigits[(element ushr (i * 4) and 0x0F).toInt()])
+                }
+            }
+
+            object Byte : HexToString<ByteArray>(java.lang.Byte.SIZE) {
+                override fun append(sb: StringBuilder, array: ByteArray): StringBuilder =
+                    sb.apply { array.forEach { appendHex(it.toLong()) } }
+            }
+
+            object Short : HexToString<ShortArray>(java.lang.Short.SIZE) {
+                override fun append(sb: StringBuilder, array: ShortArray): StringBuilder =
+                    sb.apply { array.forEach { appendHex(it.toLong()) } }
+            }
+
+            object Int : HexToString<IntArray>(java.lang.Integer.SIZE) {
+                override fun append(sb: StringBuilder, array: IntArray): StringBuilder =
+                    sb.apply { array.forEach { appendHex(it.toLong()) } }
+            }
+
+            object Long : HexToString<LongArray>(java.lang.Long.SIZE) {
+                override fun append(sb: StringBuilder, array: LongArray): StringBuilder =
+                    sb.apply { array.forEach { appendHex(it) } }
+            }
+
+            object Char : HexToString<CharArray>(java.lang.Character.SIZE) {
+                override fun append(sb: StringBuilder, array: CharArray): StringBuilder =
+                    sb.apply { array.forEach { appendHex(it.code.toLong()) } }
+            }
+
+            object Float : HexToString<FloatArray>(java.lang.Float.SIZE) {
+                override fun append(sb: StringBuilder, array: FloatArray): StringBuilder =
+                    sb.apply { array.forEach { appendHex(it.toRawBits().toLong()) } }
+            }
+
+            object Double : HexToString<DoubleArray>(java.lang.Double.SIZE) {
+                override fun append(sb: StringBuilder, array: DoubleArray): StringBuilder =
+                    sb.apply { array.forEach { appendHex(it.toRawBits()) } }
+            }
+
+            object Boolean : HexToString<BooleanArray>(1) {
+                override fun append(sb: StringBuilder, array: BooleanArray): StringBuilder =
+                    sb.apply { array.forEach { append(if (it) '1' else '0') } }
+            }
+
+            companion object {
+                private val hexDigits = charArrayOf(
+                    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+                )
+            }
+        }
+    }
+    //</editor-fold>
+
     companion object {
-        val Default = ToStringConfig(
-            true,
+        //<editor-fold desc="默认配置" defaultstatus="collapsed">
+        val Default = ToStringByReflectConfig(
             setOf(
                 "java.",
                 "android.",
@@ -557,23 +719,32 @@ data class ToStringConfig(
                 java.lang.Void::class.java,
                 java.util.Date::class.java,
             ),
+            PrimitiveArrayStringer.ContentToString.Byte,
+            PrimitiveArrayStringer.ContentToString.Short,
+            PrimitiveArrayStringer.ContentToString.Int,
+            PrimitiveArrayStringer.ContentToString.Long,
+            PrimitiveArrayStringer.ContentToString.Char,
+            PrimitiveArrayStringer.ContentToString.Float,
+            PrimitiveArrayStringer.ContentToString.Double,
+            PrimitiveArrayStringer.ContentToString.Boolean,
         )
+        //</editor-fold>
     }
 }
 
 data class ToStringStackRecord(
-    val value: Any?,
-    val nodeName: String,
-    val parentNode: ToStringStackRecord?,
+    private val value: Any?,
+    private val nodeName: String,
+    private val parentNode: ToStringStackRecord?,
 ) {
     private val nodeRecords: MutableMap<Any, String> =
         parentNode?.nodeRecords ?: mutableMapOf()
 
-    fun onChildNode(value: Any?, name: String): ToStringStackRecord {
+    internal fun onChildNode(value: Any?, name: String): ToStringStackRecord {
         return ToStringStackRecord(value, this.nodeName + "." + name, this)
     }
 
-    fun findParentNodeNameByValue(value: Any): String? {
+    internal fun findParentNodeNameByValue(value: Any): String? {
         var currentNode: ToStringStackRecord? = parentNode
         while (currentNode != null) {
             if (currentNode.value === value)
@@ -583,13 +754,14 @@ data class ToStringStackRecord(
         return null
     }
 
-    fun findNodeRecord(value: Any): String? {
+    internal fun findNodeRecord(value: Any): String? {
         val record = nodeRecords[value]
         if (record == null && value === this.value &&
-            !UtilInitializer.toStringByReflectConfig.isSkipNodeType(value.javaClass)
+            !UtilInitializer.toStringConfig.isSkipNodeType(value.javaClass)
         ) {
             nodeRecords[value] = nodeName
         }
         return record
     }
 }
+//</editor-fold>
