@@ -1,8 +1,8 @@
 package io.github.chenfei0928.reflect
 
-import android.util.Log
 import io.github.chenfei0928.lang.javaPrimitiveType
 import io.github.chenfei0928.reflect.parameterized.ParameterizedTypeReflect1
+import io.github.chenfei0928.util.Log
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type

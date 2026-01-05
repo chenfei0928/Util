@@ -1,11 +1,11 @@
 package io.github.chenfei0928.repository.local
 
 import android.content.Context
-import android.util.Log
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.concurrent.updateAndGetCompat
 import io.github.chenfei0928.io.ShareFileLockHelper
 import io.github.chenfei0928.io.UncloseableOutputStream
+import io.github.chenfei0928.util.Log
 import java.io.File
 import java.io.FileDescriptor
 import java.io.FileOutputStream

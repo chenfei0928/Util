@@ -1,6 +1,6 @@
 package io.github.chenfei0928.concurrent.coroutines
 
-import android.util.Log
+import io.github.chenfei0928.util.Log
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

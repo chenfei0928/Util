@@ -2,7 +2,6 @@ package io.github.chenfei0928.content.sp.saver
 
 import android.content.SharedPreferences
 import android.os.Build
-import android.util.Log
 import androidx.collection.ArraySet
 import androidx.collection.SparseArrayCompat
 import androidx.preference.PreferenceDataStore
@@ -22,6 +21,7 @@ import io.github.chenfei0928.reflect.isSubtypeOf
 import io.github.chenfei0928.reflect.jTypeOf
 import io.github.chenfei0928.reflect.jvmErasureClassOrNull
 import io.github.chenfei0928.util.DependencyChecker
+import io.github.chenfei0928.util.Log
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type

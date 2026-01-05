@@ -1,6 +1,5 @@
 package io.github.chenfei0928.preference.sp
 
-import android.util.Log
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.BaseMmkvSaver
 import io.github.chenfei0928.content.sp.saver.PreferenceType
@@ -12,6 +11,7 @@ import io.github.chenfei0928.content.sp.saver.convert.SpValueObservable
 import io.github.chenfei0928.content.sp.saver.delegate.AbsSpAccessDefaultValueDelegate
 import io.github.chenfei0928.preference.base.FieldAccessor
 import io.github.chenfei0928.util.DependencyChecker
+import io.github.chenfei0928.util.Log
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty

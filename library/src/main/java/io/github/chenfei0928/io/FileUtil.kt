@@ -6,8 +6,8 @@ import android.os.Build
 import android.os.Environment
 import android.os.FileUtils
 import android.os.ParcelFileDescriptor
-import android.util.Log
 import android.webkit.MimeTypeMap
+import io.github.chenfei0928.util.Log
 import okio.buffer
 import okio.sink
 import okio.source

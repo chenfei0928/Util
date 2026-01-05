@@ -1,10 +1,10 @@
 package io.github.chenfei0928.lifecycle
 
-import android.util.Log
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.concurrent.UiTaskExecutor.Companion.runOnUiThread
+import io.github.chenfei0928.util.Log
 import java.io.Closeable
 import java.util.WeakHashMap
 import kotlin.properties.ReadOnlyProperty

@@ -4,8 +4,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import android.util.Log
 import io.github.chenfei0928.concurrent.coroutines.CoroutineAndroidContext
+import io.github.chenfei0928.util.Log
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.channels.trySendBlocking

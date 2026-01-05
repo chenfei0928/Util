@@ -16,13 +16,13 @@
 
 package io.github.chenfei0928.io;
 
-import android.util.Log;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
+
+import io.github.chenfei0928.util.Log;
 
 /**
  * Created by zhangshaowen on 16/6/3.

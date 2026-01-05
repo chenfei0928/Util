@@ -1,7 +1,7 @@
 package io.github.chenfei0928.demo.storage
 
 import android.os.Bundle
-import android.util.Log
+import io.github.chenfei0928.util.Log
 import android.view.View
 import androidx.core.os.postDelayed
 import androidx.preference.PreferenceFragmentCompat

@@ -3,11 +3,11 @@ package io.github.chenfei0928.webkit
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
-import android.util.Log
 import android.webkit.WebResourceResponse
 import androidx.core.content.ContextCompat
 import androidx.webkit.WebViewAssetLoader
 import androidx.webkit.internal.AssetHelper
+import io.github.chenfei0928.util.Log
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.util.zip.GZIPInputStream

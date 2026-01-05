@@ -3,7 +3,6 @@ package io.github.chenfei0928.concurrent.coroutines
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
-import android.util.Log
 import android.view.View
 import androidx.collection.ArrayMap
 import androidx.fragment.app.Fragment
@@ -15,6 +14,7 @@ import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.content.findActivity
 import io.github.chenfei0928.lang.contains
+import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.view.findParentFragment
 import io.github.chenfei0928.webkit.WebViewLifecycleOwner
 import java.lang.reflect.Modifier
@@ -41,8 +41,10 @@ private constructor(
 
     override val tag: String by lazy {
         // 过滤掉来自操作系统的 host，如 FragmentViewLifecycleOwner 或任何操作系统的 View
-        val hostIfSelf = host.takeIf {
-            !it.javaClass.name.startsWith("android.") && !it.javaClass.name.startsWith("androidx.")
+        val hostIfSelf = host.takeIf { host ->
+            !host.javaClass.name.startsWith("android.") && !host.javaClass.name.startsWith("androidx.")
+                    // 排除掉黑名单中的类，例如 WebViewLifecycleOwner
+                    && tagBlackList.none { it.isInstance(host) }
         }
         hostIfSelf?.getStaticTag(true)
             ?: fragmentHost?.getStaticTag()
@@ -53,6 +55,9 @@ private constructor(
     companion object {
         private const val TAG = "KW_CoroutineAndroidCtx"
         private val classTagMap = ArrayMap<Class<*>, String?>()
+        val tagBlackList = listOf(
+            WebViewLifecycleOwner::class.java,
+        )
 
         fun Any.getStaticTag(
             tryOuterClass: Boolean = false
@@ -116,7 +121,8 @@ private constructor(
                 && FragmentViewLifecycleCf0928UtilAccessor.isViewLifecycleOwner(node)
             ) {
                 // 使用fragment的viewLifecycle创建协程实例，通过该方式获取其fragment
-                val fragment = FragmentViewLifecycleCf0928UtilAccessor.getFragmentByViewLifecycleOwner(node)
+                val fragment =
+                    FragmentViewLifecycleCf0928UtilAccessor.getFragmentByViewLifecycleOwner(node)
                 newInstanceImpl(host, fragment)
             } else when (node) {
                 is View -> {

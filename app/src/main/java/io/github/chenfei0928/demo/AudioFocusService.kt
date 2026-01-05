@@ -1,7 +1,7 @@
 package io.github.chenfei0928.demo
 
 import android.media.AudioManager
-import android.util.Log
+import io.github.chenfei0928.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat

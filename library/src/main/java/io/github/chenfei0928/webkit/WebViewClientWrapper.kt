@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.net.http.SslError
 import android.os.Build
 import android.os.Message
-import android.util.Log
 import android.view.KeyEvent
 import android.webkit.ClientCertRequest
 import android.webkit.HttpAuthHandler
@@ -20,6 +19,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import io.github.chenfei0928.os.safeHandler
+import io.github.chenfei0928.util.Log
 
 /**
  * @author chenf()

@@ -2,7 +2,6 @@ package io.github.chenfei0928.preference.sp
 
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
-import android.util.Log
 import androidx.preference.PreferenceManager
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver
 import io.github.chenfei0928.content.sp.saver.DataStoreDelegateStoreProvider.Companion.dataStore
@@ -11,6 +10,7 @@ import io.github.chenfei0928.preference.base.BaseFieldAccessorCache
 import io.github.chenfei0928.preference.base.FieldAccessor
 import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor.Companion.property
 import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor.Field
+import io.github.chenfei0928.util.Log
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1

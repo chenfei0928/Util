@@ -3,7 +3,7 @@ package io.github.chenfei0928.demo
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import io.github.chenfei0928.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.ComponentActivity

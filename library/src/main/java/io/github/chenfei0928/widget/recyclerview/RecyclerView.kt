@@ -1,6 +1,5 @@
 package io.github.chenfei0928.widget.recyclerview
 
-import android.util.Log
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -8,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.flexbox.FlexboxLayoutManager
 import io.github.chenfei0928.util.DependencyChecker
+import io.github.chenfei0928.util.Log
 import kotlin.math.max
 import kotlin.math.min
 

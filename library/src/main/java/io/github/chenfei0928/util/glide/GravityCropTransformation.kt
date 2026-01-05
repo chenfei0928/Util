@@ -5,11 +5,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.RectF
-import android.util.Log
 import android.view.Gravity
 import androidx.annotation.GravityInt
 import androidx.annotation.Px
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
+import io.github.chenfei0928.util.Log
 import jp.wasabeef.glide.transformations.BitmapTransformation
 import java.security.MessageDigest
 

@@ -2,7 +2,6 @@ package io.github.chenfei0928.lang
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.util.SparseArray
 import androidx.collection.LruCache
 import androidx.collection.SparseArrayCompat
@@ -14,6 +13,7 @@ import io.github.chenfei0928.content.getAll
 import io.github.chenfei0928.preference.base.FieldAccessor
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.isWriteByKotlin
+import io.github.chenfei0928.util.Log
 import java.lang.ref.Reference
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -363,7 +363,12 @@ private fun StringBuilder.appendObjectByReflectImpl(
         try {
             append(any.toString())
         } catch (e: Exception) {
-            append("${any::class.java.name}@${Integer.toHexString(any.hashCode())}($e)")
+            append(any.javaClass.name)
+            append('@')
+            append(Integer.toHexString(any.hashCode()))
+            append('(')
+            append(e)
+            append(')')
         }
         return@apply
     }
@@ -485,7 +490,7 @@ private fun getValue(
             else -> field
         }
     } catch (e: Exception) {
-        "owner $thisRef's field: $field get error: $e"
+        "owner $thisRef's kProperty: $field get failed: $e"
     }
     // Kotlin方法
     is KFunction<*> -> try {
@@ -498,7 +503,7 @@ private fun getValue(
             else -> field
         }
     } catch (e: Exception) {
-        "owner $thisRef's func: $field invoke error: $e"
+        "owner $thisRef's func: $field invoke failed: $e"
     }
     // Jvm反射体系的field
     is Field -> try {
@@ -508,7 +513,7 @@ private fun getValue(
             field.get(thisRef)
         }
     } catch (e: Exception) {
-        "owner $thisRef's field: $field get error: $e"
+        "owner $thisRef's field: $field get failed: $e"
     }
     // SpSaver preferenceDataStore的field
     is FieldAccessor.Field<*, *> -> {

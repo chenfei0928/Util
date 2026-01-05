@@ -2,11 +2,11 @@ package io.github.chenfei0928.repository.local
 
 import android.content.Context
 import android.util.AtomicFile
-import android.util.Log
 import androidx.core.util.tryWrite
 import io.github.chenfei0928.concurrent.ExecutorUtil
 import io.github.chenfei0928.concurrent.updateAndGetCompat
 import io.github.chenfei0928.io.UncloseableOutputStream
+import io.github.chenfei0928.util.Log
 import java.io.File
 import java.util.concurrent.atomic.AtomicReference
 
