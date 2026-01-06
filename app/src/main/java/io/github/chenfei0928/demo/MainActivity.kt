@@ -225,7 +225,7 @@ class MainActivity : ComponentActivity() {
         var j: String? by ArgumentDelegate.stringNullable()
         var k: Bean? by ArgumentDelegate.parcelableNullable()
         var l: Bean? by ArgumentDelegate(true)
-        var m: Bean by ArgumentDelegate()
+        var m: Bean by ArgumentDelegate(false)
         var n: Test by ArgumentDelegate.parceler(ProtobufParceler())
         var o: Test by ArgumentDelegate.protobuf()
         var p: Test? by ArgumentDelegate(BundleSupportType.ProtoBufType.nullable())
