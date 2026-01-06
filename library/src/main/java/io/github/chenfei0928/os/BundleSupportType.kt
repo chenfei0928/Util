@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 import android.util.Size
 import android.util.SizeF
 import android.util.SparseArray
@@ -89,7 +90,10 @@ abstract class BundleSupportType<T>(
         bundle?.let { getNullable(bundle, property, name) }
     else if (bundle != null)
         getNonnull(bundle, property, name, defaultValue)
-    else defaultValue ?: nonnullValue(property)
+    else defaultValue ?: run {
+        Log.d(TAG, "getValue: $name 没有找到数据，也未提供默认值，创建nonnullValue: $property")
+        nonnullValue(property)
+    }
 
     /**
      * 获取[Intent]的扩展数据，并返回可空数据。如果数据中没有存储该数据，则返回null
@@ -102,8 +106,11 @@ abstract class BundleSupportType<T>(
      */
     protected open fun getNonnull(
         bundle: Bundle, property: KProperty<*>, name: String, defaultValue: T?
-    ): T = if (!bundle.containsKey(name)) defaultValue ?: nonnullValue(property) else
-        getNullable(bundle, property, name) ?: defaultValue ?: nonnullValue(property)
+    ): T = (if (!bundle.containsKey(name)) null else getNullable(bundle, property, name))
+        ?: defaultValue ?: run {
+            Log.d(TAG, "getNonnull: $name 没有找到数据，也未提供默认值，创建nonnullValue: $property")
+            nonnullValue(property)
+        }
     //</editor-fold>
 
     //<editor-fold desc="Intent的put" defaultstatus="collapsed">
@@ -149,8 +156,13 @@ abstract class BundleSupportType<T>(
      */
     protected open fun getExtraNonnull(
         intent: Intent, property: KProperty<*>, name: String, defaultValue: T?
-    ): T = if (!intent.hasExtra(name)) defaultValue ?: nonnullValue(property) else
-        getExtraNullable(intent, property, name) ?: defaultValue ?: nonnullValue(property)
+    ): T = (if (!intent.hasExtra(name)) null else getExtraNullable(intent, property, name))
+        ?: defaultValue ?: run {
+            Log.d(TAG, run {
+                "getExtraNonnull: $name 没有找到数据，也未提供默认值，创建nonnullValue: $property"
+            })
+            nonnullValue(property)
+        }
     //</editor-fold>
     //</editor-fold>
 

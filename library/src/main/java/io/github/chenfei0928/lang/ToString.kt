@@ -32,13 +32,18 @@ import kotlin.reflect.jvm.jvmName
 private const val TAG = "Ut_ToString"
 
 //<editor-fold desc="对任意对象进行toString支持" defaultstatus="collapsed">
-fun Any?.toStringByReflect(): String = StringBuilder().appendByReflect(
+fun Any?.toStringByReflect(): String = StringBuilder().appendByReflectImpl(
     this, ToStringStackRecord(this, "this@toStringByReflect", null)
 ).toString()
 
 fun StringBuilder.appendByReflect(
     any: Any?,
     record: ToStringStackRecord = ToStringStackRecord(any, "this@toStringByReflect", null),
+): StringBuilder = appendByReflectImpl(any, record)
+
+@Suppress("CyclomaticComplexMethod", "LongMethod")
+private fun StringBuilder.appendByReflectImpl(
+    any: Any?, record: ToStringStackRecord,
 ): StringBuilder {
     if (any == null) {
         return append("null")
@@ -53,122 +58,116 @@ fun StringBuilder.appendByReflect(
         append(nodeRecord)
         return this
     }
-    return appendByReflectImpl(any, record)
-}
-
-@Suppress("CyclomaticComplexMethod", "LongMethod")
-private fun StringBuilder.appendByReflectImpl(
-    any: Any, record: ToStringStackRecord
-): StringBuilder = when (any) {
-    // Java类对象
-    is Class<*> -> if (any.isWriteByKotlin) {
-        appendByReflect(any.kotlin, record)
-    } else StaticFieldsCache.cache.getOrPut(any.name) {
-        // java，打印当前类自身定义的static字段
-        StaticFieldsCache.JavaClass(any)
-    }.appendTo(this, record)
-    // Kotlin类对象
-    is KClass<*> -> if (!any.java.isWriteByKotlin) {
-        append(any.java)
-    } else StaticFieldsCache.cache.getOrPut(any.jvmName) {
-        // kotlin，打印伴生对象的字段
-        val companionKls = if (any.isCompanion)
-            any else any.companionObject
-        if (companionKls != null) {
-            StaticFieldsCache.KotlinKClassComponentObject(any, companionKls)
+    return when (any) {
+        // Java类对象
+        is Class<*> -> if (any.isWriteByKotlin) {
+            appendByReflectImpl(any.kotlin, record)
+        } else StaticFieldsCache.cache.getOrPut(any.name) {
+            // java，打印当前类自身定义的static字段
+            StaticFieldsCache.JavaClass(any)
+        }.appendTo(this, record)
+        // Kotlin类对象
+        is KClass<*> -> if (!any.java.isWriteByKotlin) {
+            appendByReflectImpl(any.java, record)
+        } else StaticFieldsCache.cache.getOrPut(any.jvmName) {
+            // kotlin，打印伴生对象的字段
+            val companionKls = if (any.isCompanion)
+                any else any.companionObject
+            if (companionKls != null) {
+                StaticFieldsCache.KotlinKClassComponentObject(any, companionKls)
+            } else {
+                StaticFieldsCache.KotlinKClass(any)
+            }
+        }.appendTo(this, record)
+        // 数组
+        is Array<*> -> {
+            append('[')
+            any.forEachIndexed { i, element ->
+                if (i != 0) {
+                    append(", ")
+                }
+                appendByReflectImpl(element, record.onChildNode(element, "[$i]"))
+            }
+            append(']')
+        }
+        is ByteArray -> UtilInitializer.toStringConfig.byteArrayStringer.append(this, any)
+        is ShortArray -> UtilInitializer.toStringConfig.shortArrayStringer.append(this, any)
+        is IntArray -> UtilInitializer.toStringConfig.intArrayStringer.append(this, any)
+        is LongArray -> UtilInitializer.toStringConfig.longArrayStringer.append(this, any)
+        is CharArray -> UtilInitializer.toStringConfig.charArrayStringer.append(this, any)
+        is FloatArray -> UtilInitializer.toStringConfig.floatArrayStringer.append(this, any)
+        is DoubleArray -> UtilInitializer.toStringConfig.doubleArrayStringer.append(this, any)
+        is BooleanArray -> UtilInitializer.toStringConfig.booleanArrayStringer.append(this, any)
+        // JDK类型
+        is CharSequence -> append(any)
+        is Iterable<*> -> {
+            append('[')
+            any.forEachIndexed { i, element ->
+                if (i != 0) {
+                    append(", ")
+                }
+                appendByReflectImpl(element, record.onChildNode(element, "[$i]"))
+            }
+            append(']')
+        }
+        is Map<*, *> -> if (any.isEmpty()) {
+            append(any.javaClass.simpleName)
+            append("(empty)")
         } else {
-            StaticFieldsCache.KotlinKClass(any)
-        }
-    }.appendTo(this, record)
-    // 数组
-    is Array<*> -> {
-        append('[')
-        any.forEachIndexed { i, element ->
-            if (i != 0) {
+            append('[')
+            any.onEachIndexed { i, it ->
+                appendByReflectImpl(it.key, record.onChildNode(it.key, "[$i].key"))
+                append('=')
+                appendByReflectImpl(it.value, record.onChildNode(it.value, "[$i].value"))
                 append(", ")
             }
-            appendByReflect(element, record.onChildNode(element, "[$i]"))
+            replace(length - 2, length, "]")
         }
-        append(']')
-    }
-    is ByteArray -> UtilInitializer.toStringConfig.byteArrayStringer.append(this, any)
-    is ShortArray -> UtilInitializer.toStringConfig.shortArrayStringer.append(this, any)
-    is IntArray -> UtilInitializer.toStringConfig.intArrayStringer.append(this, any)
-    is LongArray -> UtilInitializer.toStringConfig.longArrayStringer.append(this, any)
-    is CharArray -> UtilInitializer.toStringConfig.charArrayStringer.append(this, any)
-    is FloatArray -> UtilInitializer.toStringConfig.floatArrayStringer.append(this, any)
-    is DoubleArray -> UtilInitializer.toStringConfig.doubleArrayStringer.append(this, any)
-    is BooleanArray -> UtilInitializer.toStringConfig.booleanArrayStringer.append(this, any)
-    // JDK类型
-    is CharSequence -> append(any)
-    is Iterable<*> -> {
-        append('[')
-        any.forEachIndexed { i, element ->
-            if (i != 0) {
-                append(", ")
+        is Reference<*> -> appendByReflectImpl(any.get(), record.onChildNode(any.get(), "get()"))
+        // 非JDK的容器类型
+        is SparseArray<*> -> {
+            append('[')
+            for (i in 0 until any.size) {
+                if (i != 0) append(", ")
+                append(any.keyAt(i))
+                append("=")
+                val value = any.valueAt(i)
+                appendByReflectImpl(value, record.onChildNode(value, "[$i].value"))
             }
-            appendByReflect(element, record.onChildNode(element, "[$i]"))
+            append(']')
         }
-        append(']')
-    }
-    is Map<*, *> -> if (any.isEmpty()) {
-        append(any.javaClass.simpleName)
-        append("(empty)")
-    } else {
-        append('[')
-        any.onEachIndexed { i, it ->
-            appendByReflect(it.key, record.onChildNode(it.key, "[$i].key"))
-            append('=')
-            appendByReflect(it.value, record.onChildNode(it.value, "[$i].value"))
-            append(", ")
+        is SparseArrayCompat<*> -> {
+            append('[')
+            for (i in 0 until any.size()) {
+                if (i != 0) append(", ")
+                append(any.keyAt(i))
+                append("=")
+                val value = any.valueAt(i)
+                appendByReflectImpl(value, record.onChildNode(value, "[$i].value"))
+            }
+            append(']')
         }
-        replace(length - 2, length, "]")
-    }
-    is Reference<*> -> appendByReflect(any.get(), record.onChildNode(any.get(), "get()"))
-    // 非JDK的容器类型
-    is SparseArray<*> -> {
-        append('[')
-        for (i in 0 until any.size) {
-            if (i != 0) append(", ")
-            append(any.keyAt(i))
-            append("=")
-            val value = any.valueAt(i)
-            appendByReflect(value, record.onChildNode(value, "[$i].value"))
-        }
-        append(']')
-    }
-    is SparseArrayCompat<*> -> {
-        append('[')
-        for (i in 0 until any.size()) {
-            if (i != 0) append(", ")
-            append(any.keyAt(i))
-            append("=")
-            val value = any.valueAt(i)
-            appendByReflect(value, record.onChildNode(value, "[$i].value"))
-        }
-        append(']')
-    }
-    is Intent -> {
-        append(any.toString())
-        append(',')
-        val all = any.extras?.getAll()
-        appendByReflect(all, record.onChildNode(all, "extras"))
-    }
-    is Bundle -> {
-        val all = any.getAll()
-        appendByReflect(all, record.onChildNode(all, "getAll"))
-    }
-    // 判断该类有没有重写toString
-    else -> if (UtilInitializer.toStringConfig.useToStringMethod(any.javaClass)) {
-        // 如果该类的 toString 方法被重写过（包括其父类）直接调用toString方法输出
-        try {
+        is Intent -> {
             append(any.toString())
-        } catch (e: Exception) {
-            append("${any.toStdString()}($e)")
+            append(',')
+            val all = any.extras?.getAll()
+            appendByReflectImpl(all, record.onChildNode(all, "extras"))
         }
-    } else appendObjectByReflectImpl(any, record)
+        is Bundle -> {
+            val all = any.getAll()
+            appendByReflectImpl(all, record.onChildNode(all, "getAll"))
+        }
+        // 判断该类有没有重写toString
+        else -> if (!UtilInitializer.toStringConfig.useToStringMethod(any.javaClass)) {
+            appendObjectByReflectImpl(any, record)
+        } else {
+            // 如果该类的 toString 方法被重写过（包括其父类）直接调用toString方法输出
+            appendStdToString(any)
+        }
+    }
 }
 
+//<editor-fold desc="静态字段缓存（JClass、KClass、KComponent）" defaultstatus="collapsed">
 /**
  * 类的静态字段缓存
  */
@@ -199,7 +198,7 @@ private sealed interface StaticFieldsCache {
             stringBuilder: StringBuilder, record: ToStringStackRecord
         ): StringBuilder = stringBuilder
             .append(clazzName)
-            .appendAnyFields(clazz, record, fields = fields)
+            .appendAnyFieldsImpl(clazz, record, fields = fields)
     }
 
     /**
@@ -241,14 +240,16 @@ private sealed interface StaticFieldsCache {
             stringBuilder: StringBuilder, record: ToStringStackRecord
         ): StringBuilder = stringBuilder
             .append(clazzName)
-            .appendAnyFields(companionObj, record, fields = fields)
+            .appendAnyFieldsImpl(companionObj, record, fields = fields)
     }
 
     companion object {
         val cache = LruCache<String, StaticFieldsCache>(UtilInitializer.lruCacheStandardSize)
     }
 }
+//</editor-fold>
 
+//<editor-fold desc="类实例字段缓存" defaultstatus="collapsed">
 private sealed interface FieldsCache<T : Any> {
     val hasField: Boolean
     fun appendTo(
@@ -283,7 +284,7 @@ private sealed interface FieldsCache<T : Any> {
                 if (value == any) {
                     append("this")
                 } else {
-                    appendByReflect(value, record.onChildNode(value, field.name))
+                    appendByReflectImpl(value, record.onChildNode(value, field.name))
                 }
                 append(", ")
             }
@@ -316,7 +317,7 @@ private sealed interface FieldsCache<T : Any> {
                 if (value == any) {
                     append("this")
                 } else {
-                    appendByReflect(value, record.onChildNode(value, field.name))
+                    appendByReflectImpl(value, record.onChildNode(value, field.name))
                 }
                 append(", ")
             }
@@ -327,6 +328,7 @@ private sealed interface FieldsCache<T : Any> {
         val cache = LruCache<String, FieldsCache<*>>(UtilInitializer.lruCacheStandardSize)
     }
 }
+//</editor-fold>
 
 private fun StringBuilder.appendObjectByReflectImpl(
     any: Any, record: ToStringStackRecord
@@ -347,16 +349,7 @@ private fun StringBuilder.appendObjectByReflectImpl(
     }
     // 如果类在反射黑名单中，不使用反射处理这个类
     if (UtilInitializer.toStringConfig.isReflectSkip(thisClass)) {
-        try {
-            append(any.toString())
-        } catch (e: Exception) {
-            append(any.javaClass.name)
-            append('@')
-            append(Integer.toHexString(any.hashCode()))
-            append('(')
-            append(e)
-            append(')')
-        }
+        appendStdToString(any)
         return@apply
     }
     // 不是数组，toString 也没有被重写过，调用反射输出每一个字段
@@ -397,7 +390,7 @@ private fun StringBuilder.appendObjectByReflectImpl(
 //<editor-fold desc="对实例toString字段支持" defaultstatus="collapsed">
 fun Any.toStringAny(vararg fields: Any): String = StringBuilder()
     .append(this.javaClass.simpleName)
-    .appendAnyFields(
+    .appendAnyFieldsImpl(
         this, ToStringStackRecord(this, "this@toStringAny", null), fields = fields
     )
     .toString()
@@ -405,6 +398,12 @@ fun Any.toStringAny(vararg fields: Any): String = StringBuilder()
 fun StringBuilder.appendAnyFields(
     any: Any,
     record: ToStringStackRecord = ToStringStackRecord(any, "this@toStringAny", null),
+    vararg fields: Any,
+): StringBuilder = appendAnyFieldsImpl(any, record, fields = fields)
+
+private fun StringBuilder.appendAnyFieldsImpl(
+    any: Any,
+    record: ToStringStackRecord,
     vararg fields: Any,
 ): StringBuilder = apply {
     append('(')
@@ -416,9 +415,9 @@ fun StringBuilder.appendAnyFields(
             // name to Kotlin字段、方法
             is Pair<*, *> -> {
                 val (key, value) = field
-                append(key)
+                appendStdToString(key)
                 append('=')
-                appendByReflect(
+                appendByReflectImpl(
                     getValue(any, value),
                     record.onChildNode(value, key as? String ?: "[$index]-$key")
                 )
@@ -428,24 +427,24 @@ fun StringBuilder.appendAnyFields(
                 append(field.name)
                 append('=')
                 val value = getValue(any, field)
-                appendByReflect(value, record.onChildNode(value, field.name))
+                appendByReflectImpl(value, record.onChildNode(value, field.name))
             }
             // Jvm反射体系的field
             is Field -> {
                 append(field.name)
                 append('=')
                 val value = getValue(any, field)
-                appendByReflect(value, record.onChildNode(value, field.name))
+                appendByReflectImpl(value, record.onChildNode(value, field.name))
             }
             // SpSaver preferenceDataStore的field
             is FieldAccessor.Field<*, *> -> {
                 append(field.pdsKey)
                 append('=')
                 val value = getValue(any, field)
-                appendByReflect(value, record.onChildNode(value, field.pdsKey))
+                appendByReflectImpl(value, record.onChildNode(value, field.pdsKey))
             }
             else -> {
-                appendByReflect(field, record.onChildNode(field, "[$index]"))
+                appendByReflectImpl(field, record.onChildNode(field, "[$index]"))
             }
         }
     }
@@ -491,6 +490,19 @@ private fun getValue(
     else -> field
 }
 //</editor-fold>
+
+fun StringBuilder.appendStdToString(any: Any?) = if (any == null) {
+    append("null")
+} else try {
+    append(any.toString())
+} catch (e: Exception) {
+    append(any.javaClass.name)
+    append('@')
+    append(Integer.toHexString(any.hashCode()))
+    append('(')
+    append(e.toString())
+    append(')')
+}
 
 fun Any.toStdString() = "${this::class.java.name}@${Integer.toHexString(this.hashCode())}"
 
@@ -545,7 +557,8 @@ data class ToStringByReflectConfig(
         fun append(sb: StringBuilder, array: T): StringBuilder
 
         object StdToString : PrimitiveArrayStringer<Any> {
-            override fun append(sb: StringBuilder, array: Any): StringBuilder = sb.append(array)
+            override fun append(sb: StringBuilder, array: Any): StringBuilder =
+                sb.appendStdToString(array)
 
             @Suppress("UNCHECKED_CAST")
             operator fun <T> invoke(): PrimitiveArrayStringer<T> =
