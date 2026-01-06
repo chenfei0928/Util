@@ -40,7 +40,7 @@ class ArgumentDelegate<V>(
 
     companion object {
         inline operator fun <reified V> invoke(
-            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: V? = null
+            isMarkedNullable: Boolean?, name: String? = null, defaultValue: V? = null
         ): ReadWriteProperty<Fragment, V> = ArgumentDelegate(
             BundleSupportType.AutoFind.findByType<V>(isMarkedNullable), name, defaultValue
         )

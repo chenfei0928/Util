@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException
 object Installation : LocalFileStorage<String>(
     StringSerializer, "INSTALLATION", false, true
 ) {
-    private const val TAG = "KW_Installation"
+    private const val TAG = "Ut_Installation"
 
     fun get(context: Context): String {
         return getCacheOrLoad(context).takeIf { it.isNotEmpty() }

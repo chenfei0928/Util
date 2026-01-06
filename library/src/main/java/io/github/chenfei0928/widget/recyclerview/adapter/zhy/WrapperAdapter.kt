@@ -111,7 +111,7 @@ class WrapperAdapter(
     }
 
     companion object {
-        private const val TAG = "KW_WrapperAdapter"
+        private const val TAG = "Ut_WrapperAdapter"
 
         fun wrap(adapter: RecyclerView.Adapter<*>): WrapperAdapter {
             return adapter as? WrapperAdapter

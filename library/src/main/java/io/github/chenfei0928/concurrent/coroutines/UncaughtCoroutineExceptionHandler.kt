@@ -16,7 +16,7 @@ abstract class AbsCoroutineExceptionHandler : CoroutineExceptionHandler,
  * [博文](https://www.jianshu.com/p/2056d5424001)
  */
 object UncaughtLogCoroutineExceptionHandler : AbsCoroutineExceptionHandler() {
-    private const val TAG = "KW_CoroutineExceptionH"
+    private const val TAG = "Ut_CoroutineExceptionH"
     var onErrorLis: ((context: CoroutineContext, exception: Throwable) -> Unit)? = null
 
     override fun handleException(context: CoroutineContext, exception: Throwable) {

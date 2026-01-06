@@ -407,7 +407,7 @@ sealed interface PreferenceType<T> {
     }
 
     companion object {
-        private const val TAG = "KW_PreferenceType"
+        private const val TAG = "Ut_PreferenceType"
 
         //<editor-fold desc="通过 Class 或 Type 获取类型" defaultstatus="collapsed">
         /**

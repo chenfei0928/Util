@@ -67,6 +67,6 @@ open class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObse
     }
 
     companion object {
-        private const val TAG = "KW_LifecycleCacheD"
+        private const val TAG = "Ut_LifecycleCacheD"
     }
 }

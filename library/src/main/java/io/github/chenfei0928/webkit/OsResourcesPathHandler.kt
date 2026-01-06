@@ -95,6 +95,6 @@ class OsResourcesPathHandler(
     }
 
     companion object {
-        private const val TAG = "KW_OsResourcesPathH"
+        private const val TAG = "Ut_OsResourcesPathH"
     }
 }

@@ -130,6 +130,6 @@ constructor(
     var volumeCallback: ((volume: Double) -> Unit)? = null
 
     companion object {
-        private const val TAG = "KW_PcmAudioRecord"
+        private const val TAG = "Ut_PcmAudioRecord"
     }
 }

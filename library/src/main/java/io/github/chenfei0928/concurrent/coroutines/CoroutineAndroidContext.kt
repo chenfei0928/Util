@@ -53,7 +53,7 @@ private constructor(
     }
 
     companion object {
-        private const val TAG = "KW_CoroutineAndroidCtx"
+        private const val TAG = "Ut_CoroutineAndroidCtx"
         private val classTagMap = ArrayMap<Class<*>, String?>()
         val tagBlackList = listOf(
             WebViewLifecycleOwner::class.java,

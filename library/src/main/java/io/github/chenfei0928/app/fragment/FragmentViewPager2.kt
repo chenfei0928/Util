@@ -10,7 +10,7 @@ import io.github.chenfei0928.util.Log
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2021-04-19 15:20
  */
-private const val TAG = "KW_FragmentViewPager2"
+private const val TAG = "Ut_FragmentViewPager2"
 
 fun ViewPager2.findFragment(
     fragmentManager: FragmentManager, position: Int = currentItem

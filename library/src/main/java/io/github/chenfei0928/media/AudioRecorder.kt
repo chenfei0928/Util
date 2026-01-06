@@ -86,6 +86,6 @@ constructor(
     }
 
     companion object {
-        private const val TAG = "KW_VoiceRecorder"
+        private const val TAG = "Ut_VoiceRecorder"
     }
 }

@@ -149,6 +149,6 @@ abstract class AbsLayoutParamRecyclerViewBinding<LP : LayoutParams>(
     open class LayoutParams
 
     companion object {
-        private const val TAG = "KW_AbsLpRecyclerViewB"
+        private const val TAG = "Ut_AbsLpRecyclerViewB"
     }
 }

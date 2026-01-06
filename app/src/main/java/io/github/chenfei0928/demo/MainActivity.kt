@@ -3,7 +3,6 @@ package io.github.chenfei0928.demo
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import io.github.chenfei0928.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.ComponentActivity
@@ -42,6 +41,7 @@ import io.github.chenfei0928.reflect.isWriteByKotlin
 import io.github.chenfei0928.repository.datastore.toDatastore
 import io.github.chenfei0928.repository.local.serializer.KtxsJsonSerializer
 import io.github.chenfei0928.repository.local.serializer.ProtobufSerializer
+import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.view.listener.setNoDoubleOnClickListener
 import io.github.chenfei0928.viewbinding.setContentViewBinding
 import kotlinx.coroutines.flow.first

@@ -64,7 +64,7 @@ abstract class AbsGridSpanRecyclerViewBinding<LP : AbsGridSpanRecyclerViewBindin
     }
 
     companion object {
-        private const val TAG = "KW_AbsSpanRecyclerViewB"
+        private const val TAG = "Ut_AbsSpanRecyclerViewB"
 
         @JvmStatic
         val NONE = Rect()

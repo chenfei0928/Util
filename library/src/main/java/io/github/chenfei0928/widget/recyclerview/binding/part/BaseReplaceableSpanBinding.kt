@@ -66,6 +66,6 @@ abstract class BaseReplaceableSpanBinding<Replaceable : ReplaceableSection<T>, T
     protected abstract fun replaceSectionContentDataImpl(firstBeanIndex: Int, section: Replaceable)
 
     private companion object {
-        private const val TAG = "KW_BaseReplaceableSpanB"
+        private const val TAG = "Ut_BaseReplaceableSpanB"
     }
 }

@@ -129,7 +129,7 @@ abstract class LocalFileStorage<T : Any>(
     }
 
     companion object {
-        private const val TAG = "KW_LocalJsonStorage"
+        private const val TAG = "Ut_LocalJsonStorage"
         private const val LOCK_FILE_SUFFIX = "_lock"
 
         private fun makeTmpFile(prefsFile: File): File {

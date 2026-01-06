@@ -121,7 +121,7 @@ open class BaseWebViewClient(
     //</editor-fold>
 
     companion object {
-        private const val TAG = "KW_BaseWebViewClient"
+        private const val TAG = "Ut_BaseWebViewClient"
 
         /**
          * release 下由于混淆规则，该参数会被认为永远为false，即不会忽略ssl错误

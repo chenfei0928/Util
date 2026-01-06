@@ -63,7 +63,7 @@ class AppBarLayoutHaltBehavior : AppBarLayout.Behavior {
     }
 
     companion object {
-        private const val TAG = "KW_AppBarLayoutHaltBeh"
+        private const val TAG = "Ut_AppBarLayoutHaltBeh"
 
         private val flingRunnableField: Field? by lazy {
             try {

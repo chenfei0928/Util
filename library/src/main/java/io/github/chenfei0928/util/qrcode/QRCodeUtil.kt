@@ -23,7 +23,7 @@ import java.io.IOException
  * Created by MrFeng on 2016/11/8.
  */
 object QRCodeUtil {
-    private const val TAG = "KW_QRCodeUtil"
+    private const val TAG = "Ut_QRCodeUtil"
 
     /**
      * 生成二维码Bitmap

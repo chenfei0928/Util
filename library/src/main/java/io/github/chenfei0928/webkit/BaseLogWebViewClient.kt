@@ -204,7 +204,7 @@ open class BaseLogWebViewClient : WebViewClientCompat() {
     //</editor-fold>
 
     companion object {
-        private const val TAG = "KW_BaseLogWebViewClient"
+        private const val TAG = "Ut_BaseLogWebViewClient"
 
         /**
          * release 下如果想忽略日志输出，将参数会设置为为false，即不会输出debug日志。

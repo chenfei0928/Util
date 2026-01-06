@@ -247,7 +247,7 @@ interface DataCopyClassFieldAccessor<T> : FieldAccessor<T> {
     }
 
     companion object {
-        private const val TAG = "KW_DataCopyClsFieldAcc"
+        private const val TAG = "Ut_DataCopyClsFieldAcc"
 
         //<editor-fold desc="data class copy方法" defaultstatus="collapsed">
         inline fun <reified T : Any> DataCopyClassFieldAccessor<*>.cacheCopyFunc(copyFunc: KFunction<T>) {

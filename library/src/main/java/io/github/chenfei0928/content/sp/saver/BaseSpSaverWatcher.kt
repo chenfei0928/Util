@@ -10,7 +10,7 @@ import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 
-private const val TAG = "KW_AbsSpSaverWatcher"
+private const val TAG = "Ut_AbsSpSaverWatcher"
 
 /**
  * 监听sp的变化并通知任何字段变化

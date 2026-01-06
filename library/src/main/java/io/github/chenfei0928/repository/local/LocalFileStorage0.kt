@@ -116,6 +116,6 @@ abstract class LocalFileStorage0<T : Any>(
     }
 
     companion object {
-        private const val TAG = "KW_LocalJsonStorage"
+        private const val TAG = "Ut_LocalJsonStorage"
     }
 }

@@ -8,7 +8,7 @@ import java.io.File
 import java.io.IOException
 import java.util.Locale
 
-private const val TAG = "KW_Bitmap"
+private const val TAG = "Ut_Bitmap"
 
 /**
  * Created by MrFeng on 2018/5/15.

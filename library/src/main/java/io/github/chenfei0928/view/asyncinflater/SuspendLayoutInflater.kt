@@ -89,6 +89,6 @@ class SuspendLayoutInflater(
     }
 
     companion object {
-        private const val TAG = "KW_SuspendLayoutInflate"
+        private const val TAG = "Ut_SuspendLayoutInflate"
     }
 }

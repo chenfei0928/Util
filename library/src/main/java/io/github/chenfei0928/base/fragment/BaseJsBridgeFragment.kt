@@ -45,7 +45,7 @@ abstract class BaseJsBridgeFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = "KW_BaseJsBridgeFragment"
+        private const val TAG = "Ut_BaseJsBridgeFragment"
 
         @JvmStatic
         protected inline fun <reified F : BaseJsBridgeFragment> createBridgeHandler(

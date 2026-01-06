@@ -285,6 +285,6 @@ open class WebViewClientWrapper(
     }
 
     companion object {
-        private const val TAG = "WebViewClientWrapper"
+        private const val TAG = "Ut_WebViewClientWrapper"
     }
 }

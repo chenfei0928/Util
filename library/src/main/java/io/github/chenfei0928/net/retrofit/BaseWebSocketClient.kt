@@ -138,7 +138,7 @@ abstract class BaseWebSocketClient(
     protected abstract fun parseMsg(text: String)
 
     companion object {
-        private const val TAG = "KW_BaseWebSocketClient"
+        private const val TAG = "Ut_BaseWebSocketClient"
         private const val TOKEN_CLOSE = "close"
         private const val TOKEN_CONNECT = "connect"
         const val TOKEN_SEND_MSG = "sendMsg"

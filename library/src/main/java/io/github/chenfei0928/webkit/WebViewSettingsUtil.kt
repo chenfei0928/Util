@@ -42,7 +42,7 @@ import io.github.chenfei0928.widget.ToastUtil
  * @date 2017/3/8
  */
 object WebViewSettingsUtil {
-    private const val TAG = "KW_WebSettingUtil"
+    private const val TAG = "Ut_WebSettingUtil"
 
     //<editor-fold desc="初始化环境" defaultstatus="collapsed">
     internal var safeBrowsingEnable = true

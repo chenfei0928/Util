@@ -20,7 +20,7 @@ import java.io.IOException
  * @date 2018/1/31.
  */
 object FileUtil {
-    private const val TAG = "KW_FileUtil"
+    private const val TAG = "Ut_FileUtil"
 
     @JvmStatic
     fun joinPath(vararg paths: String): String {

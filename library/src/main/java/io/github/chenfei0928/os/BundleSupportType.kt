@@ -50,7 +50,6 @@ import kotlin.reflect.typeOf
  * @author chenf()
  * @date 2024-12-05 11:01
  */
-@Suppress("unused", "TooManyFunctions")
 abstract class BundleSupportType<T>(
     private val isMarkedNullable: Boolean?
 ) {
@@ -60,6 +59,14 @@ abstract class BundleSupportType<T>(
      * 返回非空默认数据
      */
     protected abstract fun nonnullValue(property: KProperty<*>): T & Any
+    private fun createNonnullValue(
+        methodName: String, name: String, property: KProperty<*>
+    ): T & Any {
+        val msg = "$methodName: $name 没有找到数据，也未提供默认值，isMarkedNullable:" +
+                "$isMarkedNullable-${property.returnType.isMarkedNullable}，创建nonnullValue: $property"
+        Log.w(TAG, "createAndNonnullValue: ", RuntimeException(msg))
+        return nonnullValue(property)
+    }
 
     //<editor-fold desc="Bundle的put" defaultstatus="collapsed">
     /**
@@ -90,10 +97,7 @@ abstract class BundleSupportType<T>(
         bundle?.let { getNullable(bundle, property, name) }
     else if (bundle != null)
         getNonnull(bundle, property, name, defaultValue)
-    else defaultValue ?: run {
-        Log.d(TAG, "getValue: $name 没有找到数据，也未提供默认值，创建nonnullValue: $property")
-        nonnullValue(property)
-    }
+    else defaultValue ?: createNonnullValue("getValue", name, property)
 
     /**
      * 获取[Intent]的扩展数据，并返回可空数据。如果数据中没有存储该数据，则返回null
@@ -107,10 +111,7 @@ abstract class BundleSupportType<T>(
     protected open fun getNonnull(
         bundle: Bundle, property: KProperty<*>, name: String, defaultValue: T?
     ): T = (if (!bundle.containsKey(name)) null else getNullable(bundle, property, name))
-        ?: defaultValue ?: run {
-            Log.d(TAG, "getNonnull: $name 没有找到数据，也未提供默认值，创建nonnullValue: $property")
-            nonnullValue(property)
-        }
+        ?: defaultValue ?: createNonnullValue("getNonnull", name, property)
     //</editor-fold>
 
     //<editor-fold desc="Intent的put" defaultstatus="collapsed">
@@ -157,12 +158,7 @@ abstract class BundleSupportType<T>(
     protected open fun getExtraNonnull(
         intent: Intent, property: KProperty<*>, name: String, defaultValue: T?
     ): T = (if (!intent.hasExtra(name)) null else getExtraNullable(intent, property, name))
-        ?: defaultValue ?: run {
-            Log.d(TAG, run {
-                "getExtraNonnull: $name 没有找到数据，也未提供默认值，创建nonnullValue: $property"
-            })
-            nonnullValue(property)
-        }
+        ?: defaultValue ?: createNonnullValue("getExtraNonnull", name, property)
     //</editor-fold>
     //</editor-fold>
 
@@ -910,7 +906,7 @@ abstract class BundleSupportType<T>(
             override fun create(parcel: Parcel): SparseArray<T> {
                 val size = parcel.readInt()
                 val array = SparseArray<T>(size)
-                for (i in 0 until size) {
+                (0 until size).forEach { _ ->
                     val key = parcel.readInt()
                     val item: T? = if (ParcelCompat.readBoolean(parcel)) {
                         ParcelCompat.readParcelable(parcel, clazz.classLoader, clazz)
@@ -956,7 +952,7 @@ abstract class BundleSupportType<T>(
         @Suppress("UNCHECKED_CAST")
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
-        ): T? = bundle.getBinder(name) as T
+        ): T = bundle.getBinder(name) as T
 
         override fun putExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, value: T
@@ -964,7 +960,7 @@ abstract class BundleSupportType<T>(
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): T? = throw IllegalArgumentException("Not support return type: $property")
+        ): T = throw IllegalArgumentException("Not support return type: $property")
 
         companion object : AutoFind.Creator<IBinder>() {
             override val checkByReflectWhenCall = IBinderType<IBinder>(null)
@@ -1112,7 +1108,7 @@ abstract class BundleSupportType<T>(
 
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
-        ): List<T>? = bundle.getCharSequenceArrayList(name) as List<T>
+        ): List<T>? = bundle.getCharSequenceArrayList(name) as? List<T>
 
         override fun putExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, value: List<T>
@@ -1120,7 +1116,7 @@ abstract class BundleSupportType<T>(
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): List<T>? = intent.getCharSequenceArrayListExtra(name) as List<T>
+        ): List<T>? = intent.getCharSequenceArrayListExtra(name) as? List<T>
 
         companion object : AutoFind.Creator<List<out CharSequence>>() {
             override val checkByReflectWhenCall = ListCharSequenceType<CharSequence>(null)
@@ -1580,7 +1576,7 @@ abstract class BundleSupportType<T>(
 
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
-        ): Any? = throw IllegalArgumentException("Not support return type: $property")
+        ): Any = throw IllegalArgumentException("Not support return type: $property")
 
         override fun getNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Any?
@@ -1592,7 +1588,7 @@ abstract class BundleSupportType<T>(
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): Any? = throw IllegalArgumentException("Not support return type: $property")
+        ): Any = throw IllegalArgumentException("Not support return type: $property")
 
         override fun getExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Any?
@@ -1724,17 +1720,29 @@ abstract class BundleSupportType<T>(
 
         /**
          * 值的空安全检查处理类型，用于获取 [Creator.checkByReflectWhenCall] 或传入 [Creator.byType] 中使用
-         *
-         * - [NullableCheck.NONNULL] ：值非空，不为null
-         * - [NullableCheck.NULLABLE] ：值可空
-         * - [NullableCheck.CHECK_NOW_BY_REFLECT] ：立即检查值的nullable信息，通过调用 [TypeInfo.isMarkedNullable] 来检查 nullable 信息，
-         * 该过程可能会调用到Kotlin反射
-         * - [NullableCheck.CHECK_BY_REFLECT_WHEN_CALL] ：调用 [Creator.checkByReflectWhenCall] 来获取默认实现，并在调用读写时访问
-         * [KProperty.returnType] 的 [KType.isMarkedNullable] 来获取nullable信息。
-         * 不对外使用，仅在 [AutoFind] 中使用，即 [AutoFind.findByType] 方法中，用于提供通用实现中的读写委托。
          */
         enum class NullableCheck {
-            NONNULL, NULLABLE, CHECK_NOW_BY_REFLECT,
+            /**
+             * 值非空，不为null
+             */
+            NONNULL,
+
+            /**
+             * 值可空
+             */
+            NULLABLE,
+
+            /**
+             * 立即检查值的nullable信息，通过调用 [TypeInfo.isMarkedNullable] 来检查 nullable 信息，
+             * 该过程可能会调用到Kotlin反射
+             */
+            CHECK_NOW_BY_REFLECT,
+
+            /**
+             * 调用 [Creator.checkByReflectWhenCall] 来获取默认实现，并在调用读写时访问
+             * [KProperty.returnType] 的 [KType.isMarkedNullable] 来获取nullable信息。
+             * 不对外使用，仅在 [AutoFind.findType] 方法中使用，用于提供通用实现中的读写委托。
+             */
             /* internal */ CHECK_BY_REFLECT_WHEN_CALL;
 
             companion object {
@@ -1856,7 +1864,7 @@ abstract class BundleSupportType<T>(
     //</editor-fold>
 
     companion object {
-        private const val TAG = "KW_BundleSupportType"
+        private const val TAG = "Ut_BundleSupportType"
 
         @Suppress("UNCHECKED_CAST")
         private fun <T : Any> KProperty<*>.getReturnTypeJClass(): Class<T> =

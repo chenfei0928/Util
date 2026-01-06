@@ -85,7 +85,7 @@ private constructor(
     }
 
     companion object {
-        private const val TAG = "KW_FileLogUtil"
+        private const val TAG = "Ut_FileLogUtil"
 
         @Volatile
         private var INSTANCE: FileLogUtil? = null

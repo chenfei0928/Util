@@ -9,7 +9,7 @@ package com.drakeet.multitype
 import io.github.chenfei0928.collection.SystemIdentityMutableMap
 import io.github.chenfei0928.util.Log
 
-private const val TAG = "KW_MultiType"
+private const val TAG = "Ut_MultiType"
 
 /**
  * 注册一个类型的一type对多binder的映射关系，并且使用map字典[viewTypeRecord]来保存实例与binder类的映射。

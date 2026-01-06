@@ -43,7 +43,7 @@ class IntentDelegate<V>(
 
     companion object {
         inline operator fun <reified V> invoke(
-            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: V? = null
+            isMarkedNullable: Boolean?, name: String? = null, defaultValue: V? = null
         ): ReadWriteProperty<Intent, V> = IntentDelegate(
             BundleSupportType.AutoFind.findByType<V>(isMarkedNullable), name, defaultValue
         )

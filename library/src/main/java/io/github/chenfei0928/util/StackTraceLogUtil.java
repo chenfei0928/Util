@@ -14,7 +14,7 @@ import kotlin.jvm.functions.Function1;
  * @date 2021-01-05 17:54
  */
 public class StackTraceLogUtil {
-    private static final String TAG = "KW_StackTraceLogUtil";
+    private static final String TAG = "Ut_StackTraceLogUtil";
 
     private StackTraceLogUtil() {
     }

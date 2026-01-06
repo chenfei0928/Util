@@ -18,7 +18,7 @@ import java.io.IOException
  * @date 2019-09-10 16:46
  */
 object FileResolver {
-    private const val TAG = "KW_FileResolver"
+    private const val TAG = "Ut_FileResolver"
 
     fun save(
         context: Context,

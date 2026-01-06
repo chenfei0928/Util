@@ -60,6 +60,6 @@ class WebViewLifecycleOwner<V : WebView> constructor(
     }
 
     companion object {
-        private const val TAG = "KW_WebViewLifecycleOwn"
+        private const val TAG = "Ut_WebViewLifecycleOwn"
     }
 }

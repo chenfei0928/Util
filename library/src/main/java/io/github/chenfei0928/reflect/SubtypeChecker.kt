@@ -261,6 +261,6 @@ private class SubtypeChecker(
     )
 
     companion object {
-        private const val TAG = "KW_SubtypeChecker"
+        private const val TAG = "Ut_SubtypeChecker"
     }
 }

@@ -142,7 +142,7 @@ class GravityCropTransformation(
     }
 
     companion object {
-        private const val TAG = "KW_GravityCropTrans"
+        private const val TAG = "Ut_GravityCropTrans"
         private const val VERSION = 1
         private const val ID = "io.github.chenfei0928.util.glide.CropTransformation.$VERSION"
 

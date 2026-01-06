@@ -34,7 +34,7 @@ class BundleDelegate<V>(
 
     companion object {
         inline operator fun <reified V> invoke(
-            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: V? = null
+            isMarkedNullable: Boolean?, name: String? = null, defaultValue: V? = null
         ): ReadWriteProperty<Bundle, V> = BundleDelegate(
             BundleSupportType.AutoFind.findByType<V>(isMarkedNullable), name, defaultValue
         )

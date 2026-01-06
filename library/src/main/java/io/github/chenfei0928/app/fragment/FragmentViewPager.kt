@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import io.github.chenfei0928.util.Log
 
-private const val TAG = "KW_FragmentViewPager"
+private const val TAG = "Ut_FragmentViewPager"
 
 /**
  * 获取显示在ViewPager中指定位置的fragment实例（如果指定位置的fragment未被加载，将返回null）

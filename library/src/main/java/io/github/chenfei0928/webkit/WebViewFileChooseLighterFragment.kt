@@ -67,7 +67,7 @@ internal class WebViewFileChooseLighterFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = "KW_WVFileChooseLighterF"
+        private const val TAG = "Ut_WVFileChooseLighterF"
         private const val REQUEST_CODE = 1
     }
 }

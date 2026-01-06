@@ -11,7 +11,7 @@ import io.github.chenfei0928.util.Log
 import kotlin.math.max
 import kotlin.math.min
 
-private const val TAG = "KW_RecyclerView"
+private const val TAG = "Ut_RecyclerView"
 
 fun RecyclerView.smoothScrollToTop() {
     smoothMoveToPosition(0)

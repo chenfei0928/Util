@@ -58,6 +58,6 @@ open class NestedScrollingWebView
     }
 
     companion object {
-        private const val TAG = "KW_NestedScrollingWebV"
+        private const val TAG = "Ut_NestedScrollingWebV"
     }
 }

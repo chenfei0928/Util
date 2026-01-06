@@ -34,7 +34,7 @@ class HostIntentDelegate<V>(
 
     companion object {
         inline operator fun <reified V> invoke(
-            isMarkedNullable: Boolean = false, name: String? = null, defaultValue: V? = null
+            isMarkedNullable: Boolean?, name: String? = null, defaultValue: V? = null
         ): ReadOnlyProperty<Fragment, V> = HostIntentDelegate(
             BundleSupportType.AutoFind.findByType<V>(isMarkedNullable), name, defaultValue
         )

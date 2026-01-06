@@ -180,6 +180,6 @@ open class BaseWebChromeClient(
     //</editor-fold>
 
     companion object {
-        private const val TAG = "KW_BaseWebChromeClient"
+        private const val TAG = "Ut_BaseWebChromeClient"
     }
 }

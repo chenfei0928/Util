@@ -58,6 +58,6 @@ internal class BgExecutorThread(
     }
 
     companion object {
-        private const val TAG = "KW_BgExecutorThread"
+        private const val TAG = "Ut_BgExecutorThread"
     }
 }

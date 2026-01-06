@@ -221,7 +221,7 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
     }
 
     companion object {
-        private const val TAG = "KW_SpSaverFieldAccessor"
+        private const val TAG = "Ut_SpSaverFieldAccessor"
 
         inline fun <SpSaver : AbsSpSaver<SpSaver, *, *>, reified V> SpSaverFieldAccessor<SpSaver>.property(
             property0: KMutableProperty0<V>

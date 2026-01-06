@@ -79,7 +79,7 @@ class AsyncLayoutInflater(
     })
 
     companion object {
-        private const val TAG = "KW_AsyncLayoutInflater"
+        private const val TAG = "Ut_AsyncLayoutInflater"
 
         fun sync(context: Context) = AsyncLayoutInflater(
             context, ExecutorAndCallback.DirectExecutor,
