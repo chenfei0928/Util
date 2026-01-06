@@ -30,6 +30,7 @@ class ActivityDelegate<V>(
     override fun getValue(thisRef: Activity, property: KProperty<*>): V {
         return thisRef.intent.run {
             setExtrasClassLoader(thisRef.classLoader)
+            @Suppress("UNCHECKED_CAST")
             supportType.getValue(this, property, name ?: property.name, defaultValue) as V
         }
     }

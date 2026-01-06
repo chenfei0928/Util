@@ -25,6 +25,7 @@ class BundleDelegate<V>(
     private val defaultValue: V? = null,
 ) : ReadWriteProperty<Bundle, V> {
     override fun getValue(thisRef: Bundle, property: KProperty<*>): V {
+        @Suppress("UNCHECKED_CAST")
         return supportType.getValue(thisRef, property, name ?: property.name, defaultValue) as V
     }
 

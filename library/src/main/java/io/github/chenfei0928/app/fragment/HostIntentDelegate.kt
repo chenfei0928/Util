@@ -28,6 +28,7 @@ class HostIntentDelegate<V>(
     override fun getValue(thisRef: Fragment, property: KProperty<*>): V {
         return thisRef.requireActivity().intent.run {
             setExtrasClassLoader(thisRef.requireActivity().classLoader)
+            @Suppress("UNCHECKED_CAST")
             supportType.getValue(this, property, name ?: property.name, defaultValue) as V
         }
     }

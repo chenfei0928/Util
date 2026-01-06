@@ -28,6 +28,7 @@ class ArgumentDelegate<V>(
     override fun getValue(thisRef: Fragment, property: KProperty<*>): V {
         return thisRef.arguments.let {
             it?.classLoader = thisRef.javaClass.classLoader
+            @Suppress("UNCHECKED_CAST")
             supportType.getValue(it, property, name ?: property.name, defaultValue) as V
         }
     }

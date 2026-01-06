@@ -26,6 +26,7 @@ class IntentDelegate<V>(
     private val defaultValue: V? = null,
 ) : ReadWriteProperty<Intent, V>, IntentSetter<V> {
     override fun getValue(thisRef: Intent, property: KProperty<*>): V {
+        @Suppress("UNCHECKED_CAST")
         return supportType.getValue(thisRef, property, name ?: property.name, defaultValue) as V
     }
 
@@ -71,6 +72,7 @@ class IntentDelegate<V>(
         fun string(name: String? = null): ReadWriteProperty<Intent, String> =
             IntentDelegate(BundleSupportType.StringType(false), name)
 
+        @Suppress("UNCHECKED_CAST")
         fun stringNullable(name: String? = null): ReadWriteProperty<Intent, String?> =
             IntentDelegate(
                 BundleSupportType.StringType(true), name
