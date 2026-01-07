@@ -12,6 +12,7 @@ arrayOf(
     cleanPoolOldVersion(it)
 }
 
+// 缓存与日志目录清理
 arrayOf(
     File(appData, "\\LarkShell\\sdk_storage\\log"),
     File(appData, "\\LarkShell\\update"),
@@ -58,6 +59,8 @@ arrayOf(
     File(appData, "\\Code"),
     File(appData, "\\gmm"),
     File(appData, "\\baidunetdisk"),
+    File(appData, "\\aDrive\\Partitions\\adrive"),
+    File(appData, "\\FLiNGTrainer\\cef-cache"),
 
     File(local, "\\Yodao\\DeskDict\\dict.cache"),
     File(local, "\\EpicGamesLauncher\\Saved\\webcache_4430"),
@@ -71,13 +74,55 @@ arrayOf(
     File(it, "Cache").deleteRecursively()
 }
 
+// 子目录为版本号，版本号下面是 Chrome内核缓存的清理
+arrayOf(
+    File(appData, "\\Tencent\\WXWork\\Applet"),
+    File(appData, """\Tencent\WXWork\WXDrive"""),
+    File(appData, """\Tencent\WXWork\WeMailNode"""),
+    File(appData, """\Tencent\WXWork\WxWorkDocConvert"""),
+    File(appData, """\Tencent\WXWork\WeChatOCR"""),
+    File(appData, """\Tencent\WXWork\FlutterPlugins"""),
+).forEach {
+    val files = it.listFiles()?.filter { it.isDirectory }
+    files?.forEach { file ->
+        println("clean Chrome cache: $file")
+        File(file, "Cache").deleteRecursively()
+    }
+}
+
+// 子目录为版本号的目录清理
 arrayOf(
     File(appData, "\\Tencent\\WXWork\\wmpf_Applet"),
+    File(appData, """\Tencent\WXWork\WXDrive_x64"""),
+    File(appData, """\Tencent\WXWork\WeMailNode_x64"""),
+    File(appData, """\Tencent\WXWork\WxWorkDocConvert"""),
+    File(appData, """\Tencent\WXWork\WeChatOCR"""),
+    File(appData, """\Tencent\WXWork\FlutterPlugins"""),
 ).forEach {
-    val files = it.listFiles().filter { it.isDirectory }
+    val files = it.listFiles()
+        ?.filter { it.isDirectory }
+        ?.takeIf { it.isNotEmpty() }
+        ?: return@forEach
     (files - files.maxBy { ModuleDescriptor.Version.parse(it.name) }).forEach {
         println("delete: $it")
         it.deleteRecursively()
+    }
+}
+
+// 子目录为插件目录，再往下是版本号的目录清理
+arrayOf(
+    File(appData, "\\Tencent\\xwechat\\XPlugin\\plugins"),
+    File(appData, "\\Tencent\\xwechat\\radium\\Applet\\packages"),
+).forEach {
+    it.listFiles()?.filter { it.isDirectory }?.forEach {
+        val files = it.listFiles()
+            ?.filter { it.isDirectory }
+            ?.takeIf { it.isNotEmpty() }
+            ?: return@forEach
+        (files - files.maxBy { ModuleDescriptor.Version.parse(it.name) }).forEach {
+            println("delete: $it")
+            it.deleteRecursively()
+        }
     }
 }
 
