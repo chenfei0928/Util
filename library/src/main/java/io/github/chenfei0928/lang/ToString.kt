@@ -6,6 +6,8 @@ import android.util.SparseArray
 import androidx.collection.LruCache
 import androidx.collection.SparseArrayCompat
 import androidx.core.util.size
+import com.google.protobuf.Message
+import com.google.protobuf.toShortString
 import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.collection.getOrPut
 import io.github.chenfei0928.collection.mapToArray
@@ -13,6 +15,7 @@ import io.github.chenfei0928.content.getAll
 import io.github.chenfei0928.preference.base.FieldAccessor
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.isWriteByKotlin
+import io.github.chenfei0928.util.DependencyChecker
 import io.github.chenfei0928.util.Log
 import java.lang.ref.Reference
 import java.lang.reflect.Field
@@ -48,15 +51,9 @@ private fun StringBuilder.appendByReflectImpl(
     if (any == null) {
         return append("null")
     }
-    val parentNodeNameByValue = record.findParentNodeNameByValue(any)
-    if (parentNodeNameByValue != null) {
-        append(parentNodeNameByValue)
-        return this
-    }
-    val nodeRecord = record.findRecordedNodeName(any)
-    if (nodeRecord != null) {
-        append(nodeRecord)
-        return this
+    val nodeNameByValue = record.findNodeNameByValue(any)
+    if (nodeNameByValue != null) {
+        return append(nodeNameByValue)
     }
     return when (any) {
         // Java类对象
@@ -115,10 +112,10 @@ private fun StringBuilder.appendByReflectImpl(
             append("(empty)")
         } else {
             append('[')
-            any.onEachIndexed { i, it ->
-                appendByReflectImpl(it.key, record.onChildNode(it.key, "[$i].key"))
+            any.onEachIndexed { i, entry ->
+                appendByReflectImpl(entry.key, record.onChildNode(entry.key, "[$i].key"))
                 append('=')
-                appendByReflectImpl(it.value, record.onChildNode(it.value, "[$i].value"))
+                appendByReflectImpl(entry.value, record.onChildNode(entry.value, "[$i].value"))
                 append(", ")
             }
             replace(length - 2, length, "]")
@@ -158,7 +155,11 @@ private fun StringBuilder.appendByReflectImpl(
             appendByReflectImpl(all, record.onChildNode(all, "getAll"))
         }
         // 判断该类有没有重写toString
-        else -> if (!UtilInitializer.toStringConfig.useToStringMethod(any.javaClass)) {
+        else -> if (DependencyChecker.protobuf != null && any is Message) {
+            // protobuf 序列化对象
+            append(any.toShortString())
+        } else if (!UtilInitializer.toStringConfig.useToStringMethod(any.javaClass)) {
+            // 如果该类的 toString 方法没有被重写过（包括其父类）则反射输出字段
             appendObjectByReflectImpl(any, record)
         } else {
             // 如果该类的 toString 方法被重写过（包括其父类）直接调用toString方法输出
@@ -765,10 +766,14 @@ data class ToStringStackRecord(
         return ToStringStackRecord(value, this.nodeName + "." + name, this)
     }
 
+    internal fun findNodeNameByValue(value: Any): String? {
+        return findParentNodeNameByValue(value) ?: findRecordedNodeName(value)
+    }
+
     /**
      * 根据对象引用，查找其之前出现过的节点位置
      */
-    internal fun findParentNodeNameByValue(value: Any): String? {
+    private fun findParentNodeNameByValue(value: Any): String? {
         var currentNode: ToStringStackRecord? = parentNode
         while (currentNode != null) {
             if (currentNode.value === value)
@@ -781,7 +786,7 @@ data class ToStringStackRecord(
     /**
      * 如果该对象在之前 toString 过，返回其之前出现过的节点位置，否则返回null
      */
-    internal fun findRecordedNodeName(value: Any): String? {
+    private fun findRecordedNodeName(value: Any): String? {
         val record = nodeRecords[value]
         if (record == null && value === this.value &&
             !UtilInitializer.toStringConfig.isSkipNodeType(value.javaClass)
