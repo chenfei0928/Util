@@ -53,7 +53,6 @@ arrayOf(
 
 // Chrome内核缓存清理
 arrayOf(
-    File(appData, "\\Figma\\DesktopProfile\\v38"),
     File(appData, "\\heybox-chat-electron"),
     File(appData, "\\MrRSS.exe\\EBWebView\\Default"),
     File(appData, "\\Code"),
@@ -63,15 +62,19 @@ arrayOf(
     File(appData, "\\FLiNGTrainer\\cef-cache"),
 
     File(local, "\\Yodao\\DeskDict\\dict.cache"),
-    File(local, "\\EpicGamesLauncher\\Saved\\webcache_4430"),
     File(local, "\\Steam\\htmlcache\\Default"),
     File(local, "\\Ubisoft Game Launcher\\cache\\http2\\Default"),
     File(local, "\\io.github.clash-verge-rev.clash-verge-rev\\EBWebView\\Default"),
-    File(local, "\\Battle.net\\BrowserCaches\\214187124"),
     File(local, "\\MI\\XiaomiPCManager\\EBWebView\\Default"),
 ).forEach {
-    println("clean Chrome cache: $it")
-    File(it, "Cache").deleteRecursively()
+    cleanChromeCache(it)
+}
+
+// Epic Games Launcher 缓存清理
+File(local, "\\EpicGamesLauncher\\Saved").listFiles { _, name ->
+    name.startsWith("webcache_")
+}.forEach {
+    cleanChromeCache(it)
 }
 
 // 子目录为版本号，版本号下面是 Chrome内核缓存的清理
@@ -82,11 +85,20 @@ arrayOf(
     File(appData, """\Tencent\WXWork\WxWorkDocConvert"""),
     File(appData, """\Tencent\WXWork\WeChatOCR"""),
     File(appData, """\Tencent\WXWork\FlutterPlugins"""),
+
+    File(local, "\\Battle.net\\BrowserCaches"),
 ).forEach {
     val files = it.listFiles()?.filter { it.isDirectory }
     files?.forEach { file ->
-        println("clean Chrome cache: $file")
-        File(file, "Cache").deleteRecursively()
+        cleanChromeCache(file)
+    }
+}
+
+// Figma 缓存清理，其版本信息有前缀字符 v
+File(appData, "\\Figma\\DesktopProfile").listFiles { it.isDirectory }?.toList()?.let {
+    (it - it.maxBy { ModuleDescriptor.Version.parse(it.name.substring(1)) })?.forEach {
+        println("delete: $it")
+        it.deleteRecursively()
     }
 }
 
@@ -99,10 +111,18 @@ arrayOf(
     File(appData, """\Tencent\WXWork\WeChatOCR"""),
     File(appData, """\Tencent\WXWork\FlutterPlugins"""),
 ).forEach {
-    val files = it.listFiles()
-        ?.filter { it.isDirectory }
-        ?.takeIf { it.isNotEmpty() }
-        ?: return@forEach
+    cleanVersionNameDirs(it)
+}
+
+private fun cleanVersionNameDirs(dir: File) {
+    dir.listFiles()?.forEach { file ->
+        if (file.isDirectory && file.listFiles().isNullOrEmpty()) {
+            file.deleteRecursively()
+            return@forEach
+        }
+    }
+    val files = dir.listFiles { it.isDirectory }?.toList()
+        ?: return
     (files - files.maxBy { ModuleDescriptor.Version.parse(it.name) }).forEach {
         println("delete: $it")
         it.deleteRecursively()
@@ -114,16 +134,35 @@ arrayOf(
     File(appData, "\\Tencent\\xwechat\\XPlugin\\plugins"),
     File(appData, "\\Tencent\\xwechat\\radium\\Applet\\packages"),
 ).forEach {
-    it.listFiles()?.filter { it.isDirectory }?.forEach {
-        val files = it.listFiles()
-            ?.filter { it.isDirectory }
-            ?.takeIf { it.isNotEmpty() }
-            ?: return@forEach
-        (files - files.maxBy { ModuleDescriptor.Version.parse(it.name) }).forEach {
-            println("delete: $it")
-            it.deleteRecursively()
-        }
+    it.listFiles()?.forEach {
+        cleanVersionNameDirs(it)
     }
+}
+
+// 飞书缓存清理
+File(appData, "\\LarkShell\\iron\\users").listFiles { it.isDirectory }
+    ?.forEach { cleanChromeCache(File(it, "profile_main")) }
+
+val larkShellGlobal = File(appData, "\\LarkShell\\aha\\users\\global")
+cleanChromeCache(File(larkShellGlobal, "profile_global"))
+File(appData, "\\LarkShell\\aha\\users")
+    .listFiles { _, name -> name != "global" }
+    ?.forEach { it ->
+        cleanChromeCache(File(it, "profile_explorer"))
+        cleanChromeCache(File(it, "profile_main"))
+    }
+File(appData, "\\LarkShell\\PC_Gadget").listFiles()?.forEach {
+    File(it, "app").listFiles { _, name -> name.startsWith("cli_") }.forEach { it ->
+        cleanVersionNameDirs(it)
+    }
+    File(it, "__p_block__\\app").listFiles { _, name -> name.startsWith("blk_") }.forEach { it ->
+        cleanVersionNameDirs(it)
+    }
+}
+
+private fun cleanChromeCache(dir: File) {
+    println("clean Chrome cache: $dir")
+    File(dir, "Cache").deleteRecursively()
 }
 
 private fun cleanPoolOldVersion(files: List<File>) {

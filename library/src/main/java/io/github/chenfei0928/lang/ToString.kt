@@ -54,9 +54,17 @@ private fun StringBuilder.appendByReflectImpl(
     if (any == null) {
         return append("null")
     }
+    // 检查这个字段在之前有没有出现过，如果有就直接用它的节点信息代替
     val nodeNameByValue = record.findNodeNameByValue(any)
     if (nodeNameByValue != null) {
         return append(nodeNameByValue)
+    }
+    // 获取自定义的toString方法
+    @Suppress("UNCHECKED_CAST")
+    val stringer = UtilInitializer.toStringConfig.stringerProvider
+        ?.invoke(any) as? ToStringByReflectConfig.Stringer<Any>
+    if (stringer != null) {
+        return stringer.append(this, any)
     }
     return when (any) {
         // Java类对象
@@ -537,6 +545,7 @@ fun Any.toStdString() = "${this::class.java.name}@${Integer.toHexString(this.has
  * 在列表中的类型哪怕 [useToStringMethod] 返回`false`也会直接调用 [Any.toString] 方法输出，否则使用反射输出字段。
  * @property skipNodeTypes 跳过节点记录的类型，例如String、Int等，在列表中的类型每次都会 toString
  * @property protobufToShortString 是否在对protobuf的 [Message] 类型调用 [Message.toShortString] 方法，而不是 [Message.toString]
+ * @property stringerProvider 自定义类型的toString方式，例如 protobuf 的 [Message] 类型可以使用 [Message.toShortString]
  */
 data class ToStringByReflectConfig(
     private val useToString: Boolean,
@@ -545,6 +554,7 @@ data class ToStringByReflectConfig(
     private val reflectSkipPackages: Set<String>,
     private val skipNodeTypes: Set<Class<*>>,
     internal val protobufToShortString: Boolean,
+    internal val stringerProvider: ((Any) -> Stringer<out Any>?)?,
     // 8个原生数组类型的toString方式
     internal val byteArrayStringer: Stringer<ByteArray>,
     internal val shortArrayStringer: Stringer<ShortArray>,
@@ -756,6 +766,7 @@ data class ToStringByReflectConfig(
                 java.util.Date::class.java,
             ),
             protobufToShortString = DependencyChecker.protobuf != null,
+            stringerProvider = null,
             byteArrayStringer = Stringer.ArrayContentToString.Byte,
             shortArrayStringer = Stringer.ArrayContentToString.Short,
             intArrayStringer = Stringer.ArrayContentToString.Int,
