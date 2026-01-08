@@ -1,6 +1,7 @@
 package io.github.chenfei0928.lang
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.SparseArray
 import androidx.collection.LruCache
@@ -17,6 +18,8 @@ import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.reflect.isWriteByKotlin
 import io.github.chenfei0928.util.DependencyChecker
 import io.github.chenfei0928.util.Log
+import java.lang.invoke.MethodHandle
+import java.lang.invoke.VarHandle
 import java.lang.ref.Reference
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -155,7 +158,7 @@ private fun StringBuilder.appendByReflectImpl(
             appendByReflectImpl(all, record.onChildNode(all, "getAll"))
         }
         // 判断该类有没有重写toString
-        else -> if (DependencyChecker.protobuf != null && any is Message) {
+        else -> if (UtilInitializer.toStringConfig.protobufToShortString && any is Message) {
             // protobuf 序列化对象
             append(any.toShortString())
         } else if (!UtilInitializer.toStringConfig.useToStringMethod(any.javaClass)) {
@@ -163,7 +166,7 @@ private fun StringBuilder.appendByReflectImpl(
             appendObjectByReflectImpl(any, record)
         } else {
             // 如果该类的 toString 方法被重写过（包括其父类）直接调用toString方法输出
-            appendStdToString(any)
+            appendOrStd(any)
         }
     }
 }
@@ -350,7 +353,7 @@ private fun StringBuilder.appendObjectByReflectImpl(
     }
     // 如果类在反射黑名单中，不使用反射处理这个类
     if (UtilInitializer.toStringConfig.isReflectSkip(thisClass)) {
-        appendStdToString(any)
+        appendOrStd(any)
         return@apply
     }
     // 不是数组，toString 也没有被重写过，调用反射输出每一个字段
@@ -416,7 +419,7 @@ private fun StringBuilder.appendAnyFieldsImpl(
             // name to Kotlin字段、方法
             is Pair<*, *> -> {
                 val (key, value) = field
-                appendStdToString(key)
+                appendOrStd(key)
                 append('=')
                 appendByReflectImpl(
                     getValue(any, value),
@@ -488,11 +491,27 @@ private fun getValue(
     }
     // SpSaver preferenceDataStore的field
     is FieldAccessor.Field<*, *> -> (field as FieldAccessor.Field<Any, *>).get(thisRef)
-    else -> field
+    else -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && field is MethodHandle) {
+        // Jvm反射体系的methodHandle
+        try {
+            field.invoke(thisRef)
+        } catch (e: Exception) {
+            "owner $thisRef's methodHandle: $field invoke failed: $e"
+        }
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && field is VarHandle) {
+        // Jvm反射体系的varHandle
+        try {
+            field.get(thisRef)
+        } catch (e: Exception) {
+            "owner $thisRef's varHandle: $field get failed: $e"
+        }
+    } else {
+        field
+    }
 }
 //</editor-fold>
 
-fun StringBuilder.appendStdToString(any: Any?) = if (any == null) {
+fun StringBuilder.appendOrStd(any: Any?): StringBuilder = if (any == null) {
     append("null")
 } else try {
     append(any.toString())
@@ -511,11 +530,13 @@ fun Any.toStdString() = "${this::class.java.name}@${Integer.toHexString(this.has
 /**
  * 配置ToStringByReflect的参数
  *
- * @property useToString 是否使用对象的toString方法
- * @property toStringWasOverrideCache toString 方法是否被重写过的缓存，默认为 ConcurrentHashMap
+ * @property useToString 是否使用对象的 [Any.toString] 方法
+ * @property toStringWasOverrideCache toString 方法是否被重写过的缓存，默认为 ConcurrentHashMap。
+ * 作为property以便于调试输出时可以看到是否重写了toString方法。
  * @property reflectSkipPackages 跳过反射处理字段的包名前缀，例如"java.lang."、"kotlin."等。
- * 在列表中的类型哪怕[useToStringMethod]返回`false`也会直接调用 [Any.toString] 方法输出，否则使用反射输出字段。
+ * 在列表中的类型哪怕 [useToStringMethod] 返回`false`也会直接调用 [Any.toString] 方法输出，否则使用反射输出字段。
  * @property skipNodeTypes 跳过节点记录的类型，例如String、Int等，在列表中的类型每次都会 toString
+ * @property protobufToShortString 是否在对protobuf的 [Message] 类型调用 [Message.toShortString] 方法，而不是 [Message.toString]
  */
 data class ToStringByReflectConfig(
     private val useToString: Boolean,
@@ -523,15 +544,16 @@ data class ToStringByReflectConfig(
         java.util.concurrent.ConcurrentHashMap(),
     private val reflectSkipPackages: Set<String>,
     private val skipNodeTypes: Set<Class<*>>,
+    internal val protobufToShortString: Boolean,
     // 8个原生数组类型的toString方式
-    internal val byteArrayStringer: PrimitiveArrayStringer<ByteArray>,
-    internal val shortArrayStringer: PrimitiveArrayStringer<ShortArray>,
-    internal val intArrayStringer: PrimitiveArrayStringer<IntArray>,
-    internal val longArrayStringer: PrimitiveArrayStringer<LongArray>,
-    internal val charArrayStringer: PrimitiveArrayStringer<CharArray>,
-    internal val floatArrayStringer: PrimitiveArrayStringer<FloatArray>,
-    internal val doubleArrayStringer: PrimitiveArrayStringer<DoubleArray>,
-    internal val booleanArrayStringer: PrimitiveArrayStringer<BooleanArray>,
+    internal val byteArrayStringer: Stringer<ByteArray>,
+    internal val shortArrayStringer: Stringer<ShortArray>,
+    internal val intArrayStringer: Stringer<IntArray>,
+    internal val longArrayStringer: Stringer<LongArray>,
+    internal val charArrayStringer: Stringer<CharArray>,
+    internal val floatArrayStringer: Stringer<FloatArray>,
+    internal val doubleArrayStringer: Stringer<DoubleArray>,
+    internal val booleanArrayStringer: Stringer<BooleanArray>,
 ) {
     internal fun useToStringMethod(clazz: Class<*>): Boolean =
         useToString && toStringWasOverrideCache.getOrPut(clazz) {
@@ -554,97 +576,97 @@ data class ToStringByReflectConfig(
     }
 
     //<editor-fold desc="原生数组类型toString方式" defaultstatus="collapsed">
-    interface PrimitiveArrayStringer<T> {
+    interface Stringer<T> {
         fun append(sb: StringBuilder, array: T): StringBuilder
 
-        object StdToString : PrimitiveArrayStringer<Any> {
+        object ToStringOrStd : Stringer<Any> {
             override fun append(sb: StringBuilder, array: Any): StringBuilder =
-                sb.appendStdToString(array)
+                sb.appendOrStd(array)
 
             @Suppress("UNCHECKED_CAST")
-            operator fun <T> invoke(): PrimitiveArrayStringer<T> =
-                StdToString as PrimitiveArrayStringer<T>
+            operator fun <T> invoke(): Stringer<T> =
+                ToStringOrStd as Stringer<T>
         }
 
-        sealed interface ContentToString<T> : PrimitiveArrayStringer<T> {
-            object Byte : ContentToString<ByteArray> {
+        sealed interface ArrayContentToString<T> : Stringer<T> {
+            object Byte : ArrayContentToString<ByteArray> {
                 override fun append(sb: StringBuilder, array: ByteArray): StringBuilder =
                     sb.append(array.contentToString())
             }
 
-            object Short : ContentToString<ShortArray> {
+            object Short : ArrayContentToString<ShortArray> {
                 override fun append(sb: StringBuilder, array: ShortArray): StringBuilder =
                     sb.append(array.contentToString())
             }
 
-            object Int : ContentToString<IntArray> {
+            object Int : ArrayContentToString<IntArray> {
                 override fun append(sb: StringBuilder, array: IntArray): StringBuilder =
                     sb.append(array.contentToString())
             }
 
-            object Long : ContentToString<LongArray> {
+            object Long : ArrayContentToString<LongArray> {
                 override fun append(sb: StringBuilder, array: LongArray): StringBuilder =
                     sb.append(array.contentToString())
             }
 
-            object Char : ContentToString<CharArray> {
+            object Char : ArrayContentToString<CharArray> {
                 override fun append(sb: StringBuilder, array: CharArray): StringBuilder =
                     sb.append(array.contentToString())
             }
 
-            object Float : ContentToString<FloatArray> {
+            object Float : ArrayContentToString<FloatArray> {
                 override fun append(sb: StringBuilder, array: FloatArray): StringBuilder =
                     sb.append(array.contentToString())
             }
 
-            object Double : ContentToString<DoubleArray> {
+            object Double : ArrayContentToString<DoubleArray> {
                 override fun append(sb: StringBuilder, array: DoubleArray): StringBuilder =
                     sb.append(array.contentToString())
             }
 
-            object Boolean : ContentToString<BooleanArray> {
+            object Boolean : ArrayContentToString<BooleanArray> {
                 override fun append(sb: StringBuilder, array: BooleanArray): StringBuilder =
                     sb.append(array.contentToString())
             }
         }
 
-        sealed interface SizeToString<T> : PrimitiveArrayStringer<T> {
-            object Byte : SizeToString<ByteArray> {
+        sealed interface ArraySizeToString<T> : Stringer<T> {
+            object Byte : ArraySizeToString<ByteArray> {
                 override fun append(sb: StringBuilder, array: ByteArray): StringBuilder =
                     sb.append("size:").append(array.size)
             }
 
-            object Short : SizeToString<ShortArray> {
+            object Short : ArraySizeToString<ShortArray> {
                 override fun append(sb: StringBuilder, array: ShortArray): StringBuilder =
                     sb.append("size:").append(array.size)
             }
 
-            object Int : SizeToString<IntArray> {
+            object Int : ArraySizeToString<IntArray> {
                 override fun append(sb: StringBuilder, array: IntArray): StringBuilder =
                     sb.append("size:").append(array.size)
             }
 
-            object Long : SizeToString<LongArray> {
+            object Long : ArraySizeToString<LongArray> {
                 override fun append(sb: StringBuilder, array: LongArray): StringBuilder =
                     sb.append("size:").append(array.size)
             }
 
-            object Char : SizeToString<CharArray> {
+            object Char : ArraySizeToString<CharArray> {
                 override fun append(sb: StringBuilder, array: CharArray): StringBuilder =
                     sb.append("size:").append(array.size)
             }
 
-            object Float : SizeToString<FloatArray> {
+            object Float : ArraySizeToString<FloatArray> {
                 override fun append(sb: StringBuilder, array: FloatArray): StringBuilder =
                     sb.append("size:").append(array.size)
             }
 
-            object Double : SizeToString<DoubleArray> {
+            object Double : ArraySizeToString<DoubleArray> {
                 override fun append(sb: StringBuilder, array: DoubleArray): StringBuilder =
                     sb.append("size:").append(array.size)
             }
 
-            object Boolean : SizeToString<BooleanArray> {
+            object Boolean : ArraySizeToString<BooleanArray> {
                 override fun append(sb: StringBuilder, array: BooleanArray): StringBuilder =
                     sb.append("size:").append(array.size)
             }
@@ -652,7 +674,7 @@ data class ToStringByReflectConfig(
 
         sealed class HexToString<T>(
             private val bitCount: kotlin.Int
-        ) : PrimitiveArrayStringer<T> {
+        ) : Stringer<T> {
             fun StringBuilder.appendHex(element: kotlin.Long): StringBuilder = apply {
                 for (i in 0 until (bitCount / 4)) {
                     append(hexDigits[(element ushr (i * 4) and 0x0F).toInt()])
@@ -733,14 +755,15 @@ data class ToStringByReflectConfig(
                 java.lang.Void::class.java,
                 java.util.Date::class.java,
             ),
-            byteArrayStringer = PrimitiveArrayStringer.ContentToString.Byte,
-            shortArrayStringer = PrimitiveArrayStringer.ContentToString.Short,
-            intArrayStringer = PrimitiveArrayStringer.ContentToString.Int,
-            longArrayStringer = PrimitiveArrayStringer.ContentToString.Long,
-            charArrayStringer = PrimitiveArrayStringer.ContentToString.Char,
-            floatArrayStringer = PrimitiveArrayStringer.ContentToString.Float,
-            doubleArrayStringer = PrimitiveArrayStringer.ContentToString.Double,
-            booleanArrayStringer = PrimitiveArrayStringer.ContentToString.Boolean,
+            protobufToShortString = DependencyChecker.protobuf != null,
+            byteArrayStringer = Stringer.ArrayContentToString.Byte,
+            shortArrayStringer = Stringer.ArrayContentToString.Short,
+            intArrayStringer = Stringer.ArrayContentToString.Int,
+            longArrayStringer = Stringer.ArrayContentToString.Long,
+            charArrayStringer = Stringer.ArrayContentToString.Char,
+            floatArrayStringer = Stringer.ArrayContentToString.Float,
+            doubleArrayStringer = Stringer.ArrayContentToString.Double,
+            booleanArrayStringer = Stringer.ArrayContentToString.Boolean,
         )
         //</editor-fold>
     }
