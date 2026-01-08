@@ -5,6 +5,7 @@ import java.lang.module.ModuleDescriptor
 
 val appData = System.getenv("APPDATA")
 val local = System.getenv("LOCALAPPDATA")
+val userHome = System.getenv("USERPROFILE")
 arrayOf(
     File(appData, """\kingsoft\wps\addons\pool\win-i386"""),
     File(appData, """\kingsoft\wps\addons\pool\win-x64"""),
@@ -44,12 +45,24 @@ arrayOf(
     File(local, "\\cbox\\cache"),
     File(local, "\\Qingfeng\\HeyboxChat\\log"),
 
+    File(userHome, "\\.comate-engine\\log"),
+    File(userHome, "\\.comate-engine\\mpc-log"),
+
     File(System.getenv("TEMP")),
     File(System.getenv("TMP")),
 ).forEach {
     println("delete: $it")
     it.deleteRecursively()
 }
+
+File(userHome, "\\.comate-engine\\bin\\agent").listFiles { it.isDirectory }
+    ?.toMutableList()?.let {
+        it -= it.maxBy { it.lastModified() }
+        it.forEach {
+            println("delete: $it")
+            it.deleteRecursively()
+        }
+    }
 
 // Chrome内核缓存清理
 arrayOf(
