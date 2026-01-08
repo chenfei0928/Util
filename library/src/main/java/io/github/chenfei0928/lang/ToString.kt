@@ -61,7 +61,7 @@ private fun StringBuilder.appendByReflectImpl(
     }
     // 获取自定义的toString方法
     @Suppress("UNCHECKED_CAST")
-    val stringer = UtilInitializer.toStringConfig.stringerProvider
+    val stringer = record.config.stringerProvider
         ?.invoke(any) as? ToStringByReflectConfig.Stringer<Any>
     if (stringer != null) {
         return stringer.append(this, any)
@@ -98,14 +98,14 @@ private fun StringBuilder.appendByReflectImpl(
             }
             append(']')
         }
-        is ByteArray -> UtilInitializer.toStringConfig.byteArrayStringer.append(this, any)
-        is ShortArray -> UtilInitializer.toStringConfig.shortArrayStringer.append(this, any)
-        is IntArray -> UtilInitializer.toStringConfig.intArrayStringer.append(this, any)
-        is LongArray -> UtilInitializer.toStringConfig.longArrayStringer.append(this, any)
-        is CharArray -> UtilInitializer.toStringConfig.charArrayStringer.append(this, any)
-        is FloatArray -> UtilInitializer.toStringConfig.floatArrayStringer.append(this, any)
-        is DoubleArray -> UtilInitializer.toStringConfig.doubleArrayStringer.append(this, any)
-        is BooleanArray -> UtilInitializer.toStringConfig.booleanArrayStringer.append(this, any)
+        is ByteArray -> record.config.byteArrayStringer.append(this, any)
+        is ShortArray -> record.config.shortArrayStringer.append(this, any)
+        is IntArray -> record.config.intArrayStringer.append(this, any)
+        is LongArray -> record.config.longArrayStringer.append(this, any)
+        is CharArray -> record.config.charArrayStringer.append(this, any)
+        is FloatArray -> record.config.floatArrayStringer.append(this, any)
+        is DoubleArray -> record.config.doubleArrayStringer.append(this, any)
+        is BooleanArray -> record.config.booleanArrayStringer.append(this, any)
         // JDK类型
         is CharSequence -> append(any)
         is Iterable<*> -> {
@@ -130,6 +130,11 @@ private fun StringBuilder.appendByReflectImpl(
                 append(", ")
             }
             replace(length - 2, length, "]")
+        }
+        is Map.Entry<*, *> -> {
+            appendByReflectImpl(any.key, record.onChildNode(any.key, "key"))
+            append('=')
+            appendByReflectImpl(any.value, record.onChildNode(any.value, "value"))
         }
         is Reference<*> -> appendByReflectImpl(any.get(), record.onChildNode(any.get(), "get()"))
         // 非JDK的容器类型
@@ -166,10 +171,10 @@ private fun StringBuilder.appendByReflectImpl(
             appendByReflectImpl(all, record.onChildNode(all, "getAll"))
         }
         // 判断该类有没有重写toString
-        else -> if (UtilInitializer.toStringConfig.protobufToShortString && any is Message) {
+        else -> if (record.config.protobufToShortString && any is Message) {
             // protobuf 序列化对象
             append(any.toShortString())
-        } else if (!UtilInitializer.toStringConfig.useToStringMethod(any.javaClass)) {
+        } else if (!record.config.useToStringMethod(any.javaClass)) {
             // 如果该类的 toString 方法没有被重写过（包括其父类）则反射输出字段
             appendObjectByReflectImpl(any, record)
         } else {
@@ -360,7 +365,7 @@ private fun StringBuilder.appendObjectByReflectImpl(
         }
     }
     // 如果类在反射黑名单中，不使用反射处理这个类
-    if (UtilInitializer.toStringConfig.isReflectSkip(thisClass)) {
+    if (record.config.isReflectSkip(thisClass)) {
         appendOrStd(any)
         return@apply
     }
@@ -795,6 +800,8 @@ data class ToStringStackRecord(
     // 节点记录，用于记录对象到其之前出现过的位置的对应关系
     private val nodeRecords: MutableMap<Any, String> =
         parentNode?.nodeRecords ?: mutableMapOf()
+    internal val config: ToStringByReflectConfig =
+        parentNode?.config ?: UtilInitializer.toStringConfig
 
     internal fun onChildNode(value: Any?, name: String): ToStringStackRecord {
         return ToStringStackRecord(value, this.nodeName + "." + name, this)
@@ -823,7 +830,7 @@ data class ToStringStackRecord(
     private fun findRecordedNodeName(value: Any): String? {
         val record = nodeRecords[value]
         if (record == null && value === this.value &&
-            !UtilInitializer.toStringConfig.isSkipNodeType(value.javaClass)
+            !config.isSkipNodeType(value.javaClass)
         ) {
             // 如果该对象在之前未记录过，则将其加入到节点记录中
             nodeRecords[value] = nodeName
