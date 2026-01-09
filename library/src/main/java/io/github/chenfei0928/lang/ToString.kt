@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandle
 import java.lang.invoke.VarHandle
 import java.lang.ref.Reference
 import java.lang.reflect.Field
+import java.lang.reflect.Member
 import java.lang.reflect.Modifier
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
@@ -297,11 +298,12 @@ private sealed interface FieldsCache<T : Any> {
             fields.forEach { field ->
                 append(field.name)
                 append('=')
-                val value = getValue(any, field)
-                if (value == any) {
-                    append("this")
-                } else {
-                    appendByReflectImpl(value, record.onChildNode(value, field.name))
+                appendValue(any, field) { value ->
+                    if (value == any) {
+                        append("this")
+                    } else {
+                        appendByReflectImpl(value, record.onChildNode(value, field.name))
+                    }
                 }
                 append(", ")
             }
@@ -330,11 +332,12 @@ private sealed interface FieldsCache<T : Any> {
             fields.forEach { field ->
                 append(field.name)
                 append('=')
-                val value = getValue(any, field)
-                if (value == any) {
-                    append("this")
-                } else {
-                    appendByReflectImpl(value, record.onChildNode(value, field.name))
+                appendValue(any, field) { value ->
+                    if (value == any) {
+                        append("this")
+                    } else {
+                        appendByReflectImpl(value, record.onChildNode(value, field.name))
+                    }
                 }
                 append(", ")
             }
@@ -434,31 +437,36 @@ private fun StringBuilder.appendAnyFieldsImpl(
                 val (key, value) = field
                 appendOrStd(key)
                 append('=')
-                appendByReflectImpl(
-                    getValue(any, value),
-                    record.onChildNode(value, key as? String ?: "[$index]-$key")
-                )
+                appendValue(any, value) { value ->
+                    appendByReflectImpl(
+                        value,
+                        record.onChildNode(value, key as? String ?: "[$index]-$key")
+                    )
+                }
             }
             // Kotlin 字段、方法
             is KCallable<*> -> {
                 append(field.name)
                 append('=')
-                val value = getValue(any, field)
-                appendByReflectImpl(value, record.onChildNode(value, field.name))
+                appendValue(any, field) { value ->
+                    appendByReflectImpl(value, record.onChildNode(value, field.name))
+                }
             }
             // Jvm反射体系的field
             is Field -> {
                 append(field.name)
                 append('=')
-                val value = getValue(any, field)
-                appendByReflectImpl(value, record.onChildNode(value, field.name))
+                appendValue(any, field) { value ->
+                    appendByReflectImpl(value, record.onChildNode(value, field.name))
+                }
             }
             // SpSaver preferenceDataStore的field
             is FieldAccessor.Field<*, *> -> {
                 append(field.pdsKey)
                 append('=')
-                val value = getValue(any, field)
-                appendByReflectImpl(value, record.onChildNode(value, field.pdsKey))
+                appendValue(any, field) { value ->
+                    appendByReflectImpl(value, record.onChildNode(value, field.pdsKey))
+                }
             }
             else -> {
                 appendByReflectImpl(field, record.onChildNode(field, "[$index]"))
@@ -468,15 +476,78 @@ private fun StringBuilder.appendAnyFieldsImpl(
     append(')')
 }
 
+//<editor-fold desc="对JvmField类型为值类型的append处理" defaultstatus="collapsed">
+private inline fun StringBuilder.appendValue(
+    thisRef: Any,
+    field: Any?,
+    boxedOrObjectValueAppendable: StringBuilder.(value: Any?) -> StringBuilder
+): StringBuilder = if (field is Field && field.type.isPrimitive) {
+    appendPrimitiveValue(thisRef, field)
+} else {
+    boxedOrObjectValueAppendable(getValue(thisRef, field))
+}
+
+private val Member.isStatic: Boolean
+    get() = Modifier.isStatic(modifiers)
+
+private fun StringBuilder.appendPrimitiveValue(
+    thisRef: Any, field: Field,
+): StringBuilder = when (field.type) {
+    java.lang.Integer.TYPE -> try {
+        if (field.isStatic) append(field.getInt(null)) else append(field.getInt(thisRef))
+    } catch (e: Exception) {
+        append("owner $thisRef's field: $field get failed: $e")
+    }
+    java.lang.Float.TYPE -> try {
+        if (field.isStatic) append(field.getFloat(null)) else append(field.getFloat(thisRef))
+    } catch (e: Exception) {
+        append("owner $thisRef's field: $field get failed: $e")
+    }
+    java.lang.Byte.TYPE -> try {
+        if (field.isStatic) append(field.getByte(null)) else append(field.getByte(thisRef))
+    } catch (e: Exception) {
+        append("owner $thisRef's field: $field get failed: $e")
+    }
+    java.lang.Double.TYPE -> try {
+        if (field.isStatic) append(field.getDouble(null)) else append(field.getDouble(thisRef))
+    } catch (e: Exception) {
+        append("owner $thisRef's field: $field get failed: $e")
+    }
+    java.lang.Long.TYPE -> try {
+        if (field.isStatic) append(field.getLong(null)) else append(field.getLong(thisRef))
+    } catch (e: Exception) {
+        append("owner $thisRef's field: $field get failed: $e")
+    }
+    java.lang.Character.TYPE -> try {
+        if (field.isStatic) append(field.getChar(null)) else append(field.getChar(thisRef))
+    } catch (e: Exception) {
+        append("owner $thisRef's field: $field get failed: $e")
+    }
+    java.lang.Boolean.TYPE -> try {
+        if (field.isStatic) append(field.getBoolean(null)) else append(field.getBoolean(thisRef))
+    } catch (e: Exception) {
+        append("owner $thisRef's field: $field get failed: $e")
+    }
+    java.lang.Short.TYPE -> try {
+        if (field.isStatic) append(field.getShort(null)) else append(field.getShort(thisRef))
+    } catch (e: Exception) {
+        append("owner $thisRef's field: $field get failed: $e")
+    }
+    else -> throw IllegalArgumentException("field type: ${field.type} not supported")
+}
+//</editor-fold>
+
 @Suppress("UNCHECKED_CAST")
 private fun getValue(
-    thisRef: Any, field: Any?,
+    thisRef: Any?, field: Any?,
 ): Any? = when (field) {
     // Kotlin字段
     is KProperty<*> -> try {
         when (field) {
             is KProperty0<*> -> field.get()
-            is KProperty1<*, *> -> (field as KProperty1<Any, *>).get(thisRef)
+            is KProperty1<*, *> -> if (thisRef == null) {
+                "owner $thisRef's kProperty: $field get failed: thisRef is null"
+            } else (field as KProperty1<Any, *>).get(thisRef)
             else -> field
         }
     } catch (e: Exception) {
@@ -486,7 +557,9 @@ private fun getValue(
     is KFunction<*> -> try {
         when (field) {
             is Function0<*> -> field()
-            is Function1<*, *> -> (field as Any.() -> Any)(thisRef)
+            is Function1<*, *> -> if (thisRef == null) {
+                "owner $thisRef's func: $field invoke failed: thisRef is null"
+            } else (field as Any.() -> Any)(thisRef)
             else -> field
         }
     } catch (e: Exception) {
@@ -494,8 +567,10 @@ private fun getValue(
     }
     // Jvm反射体系的field
     is Field -> try {
-        if (Modifier.isStatic(field.modifiers)) {
+        if (field.isStatic) {
             field.get(null)
+        } else if (thisRef == null) {
+            "owner $thisRef's field: $field get failed: thisRef is null"
         } else {
             field.get(thisRef)
         }
@@ -503,7 +578,9 @@ private fun getValue(
         "owner $thisRef's field: $field get failed: $e"
     }
     // SpSaver preferenceDataStore的field
-    is FieldAccessor.Field<*, *> -> (field as FieldAccessor.Field<Any, *>).get(thisRef)
+    is FieldAccessor.Field<*, *> -> if (thisRef == null) {
+        "owner $thisRef's FieldAccessor.Field: $field get failed: thisRef is null"
+    } else (field as FieldAccessor.Field<Any, *>).get(thisRef)
     else -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && field is MethodHandle) {
         // Jvm反射体系的methodHandle
         try {
