@@ -1,7 +1,9 @@
 package io.github.chenfei0928.reflect
 
 import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Member
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import java.util.concurrent.ConcurrentHashMap
 
 @Throws(
@@ -25,3 +27,6 @@ private val classIsKotlin = ConcurrentHashMap<Class<*>, Boolean>()
  */
 val Class<*>.isWriteByKotlin: Boolean
     get() = classIsKotlin.getOrPut(this) { getAnnotation(Metadata::class.java) != null }
+
+val Member.isStatic: Boolean
+    get() = Modifier.isStatic(modifiers)
