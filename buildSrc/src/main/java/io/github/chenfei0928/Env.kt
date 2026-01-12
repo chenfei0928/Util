@@ -34,6 +34,7 @@ object Env {
         // 创建impl
         impl = EnvImpl(containsReleaseBuild, protobufType)
         logger.lifecycle("Env环境初始化：$containsReleaseBuild, ${Instant.now()}")
+        Thread(impl).start()
     }
 
     val isWindows: Boolean = System.getProperty("os.name").startsWith("Windows")
@@ -61,7 +62,7 @@ object Env {
     private class EnvImpl(
         val containsReleaseBuild: Boolean,
         val protobufType: ProtobufType,
-    ) {
+    ) : Runnable {
         val launchTimestamp = Date()
 
         /**
@@ -85,6 +86,13 @@ object Env {
         val vscBranchName: String by RuntimeExecProperty(
             "git symbolic-ref --short -q HEAD"
         )
+
+        override fun run() {
+            agpVersion
+            vcsCommitId
+            vcsVersionCode
+            vscBranchName
+        }
     }
     //</editor-fold>
 }
