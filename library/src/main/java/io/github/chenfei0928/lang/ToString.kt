@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package io.github.chenfei0928.lang
 
 import android.content.Intent
@@ -188,10 +190,20 @@ private fun StringBuilder.appendByReflectImpl(
  * 类的静态字段缓存
  */
 private sealed interface StaticFieldsCache {
+    /**
+     * 类名信息
+     */
     val clazzName: String
 
+    /**
+     * 将当前类静态字段输出到 [builder] 中，并返回该字符串构建器实例
+     *
+     * @param builder 字符串构建器实例
+     * @param record 记录堆栈信息，用于递归调用时防止无限循环
+     * @return 该字符串构建器实例
+     */
     fun appendTo(
-        stringBuilder: StringBuilder, record: ToStringStackRecord
+        builder: StringBuilder, record: ToStringStackRecord
     ): StringBuilder
 
     /**
@@ -211,8 +223,8 @@ private sealed interface StaticFieldsCache {
         }
 
         override fun appendTo(
-            stringBuilder: StringBuilder, record: ToStringStackRecord
-        ): StringBuilder = stringBuilder
+            builder: StringBuilder, record: ToStringStackRecord
+        ): StringBuilder = builder
             .append(clazzName)
             .appendAnyFieldsImpl(clazz, record, fields = fields)
     }
@@ -227,8 +239,8 @@ private sealed interface StaticFieldsCache {
     ) : StaticFieldsCache {
         override val clazzName: String = any.qualifiedName!!
         override fun appendTo(
-            stringBuilder: StringBuilder, record: ToStringStackRecord
-        ): StringBuilder = stringBuilder.append(clazzName).append("{}")
+            builder: StringBuilder, record: ToStringStackRecord
+        ): StringBuilder = builder.append(clazzName).append("{}")
     }
 
     /**
@@ -253,8 +265,8 @@ private sealed interface StaticFieldsCache {
         }
 
         override fun appendTo(
-            stringBuilder: StringBuilder, record: ToStringStackRecord
-        ): StringBuilder = stringBuilder
+            builder: StringBuilder, record: ToStringStackRecord
+        ): StringBuilder = builder
             .append(clazzName)
             .appendAnyFieldsImpl(companionObj, record, fields = fields)
     }
@@ -274,7 +286,19 @@ private sealed interface StaticFieldsCache {
  * @param T 类类型
  */
 private sealed interface FieldsCache<T : Any> {
+    /**
+     * 该类是否有成员字段可以被输出。
+     */
     val hasField: Boolean
+
+    /**
+     * 将当前类实例字段输出到 [builder] 中，并返回该字符串构建器实例。
+     *
+     * @param builder 字符串构建器实例
+     * @param any 类实例
+     * @param record 记录堆栈信息，用于递归调用时防止无限循环。
+     * @return 该字符串构建器实例。
+     */
     fun appendTo(
         builder: StringBuilder, any: T, record: ToStringStackRecord
     ): StringBuilder
@@ -529,6 +553,7 @@ private fun StringBuilder.appendPrimitiveValue(
 }
 //</editor-fold>
 
+@Suppress("TooGenericExceptionCaught", "CyclomaticComplexMethod")
 private fun getValue(
     thisRef: Any, field: Any?,
 ): Any? = try {

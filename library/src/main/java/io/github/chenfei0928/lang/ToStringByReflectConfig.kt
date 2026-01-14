@@ -138,6 +138,7 @@ data class ToStringByReflectConfig(
             }
         }
 
+        @Suppress("UNUSED")
         sealed interface ArraySizeToString<T> : Stringer<T> {
             object Byte : ArraySizeToString<ByteArray> {
                 override fun append(sb: StringBuilder, array: ByteArray): StringBuilder =
@@ -180,6 +181,7 @@ data class ToStringByReflectConfig(
             }
         }
 
+        @Suppress("UNUSED")
         sealed class HexToString<T>(
             private val bitCount: kotlin.Int
         ) : Stringer<T> {
