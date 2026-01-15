@@ -13,11 +13,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.content.findActivity
-import io.github.chenfei0928.lang.contains
+import io.github.chenfei0928.reflect.isStatic
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.view.findParentFragment
 import io.github.chenfei0928.webkit.WebViewLifecycleOwner
-import java.lang.reflect.Modifier
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
@@ -99,7 +98,7 @@ private constructor(
         private fun findTag(jClass: Class<*>, instance: Any? = null): String? = try {
             jClass.getDeclaredField("TAG").run {
                 isAccessible = true
-                if (Modifier.STATIC in modifiers) {
+                if (isStatic) {
                     get(null) as? String
                 } else {
                     Log.w(TAG, run {

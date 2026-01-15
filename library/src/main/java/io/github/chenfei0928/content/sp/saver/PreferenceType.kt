@@ -476,21 +476,24 @@ sealed interface PreferenceType<T> {
                 Descriptors.FieldDescriptor.JavaType.LONG -> Native.LONG
                 Descriptors.FieldDescriptor.JavaType.FLOAT -> Native.FLOAT
                 Descriptors.FieldDescriptor.JavaType.DOUBLE ->
-                    throw IllegalArgumentException("Not support type: $field")
+                    throwNotSupportType(field)
                 Descriptors.FieldDescriptor.JavaType.BOOLEAN -> Native.BOOLEAN
                 Descriptors.FieldDescriptor.JavaType.STRING -> Native.STRING
                 Descriptors.FieldDescriptor.JavaType.BYTE_STRING ->
-                    throw IllegalArgumentException("Not support type: $field")
+                    throwNotSupportType(field)
                 Descriptors.FieldDescriptor.JavaType.ENUM ->
                     @Suppress("UNCHECKED_CAST") EnumNameString(
                         tClass as? Class<out Enum<*>> ?: field.enumType.enumClass()
                     )
                 Descriptors.FieldDescriptor.JavaType.MESSAGE ->
-                    throw IllegalArgumentException("Not support type: $field")
+                    throwNotSupportType(field)
             }
             @Suppress("UNCHECKED_CAST")
             preferenceType as PreferenceType<T>
         }
+
+        private fun throwNotSupportType(field: Descriptors.FieldDescriptor): Nothing =
+            throw IllegalArgumentException("Not support type: $field")
         //</editor-fold>
     }
 }

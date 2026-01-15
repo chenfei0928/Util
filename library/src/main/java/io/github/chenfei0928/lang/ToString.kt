@@ -17,14 +17,15 @@ import io.github.chenfei0928.collection.getOrPut
 import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.content.getAll
 import io.github.chenfei0928.preference.base.FieldAccessor
+import io.github.chenfei0928.reflect.isFinal
 import io.github.chenfei0928.reflect.isStatic
+import io.github.chenfei0928.reflect.isTransient
 import io.github.chenfei0928.reflect.isWriteByKotlin
 import io.github.chenfei0928.util.Log
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.VarHandle
 import java.lang.ref.Reference
 import java.lang.reflect.Field
-import java.lang.reflect.Modifier
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -219,10 +220,10 @@ private sealed interface StaticFieldsCache {
     ) : StaticFieldsCache {
         override val clazzName: String = clazz.name
         private val fields: Array<Any> = clazz.declaredFields.filter {
-            Modifier.isStatic(it.modifiers) && !it.isSynthetic
+            it.isStatic && !it.isSynthetic
         }.mapToArray {
             it.isAccessible = true
-            if (!Modifier.isFinal(it.modifiers)) it else it.name to it.get(null)
+            if (!it.isFinal) it else it.name to it.get(null)
         }
 
         override fun appendTo(
@@ -317,9 +318,7 @@ private sealed interface FieldsCache<T : Any> {
         clazz: Class<T>
     ) : FieldsCache<T> {
         private val fields: List<Field> = clazz.declaredFields.filter {
-            Modifier.TRANSIENT !in it.modifiers
-                    && Modifier.STATIC !in it.modifiers
-                    && !it.isSynthetic
+            !it.isTransient && !it.isStatic && !it.isSynthetic
         }.mapNotNull {
             try {
                 it.isAccessible = true

@@ -44,9 +44,7 @@ private class SubtypeChecker(
         is GenericArrayType -> isSubTypeOfGenericArrayType(child, base)
         is WildcardType -> isSubTypeOfWildcardType(child, base)
         is TypeVariable<*> -> isSubTypeOfTypeVariable(child, base)
-        else -> @Suppress("UseRequire") throw IllegalArgumentException(
-            "Not support base type: ${child.javaClass.name} $child and base ${base.javaClass.name} $base"
-        )
+        else -> throwNotSupportTypeWithBase(child, base)
     }
 
     @Suppress("CyclomaticComplexMethod")
@@ -82,9 +80,7 @@ private class SubtypeChecker(
         is WildcardType -> child.upperBounds.all { isSubtypeOf(it, base) }
                 && isSubtypeOfUpperBounds(base, child.lowerBounds)
         is TypeVariable<*> -> isSubtypeOf(child.bounds[indexOfTypeVariable], base)
-        else -> @Suppress("UseRequire") throw IllegalArgumentException(
-            "Not support type: ${child.javaClass.name} $child and base $base"
-        )
+        else -> throwNotSupportTypeWithBase(child, base)
     }
 
     private fun isSubtypeOfParameterizedType(
@@ -121,9 +117,7 @@ private class SubtypeChecker(
         is TypeVariable<*> -> isSubtypeOfParameterizedType(
             child.bounds[indexOfTypeVariable], base
         )
-        else -> @Suppress("UseRequire") throw IllegalArgumentException(
-            "Not support type: ${child.javaClass.name} $child and base $base"
-        )
+        else -> throwNotSupportTypeWithBase(child, base)
     }
 
     /**
@@ -141,9 +135,7 @@ private class SubtypeChecker(
         )
         is WildcardType -> false
         is TypeVariable<*> -> false
-        else -> @Suppress("UseRequire") throw IllegalArgumentException(
-            "Not support type: ${child.javaClass.name} $child and base $base"
-        )
+        else -> throwNotSupportTypeWithBase(child, base)
     }
 
     private fun isSubTypeOfWildcardType(
@@ -173,9 +165,7 @@ private class SubtypeChecker(
             base.upperBounds.all { baseType -> isSubtypeOf(childType, baseType) }
                     && base.lowerBounds.any { baseType -> isSubtypeOf(baseType, childType) }
         }
-        else -> @Suppress("UseRequire") throw IllegalArgumentException(
-            "Not support type: ${child.javaClass.name} $child and base $base"
-        )
+        else -> throwNotSupportTypeWithBase(child, base)
     }
 
     private fun isSubTypeOfTypeVariable(
@@ -193,10 +183,11 @@ private class SubtypeChecker(
         is TypeVariable<*> -> base.bounds.all { baseType ->
             child.bounds.any { isSubtypeOf(it, baseType) }
         }
-        else -> @Suppress("UseRequire") throw IllegalArgumentException(
-            "Not support type: ${child.javaClass.name} $child and base $base"
-        )
+        else -> throwNotSupportTypeWithBase(child, base)
     }
+
+    private fun throwNotSupportTypeWithBase(child: Type, base: Type): Nothing =
+        throw IllegalArgumentException("Not support type: ${child.javaClass.name} $child and base ${base.javaClass.name} $base")
 
     private fun isSubtypeOfUpperBounds(
         child: Type, upperBounds: Array<Type>

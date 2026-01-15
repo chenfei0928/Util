@@ -132,13 +132,7 @@ class ParameterizedTypeReflect1<Parent>(
                 .map { getErasedTypeClass(currentNode, it) }
                 .first()
         }
-        else -> throw IllegalArgumentException(
-            "无法从指定类型中获取其泛型擦除后的类型." +
-                    "\n父类：" + parentClass +
-                    "\n最终子类：" + finalChildClass +
-                    "\n当前子类：" + currentNode +
-                    "\n当前子类实现的父类中的范型定义：" + typeImplOnParent.javaClass + typeImplOnParent
-        )
+        else -> throwIfCantFound(currentNode, typeImplOnParent)
     }
 
     /**
@@ -206,12 +200,16 @@ class ParameterizedTypeReflect1<Parent>(
             // 范型约束只约束了范围，而没有继续约束实现，通常不会被类实现，或许为字段或方法（？）
             typeImplOnParent
         }
-        else -> throw IllegalArgumentException(
-            "无法从指定类型中获取其泛型擦除后的类型." +
-                    "\n父类：" + parentClass +
-                    "\n最终子类：" + finalChildClass +
-                    "\n当前子类：" + currentNode +
-                    "\n当前子类实现的父类中的范型定义：" + typeImplOnParent.javaClass + typeImplOnParent
-        )
+        else -> throwIfCantFound(currentNode, typeImplOnParent)
     }
+
+    private fun throwIfCantFound(
+        currentNode: ParentParameterizedTypeNode, typeImplOnParent: Type
+    ): Nothing = throw IllegalArgumentException(
+        "无法从指定类型中获取其泛型擦除后的类型." +
+                "\n父类：" + parentClass +
+                "\n最终子类：" + finalChildClass +
+                "\n当前子类：" + currentNode +
+                "\n当前子类实现的父类中的范型定义：" + typeImplOnParent.javaClass + typeImplOnParent
+    )
 }

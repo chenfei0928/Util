@@ -30,6 +30,9 @@ abstract class BaseFieldAccessorCache<T : Any>(
      */
     protected abstract fun <V> FieldAccessor.Field<T, V>.getFromStorage(): V
 
+    private fun throwUnsupportedType(field: FieldAccessor.Field<T, *>): Nothing =
+        throw IllegalArgumentException("Unsupported type: ${field.vType} for field: $field")
+
     /**
      * 将 preference screen 数据 [value] 设置给 [data] 中，扩展支持了[PreferenceType]的枚举
      */
@@ -50,9 +53,7 @@ abstract class BaseFieldAccessorCache<T : Any>(
             // preference原生支持的类型，直接设置
             set(data, value)
         }
-        is PreferenceType.Struct<*> -> throw IllegalArgumentException(
-            "Not support type: $this"
-        )
+        is PreferenceType.Struct<*> -> throwUnsupportedType(this)
     }
 
     /**
@@ -80,9 +81,7 @@ abstract class BaseFieldAccessorCache<T : Any>(
             // preference原生支持的类型，直接返回
             get(data)
         }
-        is PreferenceType.Struct<*> -> throw IllegalArgumentException(
-            "Not support type: $this"
-        )
+        is PreferenceType.Struct<*> -> throwUnsupportedType(this)
     }
 
     val preferenceDataStore: PreferenceDataStore

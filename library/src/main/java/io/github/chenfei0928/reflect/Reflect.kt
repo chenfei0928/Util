@@ -30,3 +30,9 @@ val Class<*>.isWriteByKotlin: Boolean
 
 val Member.isStatic: Boolean
     get() = Modifier.isStatic(modifiers)
+
+val Member.isTransient: Boolean
+    get() = Modifier.isTransient(modifiers)
+
+val Member.isFinal: Boolean
+    get() = Modifier.isFinal(modifiers)

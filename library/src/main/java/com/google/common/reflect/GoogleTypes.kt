@@ -65,17 +65,12 @@ interface GoogleTypes {
     object NotImpl : GoogleTypes {
         override fun newParameterizedTypeWithOwner(
             ownerType: Type?, rawType: Class<*>, vararg typeArguments: Type
-        ): ParameterizedType {
-            throw IllegalArgumentException("没有引入 Gson 或 Guava 依赖库")
-        }
+        ): ParameterizedType = throwNotImpl()
 
-        override fun subtypeOf(bound: Type): WildcardType {
+        override fun subtypeOf(bound: Type): WildcardType = throwNotImpl()
+        override fun arrayOf(componentType: Type): Type = throwNotImpl()
+        private fun throwNotImpl(): Nothing =
             throw IllegalArgumentException("没有引入 Gson 或 Guava 依赖库")
-        }
-
-        override fun arrayOf(componentType: Type): Type {
-            throw IllegalArgumentException("没有引入 Gson 或 Guava 依赖库")
-        }
     }
     //</editor-fold>
 

@@ -21,7 +21,7 @@ open class ReadOnlyCacheDelegate<Host : Any, V>(
         CACHE_MODE_DELEGATE -> UNINITIALIZED_VALUE
         CACHE_MODE_INSTANCE -> WeakHashMap<Host, V>()
         CACHE_MODE_INSTANCE_WITH_PROPERTY -> WeakHashMap<Host, ArrayMap<KProperty<*>, V>>()
-        else -> throw IllegalArgumentException("Invalid cache mode: $cacheMode")
+        else -> throwIllegalCacheMode(cacheMode)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -43,7 +43,7 @@ open class ReadOnlyCacheDelegate<Host : Any, V>(
                 caches.getOrPut(thisRef) { ArrayMap() }
                     .getOrPut(property) { delegate.getValue(thisRef, property) }
             }
-            else -> throw IllegalArgumentException("Invalid cache mode: $cacheMode")
+            else -> throwIllegalCacheMode(cacheMode)
         }
     }
 
@@ -67,7 +67,7 @@ open class ReadOnlyCacheDelegate<Host : Any, V>(
                     caches.getOrPut(thisRef) { ArrayMap() }[property] = value
                     delegate.setValue(thisRef, property, value)
                 }
-                else -> throw IllegalArgumentException("Invalid cache mode: $cacheMode")
+                else -> throwIllegalCacheMode(cacheMode)
             }
         }
     }
@@ -83,5 +83,8 @@ open class ReadOnlyCacheDelegate<Host : Any, V>(
         const val CACHE_MODE_DELEGATE = 0
         const val CACHE_MODE_INSTANCE = 1
         const val CACHE_MODE_INSTANCE_WITH_PROPERTY = 2
+
+        private fun throwIllegalCacheMode(cacheMode: Int): Nothing =
+            throw IllegalArgumentException("Invalid cache mode: $cacheMode")
     }
 }

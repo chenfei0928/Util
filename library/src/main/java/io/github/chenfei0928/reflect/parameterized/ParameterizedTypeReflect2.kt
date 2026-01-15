@@ -64,13 +64,7 @@ class ParameterizedTypeReflect2<Parent : Any>(
     ): Class<R> = when (val kClassifier = kType?.classifier) {
         null -> {
             // Kotlin不支持对其进行描述的类型，如复合类型
-            throw IllegalArgumentException(
-                "无法从指定类型中获取其泛型擦除后的类型." +
-                        "\n父类：" + parentKClass +
-                        "\n最终子类：" + finalChildKClass +
-                        "\n当前子类：" + currentNode +
-                        "\n当前子类实现的父类中的范型定义：" + kType
-            )
+            throwIfCantFound(currentNode, kType)
         }
         is KClass<*> -> {
             val jClass = kClassifier.java
@@ -107,16 +101,18 @@ class ParameterizedTypeReflect2<Parent : Any>(
                 erasedTypeKClass as Class<R>
             }
         }
-        else -> {
-            throw IllegalArgumentException(
-                "无法从指定类型中获取其泛型擦除后的类型." +
-                        "\n父类：" + parentKClass +
-                        "\n最终子类：" + finalChildKClass +
-                        "\n当前子类：" + currentNode +
-                        "\n当前子类实现的父类中的范型定义：" + kType.javaClass + kType
-            )
-        }
+        else -> throwIfCantFound(currentNode, kType)
     }
+
+    private fun throwIfCantFound(
+        currentNode: ParentParameterizedKtTypeNode, kType: KType?
+    ): Nothing = throw IllegalArgumentException(
+        "无法从指定类型中获取其泛型擦除后的类型." +
+                "\n父类：" + parentKClass +
+                "\n最终子类：" + finalChildKClass +
+                "\n当前子类：" + currentNode +
+                "\n当前子类实现的父类中的范型定义：" + kType?.javaClass + kType
+    )
 
     private fun <R> KTypeParameter.jvmErasureJavaClass(): Class<R> = upperBounds.run {
         firstNotNullOf { it.jvmErasure.java } as? Class<R>

@@ -5,9 +5,9 @@ import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.core.os.ParcelCompat
+import io.github.chenfei0928.reflect.isStatic
 import io.github.chenfei0928.util.MapCache
 import java.lang.reflect.Method
-import java.lang.reflect.Modifier
 
 /**
  * [android.os.Parcel.readParcelableCreator]
@@ -52,7 +52,7 @@ private fun <T : Parcelable> readParcelableCreator(clazz: Class<T>): Parcelable.
         return creator
     }
     val f = clazz.getField("CREATOR")
-    if (f.modifiers and Modifier.STATIC == 0) {
+    if (f.isStatic) {
         throw BadParcelableException(
             "Parcelable protocol requires " + "the CREATOR object to be static on class " + clazz.name
         )

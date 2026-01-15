@@ -943,7 +943,7 @@ abstract class BundleSupportType<T>(
         isMarkedNullable: Boolean? = false
     ) : BundleSupportType<T>(isMarkedNullable) {
         override fun nonnullValue(property: KProperty<*>): T =
-            throw IllegalAccessException()
+            throwNotSupportReturnType(property)
 
         override fun putNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, value: T
@@ -956,11 +956,11 @@ abstract class BundleSupportType<T>(
 
         override fun putExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, value: T
-        ): Intent = throw IllegalArgumentException("Not support return type: $property")
+        ): Intent = throwNotSupportReturnType(property)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): T = throw IllegalArgumentException("Not support return type: $property")
+        ): T = throwNotSupportReturnType(property)
 
         companion object : AutoFind.Creator<IBinder>() {
             override val checkByReflectWhenCall = IBinderType<IBinder>(null)
@@ -1568,31 +1568,31 @@ abstract class BundleSupportType<T>(
     //<editor-fold desc="占位用于不支持的类型的报错信息反馈" defaultstatus="collapsed">
     class NotSupportType : BundleSupportType<Any>(false) {
         override fun nonnullValue(property: KProperty<*>): Any =
-            throw IllegalArgumentException("Not support return type: $property")
+            throwNotSupportReturnType(property)
 
         override fun putNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, value: Any
-        ) = throw IllegalArgumentException("Not support return type: $property")
+        ) = throwNotSupportReturnType(property)
 
         override fun getNullable(
             bundle: Bundle, property: KProperty<*>, name: String
-        ): Any = throw IllegalArgumentException("Not support return type: $property")
+        ): Any = throwNotSupportReturnType(property)
 
         override fun getNonnull(
             bundle: Bundle, property: KProperty<*>, name: String, defaultValue: Any?
-        ): Any = throw IllegalArgumentException("Not support return type: $property")
+        ): Any = throwNotSupportReturnType(property)
 
         override fun putExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, value: Any
-        ): Intent = throw IllegalArgumentException("Not support return type: $property")
+        ): Intent = throwNotSupportReturnType(property)
 
         override fun getExtraNullable(
             intent: Intent, property: KProperty<*>, name: String
-        ): Any = throw IllegalArgumentException("Not support return type: $property")
+        ): Any = throwNotSupportReturnType(property)
 
         override fun getExtraNonnull(
             intent: Intent, property: KProperty<*>, name: String, defaultValue: Any?
-        ): Any = throw IllegalArgumentException("Not support return type: $property")
+        ): Any = throwNotSupportReturnType(property)
 
         companion object : AutoFind.Creator<Any>() {
             override val checkByReflectWhenCall = NotSupportType()
@@ -1873,5 +1873,8 @@ abstract class BundleSupportType<T>(
         @Suppress("UNCHECKED_CAST")
         private fun <T : Any> KType.argument0TypeJClass(): Class<T> =
             arguments[0].type?.jvmErasure?.java as Class<T>
+
+        private fun throwNotSupportReturnType(property: KProperty<*>): Nothing =
+            throw IllegalArgumentException("Not support return type: $property")
     }
 }
