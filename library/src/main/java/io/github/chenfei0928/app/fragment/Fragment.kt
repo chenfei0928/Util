@@ -1,6 +1,7 @@
 package io.github.chenfei0928.app.fragment
 
 import android.os.Bundle
+import androidx.annotation.ReturnThis
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
@@ -35,6 +36,7 @@ fun Fragment.toVisibleStatusString(): String = buildString {
     }
 }
 
+@ReturnThis
 inline fun <F : Fragment> F.applyArgumentBundle(
     block: Bundle.() -> Unit
 ): F = apply {

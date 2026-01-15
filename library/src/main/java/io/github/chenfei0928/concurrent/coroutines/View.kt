@@ -1,6 +1,7 @@
 package io.github.chenfei0928.concurrent.coroutines
 
 import android.view.View
+import androidx.annotation.ReturnThis
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +34,7 @@ private class ViewCoroutineScope(
     override val coroutineContext: CoroutineContext =
         super.coroutineContext + androidContextElement
 
+    @ReturnThis
     fun init(): ViewCoroutineScope = apply {
         view.doOnAttach {
             job.start()

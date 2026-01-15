@@ -5,8 +5,10 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.annotation.ReturnThis
 import androidx.core.widget.TextViewCompat
 
+@ReturnThis
 fun <D : Drawable> D.applyIntrinsicBounds() = apply {
     setBounds(0, 0, intrinsicWidth, intrinsicHeight)
 }

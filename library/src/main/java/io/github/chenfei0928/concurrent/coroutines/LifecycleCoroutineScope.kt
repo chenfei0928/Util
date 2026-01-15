@@ -1,5 +1,6 @@
 package io.github.chenfei0928.concurrent.coroutines
 
+import androidx.annotation.ReturnThis
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -67,6 +68,7 @@ private class LifecycleCoroutineScope(
     override val coroutineContext: CoroutineContext =
         super.coroutineContext + androidContextElement
 
+    @ReturnThis
     fun init(): LifecycleCoroutineScope = apply {
         onCancellation {
             closeCallback.close()

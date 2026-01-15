@@ -1,5 +1,6 @@
 package io.github.chenfei0928.io
 
+import androidx.annotation.ReturnThis
 import java.io.Flushable
 import java.io.Writer
 
@@ -26,6 +27,7 @@ class AppendableWriter(
         target.append(c.toChar())
     }
 
+    @ReturnThis
     override fun append(
         csq: CharSequence?, start: Int, end: Int
     ): Writer {
@@ -33,6 +35,7 @@ class AppendableWriter(
         return this
     }
 
+    @ReturnThis
     override fun append(c: Char): Writer {
         target.append(c)
         return this

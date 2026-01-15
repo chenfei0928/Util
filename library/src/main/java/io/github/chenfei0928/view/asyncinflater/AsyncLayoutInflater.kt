@@ -6,6 +6,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
 import io.github.chenfei0928.concurrent.ExecutorAndCallback
@@ -55,7 +56,7 @@ class AsyncLayoutInflater(
      */
     @UiThread
     override fun <VG : ViewGroup> inflate(
-        resId: Int,
+        @LayoutRes resId: Int,
         parent: VG?,
         callback: (View) -> Unit
     ) = inflate({ inflater.inflate(resId, parent, false) }, callback)

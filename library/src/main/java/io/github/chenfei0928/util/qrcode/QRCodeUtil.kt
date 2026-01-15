@@ -2,6 +2,7 @@ package io.github.chenfei0928.util.qrcode
 
 import android.graphics.Bitmap
 import androidx.annotation.Px
+import androidx.annotation.ReturnThis
 import androidx.collection.ArrayMap
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.withScale
@@ -74,6 +75,7 @@ object QRCodeUtil {
     /**
      * 在二维码中间添加Logo图案
      */
+    @ReturnThis
     private fun Bitmap.addLogo(logo: Bitmap?) = apply {
         if (logo == null) {
             return@apply

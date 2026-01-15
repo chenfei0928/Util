@@ -48,11 +48,17 @@ fun Intent.syncPackage(): Intent {
     return this
 }
 
-fun Bundle.getAll(): Map<String, Any> {
+fun Bundle.getAll(recursive: Boolean = false): Map<String, Any> {
     val keySet = keySet()
     val output = ArrayMap<String, Any>(keySet.size)
     keySet.forEach {
-        output[it] = this.get(it)
+        val value = this.get(it)
+        output[it] = if (!recursive) value
+        else when (value) {
+            is Bundle -> value.getAll(true)
+            is Intent -> value.getAllExtras()
+            else -> value
+        }
     }
     return output
 }

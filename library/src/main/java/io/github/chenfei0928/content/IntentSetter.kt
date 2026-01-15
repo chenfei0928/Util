@@ -30,6 +30,7 @@ interface IntentSetter<V> {
     fun putValue(intent: Intent, property: KProperty<*>, value: V?)
 }
 
+@ReturnThis
 operator fun <V, V1 : V> Intent.set(
     property: KProperty<V>, delegate: IntentSetter<V>, value: V1?
 ): Intent {
@@ -53,85 +54,107 @@ operator fun Intent.contains(
 }
 
 //<editor-fold desc="Intent所原生支持的类型" defaultstatus="collapsed">
+@ReturnThis
 operator fun Intent.set(property: KProperty<Byte>, value: Byte) =
     putExtra(property.name, value)
 
+@ReturnThis
 operator fun Intent.set(property: KProperty<Short>, value: Short) =
     putExtra(property.name, value)
 
+@ReturnThis
 operator fun Intent.set(property: KProperty<Int>, value: Int) =
     putExtra(property.name, value)
 
+@ReturnThis
 operator fun Intent.set(property: KProperty<Long>, value: Long) =
     putExtra(property.name, value)
 
+@ReturnThis
 operator fun Intent.set(property: KProperty<Float>, value: Float) =
     putExtra(property.name, value)
 
+@ReturnThis
 operator fun Intent.set(property: KProperty<Double>, value: Double) =
     putExtra(property.name, value)
 
+@ReturnThis
 operator fun Intent.set(property: KProperty<Char>, value: Char) =
     putExtra(property.name, value)
 
+@ReturnThis
 operator fun Intent.set(property: KProperty<Boolean>, value: Boolean) =
     putExtra(property.name, value)
 
+@ReturnThis
 operator fun Intent.set(
     property: KProperty<ByteArray>, value: ByteArray?
 ) = setImpl(property, BundleSupportType.ByteArrayType.commonCase, value)
 
+@ReturnThis
 operator fun Intent.set(
     property: KProperty<ShortArray>, value: ShortArray?
 ) = setImpl(property, BundleSupportType.ShortArrayType.commonCase, value)
 
+@ReturnThis
 operator fun Intent.set(
     property: KProperty<IntArray>, value: IntArray?
 ) = setImpl(property, BundleSupportType.IntArrayType.commonCase, value)
 
+@ReturnThis
 operator fun Intent.set(
     property: KProperty<LongArray>, value: LongArray?
 ) = setImpl(property, BundleSupportType.LongArrayType.commonCase, value)
 
+@ReturnThis
 operator fun Intent.set(
     property: KProperty<FloatArray>, value: FloatArray?
 ) = setImpl(property, BundleSupportType.FloatArrayType.commonCase, value)
 
+@ReturnThis
 operator fun Intent.set(
     property: KProperty<DoubleArray>, value: DoubleArray?
 ) = setImpl(property, BundleSupportType.DoubleArrayType.commonCase, value)
 
+@ReturnThis
 operator fun Intent.set(
     property: KProperty<CharArray>, value: CharArray?
 ) = setImpl(property, BundleSupportType.CharArrayType.commonCase, value)
 
+@ReturnThis
 operator fun Intent.set(
     property: KProperty<BooleanArray>, value: BooleanArray?
 ) = setImpl(property, BundleSupportType.BooleanArrayType.commonCase, value)
 
+@ReturnThis
 operator fun Intent.set(
     property: KProperty<CharSequence>, value: CharSequence?
 ) = setImpl(property, BundleSupportType.CharSequenceType.commonCase, value)
 
+@ReturnThis
 @JvmName("setCharSequenceArray")
 operator fun Intent.set(
     property: KProperty<Array<out CharSequence>>, value: Array<out CharSequence>?
 ) = setImpl(property, BundleSupportType.ArrayCharSequenceType.commonCase, value)
 
+@ReturnThis
 @JvmName("setCharSequenceArray")
 operator fun Intent.set(
     property: KProperty<List<out CharSequence>>, value: List<out CharSequence>?
 ) = setImpl(property, BundleSupportType.ListCharSequenceType.commonCase, value)
 
+@ReturnThis
 operator fun Intent.set(
     property: KProperty<String>, value: String?
 ) = setImpl(property, BundleSupportType.StringType.commonCase, value)
 
+@ReturnThis
 @JvmName("setStringArray")
 operator fun Intent.set(
     property: KProperty<Array<String>>, value: Array<String>?
 ) = setImpl(property, BundleSupportType.ArrayStringType.commonCase, value)
 
+@ReturnThis
 @JvmName("setStringList")
 operator fun Intent.set(
     property: KProperty<Array<String>>, value: List<String>?
@@ -141,15 +164,18 @@ operator fun Intent.set(
     value
 )
 
+@ReturnThis
 operator fun Intent.set(
     property: KProperty<Bundle>, value: Bundle?
 ) = setImpl(property, BundleSupportType.BundleType.commonCase, value)
 
+@ReturnThis
 @JvmName("setParcelable")
 operator fun <V : Parcelable, V1 : V> Intent.set(
     property: KProperty<V>, value: V1?
 ) = setImpl(property, BundleSupportType.ParcelableType.commonCase, value)
 
+@ReturnThis
 @JvmName("setParcelableArray")
 operator fun <V : Parcelable, V1 : V> Intent.set(
     property: KProperty<Array<V>>, value: Array<V1>?
@@ -159,17 +185,20 @@ operator fun <V : Parcelable, V1 : V> Intent.set(
     value
 )
 
+@ReturnThis
 @JvmName("setParcelableList")
 operator fun <V : Parcelable, V1 : V> Intent.set(
     property: KProperty<List<V>>, value: List<V1>?
 ) = setImpl(property, BundleSupportType.ListParcelableType.commonCase, value)
 
+@ReturnThis
 @JvmName("setEnum")
 operator fun <V : Enum<V>> Intent.set(
     property: KProperty<V>, value: V?
 ) = setImpl(property, BundleSupportType.EnumType.commonCase, value)
 //</editor-fold>
 
+@ReturnThis
 private fun <V, V1 : V> Intent.setImpl(
     property: KProperty<V>, bundleSupportType: BundleSupportType<V>, value: V1?
 ): Intent = if (
@@ -197,11 +226,13 @@ private fun <V, V1 : V> Intent.setImpl(
  * @param property
  * @param value
  */
+@ReturnThis
 @JvmName("setProtobuf")
 inline operator fun <reified V : MessageLite, V1 : V> Intent.set(
     property: KProperty<V>, value: V1?
 ): Intent = set(property, V::class.java, value)
 
+@ReturnThis
 @JvmName("setProtobuf")
 operator fun <V : MessageLite, V1 : V> Intent.set(
     property: KProperty<V>, vClass: Class<V>, value: V1?
@@ -222,6 +253,7 @@ operator fun <V : MessageLite, V1 : V> Intent.set(
  * @param property
  * @param value
  */
+@ReturnThis
 @JvmName("setProtobufList")
 inline operator fun <reified V : MessageLite, V1 : V> Intent.set(
     property: KProperty<List<V>>, value: List<V1>?
@@ -255,6 +287,7 @@ operator fun <V : MessageLite, V1 : V> Intent.set(
  * @param value
  * @return
  */
+@ReturnThis
 operator fun <V, V1 : V> Intent.set(
     property: KProperty<V>, parceler: Parceler<V>, value: V1?
 ): Intent = if (value == null) {

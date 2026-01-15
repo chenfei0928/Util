@@ -2,6 +2,7 @@ package io.github.chenfei0928.preference.base
 
 import android.content.Context
 import androidx.annotation.RestrictTo
+import androidx.annotation.ReturnThis
 import androidx.preference.CheckBoxPreference
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
@@ -27,6 +28,7 @@ abstract class AbsPreferenceGroupBuilder<Builder>(
     @RestrictTo(RestrictTo.Scope.SUBCLASSES)
     abstract fun createInstance(): Builder
 
+    @ReturnThis
     @Suppress("UNCHECKED_CAST")
     inline fun applyBuilder(block: Builder.() -> Unit): Builder = apply {
         block(this@AbsPreferenceGroupBuilder as Builder)

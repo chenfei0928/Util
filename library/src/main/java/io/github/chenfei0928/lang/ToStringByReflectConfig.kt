@@ -1,5 +1,6 @@
 package io.github.chenfei0928.lang
 
+import androidx.annotation.ReturnThis
 import com.google.protobuf.Message
 import com.google.protobuf.toShortString
 import io.github.chenfei0928.base.UtilInitializer
@@ -185,6 +186,7 @@ data class ToStringByReflectConfig(
         sealed class HexToString<T>(
             private val bitCount: kotlin.Int
         ) : Stringer<T> {
+            @ReturnThis
             fun StringBuilder.appendHex(element: kotlin.Long): StringBuilder = apply {
                 for (i in 0 until (bitCount / 4)) {
                     append(hexDigits[(element ushr (i * 4) and 0x0F).toInt()])

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.SparseArray
+import androidx.annotation.ReturnThis
 import androidx.collection.LruCache
 import androidx.collection.SparseArrayCompat
 import androidx.core.util.size
@@ -43,11 +44,13 @@ fun Any?.toStringByReflect(): String = StringBuilder().appendByReflectImpl(
     this, ToStringStackRecord(this, "this@toStringByReflect", null)
 ).toString()
 
+@ReturnThis
 fun StringBuilder.appendByReflect(
     any: Any?,
     record: ToStringStackRecord = ToStringStackRecord(any, "this@toStringByReflect", null),
 ): StringBuilder = appendByReflectImpl(any, record)
 
+@ReturnThis
 @Suppress("CyclomaticComplexMethod", "LongMethod", "ReturnCount")
 private fun StringBuilder.appendByReflectImpl(
     any: Any?, record: ToStringStackRecord,
@@ -200,7 +203,7 @@ private sealed interface StaticFieldsCache {
      *
      * @param builder 字符串构建器实例
      * @param record 记录堆栈信息，用于递归调用时防止无限循环
-     * @return 该字符串构建器实例
+     * @return [builder]实例
      */
     fun appendTo(
         builder: StringBuilder, record: ToStringStackRecord
@@ -297,7 +300,7 @@ private sealed interface FieldsCache<T : Any> {
      * @param builder 字符串构建器实例
      * @param any 类实例
      * @param record 记录堆栈信息，用于递归调用时防止无限循环。
-     * @return 该字符串构建器实例。
+     * @return [builder]实例。
      */
     fun appendTo(
         builder: StringBuilder, any: T, record: ToStringStackRecord
@@ -393,6 +396,7 @@ private sealed interface FieldsCache<T : Any> {
 }
 //</editor-fold>
 
+@ReturnThis
 private fun StringBuilder.appendObjectByReflectImpl(
     any: Any, record: ToStringStackRecord
 ) = apply {
@@ -458,12 +462,14 @@ fun Any.toStringAny(vararg fields: Any): String = StringBuilder()
     )
     .toString()
 
+@ReturnThis
 fun StringBuilder.appendAnyFields(
     any: Any,
     record: ToStringStackRecord = ToStringStackRecord(any, "this@toStringAny", null),
     vararg fields: Any,
 ): StringBuilder = appendAnyFieldsImpl(any, record, fields = fields)
 
+@ReturnThis
 private fun StringBuilder.appendAnyFieldsImpl(
     any: Any,
     record: ToStringStackRecord,
@@ -520,6 +526,7 @@ private fun StringBuilder.appendAnyFieldsImpl(
 }
 
 //<editor-fold desc="对JvmField类型为值类型的append处理" defaultstatus="collapsed">
+@ReturnThis
 private inline fun StringBuilder.appendValue(
     thisRef: Any,
     field: Any?,
@@ -530,6 +537,7 @@ private inline fun StringBuilder.appendValue(
     boxedOrObjectValueAppendable(getValue(thisRef, field))
 }
 
+@ReturnThis
 private fun StringBuilder.appendPrimitiveValue(
     thisRef: Any, field: Field,
 ): StringBuilder = try {
@@ -593,6 +601,7 @@ private fun getValue(
 }
 //</editor-fold>
 
+@ReturnThis
 @Suppress("TooGenericExceptionCaught")
 fun StringBuilder.appendOrStd(any: Any?): StringBuilder = if (any == null) {
     append("null")

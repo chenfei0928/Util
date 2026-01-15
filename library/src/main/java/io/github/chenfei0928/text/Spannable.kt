@@ -7,6 +7,7 @@ import android.text.SpannableStringBuilder
 import android.text.style.DynamicDrawableSpan
 import android.text.style.ImageSpan
 import androidx.annotation.DrawableRes
+import androidx.annotation.ReturnThis
 import org.jetbrains.anko.append
 import java.text.FieldPosition
 import java.text.Format
@@ -17,31 +18,35 @@ import java.util.Locale
 /**
  * [android.text.Html.startImg(Editable, org.xml.sax.Attributes, android.text.Html.ImageGetter)]
  */
+@ReturnThis
 @JvmOverloads
 fun SpannableStringBuilder.appendDrawable(
     context: Context,
     @DrawableRes drawableRes: Int,
     verticalAlignment: Int = DynamicDrawableSpan.ALIGN_BASELINE
-) = if (drawableRes == Resources.ID_NULL) {
+): SpannableStringBuilder = if (drawableRes == Resources.ID_NULL) {
     this
 } else append("\uFFFC", ImageSpan(context, drawableRes, verticalAlignment))
 
 /**
  * [android.text.Html.startImg(Editable, org.xml.sax.Attributes, android.text.Html.ImageGetter)]
  */
+@ReturnThis
 fun SpannableStringBuilder.appendDrawable(
     drawable: Drawable, verticalAlignment: Int = DynamicDrawableSpan.ALIGN_BASELINE
-) = append("\uFFFC", ImageSpan(drawable, verticalAlignment))
+): SpannableStringBuilder = append("\uFFFC", ImageSpan(drawable, verticalAlignment))
 
+@ReturnThis
 fun StringBuffer.appendFormat(
     format: Format,
     data: Any,
     fieldPosition: FieldPosition = FieldPosition(0)
-) = format.format(data, this, fieldPosition)
+): StringBuffer = format.format(data, this, fieldPosition)
 
+@ReturnThis
 fun StringBuffer.appendData(
     pattern: String,
     data: Date,
     locale: Locale = Locale.US,
     fieldPosition: FieldPosition = FieldPosition(0)
-) = SimpleDateFormat(pattern, locale).format(data, this, fieldPosition)
+): StringBuffer = SimpleDateFormat(pattern, locale).format(data, this, fieldPosition)

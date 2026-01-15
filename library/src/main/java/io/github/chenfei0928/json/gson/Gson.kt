@@ -2,6 +2,7 @@ package io.github.chenfei0928.json.gson
 
 import android.util.SparseArray
 import android.util.SparseLongArray
+import androidx.annotation.ReturnThis
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.InstanceCreator
@@ -18,15 +19,19 @@ inline fun <reified T> Gson.fromJson(json: Reader): T? = fromJson(json, jTypeOf<
 
 inline fun <reified T> Gson.fromJson(json: String): T? = fromJson(json, jTypeOf<T>())
 
+@ReturnThis
 inline fun <reified T> GsonBuilder.registerTypeAdapter(typeAdapter: JsonSerializer<T>): GsonBuilder =
     registerTypeAdapter(jTypeOf<T>(), typeAdapter)
 
+@ReturnThis
 inline fun <reified T> GsonBuilder.registerTypeAdapter(typeAdapter: JsonDeserializer<T>): GsonBuilder =
     registerTypeAdapter(jTypeOf<T>(), typeAdapter)
 
+@ReturnThis
 inline fun <reified T> GsonBuilder.registerTypeAdapter(typeAdapter: InstanceCreator<T>): GsonBuilder =
     registerTypeAdapter(jTypeOf<T>(), typeAdapter)
 
+@ReturnThis
 inline fun <reified T> GsonBuilder.registerTypeAdapter(typeAdapter: TypeAdapter<T>): GsonBuilder =
     registerTypeAdapter(jTypeOf<T>(), typeAdapter)
 
