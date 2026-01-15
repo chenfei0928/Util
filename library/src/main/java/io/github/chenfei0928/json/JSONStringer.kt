@@ -45,6 +45,15 @@ inline fun <T> JSONStringer.newJsonObject(
     endObject()
 }
 
+/**
+ * 用于输出一个数组，由[block]控制输出内容
+ *
+ * 外部使用时使用各个[newJsonArray]系列函数，它们已经为各个数组类型添加了基本遍历操作，内部使用时使用[internalNewJsonArray]函数。
+ *
+ * @param name 数组的键名
+ * @param block 控制输出内容的[block]
+ * @receiver 输出到的[JSONStringer]对象
+ */
 inline fun JSONStringer.internalNewJsonArray(
     name: String, block: JSONStringer.() -> Unit
 ): JSONStringer = apply {

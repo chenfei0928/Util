@@ -4,13 +4,13 @@
  */
 package io.github.chenfei0928.graphics
 
-import android.graphics.Color
 import androidx.annotation.ColorInt
+import androidx.core.graphics.toColorInt
 
 @ColorInt
 fun String.toColorIntOrNull(): Int? {
     return try {
-        Color.parseColor(this)
+        this.toColorInt()
     } catch (_: IllegalArgumentException) {
         null
     }
