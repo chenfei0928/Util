@@ -39,7 +39,8 @@ class ProtobufMessageField<T : Message, V>(
     // 此处不可直接forType vType实例，ProtobufMessageField 可能不会直接使用它的类型，而是用来获取内部字段使用，而导致 V 是个结构体
     // 包括 toString 或 get、set 方法中也不优先使用 vType 判断类型
     override val vType: PreferenceType<V> by lazy(LazyThreadSafetyMode.NONE, this)
-    override fun invoke(): PreferenceType<V> = PreferenceType.forProtobufType(fieldDescriptor, vClass)
+    override fun invoke(): PreferenceType<V> =
+        PreferenceType.forProtobufType(fieldDescriptor, vClass)
 
     @Suppress("UNCHECKED_CAST", "kotlin:S6531")
     override fun get(
@@ -87,6 +88,7 @@ class ProtobufMessageField<T : Message, V>(
     }
 
     override fun toString(): String {
+        // 此处使用protobuf名，而非jvm中的类型，jvm类型由下方vType输出
         val type = if (fieldDescriptor.type != Descriptors.FieldDescriptor.Type.ENUM) {
             fieldDescriptor.type.toString()
         } else if (fieldDescriptor.isRepeated) {
@@ -94,6 +96,7 @@ class ProtobufMessageField<T : Message, V>(
         } else {
             fieldDescriptor.enumType.fullName
         }
+        // 输出key、protobuf类型与jvm类型
         return "ProtobufMessageField($pdsKey:$type, $vType)"
     }
 
