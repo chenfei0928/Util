@@ -30,9 +30,10 @@ abstract class AbsPreferenceGroupBuilder<Builder>(
 
     @ReturnThis
     @Suppress("UNCHECKED_CAST")
-    inline fun applyBuilder(block: Builder.() -> Unit): Builder = apply {
+    inline fun applyBuilder(block: Builder.() -> Unit): Builder {
         block(this@AbsPreferenceGroupBuilder as Builder)
-    } as Builder
+        return this
+    }
 
     inline fun <P : Preference> preference(
         preference: P,

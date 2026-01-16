@@ -187,10 +187,11 @@ data class ToStringByReflectConfig(
             private val bitCount: kotlin.Int
         ) : Stringer<T> {
             @ReturnThis
-            fun StringBuilder.appendHex(element: kotlin.Long): StringBuilder = apply {
+            fun StringBuilder.appendHex(element: kotlin.Long): StringBuilder {
                 for (i in 0 until (bitCount / 4)) {
                     append(hexDigits[(element ushr (i * 4) and 0x0F).toInt()])
                 }
+                return this
             }
 
             object Byte : HexToString<ByteArray>(java.lang.Byte.SIZE) {

@@ -30,14 +30,18 @@ class ProtobufMessageField<T : Message, V>(
     private val fieldDescriptor: Descriptors.FieldDescriptor,
     private val vClass: Class<V>?,
 ) : Field<T, V>, () -> PreferenceType<V> {
+    // Protobuf的fieldNumber 从1开始，而Descriptors.FieldDescriptor是从0开始的
     constructor(
         defaultInstance: T, fieldNumber: Int, vClass: Class<V>?,
     ) : this(defaultInstance.descriptorForType.fields[fieldNumber - 1], vClass)
 
     override val pdsKey: String = fieldDescriptor.name
 
-    // 此处不可直接forType vType实例，ProtobufMessageField 可能不会直接使用它的类型，而是用来获取内部字段使用，而导致 V 是个结构体
-    // 包括 toString 或 get、set 方法中也不优先使用 vType 判断类型
+    /**
+     * 此处不可直接 [PreferenceType.forProtobufType] 获取 [vType] 实例，
+     * [ProtobufMessageField] 可能不会直接使用它的类型，而是用来获取内部字段使用，而导致 [V] 是个结构体
+     * 包括 [toString] 或 [get]、[set] 方法中也不优先使用 [vType] 判断类型
+     */
     override val vType: PreferenceType<V> by lazy(LazyThreadSafetyMode.NONE, this)
     override fun invoke(): PreferenceType<V> =
         PreferenceType.forProtobufType(fieldDescriptor, vClass)

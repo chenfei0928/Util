@@ -35,7 +35,7 @@ private class ViewCoroutineScope(
         super.coroutineContext + androidContextElement
 
     @ReturnThis
-    fun init(): ViewCoroutineScope = apply {
+    fun init(): ViewCoroutineScope {
         view.doOnAttach {
             job.start()
             view.doOnDetach {
@@ -49,5 +49,6 @@ private class ViewCoroutineScope(
                 viewOwnerCoroutineScopeCache.remove(view)
             }
         }
+        return this
     }
 }

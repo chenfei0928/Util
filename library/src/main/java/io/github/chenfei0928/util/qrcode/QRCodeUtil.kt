@@ -76,9 +76,9 @@ object QRCodeUtil {
      * 在二维码中间添加Logo图案
      */
     @ReturnThis
-    private fun Bitmap.addLogo(logo: Bitmap?) = apply {
+    private fun Bitmap.addLogo(logo: Bitmap?): Bitmap {
         if (logo == null) {
-            return@apply
+            return this
         }
 
         // 获取图片的宽高
@@ -88,11 +88,11 @@ object QRCodeUtil {
         val logoHeight = logo.height
 
         if (srcWidth == 0 || srcHeight == 0) {
-            return@apply
+            return this
         }
 
         if (logoWidth == 0 || logoHeight == 0) {
-            return@apply
+            return this
         }
 
         // logo大小为二维码整体大小的1/5
@@ -102,5 +102,6 @@ object QRCodeUtil {
                 drawBitmap(logo, (srcWidth - logoWidth) / 2f, (srcHeight - logoHeight) / 2f, null)
             }
         }
+        return this
     }
 }

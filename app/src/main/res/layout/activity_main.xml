@@ -24,18 +24,10 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/btn_preference"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="preference"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
         android:id="@+id/btn_preload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="preload"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn_preference" />
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

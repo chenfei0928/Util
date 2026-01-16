@@ -39,13 +39,14 @@ fun Fragment.toVisibleStatusString(): String = buildString {
 @ReturnThis
 inline fun <F : Fragment> F.applyArgumentBundle(
     block: Bundle.() -> Unit
-): F = apply {
+): F {
     val args = arguments
     if (args == null) {
         arguments = Bundle().apply(block)
     } else {
         args.apply(block)
     }
+    return this
 }
 
 fun Fragment.removeSelf() {

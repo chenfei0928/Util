@@ -19,19 +19,15 @@ inline fun <reified T> Gson.fromJson(json: Reader): T? = fromJson(json, jTypeOf<
 
 inline fun <reified T> Gson.fromJson(json: String): T? = fromJson(json, jTypeOf<T>())
 
-@ReturnThis
 inline fun <reified T> GsonBuilder.registerTypeAdapter(typeAdapter: JsonSerializer<T>): GsonBuilder =
     registerTypeAdapter(jTypeOf<T>(), typeAdapter)
 
-@ReturnThis
 inline fun <reified T> GsonBuilder.registerTypeAdapter(typeAdapter: JsonDeserializer<T>): GsonBuilder =
     registerTypeAdapter(jTypeOf<T>(), typeAdapter)
 
-@ReturnThis
 inline fun <reified T> GsonBuilder.registerTypeAdapter(typeAdapter: InstanceCreator<T>): GsonBuilder =
     registerTypeAdapter(jTypeOf<T>(), typeAdapter)
 
-@ReturnThis
 inline fun <reified T> GsonBuilder.registerTypeAdapter(typeAdapter: TypeAdapter<T>): GsonBuilder =
     registerTypeAdapter(jTypeOf<T>(), typeAdapter)
 

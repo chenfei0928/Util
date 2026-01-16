@@ -69,10 +69,11 @@ private class LifecycleCoroutineScope(
         super.coroutineContext + androidContextElement
 
     @ReturnThis
-    fun init(): LifecycleCoroutineScope = apply {
+    fun init(): LifecycleCoroutineScope {
         onCancellation {
             closeCallback.close()
         }
+        return this
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

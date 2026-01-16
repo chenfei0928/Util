@@ -1,28 +1,31 @@
 package io.github.chenfei0928.demo
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.drakeet.multitype.MultiTypeAdapter
 import com.google.protobuf.ProtobufParceler
 import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.app.fragment.ArgumentDelegate
-import io.github.chenfei0928.collection.mapToArray
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.bean.Bean
 import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.demo.bean.Test
 import io.github.chenfei0928.demo.databinding.ActivityMainBinding
+import io.github.chenfei0928.demo.databinding.ItemMainListBinding
 import io.github.chenfei0928.demo.storage.JsonDataStorePreferenceFragment
 import io.github.chenfei0928.demo.storage.JsonLocalFileStorage
 import io.github.chenfei0928.demo.storage.JsonLocalFileStorage0.Companion.jsonLocalStorage0
@@ -44,6 +47,8 @@ import io.github.chenfei0928.repository.local.serializer.ProtobufSerializer
 import io.github.chenfei0928.util.Log
 import io.github.chenfei0928.view.listener.setNoDoubleOnClickListener
 import io.github.chenfei0928.viewbinding.setContentViewBinding
+import io.github.chenfei0928.widget.recyclerview.adapter.ViewBindingHolder
+import io.github.chenfei0928.widget.recyclerview.binder.BaseBindingClickBinder
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.LinkedList
@@ -67,24 +72,36 @@ class MainActivity : ComponentActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        binding.btnPreference.setNoDoubleOnClickListener {
-            val items = arrayOf(
+        binding.rvList.layoutManager = LinearLayoutManager(this)
+        binding.rvList.adapter = MultiTypeAdapter().apply {
+            register(object : BaseBindingClickBinder<Intent, ItemMainListBinding>(
+                ItemMainListBinding::inflate
+            ) {
+                override fun onBindViewHolder(
+                    holder: ViewBindingHolder<Intent, ItemMainListBinding>,
+                    item: Intent
+                ) {
+                    holder.viewBinding.root.text = item.toUri(0)
+                }
+
+                override fun onItemClick(item: Intent) {
+                    startActivity(item)
+                }
+            })
+            items = arrayOf(
                 "spSaver" to SpSaverPreferenceFragment::class.java,
                 "mmkvSaver" to MmkvSaverPreferenceFragment::class.java,
                 "protobufDataStore" to TestPreferenceFragment::class.java,
                 "jsonDataStore" to JsonDataStorePreferenceFragment::class.java,
                 "jsonLocalFileStorage" to JsonLocalFileStoragePreferenceFragment.StorageFragment::class.java,
                 "jsonLocalFileStorage0" to JsonLocalFileStoragePreferenceFragment.Storage0Fragment::class.java,
+            ).map {
+                PreferenceActivity.newIntent(
+                    this@MainActivity, it.second, 7, Test.newBuilder().setInt(8).build()
+                )
+            } + listOf(
+                Intent().setComponent(ComponentName("ccc71.at", "lib3c.ui.lib3c_pro_key"))
             )
-            AlertDialog.Builder(this)
-                .setItems(items.mapToArray { it.first }) { _, which ->
-                    startActivity(
-                        PreferenceActivity.newIntent(
-                            this, items[which].second, 7, Test.newBuilder().setInt(8).build()
-                        )
-                    )
-                }
-                .show()
         }
         binding.btnPreload.setNoDoubleOnClickListener {
             Debug.countTime(TAG, "preload TestSpSaver") {

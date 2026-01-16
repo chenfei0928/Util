@@ -9,8 +9,9 @@ import androidx.annotation.ReturnThis
 import androidx.core.widget.TextViewCompat
 
 @ReturnThis
-fun <D : Drawable> D.applyIntrinsicBounds() = apply {
+fun <D : Drawable> D.applyIntrinsicBounds(): D {
     setBounds(0, 0, intrinsicWidth, intrinsicHeight)
+    return this
 }
 
 fun TextView.updateDrawableRelative(

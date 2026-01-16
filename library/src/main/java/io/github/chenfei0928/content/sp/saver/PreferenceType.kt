@@ -363,7 +363,7 @@ sealed interface PreferenceType<T> {
     //</editor-fold>
 
     /**
-     * 其它平台未原生支持的复杂类型，在当前类的各个 forType 中均不会返回该类型，
+     * 其它平台未原生支持的复杂类型，在当前类的各个 `forType` 中均不会返回该类型，
      * 仅用作 [BaseSpConvert] 的子类中使用
      */
     open class Struct<T> : LazyTypeToken<T>, PreferenceType<T> {

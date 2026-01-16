@@ -7,7 +7,6 @@ import android.text.SpannableStringBuilder
 import android.text.style.DynamicDrawableSpan
 import android.text.style.ImageSpan
 import androidx.annotation.DrawableRes
-import androidx.annotation.ReturnThis
 import org.jetbrains.anko.append
 import java.text.FieldPosition
 import java.text.Format
@@ -18,7 +17,6 @@ import java.util.Locale
 /**
  * [android.text.Html.startImg(Editable, org.xml.sax.Attributes, android.text.Html.ImageGetter)]
  */
-@ReturnThis
 @JvmOverloads
 fun SpannableStringBuilder.appendDrawable(
     context: Context,
@@ -31,19 +29,16 @@ fun SpannableStringBuilder.appendDrawable(
 /**
  * [android.text.Html.startImg(Editable, org.xml.sax.Attributes, android.text.Html.ImageGetter)]
  */
-@ReturnThis
 fun SpannableStringBuilder.appendDrawable(
     drawable: Drawable, verticalAlignment: Int = DynamicDrawableSpan.ALIGN_BASELINE
 ): SpannableStringBuilder = append("\uFFFC", ImageSpan(drawable, verticalAlignment))
 
-@ReturnThis
 fun StringBuffer.appendFormat(
     format: Format,
     data: Any,
     fieldPosition: FieldPosition = FieldPosition(0)
 ): StringBuffer = format.format(data, this, fieldPosition)
 
-@ReturnThis
 fun StringBuffer.appendData(
     pattern: String,
     data: Date,
