@@ -3,7 +3,6 @@
 package io.github.chenfei0928.lang
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.SparseArray
 import androidx.annotation.ReturnThis
@@ -22,8 +21,6 @@ import io.github.chenfei0928.reflect.isStatic
 import io.github.chenfei0928.reflect.isTransient
 import io.github.chenfei0928.reflect.isWriteByKotlin
 import io.github.chenfei0928.util.Log
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.VarHandle
 import java.lang.ref.Reference
 import java.lang.reflect.Field
 import kotlin.reflect.KCallable
@@ -49,9 +46,11 @@ fun Any?.toStringByReflect(): String = StringBuilder().appendByReflectImpl(
 fun StringBuilder.appendByReflect(
     any: Any?,
     record: ToStringStackRecord = ToStringStackRecord(any, "this@toStringByReflect", null),
-): StringBuilder = appendByReflectImpl(any, record)
+): StringBuilder {
+    appendByReflectImpl(any, record)
+    return this
+}
 
-@ReturnThis
 @Suppress("CyclomaticComplexMethod", "LongMethod", "ReturnCount")
 private fun StringBuilder.appendByReflectImpl(
     any: Any?, record: ToStringStackRecord,
@@ -398,7 +397,7 @@ private sealed interface FieldsCache<T : Any> {
 @ReturnThis
 private fun StringBuilder.appendObjectByReflectImpl(
     any: Any, record: ToStringStackRecord
-) = apply {
+): StringBuilder {
     val thisClass: Class<*> = any.javaClass
     if (thisClass.isWriteByKotlin) {
         // 如果当前实例的类是kotlin类，且当前对象是伴生对象，尝试打印伴生对象的字段
@@ -410,13 +409,13 @@ private fun StringBuilder.appendObjectByReflectImpl(
             StaticFieldsCache.cache.getOrPut(outerClass.name) {
                 StaticFieldsCache.KotlinKClassComponentObject(outerClass.kotlin, kClass)
             }.appendTo(this, record)
-            return@apply
+            return this
         }
     }
     // 如果类在反射黑名单中，不使用反射处理这个类
     if (record.config.isReflectSkip(thisClass)) {
         appendOrStd(any)
-        return@apply
+        return this
     }
     // 不是数组，toString 也没有被重写过，调用反射输出每一个字段
     var thisOrSuperClass: Class<*>? = thisClass
@@ -450,6 +449,7 @@ private fun StringBuilder.appendObjectByReflectImpl(
     } else {
         append(')')
     }
+    return this
 }
 //</editor-fold>
 
@@ -466,9 +466,11 @@ fun StringBuilder.appendAnyFields(
     any: Any,
     record: ToStringStackRecord = ToStringStackRecord(any, "this@toStringAny", null),
     vararg fields: Any,
-): StringBuilder = appendAnyFieldsImpl(any, record, fields = fields)
+): StringBuilder {
+    appendAnyFieldsImpl(any, record, fields = fields)
+    return this
+}
 
-@ReturnThis
 private fun StringBuilder.appendAnyFieldsImpl(
     any: Any,
     record: ToStringStackRecord,
@@ -525,7 +527,6 @@ private fun StringBuilder.appendAnyFieldsImpl(
 }
 
 //<editor-fold desc="对JvmField类型为值类型的append处理" defaultstatus="collapsed">
-@ReturnThis
 private inline fun StringBuilder.appendValue(
     thisRef: Any,
     field: Any?,
@@ -536,7 +537,6 @@ private inline fun StringBuilder.appendValue(
     boxedOrObjectValueAppendable(getValue(thisRef, field))
 }
 
-@ReturnThis
 private fun StringBuilder.appendPrimitiveValue(
     thisRef: Any, field: Field,
 ): StringBuilder = try {
@@ -564,9 +564,9 @@ private fun StringBuilder.appendPrimitiveValue(
 private fun getValue(
     thisRef: Any, field: Any?,
 ): Any? = try {
-    when {
-        // Kotlin字段
-        field is KProperty<*> -> when (field) {
+    when (// Kotlin字段
+        field) {
+        is KProperty<*> -> when (field) {
             is KProperty0<*> -> field.get()
             is KProperty1<*, *> ->
                 @Suppress("UNCHECKED_CAST")
@@ -574,7 +574,7 @@ private fun getValue(
             else -> field
         }
         // Kotlin方法
-        field is KFunction<*> -> when (field) {
+        is KFunction<*> -> when (field) {
             is Function0<*> -> field()
             is Function1<*, *> ->
                 @Suppress("UNCHECKED_CAST")
@@ -582,17 +582,10 @@ private fun getValue(
             else -> field
         }
         // Jvm反射体系的field
-        field is Field -> field.get(if (field.isStatic) null else thisRef)
+        is Field -> field.get(if (field.isStatic) null else thisRef)
         // SpSaver preferenceDataStore的field
-        field is FieldAccessor.Field<*, *> ->
-            @Suppress("UNCHECKED_CAST")
-            (field as FieldAccessor.Field<Any, *>).get(thisRef)
-        // Jvm反射体系的methodHandle
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && field is MethodHandle ->
-            field.invoke(thisRef)
-        // Jvm反射体系的varHandle
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && field is VarHandle ->
-            field.get(thisRef)
+        is FieldAccessor.Field<*, *> -> @Suppress("UNCHECKED_CAST")
+        (field as FieldAccessor.Field<Any, *>).get(thisRef)
         else -> field
     }
 } catch (e: Throwable) {
@@ -600,7 +593,6 @@ private fun getValue(
 }
 //</editor-fold>
 
-@ReturnThis
 @Suppress("TooGenericExceptionCaught")
 fun StringBuilder.appendOrStd(any: Any?): StringBuilder = if (any == null) {
     append("null")
