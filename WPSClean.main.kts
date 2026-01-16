@@ -3,36 +3,36 @@
 import java.io.File
 import java.lang.module.ModuleDescriptor
 
-val appData = System.getenv("APPDATA")
+val appDataRoaming = System.getenv("APPDATA")
 val local = System.getenv("LOCALAPPDATA")
 val userHome = System.getenv("USERPROFILE")
 arrayOf(
-    File(appData, """\kingsoft\wps\addons\pool\win-i386"""),
-    File(appData, """\kingsoft\wps\addons\pool\win-x64"""),
+    File(appDataRoaming, """\kingsoft\wps\addons\pool\win-i386"""),
+    File(appDataRoaming, """\kingsoft\wps\addons\pool\win-x64"""),
 ).flatMap { it.listFiles()?.toList() ?: emptyList() }.let {
     cleanPoolOldVersion(it)
 }
 
 // 缓存与日志目录清理
 arrayOf(
-    File(appData, "\\LarkShell\\sdk_storage\\log"),
-    File(appData, "\\LarkShell\\update"),
-    File(appData, "\\Tencent\\Logs"),
-    File(appData, "\\aDrive\\logs"),
-    File(appData, "\\BaiduYunGuanjia\\logs"),
-    File(appData, "\\baidu\\BaiduNetdisk\\AutoUpdate"),
-    File(appData, "\\Tencent\\WXWork\\Log"),
-    File(appData, "\\Tencent\\WXWork\\upgrade"),
-    File(appData, "\\Tencent\\xwechat\\log"),
-    File(appData, "\\Tencent\\xwechat\\update"),
-    File(appData, "\\Tencent\\WeMeet\\Global\\Logs"),
-    File(appData, "\\Tencent\\WeMeet\\Global\\Update"),
-    File(appData, "\\Tencent\\Logs"),
-    File(appData, "\\heybox-chat-electron\\log"),
-    File(appData, "\\BaiduYunKernel\\Data"),
-    File(appData, "\\BaiduYunGuanjia\\BaiduYunKernel\\VideoLog"),
-    File(appData, "\\HandBrake\\logs"),
-    File(appData, "\\Tencent\\TencentVideoMPlayer\\webkit_cache"),
+    File(appDataRoaming, "\\LarkShell\\sdk_storage\\log"),
+    File(appDataRoaming, "\\LarkShell\\update"),
+    File(appDataRoaming, "\\Tencent\\Logs"),
+    File(appDataRoaming, "\\aDrive\\logs"),
+    File(appDataRoaming, "\\BaiduYunGuanjia\\logs"),
+    File(appDataRoaming, "\\baidu\\BaiduNetdisk\\AutoUpdate"),
+    File(appDataRoaming, "\\Tencent\\WXWork\\Log"),
+    File(appDataRoaming, "\\Tencent\\WXWork\\upgrade"),
+    File(appDataRoaming, "\\Tencent\\xwechat\\log"),
+    File(appDataRoaming, "\\Tencent\\xwechat\\update"),
+    File(appDataRoaming, "\\Tencent\\WeMeet\\Global\\Logs"),
+    File(appDataRoaming, "\\Tencent\\WeMeet\\Global\\Update"),
+    File(appDataRoaming, "\\Tencent\\Logs"),
+    File(appDataRoaming, "\\heybox-chat-electron\\log"),
+    File(appDataRoaming, "\\BaiduYunKernel\\Data"),
+    File(appDataRoaming, "\\BaiduYunGuanjia\\BaiduYunKernel\\VideoLog"),
+    File(appDataRoaming, "\\HandBrake\\logs"),
+    File(appDataRoaming, "\\Tencent\\TencentVideoMPlayer\\webkit_cache"),
 
     File(local, "\\Microsoft\\OneDrive\\logs"),
     File(local, "\\Figma\\packages"),
@@ -44,6 +44,7 @@ arrayOf(
     File(local, "\\sso_cef_cache"),
     File(local, "\\cbox\\cache"),
     File(local, "\\Qingfeng\\HeyboxChat\\log"),
+    File(local, "\\Feishu\\app.todelete"),
 
     File(userHome, "\\.comate-engine\\log"),
     File(userHome, "\\.comate-engine\\mpc-log"),
@@ -51,8 +52,27 @@ arrayOf(
     File(System.getenv("TEMP")),
     File(System.getenv("TMP")),
 ).forEach {
-    println("delete: $it")
-    it.deleteRecursively()
+    if (it.exists() && it.isDirectory) {
+        println("delete: $it")
+        it.deleteRecursively()
+    }
+}
+
+// 飞书目录旧版本
+arrayOf(
+    File(local, "\\Feishu"),
+).forEach {
+    it.listFiles {
+        it.isDirectory && try {
+            ModuleDescriptor.Version.parse(it.name)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }?.toList()?.forEach {
+        println("delete: $it")
+        it.deleteRecursively()
+    }
 }
 
 File(userHome, "\\.comate-engine\\bin\\agent").listFiles { it.isDirectory }
@@ -66,13 +86,13 @@ File(userHome, "\\.comate-engine\\bin\\agent").listFiles { it.isDirectory }
 
 // Chrome内核缓存清理
 arrayOf(
-    File(appData, "\\heybox-chat-electron"),
-    File(appData, "\\MrRSS.exe\\EBWebView\\Default"),
-    File(appData, "\\Code"),
-    File(appData, "\\gmm"),
-    File(appData, "\\baidunetdisk"),
-    File(appData, "\\aDrive\\Partitions\\adrive"),
-    File(appData, "\\FLiNGTrainer\\cef-cache"),
+    File(appDataRoaming, "\\heybox-chat-electron"),
+    File(appDataRoaming, "\\MrRSS.exe\\EBWebView\\Default"),
+    File(appDataRoaming, "\\Code"),
+    File(appDataRoaming, "\\gmm"),
+    File(appDataRoaming, "\\baidunetdisk"),
+    File(appDataRoaming, "\\aDrive\\Partitions\\adrive"),
+    File(appDataRoaming, "\\FLiNGTrainer\\cef-cache"),
 
     File(local, "\\Yodao\\DeskDict\\dict.cache"),
     File(local, "\\Steam\\htmlcache\\Default"),
@@ -92,12 +112,12 @@ File(local, "\\EpicGamesLauncher\\Saved").listFiles { _, name ->
 
 // 子目录为版本号，版本号下面是 Chrome内核缓存的清理
 arrayOf(
-    File(appData, "\\Tencent\\WXWork\\Applet"),
-    File(appData, """\Tencent\WXWork\WXDrive"""),
-    File(appData, """\Tencent\WXWork\WeMailNode"""),
-    File(appData, """\Tencent\WXWork\WxWorkDocConvert"""),
-    File(appData, """\Tencent\WXWork\WeChatOCR"""),
-    File(appData, """\Tencent\WXWork\FlutterPlugins"""),
+    File(appDataRoaming, "\\Tencent\\WXWork\\Applet"),
+    File(appDataRoaming, """\Tencent\WXWork\WXDrive"""),
+    File(appDataRoaming, """\Tencent\WXWork\WeMailNode"""),
+    File(appDataRoaming, """\Tencent\WXWork\WxWorkDocConvert"""),
+    File(appDataRoaming, """\Tencent\WXWork\WeChatOCR"""),
+    File(appDataRoaming, """\Tencent\WXWork\FlutterPlugins"""),
 
     File(local, "\\Battle.net\\BrowserCaches"),
 ).forEach {
@@ -108,7 +128,7 @@ arrayOf(
 }
 
 // Figma 缓存清理，其版本信息有前缀字符 v
-File(appData, "\\Figma\\DesktopProfile").listFiles { it.isDirectory }?.toList()?.let {
+File(appDataRoaming, "\\Figma\\DesktopProfile").listFiles { it.isDirectory }?.toList()?.let {
     (it - it.maxBy { ModuleDescriptor.Version.parse(it.name.substring(1)) })?.forEach {
         println("delete: $it")
         it.deleteRecursively()
@@ -117,12 +137,15 @@ File(appData, "\\Figma\\DesktopProfile").listFiles { it.isDirectory }?.toList()?
 
 // 子目录为版本号的目录清理
 arrayOf(
-    File(appData, "\\Tencent\\WXWork\\wmpf_Applet"),
-    File(appData, """\Tencent\WXWork\WXDrive_x64"""),
-    File(appData, """\Tencent\WXWork\WeMailNode_x64"""),
-    File(appData, """\Tencent\WXWork\WxWorkDocConvert"""),
-    File(appData, """\Tencent\WXWork\WeChatOCR"""),
-    File(appData, """\Tencent\WXWork\FlutterPlugins"""),
+    File(local, "\\kingsoft\\WPS Office"),
+    File(local, "\\youdao\\dict\\Application"),
+
+    File(appDataRoaming, "\\Tencent\\WXWork\\wmpf_Applet"),
+    File(appDataRoaming, """\Tencent\WXWork\WXDrive_x64"""),
+    File(appDataRoaming, """\Tencent\WXWork\WeMailNode_x64"""),
+    File(appDataRoaming, """\Tencent\WXWork\WxWorkDocConvert"""),
+    File(appDataRoaming, """\Tencent\WXWork\WeChatOCR"""),
+    File(appDataRoaming, """\Tencent\WXWork\FlutterPlugins"""),
 ).forEach {
     cleanVersionNameDirs(it)
 }
@@ -134,18 +157,23 @@ private fun cleanVersionNameDirs(dir: File) {
             return@forEach
         }
     }
-    val files = dir.listFiles { it.isDirectory }?.toList()
-        ?: return
-    (files - files.maxBy { ModuleDescriptor.Version.parse(it.name) }).forEach {
+    val files = dir.listFiles { it.isDirectory }?.mapNotNull {
+        try {
+            ModuleDescriptor.Version.parse(it.name) to it
+        } catch (e: Exception) {
+            null
+        }
+    } ?: return
+    (files - files.maxBy { it.first }).forEach {
         println("delete: $it")
-        it.deleteRecursively()
+        it.second.deleteRecursively()
     }
 }
 
 // 子目录为插件目录，再往下是版本号的目录清理
 arrayOf(
-    File(appData, "\\Tencent\\xwechat\\XPlugin\\plugins"),
-    File(appData, "\\Tencent\\xwechat\\radium\\Applet\\packages"),
+    File(appDataRoaming, "\\Tencent\\xwechat\\XPlugin\\plugins"),
+    File(appDataRoaming, "\\Tencent\\xwechat\\radium\\Applet\\packages"),
 ).forEach {
     it.listFiles()?.forEach {
         cleanVersionNameDirs(it)
@@ -153,18 +181,18 @@ arrayOf(
 }
 
 // 飞书缓存清理
-File(appData, "\\LarkShell\\iron\\users").listFiles { it.isDirectory }
+File(appDataRoaming, "\\LarkShell\\iron\\users").listFiles { it.isDirectory }
     ?.forEach { cleanChromeCache(File(it, "profile_main")) }
 
-val larkShellGlobal = File(appData, "\\LarkShell\\aha\\users\\global")
+val larkShellGlobal = File(appDataRoaming, "\\LarkShell\\aha\\users\\global")
 cleanChromeCache(File(larkShellGlobal, "profile_global"))
-File(appData, "\\LarkShell\\aha\\users")
+File(appDataRoaming, "\\LarkShell\\aha\\users")
     .listFiles { _, name -> name != "global" }
     ?.forEach { it ->
         cleanChromeCache(File(it, "profile_explorer"))
         cleanChromeCache(File(it, "profile_main"))
     }
-File(appData, "\\LarkShell\\PC_Gadget").listFiles()?.forEach {
+File(appDataRoaming, "\\LarkShell\\PC_Gadget").listFiles()?.forEach {
     File(it, "app").listFiles { _, name -> name.startsWith("cli_") }.forEach { it ->
         cleanVersionNameDirs(it)
     }
@@ -174,6 +202,7 @@ File(appData, "\\LarkShell\\PC_Gadget").listFiles()?.forEach {
 }
 
 private fun cleanChromeCache(dir: File) {
+    if (!dir.exists()) return
     println("clean Chrome cache: $dir")
     File(dir, "Cache").deleteRecursively()
 }
