@@ -1804,19 +1804,10 @@ abstract class BundleSupportType<T>(
             abstract class ByInline(
                 jClass: Class<*>,
                 private val privateIsMarkedNullable: Boolean?,
-            ) : TypeInfo(jClass) {
+            ) : TypeInfo(jClass), () -> KType {
                 //<editor-fold desc="kType与jType字段的getter懒加载与是否空标记" defaultstatus="collapsed">
-                @field:Volatile
-                final override var kType: KType
-                    field : KType? = null
-                    private set
-                    get() = field ?: synchronized(this) {
-                        field ?: run {
-                            val type = kType()
-                            field = type
-                            type
-                        }
-                    }
+                final override val kType: KType by lazy(this)
+                override fun invoke(): KType = kType()
 
                 final override val isMarkedNullable: Boolean
                     get() = privateIsMarkedNullable ?: kType.isMarkedNullable

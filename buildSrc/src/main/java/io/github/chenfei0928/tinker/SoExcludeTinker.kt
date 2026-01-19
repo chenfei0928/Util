@@ -2,6 +2,8 @@ package io.github.chenfei0928.tinker
 
 import com.android.build.api.dsl.ApkSigningConfig
 import com.android.build.gradle.AppExtension
+import com.google.gradle.osdetector.OsDetectorPlugin
+import com.tencent.tinker.build.util.TypedValue
 import io.github.chenfei0928.Deps
 import io.github.chenfei0928.Env
 import io.github.chenfei0928.util.buildOutputsDir
@@ -11,8 +13,6 @@ import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.forEachAssembleTasks
 import io.github.chenfei0928.util.implementation
 import io.github.chenfei0928.util.replaceFirstCharToUppercase
-import com.google.gradle.osdetector.OsDetectorPlugin
-import com.tencent.tinker.build.util.TypedValue
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
@@ -44,7 +44,7 @@ fun Project.applyAppSoExclude() {
     }
 
     afterEvaluate {
-        val (tinkerPatchExtensionTriples, buildTypes) = createEveryVariantTinkerPatchExtension()
+        val (tinkerPatchExtensionTriples, _) = createEveryVariantTinkerPatchExtension()
 
         forEachAssembleTasks { assembleTask, taskInfo ->
             // 对当前的flavor+buildType的输出文件加渠道号
@@ -64,7 +64,7 @@ fun Project.applyAppSoExclude() {
                     variantTinkerPatchExtension.tinkerPatchExtension.oldApk = baseApk.absolutePath
 
                     val tinkerId = putTinkerManifestPlaceholders.toList()
-                        .find { (key, value) -> taskInfo.isSameTo(key) }
+                        .find { (key, _) -> taskInfo.isSameTo(key) }
                         ?.second?.get() ?: "tinkerId"
 
                     val tinkerPatchSchema = TinkerPatchSchema(

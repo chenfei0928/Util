@@ -13,7 +13,7 @@ import org.gradle.api.Project
 fun Project.applyLibrary(appendBuildConfig: Boolean = true) {
     applyCommon(appendBuildConfig = appendBuildConfig)
 
-    buildSrcAndroid<com.android.build.gradle.LibraryExtension> {
+    buildSrcAndroid<com.android.build.gradle.LibraryExtension>().apply {
         defaultConfig {
             minSdk = Contract.minSdkVersion
         }

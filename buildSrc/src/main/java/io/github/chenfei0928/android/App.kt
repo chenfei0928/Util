@@ -1,12 +1,11 @@
 package io.github.chenfei0928.android
 
+import com.android.build.api.dsl.ApplicationExtension
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.Env
 import io.github.chenfei0928.util.buildSrcAndroid
-import io.github.chenfei0928.util.debug
 import io.github.chenfei0928.util.prerelease
 import io.github.chenfei0928.util.qatest
-import io.github.chenfei0928.util.release
 import org.gradle.api.Project
 import java.io.File
 
@@ -19,7 +18,7 @@ import java.io.File
 fun Project.applyApp() {
     applyCommon()
 
-    buildSrcAndroid<com.android.build.gradle.AppExtension> {
+    buildSrcAndroid<ApplicationExtension>().apply {
         signingConfigs {
             register("config") {
                 storeFile =
@@ -52,15 +51,15 @@ fun Project.applyApp() {
                 // 签名
                 signingConfig = signingConfigs.getByName("config")
                 // 后处理，对编译完成后的资源、代码文件进行处理
-                postprocessing {
-                    // 启用自动过滤删除无用res资源文件，依赖于 isMinifyEnabled
-                    // 但不清楚keep混淆R文件是否会影响该效果
-                    isRemoveUnusedResources = false
-                    // 代码混淆
-                    isObfuscate = true
-                    isOptimizeCode = true
-                    isRemoveUnusedCode = true
-                }
+//                postprocessing {
+//                    // 启用自动过滤删除无用res资源文件，依赖于 isMinifyEnabled
+//                    // 但不清楚keep混淆R文件是否会影响该效果
+//                    isRemoveUnusedResources = false
+//                    // 代码混淆
+//                    isObfuscate = true
+//                    isOptimizeCode = true
+//                    isRemoveUnusedCode = true
+//                }
             }
             // PreRelease灰度测试包（预上线）
             prerelease {
@@ -84,16 +83,6 @@ fun Project.applyApp() {
             }
         }
 
-        aaptOptions {
-            // 禁用cruncher, 以加速编译
-            cruncherEnabled = false
-        }
-
-        compileOptions {
-            // 开启增量编译
-            incremental = true
-        }
-
         // 如果出现META-INF重复的问题 - 友盟社会化登录、分享
         // 打包时排除一些文件
         packagingOptions {
@@ -113,7 +102,6 @@ fun Project.applyApp() {
         // Debug时禁用Multi APK
         if (!Env.containsReleaseBuild) {
             splits.abi.isEnable = false
-            splits.density.isEnable = false
         }
 
         // Debug时不编译不必要的资源

@@ -36,7 +36,6 @@ fun Project.applyKotlin(
     json: Boolean = false,
     protobuf: Boolean = false,
 ) {
-    apply<KotlinAndroidPluginWrapper>()
     if (parcelize) {
         apply<ParcelizeSubplugin>()
     }
@@ -50,7 +49,7 @@ fun Project.applyKotlin(
         apply<SerializationGradleSubplugin>()
     }
 
-    buildSrcAndroid<com.android.build.gradle.BaseExtension> {
+    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
         defaultConfig {
             if (Env.containsReleaseBuild) {
                 // Release编译时移除kotlin断言
@@ -87,14 +86,16 @@ fun Project.applyKotlin(
                         "-Xno-call-assertions",
                         "-Xno-param-assertions",
                         "-Xno-receiver-assertions",
-                        "-Xannotation-target-all"
+                        "-Xannotation-target-all",
+                        "-XXLanguage:+ExplicitBackingFields",
                     )
                 } else {
                     // Debug编译时启用debug编译，以优化断点支持与断点时变量捕获
                     // https://kotlinlang.org/docs/whatsnew18.html#a-new-compiler-option-for-disabling-optimizations
                     listOf(
 //                    "-Xdebug",
-                        "-Xannotation-target-all"
+                        "-Xannotation-target-all",
+                        "-XXLanguage:+ExplicitBackingFields",
                     )
                 }
             )

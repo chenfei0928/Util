@@ -21,8 +21,8 @@ class WebViewLifecycleOwner<V : WebView> constructor(
     val webView: V,
     placeHolder: View? = null
 ) : LifecycleOwner, LifecycleEventObserver {
-    override val lifecycle: Lifecycle
-        private field = LifecycleRegistry(this)
+    final override val lifecycle: Lifecycle
+        field = LifecycleRegistry(this)
 
     init {
         lifecycle.addObserver(LifecycleEventObserver { _, event ->

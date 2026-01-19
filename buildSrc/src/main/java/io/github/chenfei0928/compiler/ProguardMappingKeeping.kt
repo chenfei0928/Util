@@ -1,5 +1,6 @@
 package io.github.chenfei0928.compiler
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.Env
@@ -23,7 +24,7 @@ import java.io.File
  * @date 2022-01-27 14:17
  */
 internal fun Project.applyProguardMappingKeeping() {
-    buildSrcAndroid<com.android.build.gradle.AppExtension> {
+    buildSrcAndroid<ApplicationExtension>().apply {
         // dex混淆映射表保持
         productFlavors.all productFlavor@{
             // 某个flavor的混淆表导入文件夹

@@ -33,7 +33,7 @@ fun Project.applyAppDictObfuscation() {
     val obfuscationDictProguardFile = writeTmpProguardFile(
         "obfuscation_dict.pro", obfuscationDictProguardContent
     )
-    buildSrcAndroid<com.android.build.gradle.BaseExtension> {
+    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
         defaultConfig {
             proguardFile(obfuscationDictProguardFile)
         }
@@ -49,7 +49,7 @@ fun Project.applyAppDictObfuscation() {
 
     // 将混淆字典生成任务添加到编译任务的依赖中
     afterEvaluate {
-        buildSrcAndroid<AppExtension> {
+        buildSrcAndroid<AppExtension>().apply {
             applicationVariants.all {
                 val preBuildName = getPreBuildName(name)
                     ?: return@all

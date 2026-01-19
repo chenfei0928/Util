@@ -25,7 +25,7 @@ object PowerSaveUtil {
     }
 
     val isInPowerSaveMode: LiveData<Boolean>
-        private field: MutableLiveData<Boolean> = MutableLiveData<Boolean>(
+        field: MutableLiveData<Boolean> = MutableLiveData<Boolean>(
             powerManager?.isPowerSaveMode
         )
 

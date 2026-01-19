@@ -2,7 +2,6 @@
 
 package me.omico.age.dsl
 
-import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -25,9 +24,6 @@ fun Project.withAndroid(block: Plugin<in Any>.() -> Unit) {
     withAndroidLibrary(block)
     withAndroidDynamicFeature(block)
 }
-
-fun Project.configureAndroidCommon(block: CommonExtension<*, *, *, *, *, *>.() -> Unit) =
-    withAndroid { configure("android", block) }
 
 fun Project.withBuildType(buildType: String, block: () -> Unit) {
     if (taskRequestContains(buildType)) block()

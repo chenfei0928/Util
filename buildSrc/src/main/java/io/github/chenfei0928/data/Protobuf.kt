@@ -43,7 +43,7 @@ private const val proguardRules = """
  * @date 2021-10-28 15:12
  */
 fun Project.applyProtobufDependencies(includeGrpc: Boolean = true) {
-    buildSrcAndroid<com.android.build.gradle.BaseExtension> {
+    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
         // 打包时排除proto接口的源代码
         packagingOptions {
             resources.excludes.add("**.proto")
@@ -103,7 +103,7 @@ fun Project.applyProtobuf(includeGrpc: Boolean = false, useKotlinExt: Boolean = 
     if (Env.protobufType.includeProguardRule) {
         val proguardFile = writeTmpProguardFile(proguardFileName, proguardRules)
 
-        buildSrcAndroid<com.android.build.gradle.BaseExtension> {
+        buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
             defaultConfig {
                 proguardFile(proguardFile)
                 consumerProguardFile(proguardFile)
@@ -111,7 +111,7 @@ fun Project.applyProtobuf(includeGrpc: Boolean = false, useKotlinExt: Boolean = 
         }
     }
 
-    buildSrcAndroid<com.android.build.gradle.BaseExtension> {
+    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
         sourceSets {
             named("main") {
                 proto {

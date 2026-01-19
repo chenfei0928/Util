@@ -19,7 +19,7 @@ fun Project.applyComponent() {
         applyLibrary()
     }
 
-    buildSrcAndroid<com.android.build.gradle.BaseExtension> {
+    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
         buildFeatures.run {
             viewBinding = true
         }

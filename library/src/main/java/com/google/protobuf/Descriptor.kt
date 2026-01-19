@@ -35,7 +35,7 @@ val Descriptors.GenericDescriptor.jvmFullyQualifiedName: String
                 file.`package`
             }
         }
-        var parent = parent
+        var parent: Descriptors.GenericDescriptor? = parent
         while (parent != null) {
             if (parent !is Descriptors.FileDescriptor) {
                 // 类（字段或枚举实例的 parent 只能是message/类）

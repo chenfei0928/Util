@@ -26,7 +26,7 @@ fun Project.applyARouter() {
         apply<PluginLaunch>()
     }
 
-    buildSrcAndroid<com.android.build.gradle.BaseExtension> {
+    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
         defaultConfig {
             proguardFile(writeTmpProguardFile("aRouter.pro", proguardContent))
 

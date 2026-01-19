@@ -28,7 +28,7 @@ fun Project.applyJetpackCompose(
     apply<ComposeCompilerGradleSubplugin>()
 
     // https://developer.android.com/jetpack/compose/setup?hl=zh-cn
-    buildSrcAndroid<com.android.build.gradle.BaseExtension> {
+    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
         defaultConfig {
             minSdk = max(minSdk ?: 0, 21)
         }

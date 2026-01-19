@@ -47,12 +47,7 @@ interface WrapMutableMapConvertor {
 
         class WeakRef<V> : Value<V, WeakReference<V>>, Hostable<Any, Any, V, WeakReference<V>> {
             private val queue = ReferenceQueue<V>()
-            override var hostMap: WrapMutableMap<Any, Any, V, WeakReference<V>>
-                field : WrapMutableMap<Any, Any, V, WeakReference<V>>? = null
-                get() = field!!
-                set(value) {
-                    field = value
-                }
+            override lateinit var hostMap: WrapMutableMap<Any, Any, V, WeakReference<V>>
 
             override fun <WVA : V & Any> WVA.toV(): WeakReference<V> = WeakReference(this, queue)
             override fun <VA : WeakReference<V>> VA.toWV(): V = get()!!

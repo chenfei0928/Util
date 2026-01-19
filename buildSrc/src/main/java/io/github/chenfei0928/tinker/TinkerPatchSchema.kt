@@ -92,9 +92,9 @@ class TinkerPatchSchema(
                 HashMap<String, String>(configuration.packageConfig.getFields())
             packageConfigFields.putAll(configuration.packageConfig.getApkSpecFields(newApk.name))
 
-            builder.setOldApk(oldApk.getAbsolutePath())
-                .setNewApk(newApk.getAbsolutePath())
-                .setOutBuilder(tmpDir.getAbsolutePath())
+            builder.setOldApk(oldApk.absolutePath)
+                .setNewApk(newApk.absolutePath)
+                .setOutBuilder(tmpDir.absolutePath)
                 .setIgnoreWarning(configuration.ignoreWarning)
                 .setAllowLoaderInAnyDex(configuration.allowLoaderInAnyDex)
                 .setCustomDiffPath(configuration.customPath)

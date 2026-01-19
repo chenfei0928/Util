@@ -13,7 +13,7 @@ import org.gradle.kotlin.dsl.dependencies
  * @date 2021-07-28 17:37
  */
 fun Project.applyTest() {
-    buildSrcAndroid<com.android.build.gradle.BaseExtension> {
+    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
         defaultConfig {
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

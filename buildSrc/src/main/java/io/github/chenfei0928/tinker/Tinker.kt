@@ -39,7 +39,7 @@ fun Project.applyAppTinker() {
     applyTinkerTask()
 
     // tinkerSdk 所需混淆表
-    buildSrcAndroid<com.android.build.gradle.AppExtension> {
+    buildSrcAndroid<com.android.build.gradle.AppExtension>().apply {
         defaultConfig {
             proguardFiles(projectDir.child { Contract.mappingFileSaveDirName / "tinker_proguard.pro" })
             multiDexKeepProguard = projectDir.child {

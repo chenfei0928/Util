@@ -1,7 +1,6 @@
 package io.github.chenfei0928.android
 
 import io.github.chenfei0928.Contract
-import io.github.chenfei0928.Env
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debug
 import io.github.chenfei0928.util.implementation
@@ -18,7 +17,7 @@ import org.gradle.kotlin.dsl.dependencies
  * @date 2021-11-10 14:57
  */
 fun Project.applyCommon(appendBuildConfig: Boolean = true) {
-    buildSrcAndroid<com.android.build.gradle.BaseExtension> {
+    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
         compileSdkVersion(Contract.compileSdkVersion)
 
         defaultConfig {
@@ -59,8 +58,6 @@ fun Project.applyCommon(appendBuildConfig: Boolean = true) {
                 )
             }
             prerelease {
-                isDebuggable = true
-
                 buildConfigFields(
                     thirdSdkEnable = true,
                     loggable = true,
@@ -68,8 +65,6 @@ fun Project.applyCommon(appendBuildConfig: Boolean = true) {
                 )
             }
             qatest {
-                isDebuggable = true
-
                 buildConfigFields(
                     thirdSdkEnable = true,
                     loggable = true,
@@ -77,9 +72,6 @@ fun Project.applyCommon(appendBuildConfig: Boolean = true) {
                 )
             }
             debug {
-                isDebuggable = true
-                isCrunchPngs = false
-
                 buildConfigFields(
                     thirdSdkEnable = false,
                     loggable = true,
@@ -88,16 +80,9 @@ fun Project.applyCommon(appendBuildConfig: Boolean = true) {
             }
         }
 
-        // Debug时禁用PNG优化
-        aaptOptions {
-            cruncherEnabled = Env.containsReleaseBuild
-        }
-
         compileOptions {
             sourceCompatibility = Contract.JAVA_VERSION
             targetCompatibility = Contract.JAVA_VERSION
-            // 开启增量编译
-            incremental = true
         }
     }
 

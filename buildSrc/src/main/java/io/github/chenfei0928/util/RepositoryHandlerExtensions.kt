@@ -7,7 +7,6 @@ package io.github.chenfei0928.util
 import com.android.build.api.dsl.BuildType
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.AppExtension
-import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.bean.TaskInfo
@@ -20,11 +19,7 @@ import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import java.util.regex.Pattern
 
-internal fun <Android : BaseExtension> Project.buildSrcAndroid(
-    configure: Action<Android>
-): Unit = extensions.configure("android", configure)
-
-internal fun <Android : BaseExtension> Project.buildSrcAndroid(
+internal fun <Android : Any> Project.buildSrcAndroid(
 ): Android = extensions.getByName("android") as Android
 
 /**

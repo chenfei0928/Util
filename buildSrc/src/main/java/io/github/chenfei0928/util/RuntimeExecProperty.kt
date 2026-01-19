@@ -12,8 +12,7 @@ import kotlin.reflect.KProperty
  * @author chenf()
  * @date 2023-09-14 15:39
  */
-class RuntimeExecProperty<R : Any>
-constructor(
+class RuntimeExecProperty<R : Any>(
     private val cmdarray: Array<String>,
     private val envp: Array<String>? = null,
     private val dir: File? = null,

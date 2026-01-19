@@ -1,11 +1,11 @@
 package io.github.chenfei0928.android
 
-import io.github.chenfei0928.Deps
-import io.github.chenfei0928.util.implementation
 import com.qihoo360.replugin.gradle.host.Replugin
 import com.qihoo360.replugin.gradle.host.RepluginConfig
 import com.qihoo360.replugin.gradle.plugin.ReClassConfig
 import com.qihoo360.replugin.gradle.plugin.ReClassPlugin
+import io.github.chenfei0928.Deps
+import io.github.chenfei0928.util.implementation
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies

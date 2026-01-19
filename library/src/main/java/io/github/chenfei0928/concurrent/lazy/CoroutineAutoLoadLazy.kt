@@ -27,7 +27,7 @@ private class CoroutineAutoLoadLazy<T>(
 
     init {
         val async = scope.async(start = start) {
-            value = initializer.invoke()
+            _value = initializer.invoke()
             notifyLock()
         }
         async.start()
@@ -39,11 +39,10 @@ private class CoroutineAutoLoadLazy<T>(
         }
     }
 
-    @field:Volatile
-    override var value: T
-        private field: Any? = UNINITIALIZED_VALUE
+    private var _value: Any? = UNINITIALIZED_VALUE
+    override val value: T
         get() {
-            val _v1 = field
+            val _v1 = _value
             if (_v1 !== UNINITIALIZED_VALUE) {
                 @Suppress("UNCHECKED_CAST") return _v1 as T
             }
@@ -55,7 +54,7 @@ private class CoroutineAutoLoadLazy<T>(
                         // noop
                     }
                 }
-                val _v2 = field
+                val _v2 = _value
                 if (_v2 !== UNINITIALIZED_VALUE) {
                     @Suppress("UNCHECKED_CAST") return (_v2 as T)
                 }

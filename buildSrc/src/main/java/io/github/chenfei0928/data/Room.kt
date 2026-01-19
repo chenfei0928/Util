@@ -17,7 +17,7 @@ import org.gradle.kotlin.dsl.dependencies
 fun Project.applyRoom() {
     val schemesPath = "$projectDir/schemas"
 
-    buildSrcAndroid<com.android.build.gradle.BaseExtension> {
+    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
         // https://developer.android.com/training/data-storage/room/migrating-db-versions#single-migration-test
         sourceSets {
             // Adds exported schema location as test app assets.
@@ -44,7 +44,7 @@ fun Project.applyRoom() {
             implementation(DepsAndroidx.room.ktx)
         }
     } else {
-        buildSrcAndroid<com.android.build.gradle.BaseExtension> {
+        buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
             defaultConfig {
                 //指定room.schemaLocation生成的文件路径
                 javaCompileOptions {

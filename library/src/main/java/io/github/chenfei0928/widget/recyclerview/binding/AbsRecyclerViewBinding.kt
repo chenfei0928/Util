@@ -46,7 +46,7 @@ abstract class AbsRecyclerViewBinding(
      * 添加操作使用本类提供的[addSingleItem]、[addListItems]进行添加操作
      */
     protected val list: List<Any>
-        private field: MutableList<Any> = list
+        field: MutableList<Any> = list
     protected val adapter = IMultiTypeAdapterStringer.IMultiTypeAdapter(list).apply {
         binding = this@AbsRecyclerViewBinding
         if (list is RecyclerViewAdapterDataSource) {

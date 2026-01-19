@@ -9,4 +9,4 @@ inline val Project.localProperties: Properties
     }
 
 fun Project.taskRequestContains(parameter: String): Boolean =
-    gradle.startParameter.taskRequests.toString().toUpperCase().contains(parameter.toUpperCase())
+    gradle.startParameter.taskRequests.toString().uppercase().contains(parameter.uppercase())

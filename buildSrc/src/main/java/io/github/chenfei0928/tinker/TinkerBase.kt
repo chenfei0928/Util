@@ -24,7 +24,7 @@ internal fun Project.createEveryVariantTinkerPatchExtension(): Pair<List<Variant
     val outputsApkPath = mutableListOf<VariantTinkerPatchExtension>()
     val buildTypeNames = mutableListOf<String>()
 
-    buildSrcAndroid<com.android.build.gradle.AppExtension> {
+    buildSrcAndroid<com.android.build.gradle.AppExtension>().apply {
         // 读取所有编译任务输出文件路径
         applicationVariants.forEach { applicationVariant ->
             applicationVariant as ExtensionAware

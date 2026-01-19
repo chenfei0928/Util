@@ -4,7 +4,8 @@ import com.google.common.io.Files
 import com.meituan.android.walle.ChannelWriter
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 /**
  * 进行签名任务，参考自：
