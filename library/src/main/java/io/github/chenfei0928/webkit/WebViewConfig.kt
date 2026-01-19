@@ -9,6 +9,7 @@ import androidx.annotation.IntRange
 import androidx.collection.ArrayMap
 import androidx.core.net.toUri
 import androidx.webkit.UserAgentMetadata
+import androidx.webkit.WebNavigationClient
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
@@ -530,6 +531,64 @@ open class WebViewConfig {
      * [WebSettingsCompat.WEB_AUTHENTICATION_SUPPORT_FOR_BROWSER]
      */
     var webAuthenticationSupport: Int = WebSettingsCompat.WEB_AUTHENTICATION_SUPPORT_NONE
+
+    /**
+     * 设置此网页设置对象的推测加载状态。此 API 属于实验性质，未来可能会有变动且不会提前通知。请谨慎使用。
+     * 获取此 WebSettings 的推测性加载状态。此 API 为实验性 API，未来可能会在未通知的情况下发生变化。请谨慎使用。
+     *
+     * 仅当 WebViewFeature.isFeatureSupported(String) 对 WebViewFeature.SPECULATIVE_LOADING 返回 true 时，才应调用此方法。
+     */
+    var speculativeLoadingStatus: Int = WebSettingsCompat.SPECULATIVE_LOADING_DISABLED
+
+    /**
+     * 为给定的 [WebSettings] 启用 BackForwardCache。此 API 为实验性 API，未来可能会在未通知的情况下发生变化。请谨慎使用。
+     *
+     * 获取此 [WebSettings] 的 BackForwardCache 当前状态。此 API 为实验性 API，未来可能会在未通知的情况下发生变化。请谨慎使用。
+     *
+     * 仅当 WebViewFeature.isFeatureSupported(String) 对 WebViewFeature.BACK_FORWARD_CACHE 返回 true 时，才应调用此方法。
+     */
+    var backForwardCacheEnabled: Boolean = false
+
+    /**
+     * 为给定的 [WebSettings] 启用 [PaymentRequest](https://w3c.github.io/payment-request/)。
+     * 此功能需要在 `AndroidManifest.xml` 中添加以下代码片段：
+     * ```xml
+     *   <queries>
+     *       <intent>
+     *           <action android:name="org.chromium.intent.action.PAY"/>
+     *       </intent>
+     *       <intent>
+     *           <action android:name="org.chromium.intent.action.IS_READY_TO_PAY"/>
+     *       </intent>
+     *       <intent>
+     *           <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS"/>
+     *       </intent>
+     *   </queries>
+     * ```
+     *
+     * 此内容旨在允许 WebView 查询设备上根据
+     * [Android 支付应用开发者指南](https://web.dev/articles/android-payment-apps-developers-guide) 实现的用户支付应用。
+     * - `org.chromium.intent.action.PAY` 意图对于让用户进行支付是必要的。
+     * - `org.chromium.intent.action.IS_READY_TO_PAY` 意图对于让商家网站知晓用户是否准备好支付是必要的。
+     * - `org.chromium.intent.action.UPDATE_PAYMENT_DETAILS` 意图对于支付应用支持在用户选择不同的送货地址或选项时动态更新价格是必要的。
+     *
+     * 获取给定 [WebSettings] 的 [PaymentRequest](https://w3c.github.io/payment-request/) 的当前状态。
+     *
+     * 只有在 isFeatureSupported 对 PAYMENT_REQUEST 返回 true 时，才应调用此方法。
+     */
+    var paymentRequestEnabled: Boolean = false
+
+    /**
+     * 在给定的 WebSettings 中为 [PaymentRequest](https://w3c.github.io/payment-request/)
+     * 提供了对 `hasEnrolledInstrument()` 方法的支持。
+     * 只有在调用了 `WebSettingsCompat.setPaymentRequestEnabled(settings， true)` 之后，此功能才会生效。
+     * 当此设置被禁用时，`PaymentRequest.hasEnrolledInstrument()` 方法总是返回 false 。
+     *
+     * 获取给定 Web 设置下 [PaymentRequest](https://w3c.github.io/payment-request/) 中 `hasEnrolledInstrument()` 方法的当前状态。
+     *
+     * 只有在 isFeatureSupported 函数返回 PAYMENT_REQUEST 支持状态为 true 的情况下，才应调用此方法。
+     */
+    var hasEnrolledInstrumentEnabled: Boolean = false
     //</editor-fold>
 
     //<editor-fold desc="WebView字段" defaultstatus+collapsed">
@@ -567,6 +626,8 @@ open class WebViewConfig {
      * 如果 WebView 已处于静音状态，则返回 true，否则返回 false。
      */
     var isAudioMuted: Boolean = false
+
+    var webNavigationClient: WebNavigationClient? = null
     //</editor-fold>
 
     companion object {

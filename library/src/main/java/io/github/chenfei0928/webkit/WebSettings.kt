@@ -4,6 +4,7 @@ import android.os.Build
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.webkit.UserAgentMetadata
+import androidx.webkit.WebNavigationClient
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
@@ -14,6 +15,7 @@ import androidx.webkit.WebViewRenderProcessClient
  * @author chenf()
  * @date 2025-03-24 16:07
  */
+//<editor-fold desc="WebSettings属性">
 var WebSettings.supportZoomCompat: Boolean
     get() = supportZoom()
     set(value) {
@@ -25,7 +27,9 @@ var WebSettings.supportMultipleWindowsCompat: Boolean
     set(value) {
         setSupportMultipleWindows(value)
     }
+//</editor-fold>
 
+//<editor-fold desc="WebSettingsCompat属性">
 var WebSettings.openOffscreenPreRasterCompat: Boolean
     get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         offscreenPreRaster
@@ -152,6 +156,38 @@ var WebSettings.speculativeLoadingStatus: Int
         }
     }
 
+var WebSettings.backForwardCacheEnabled: Boolean
+    get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.BACK_FORWARD_CACHE)) {
+        WebSettingsCompat.getBackForwardCacheEnabled(this)
+    } else false
+    set(value) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.BACK_FORWARD_CACHE)) {
+            WebSettingsCompat.setBackForwardCacheEnabled(this, value)
+        }
+    }
+
+var WebSettings.paymentRequestEnabled: Boolean
+    get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.PAYMENT_REQUEST)) {
+        WebSettingsCompat.getPaymentRequestEnabled(this)
+    } else false
+    set(value) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.PAYMENT_REQUEST)) {
+            WebSettingsCompat.setPaymentRequestEnabled(this, value)
+        }
+    }
+
+var WebSettings.hasEnrolledInstrumentEnabled: Boolean
+    get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.PAYMENT_REQUEST)) {
+        WebSettingsCompat.getHasEnrolledInstrumentEnabled(this)
+    } else false
+    set(value) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.PAYMENT_REQUEST)) {
+            WebSettingsCompat.setHasEnrolledInstrumentEnabled(this, value)
+        }
+    }
+//</editor-fold>
+
+//<editor-fold desc="WebViewCompat属性">
 var WebView.webViewRenderProcessClientCompat: WebViewRenderProcessClient?
     get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
         WebViewCompat.getWebViewRenderProcessClient(this)
@@ -171,3 +207,14 @@ var WebView.isAudioMuted: Boolean
             WebViewCompat.setAudioMuted(this, value)
         }
     }
+
+var WebView.webNavigationClient: WebNavigationClient?
+    get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.NAVIGATION_CALLBACK_BASIC)) {
+        WebViewCompat.getWebNavigationClient(this)
+    } else null
+    set(value) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.NAVIGATION_CALLBACK_BASIC)) {
+            WebViewCompat.setWebNavigationClient(this, value)
+        }
+    }
+//</editor-fold>

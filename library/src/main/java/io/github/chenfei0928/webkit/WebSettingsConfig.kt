@@ -63,6 +63,10 @@ internal interface WebSettingsConfig<T, V> {
                 WebView::isAudioMuted,
                 WebViewConfig::isAudioMuted
             ),
+            invoke(
+                WebView::webNavigationClient,
+                WebViewConfig::webNavigationClient
+            ),
         )
 
         val settingsConfigField: Array<WebSettingsConfig<WebSettings, *>> = arrayOf(
@@ -258,6 +262,22 @@ internal interface WebSettingsConfig<T, V> {
             invoke(
                 WebSettings::webAuthenticationSupportCompat,
                 WebViewConfig::webAuthenticationSupport
+            ),
+            invoke(
+                WebSettings::speculativeLoadingStatus,
+                WebViewConfig::speculativeLoadingStatus
+            ),
+            invoke(
+                WebSettings::backForwardCacheEnabled,
+                WebViewConfig::backForwardCacheEnabled
+            ),
+            invoke(
+                WebSettings::paymentRequestEnabled,
+                WebViewConfig::paymentRequestEnabled
+            ),
+            invoke(
+                WebSettings::hasEnrolledInstrumentEnabled,
+                WebViewConfig::hasEnrolledInstrumentEnabled
             ),
         )
     }

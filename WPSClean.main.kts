@@ -84,7 +84,7 @@ File(userHome, "\\.comate-engine\\bin\\agent").listFiles { it.isDirectory }
         }
     }
 
-// Chrome内核缓存清理
+// Chromium内核缓存清理
 arrayOf(
     File(appDataRoaming, "\\heybox-chat-electron"),
     File(appDataRoaming, "\\MrRSS.exe\\EBWebView\\Default"),
@@ -100,17 +100,17 @@ arrayOf(
     File(local, "\\io.github.clash-verge-rev.clash-verge-rev\\EBWebView\\Default"),
     File(local, "\\MI\\XiaomiPCManager\\EBWebView\\Default"),
 ).forEach {
-    cleanChromeCache(it)
+    cleanChromiumCache(it)
 }
 
 // Epic Games Launcher 缓存清理
 File(local, "\\EpicGamesLauncher\\Saved").listFiles { _, name ->
     name.startsWith("webcache_")
 }.forEach {
-    cleanChromeCache(it)
+    cleanChromiumCache(it)
 }
 
-// 子目录为版本号，版本号下面是 Chrome内核缓存的清理
+// 子目录为版本号，版本号下面是 Chromium内核缓存的清理
 arrayOf(
     File(appDataRoaming, "\\Tencent\\WXWork\\Applet"),
     File(appDataRoaming, """\Tencent\WXWork\WXDrive"""),
@@ -123,7 +123,7 @@ arrayOf(
 ).forEach {
     val files = it.listFiles()?.filter { it.isDirectory }
     files?.forEach { file ->
-        cleanChromeCache(file)
+        cleanChromiumCache(file)
     }
 }
 
@@ -182,15 +182,15 @@ arrayOf(
 
 // 飞书缓存清理
 File(appDataRoaming, "\\LarkShell\\iron\\users").listFiles { it.isDirectory }
-    ?.forEach { cleanChromeCache(File(it, "profile_main")) }
+    ?.forEach { cleanChromiumCache(File(it, "profile_main")) }
 
 val larkShellGlobal = File(appDataRoaming, "\\LarkShell\\aha\\users\\global")
-cleanChromeCache(File(larkShellGlobal, "profile_global"))
+cleanChromiumCache(File(larkShellGlobal, "profile_global"))
 File(appDataRoaming, "\\LarkShell\\aha\\users")
     .listFiles { _, name -> name != "global" }
     ?.forEach { it ->
-        cleanChromeCache(File(it, "profile_explorer"))
-        cleanChromeCache(File(it, "profile_main"))
+        cleanChromiumCache(File(it, "profile_explorer"))
+        cleanChromiumCache(File(it, "profile_main"))
     }
 File(appDataRoaming, "\\LarkShell\\PC_Gadget").listFiles()?.forEach {
     File(it, "app").listFiles { _, name -> name.startsWith("cli_") }.forEach { it ->
@@ -201,7 +201,7 @@ File(appDataRoaming, "\\LarkShell\\PC_Gadget").listFiles()?.forEach {
     }
 }
 
-private fun cleanChromeCache(dir: File) {
+private fun cleanChromiumCache(dir: File) {
     if (!dir.exists()) return
     println("clean Chrome cache: $dir")
     File(dir, "Cache").deleteRecursively()

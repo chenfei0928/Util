@@ -16,7 +16,7 @@ applyLibrary(appendBuildConfig = false)
 applyTest()
 applyKotlin(parcelize = true)
 withKotlinAndroidMavenPublication(
-    versionName = "1.3-SNAPSHOT",
+    versionName = "1.3",
     signed = true,
 )
 

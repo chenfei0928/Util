@@ -74,18 +74,18 @@ class MainActivity : ComponentActivity() {
         }
         binding.rvList.layoutManager = LinearLayoutManager(this)
         binding.rvList.adapter = MultiTypeAdapter().apply {
-            register(object : BaseBindingClickBinder<Intent, ItemMainListBinding>(
+            register(object : BaseBindingClickBinder<Pair<String, Intent>, ItemMainListBinding>(
                 ItemMainListBinding::inflate
             ) {
                 override fun onBindViewHolder(
-                    holder: ViewBindingHolder<Intent, ItemMainListBinding>,
-                    item: Intent
+                    holder: ViewBindingHolder<Pair<String, Intent>, ItemMainListBinding>,
+                    item: Pair<String, Intent>
                 ) {
-                    holder.viewBinding.root.text = item.toUri(0)
+                    holder.viewBinding.root.text = item.first
                 }
 
-                override fun onItemClick(item: Intent) {
-                    startActivity(item)
+                override fun onItemClick(item: Pair<String, Intent>) {
+                    startActivity(item.second)
                 }
             })
             items = arrayOf(
@@ -96,11 +96,14 @@ class MainActivity : ComponentActivity() {
                 "jsonLocalFileStorage" to JsonLocalFileStoragePreferenceFragment.StorageFragment::class.java,
                 "jsonLocalFileStorage0" to JsonLocalFileStoragePreferenceFragment.Storage0Fragment::class.java,
             ).map {
-                PreferenceActivity.newIntent(
+                it.first to PreferenceActivity.newIntent(
                     this@MainActivity, it.second, 7, Test.newBuilder().setInt(8).build()
                 )
             } + listOf(
-                Intent().setComponent(ComponentName("ccc71.at", "lib3c.ui.lib3c_pro_key"))
+                // miui会禁止一段时间未启动过的app自启动, 需要定期手动打开，否则3C工具箱ProKey失效
+                "3C工具箱ProKey" to Intent().setComponent(
+                    ComponentName("ccc71.at", "lib3c.ui.lib3c_pro_key")
+                )
             )
         }
         binding.btnPreload.setNoDoubleOnClickListener {
