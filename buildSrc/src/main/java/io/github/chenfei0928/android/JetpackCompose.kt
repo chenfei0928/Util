@@ -1,5 +1,10 @@
 package io.github.chenfei0928.android
 
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.BuildFeatures
+import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.DynamicFeatureExtension
+import com.android.build.api.dsl.LibraryExtension
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.Deps
 import io.github.chenfei0928.DepsAndroidx
@@ -14,7 +19,6 @@ import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginE
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradleSubplugin
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
-import kotlin.math.max
 
 /**
  * [Document](https://developer.android.com/develop/ui/compose/documentation)
@@ -27,21 +31,21 @@ fun Project.applyJetpackCompose(
 ) {
     apply<ComposeCompilerGradleSubplugin>()
 
+    fun BuildFeatures.apply() {
+        // Enables Jetpack Compose for this module
+        compose = true
+    }
+
     // https://developer.android.com/jetpack/compose/setup?hl=zh-cn
-    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
-        defaultConfig {
-            minSdk = max(minSdk ?: 0, 21)
+    when (val ext = buildSrcAndroid<CommonExtension>()) {
+        is ApplicationExtension -> ext.apply {
+            buildFeatures.apply()
         }
-
-        buildFeatures.apply {
-            // Enables Jetpack Compose for this module
-            compose = true
+        is LibraryExtension -> ext.apply {
+            buildFeatures.apply()
         }
-
-        // Set both the Java and Kotlin compilers to target Java 8.
-        compileOptions {
-            sourceCompatibility = Contract.JAVA_VERSION
-            targetCompatibility = Contract.JAVA_VERSION
+        is DynamicFeatureExtension -> ext.apply {
+            buildFeatures.apply()
         }
     }
 

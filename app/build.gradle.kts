@@ -14,7 +14,7 @@ applyApp()
 applyTest()
 applyKotlin(parcelize = true, json = true, protobuf = true)
 applyJetpackCompose()
-applyProtobuf(includeGrpc = true)
+//applyProtobuf(includeGrpc = true)
 
 android {
     namespace = "io.github.chenfei0928.demo"

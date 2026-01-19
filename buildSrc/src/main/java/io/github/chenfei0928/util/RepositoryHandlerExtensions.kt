@@ -4,6 +4,7 @@
  */
 package io.github.chenfei0928.util
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.BuildType
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.AppExtension
@@ -33,7 +34,7 @@ internal fun <Android : AndroidComponentsExtension<*, *, *>> Project.buildSrcAnd
 ): Unit = extensions.configure("androidComponents", configure)
 
 internal fun Project.checkApp(methodName: String) {
-    extensions.getByName("android") as? BaseAppModuleExtension
+    extensions.getByName("android") as? ApplicationExtension
         ?: throw IllegalStateException("$methodName 只能在 plugins android 下使用.")
 }
 

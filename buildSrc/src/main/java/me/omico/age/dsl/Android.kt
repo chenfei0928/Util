@@ -2,6 +2,7 @@
 
 package me.omico.age.dsl
 
+import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -30,11 +31,11 @@ fun Project.withBuildType(buildType: String, block: () -> Unit) {
 }
 
 fun Project.withAndroidSourcesJar() {
-    configure<BaseExtension> {
+    configure<CommonExtension> {
         tasks.create("androidSourcesJar", Jar::class) {
             archiveClassifier.set("sources")
             from(
-                sourceSets["main"].java.srcDirs,
+                sourceSets["main"].java.directories,
                 "src/main/kotlin",
             )
         }

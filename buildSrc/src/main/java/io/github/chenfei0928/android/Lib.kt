@@ -1,5 +1,6 @@
 package io.github.chenfei0928.android
 
+import com.android.build.api.dsl.LibraryExtension
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.util.buildSrcAndroid
 import org.gradle.api.Project
@@ -13,7 +14,7 @@ import org.gradle.api.Project
 fun Project.applyLibrary(appendBuildConfig: Boolean = true) {
     applyCommon(appendBuildConfig = appendBuildConfig)
 
-    buildSrcAndroid<com.android.build.gradle.LibraryExtension>().apply {
+    buildSrcAndroid<LibraryExtension>().apply {
         defaultConfig {
             minSdk = Contract.minSdkVersion
         }

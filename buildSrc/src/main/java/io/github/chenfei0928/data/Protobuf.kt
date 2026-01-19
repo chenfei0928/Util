@@ -1,5 +1,9 @@
 package io.github.chenfei0928.data
 
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.DynamicFeatureExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.google.protobuf.gradle.GenerateProtoTask
 import com.google.protobuf.gradle.ProtobufExtension
 import com.google.protobuf.gradle.ProtobufPlugin
@@ -43,10 +47,15 @@ private const val proguardRules = """
  * @date 2021-10-28 15:12
  */
 fun Project.applyProtobufDependencies(includeGrpc: Boolean = true) {
-    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
-        // 打包时排除proto接口的源代码
-        packagingOptions {
-            resources.excludes.add("**.proto")
+    when (val ext = buildSrcAndroid<CommonExtension>()) {
+        is ApplicationExtension -> {
+            ext.packaging.resources.excludes.add("**.proto")
+        }
+        is LibraryExtension -> {
+            ext.packaging.resources.excludes.add("**.proto")
+        }
+        is DynamicFeatureExtension -> {
+            ext.packaging.resources.excludes.add("**.proto")
         }
     }
 

@@ -2,7 +2,6 @@
 
 package me.omico.age.dsl
 
-import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
@@ -101,7 +100,7 @@ fun Project.withKotlinAndroidMavenPublication(
 ) {
     withAndroidSourcesJar()
     withAndroidLibrary {
-        configure<LibraryExtension> {
+        configure<com.android.build.api.dsl.LibraryExtension> {
             publishing {
                 singleVariant(componentName)
             }

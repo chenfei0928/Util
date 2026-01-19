@@ -1,5 +1,12 @@
 package io.github.chenfei0928.android
 
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.BuildType
+import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.CompileOptions
+import com.android.build.api.dsl.DefaultConfig
+import com.android.build.api.dsl.DynamicFeatureExtension
+import com.android.build.api.dsl.LibraryExtension
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debug
@@ -7,6 +14,7 @@ import io.github.chenfei0928.util.implementation
 import io.github.chenfei0928.util.prerelease
 import io.github.chenfei0928.util.qatest
 import io.github.chenfei0928.util.release
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 
@@ -17,72 +25,77 @@ import org.gradle.kotlin.dsl.dependencies
  * @date 2021-11-10 14:57
  */
 fun Project.applyCommon(appendBuildConfig: Boolean = true) {
-    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
-        compileSdkVersion(Contract.compileSdkVersion)
-
-        defaultConfig {
-            proguardFile("proguard-rules.pro")
-            // 添加文件夹下的混淆配置文件
-            fileTree(Contract.PROGUARD_FILES_DIR).forEach { file ->
-                if (file.path.endsWith(".pro")) {
-                    proguardFile(file)
-                }
-            }
-
-            consumerProguardFile("consumer-rules.pro")
-
-            // 添加文件夹下的混淆配置文件
-            fileTree(Contract.PROGUARD_FILES_DIR) {
-                include("*.pro")
-            }.forEach { file ->
-                consumerProguardFile(file)
+    fun DefaultConfig.applyProguardFiles() {
+        proguardFile("proguard-rules.pro")
+        // 添加文件夹下的混淆配置文件
+        fileTree(Contract.PROGUARD_FILES_DIR).forEach { file ->
+            if (file.path.endsWith(".pro")) {
+                proguardFile(file)
             }
         }
+    }
 
-        buildTypes {
-            fun com.android.build.api.dsl.BuildType.buildConfigFields(
-                thirdSdkEnable: Boolean, loggable: Boolean, toastFullNetApiErrorResp: Boolean
-            ) {
-                if (!appendBuildConfig) {
-                    return
-                }
-                buildConfigField("boolean", "thirdSdkEnable", "$thirdSdkEnable")
-                buildConfigField("boolean", "loggable", "$loggable")
-                buildConfigField("boolean", "toastFullNetApiErrorResp", "$toastFullNetApiErrorResp")
+    fun NamedDomainObjectContainer<out BuildType>.applyBuildTypes() {
+        fun BuildType.buildConfigFields(
+            thirdSdkEnable: Boolean, loggable: Boolean, toastFullNetApiErrorResp: Boolean
+        ) {
+            if (!appendBuildConfig) {
+                return
             }
-            release {
-                buildConfigFields(
-                    thirdSdkEnable = true,
-                    loggable = false,
-                    toastFullNetApiErrorResp = false,
-                )
-            }
-            prerelease {
-                buildConfigFields(
-                    thirdSdkEnable = true,
-                    loggable = true,
-                    toastFullNetApiErrorResp = true,
-                )
-            }
-            qatest {
-                buildConfigFields(
-                    thirdSdkEnable = true,
-                    loggable = true,
-                    toastFullNetApiErrorResp = true,
-                )
-            }
-            debug {
-                buildConfigFields(
-                    thirdSdkEnable = false,
-                    loggable = true,
-                    toastFullNetApiErrorResp = true,
-                )
-            }
+            buildConfigField("boolean", "thirdSdkEnable", "$thirdSdkEnable")
+            buildConfigField("boolean", "loggable", "$loggable")
+            buildConfigField("boolean", "toastFullNetApiErrorResp", "$toastFullNetApiErrorResp")
         }
+        release {
+            buildConfigFields(
+                thirdSdkEnable = true,
+                loggable = false,
+                toastFullNetApiErrorResp = false,
+            )
+        }
+        prerelease {
+            buildConfigFields(
+                thirdSdkEnable = true,
+                loggable = true,
+                toastFullNetApiErrorResp = true,
+            )
+        }
+        qatest {
+            buildConfigFields(
+                thirdSdkEnable = true,
+                loggable = true,
+                toastFullNetApiErrorResp = true,
+            )
+        }
+        debug {
+            buildConfigFields(
+                thirdSdkEnable = false,
+                loggable = true,
+                toastFullNetApiErrorResp = true,
+            )
+        }
+    }
 
-        compileOptions {
-            sourceCompatibility = Contract.JAVA_VERSION
-            targetCompatibility = Contract.JAVA_VERSION
+    fun CompileOptions.applyCompileOptions() {
+        sourceCompatibility = Contract.JAVA_VERSION
+        targetCompatibility = Contract.JAVA_VERSION
+    }
+
+    when (val ext = buildSrcAndroid<CommonExtension>()) {
+        is ApplicationExtension -> ext.apply {
+            defaultConfig.applyProguardFiles()
+            buildTypes.applyBuildTypes()
+            compileOptions.applyCompileOptions()
+        }
+        is LibraryExtension -> ext.apply {
+            defaultConfig.applyProguardFiles()
+            buildTypes.applyBuildTypes()
+            compileOptions.applyCompileOptions()
+        }
+        is DynamicFeatureExtension -> ext.apply {
+            defaultConfig.applyProguardFiles()
+            buildTypes.applyBuildTypes()
+            compileOptions.applyCompileOptions()
         }
     }
 

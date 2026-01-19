@@ -1,5 +1,11 @@
 package io.github.chenfei0928.compiler
 
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.DefaultConfig
+import com.android.build.api.dsl.DynamicFeatureExtension
+import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.Packaging
 import com.google.devtools.ksp.gradle.KspExtension
 import com.google.devtools.ksp.gradle.KspGradleSubplugin
 import io.github.chenfei0928.Contract
@@ -49,27 +55,39 @@ fun Project.applyKotlin(
         apply<SerializationGradleSubplugin>()
     }
 
-    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
-        defaultConfig {
-            if (Env.containsReleaseBuild) {
-                // Release编译时移除kotlin断言
-                proguardFile(
-                    writeTmpProguardFile("kotlinParameterChecker.pro", proguardFileContent)
-                )
-            }
+    fun DefaultConfig.apply() {
+        if (Env.containsReleaseBuild) {
+            // Release编译时移除kotlin断言
+            proguardFile(
+                writeTmpProguardFile("kotlinParameterChecker.pro", proguardFileContent)
+            )
         }
+    }
 
-        packagingOptions {
-            resources.excludes += "DebugProbesKt.bin"
-            // https://github.com/Kotlin/kotlinx.coroutines/tree/master/kotlinx-coroutines-debug#build-failures-due-to-duplicate-resource-files
-            // for JNA and JNA-platform
-            resources.excludes += "META-INF/AL2.0"
-            resources.excludes += "META-INF/LGPL2.1"
-            resources.excludes += "com/sun/jna/**"
-            // for byte-buddy
-            resources.excludes += "META-INF/licenses/ASM"
-            resources.excludes += "win32-x86-64/**"
-            resources.excludes += "win32-x86/**"
+    fun Packaging.apply() {
+        resources.excludes += "DebugProbesKt.bin"
+        // https://github.com/Kotlin/kotlinx.coroutines/tree/master/kotlinx-coroutines-debug#build-failures-due-to-duplicate-resource-files
+        // for JNA and JNA-platform
+        resources.excludes += "META-INF/AL2.0"
+        resources.excludes += "META-INF/LGPL2.1"
+        resources.excludes += "com/sun/jna/**"
+        // for byte-buddy
+        resources.excludes += "META-INF/licenses/ASM"
+        resources.excludes += "win32-x86-64/**"
+        resources.excludes += "win32-x86/**"
+    }
+    when (val ext = buildSrcAndroid<CommonExtension>()) {
+        is ApplicationExtension -> {
+            ext.defaultConfig.apply()
+            ext.packaging.apply()
+        }
+        is LibraryExtension -> {
+            ext.defaultConfig.apply()
+            ext.packaging.apply()
+        }
+        is DynamicFeatureExtension -> {
+            ext.defaultConfig.apply()
+            ext.packaging.apply()
         }
     }
 

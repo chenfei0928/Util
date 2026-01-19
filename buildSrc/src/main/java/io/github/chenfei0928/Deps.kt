@@ -180,7 +180,7 @@ object Deps {
         // protobuf 序列化框架
         object protobuf {
             // https://github.com/grpc/grpc-java
-            const val grpcVersion = "1.77.0"
+            const val grpcVersion = "1.78.0"
 
             // https://github.com/grpc/grpc-kotlin
             const val grpcKotlinVersion = "1.5.0"
@@ -188,7 +188,7 @@ object Deps {
             // https://github.com/protocolbuffers/protobuf
             // https://github.com/protocolbuffers/protobuf/blob/main/java/lite.md
             // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-javalite
-            const val protobufVersion = "4.33.2"
+            const val protobufVersion = "4.33.4"
 
             // https://github.com/protocolbuffers/protobuf/tree/master/java
             val java = "com.google.protobuf:protobuf-java:$protobufVersion"
