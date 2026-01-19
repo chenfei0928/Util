@@ -1,5 +1,6 @@
 package io.github.chenfei0928.webkit
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -146,6 +147,8 @@ var WebSettings.webAuthenticationSupportCompat: Int
         }
     }
 
+@get:SuppressLint("UnsafeOptInUsageError")
+@set:SuppressLint("UnsafeOptInUsageError")
 var WebSettings.speculativeLoadingStatus: Int
     get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.SPECULATIVE_LOADING)) {
         WebSettingsCompat.getSpeculativeLoadingStatus(this)
@@ -156,6 +159,8 @@ var WebSettings.speculativeLoadingStatus: Int
         }
     }
 
+@get:SuppressLint("UnsafeOptInUsageError")
+@set:SuppressLint("UnsafeOptInUsageError")
 var WebSettings.backForwardCacheEnabled: Boolean
     get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.BACK_FORWARD_CACHE)) {
         WebSettingsCompat.getBackForwardCacheEnabled(this)
@@ -208,10 +213,12 @@ var WebView.isAudioMuted: Boolean
         }
     }
 
-var WebView.webNavigationClient: WebNavigationClient?
+@get:SuppressLint("UnsafeOptInUsageError")
+@set:SuppressLint("UnsafeOptInUsageError")
+var WebView.webNavigationClient: WebNavigationClient
     get() = if (WebViewFeature.isFeatureSupported(WebViewFeature.NAVIGATION_CALLBACK_BASIC)) {
         WebViewCompat.getWebNavigationClient(this)
-    } else null
+    } else WebViewConfig.WEB_NAVIGATION_CLIENT
     set(value) {
         if (WebViewFeature.isFeatureSupported(WebViewFeature.NAVIGATION_CALLBACK_BASIC)) {
             WebViewCompat.setWebNavigationClient(this, value)

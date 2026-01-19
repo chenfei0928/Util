@@ -8,6 +8,8 @@ import android.webkit.WebView
 import androidx.annotation.IntRange
 import androidx.collection.ArrayMap
 import androidx.core.net.toUri
+import androidx.webkit.Navigation
+import androidx.webkit.Page
 import androidx.webkit.UserAgentMetadata
 import androidx.webkit.WebNavigationClient
 import androidx.webkit.WebSettingsCompat
@@ -538,6 +540,7 @@ open class WebViewConfig {
      *
      * 仅当 WebViewFeature.isFeatureSupported(String) 对 WebViewFeature.SPECULATIVE_LOADING 返回 true 时，才应调用此方法。
      */
+    @SuppressLint("UnsafeOptInUsageError")
     var speculativeLoadingStatus: Int = WebSettingsCompat.SPECULATIVE_LOADING_DISABLED
 
     /**
@@ -627,7 +630,8 @@ open class WebViewConfig {
      */
     var isAudioMuted: Boolean = false
 
-    var webNavigationClient: WebNavigationClient? = null
+    @SuppressLint("UnsafeOptInUsageError")
+    var webNavigationClient: WebNavigationClient = WEB_NAVIGATION_CLIENT
     //</editor-fold>
 
     companion object {
@@ -639,5 +643,16 @@ open class WebViewConfig {
             WebViewMediaIntegrityApiStatusConfig.Builder(
                 WebViewMediaIntegrityApiStatusConfig.WEBVIEW_MEDIA_INTEGRITY_API_ENABLED
             ).build()
+
+        @SuppressLint("UnsafeOptInUsageError")
+        val WEB_NAVIGATION_CLIENT = object : WebNavigationClient {
+            override fun onNavigationStarted(navigation: Navigation) {}
+            override fun onNavigationRedirected(navigation: Navigation) {}
+            override fun onNavigationCompleted(navigation: Navigation) {}
+            override fun onPageDeleted(page: Page) {}
+            override fun onPageLoadEventFired(page: Page) {}
+            override fun onPageDomContentLoadedEventFired(page: Page) {}
+            override fun onFirstContentfulPaint(page: Page) {}
+        }
     }
 }
