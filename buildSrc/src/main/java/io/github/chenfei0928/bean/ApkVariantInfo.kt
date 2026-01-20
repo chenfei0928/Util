@@ -2,6 +2,7 @@ package io.github.chenfei0928.bean
 
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.api.variant.VariantOutputConfiguration
+import io.github.chenfei0928.Contract
 import io.github.chenfei0928.util.replaceFirstCharToUppercase
 
 /**
@@ -32,7 +33,8 @@ data class ApkVariantInfo(
         apkVariant.flavorName ?: ""
     )
 
-    val assembleTaskName: String = "assemble${name.replaceFirstCharToUppercase()}"
+    val assembleTaskName: String =
+        "${Contract.ASSEMBLE_TASK_PREFIX}${name.replaceFirstCharToUppercase()}"
 
     companion object {
         private const val serialVersionUID = -4940583368468432371L
