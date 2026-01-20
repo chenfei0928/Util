@@ -23,6 +23,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.register
 import java.io.File
 import java.util.Locale
@@ -118,16 +119,18 @@ private fun Project.applyTinkerTask() {
                     }
                 }
 
-//                setPatchNewApkPath(
-//                    variantAndExtension.tinkerPatchExtension,
-//                    variantAndExtension.variantOutput!!.outputFile,
-//                    variantAndExtension.apkVariantInfo
-//                )
-//                setPatchOutputFolder(
-//                    variantAndExtension.tinkerPatchExtension,
-//                    variantAndExtension.applicationVariant.outputFile,
-//                    variantAndExtension.apkVariantInfo
-//                )
+                val assembleOutputs = tasks[variantAndExtension.apkVariantInfo.assembleTaskName]
+                    .outputs.files
+                setPatchNewApkPath(
+                    variantAndExtension.tinkerPatchExtension,
+                    assembleOutputs.singleFile,
+                    variantAndExtension.apkVariantInfo
+                )
+                setPatchOutputFolder(
+                    variantAndExtension.tinkerPatchExtension,
+                    assembleOutputs.singleFile,
+                    variantAndExtension.apkVariantInfo
+                )
                 // 要求该任务在标准Apk编译任务完成后进行执行
                 // 使自己的assembleSomeBuildTypeChannels task依赖其(assembleTask)，并在其编译后对输出文件注入渠道号
                 dependsOn(assembleTask)
