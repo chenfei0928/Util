@@ -53,7 +53,7 @@ internal fun Project.applyProguardMappingKeeping() {
     }
 
     // 资源id名与id值映射保持表（此映射表与 android.enableResourceOptimizations 无关）
-    buildSrcAndroidComponents<ApplicationAndroidComponentsExtension> {
+    buildSrcAndroidComponents<ApplicationAndroidComponentsExtension>().apply {
         onVariants { variant ->
             // 资源id固定，适用于aapt2
             // https://fucknmb.com/2017/11/15/aapt2%E9%80%82%E9%85%8D%E4%B9%8B%E8%B5%84%E6%BA%90id%E5%9B%BA%E5%AE%9A/

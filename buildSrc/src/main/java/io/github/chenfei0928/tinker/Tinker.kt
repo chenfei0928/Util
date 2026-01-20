@@ -1,5 +1,7 @@
 package io.github.chenfei0928.tinker
 
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.gradle.AppExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.tencent.tinker.build.apkparser.AndroidParser
 import com.tencent.tinker.build.gradle.extension.TinkerPatchExtension
@@ -39,7 +41,7 @@ fun Project.applyAppTinker() {
     applyTinkerTask()
 
     // tinkerSdk 所需混淆表
-    buildSrcAndroid<com.android.build.gradle.AppExtension>().apply {
+    buildSrcAndroid<ApplicationExtension>().apply {
         defaultConfig {
             proguardFiles(projectDir.child { Contract.mappingFileSaveDirName / "tinker_proguard.pro" })
             multiDexKeepProguard = projectDir.child {
@@ -67,9 +69,8 @@ private const val TINKER_PATCH_TASK_PREFIX = "tinkerPatch"
 private fun Project.applyTinkerTask() {
     applyTinkerPluginConfig(withPlugin = false)
 
+    val (outputsApkPath, buildTypeNames) = createEveryVariantTinkerPatchExtension()
     afterEvaluate {
-        val (outputsApkPath, buildTypeNames) = createEveryVariantTinkerPatchExtension()
-
         // 根据buildTypes创建属于该buildType的全flavor的Tinker补丁包生成任务，并在之后对该project的所有task遍历中将其添加到该task的依赖中
         val patchBuildTypesTask: Map<String, TaskProvider<Task>> =
             buildTypeNames.associateWith { buildType ->
@@ -116,16 +117,16 @@ private fun Project.applyTinkerTask() {
                     }
                 }
 
-                setPatchNewApkPath(
-                    variantAndExtension.tinkerPatchExtension,
-                    variantAndExtension.variantOutput!!.outputFile,
-                    variantAndExtension.apkVariantInfo
-                )
-                setPatchOutputFolder(
-                    variantAndExtension.tinkerPatchExtension,
-                    variantAndExtension.variantOutput.outputFile,
-                    variantAndExtension.apkVariantInfo
-                )
+//                setPatchNewApkPath(
+//                    variantAndExtension.tinkerPatchExtension,
+//                    variantAndExtension.variantOutput!!.outputFile,
+//                    variantAndExtension.apkVariantInfo
+//                )
+//                setPatchOutputFolder(
+//                    variantAndExtension.tinkerPatchExtension,
+//                    variantAndExtension.applicationVariant.outputFile,
+//                    variantAndExtension.apkVariantInfo
+//                )
                 // 要求该任务在标准Apk编译任务完成后进行执行
                 // 使自己的assembleSomeBuildTypeChannels task依赖其(assembleTask)，并在其编译后对输出文件注入渠道号
                 dependsOn(assembleTask)
@@ -167,11 +168,11 @@ internal fun TinkerPatchSchemaTask.setPatchOutputFolder(
     this.outputFolder = configuration.outputFolder.let { outputFolder ->
         if (!outputFolder.isNullOrEmpty()) {
             File(outputFolder).child {
-                TypedValue.PATH_DEFAULT_OUTPUT / variant.dirName
+                TypedValue.PATH_DEFAULT_OUTPUT / variant.name
             }
         } else {
             output.parentFile.parentFile.parentFile.child {
-                TypedValue.PATH_DEFAULT_OUTPUT / variant.dirName
+                TypedValue.PATH_DEFAULT_OUTPUT / variant.name
             }
         }
     }.absolutePath

@@ -1,11 +1,14 @@
 package io.github.chenfei0928.walle
 
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.google.common.io.Files
 import com.meituan.android.walle.GradlePlugin
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.bean.ApkVariantInfo
 import io.github.chenfei0928.util.buildOutputsDir
 import io.github.chenfei0928.util.buildSrcAndroid
+import io.github.chenfei0928.util.buildSrcAndroidComponents
 import io.github.chenfei0928.util.checkApp
 import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.forEachAssembleTasks
@@ -43,14 +46,15 @@ fun Project.applyAppWalle() {
 
     // 此时主build.gradle.kts还未执行完毕，等待project configure完毕后，根据生成的编译任务添加渠道信息注入task
     afterEvaluate {
-        val appExt = buildSrcAndroid<com.android.build.gradle.AppExtension>()
+        val appExt = buildSrcAndroidComponents<ApplicationAndroidComponentsExtension>()
         // 读取所有编译任务输出文件路径
-        val outputsApkPath: List<Pair<ApkVariantInfo, File>> =
-            appExt.applicationVariants.flatMap { variant ->
-                variant.outputs.map { ApkVariantInfo(variant) to it.outputFile }
-            }
+        val outputsApkPath: List<Pair<ApkVariantInfo, File>> = emptyList()
+//            appExt.applicationVariants.flatMap { variant ->
+//                variant.outputs.map { ApkVariantInfo(variant) to it.outputFile }
+//            }
         // 读取所有buildTypes
-        val buildTypeNames: List<String> = appExt.buildTypes.map { it.name }
+        val buildTypeNames: List<String> = emptyList()
+//            appExt.buildTypes.map { it.name }
 
         // 根据buildTypes创建属于该buildType的全flavor编译任务，并在之后对该project的所有task遍历中将其添加到该task的依赖中
         val buildTypesAllFlavorTask: Map<String, Task> = buildTypeNames.associateWith { buildType ->

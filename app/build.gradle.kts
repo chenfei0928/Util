@@ -4,7 +4,7 @@ import io.github.chenfei0928.android.applyApp
 import io.github.chenfei0928.android.applyJetpackCompose
 import io.github.chenfei0928.android.applyTest
 import io.github.chenfei0928.compiler.applyKotlin
-import io.github.chenfei0928.data.applyProtobuf
+import io.github.chenfei0928.tinker.applyAppTinker
 
 plugins {
     android
@@ -40,6 +40,8 @@ android {
         }
     }
 }
+
+applyAppTinker()
 
 dependencies {
     implementation(DepsAndroidx.appcompat)

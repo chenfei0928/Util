@@ -1,7 +1,8 @@
 package io.github.chenfei0928.bean
 
-import com.android.build.gradle.api.ApkVariant
-import com.android.builder.model.SigningConfig
+import com.android.build.api.variant.ApkOutputProviders
+import com.android.build.api.variant.ApplicationVariant
+import com.android.build.api.variant.VariantOutputConfiguration
 
 /**
  * @author ChenFei(chenfei0928@gmail.com)
@@ -10,23 +11,27 @@ import com.android.builder.model.SigningConfig
 data class ApkVariantInfo(
     val name: String,
     val buildTypeName: String,
-    val signingConfig: SigningConfig?,
-    val dirName: String,
+    val signingConfig: com.android.build.api.variant.SigningConfig,
+    val outputProviders: ApkOutputProviders,
     val versionName: String,
     val versionCode: Int,
     val applicationId: String,
     val flavorName: String
 ) : java.io.Serializable {
 
-    constructor(apkVariant: ApkVariant) : this(
+    constructor(apkVariant: ApplicationVariant) : this(
         apkVariant.name,
-        apkVariant.buildType.name,
+        apkVariant.buildType!!,
         apkVariant.signingConfig,
-        apkVariant.dirName,
-        apkVariant.versionName,
-        apkVariant.versionCode,
-        apkVariant.applicationId,
-        apkVariant.flavorName
+        apkVariant.outputProviders,
+        apkVariant.outputs.single {
+            it.outputType == VariantOutputConfiguration.OutputType.SINGLE
+        }.versionName.get(),
+        apkVariant.outputs.single {
+            it.outputType == VariantOutputConfiguration.OutputType.SINGLE
+        }.versionCode.get(),
+        apkVariant.applicationId.get(),
+        apkVariant.flavorName ?: ""
     )
 
     companion object {

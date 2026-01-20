@@ -44,7 +44,7 @@ fun Project.applyAppSoExclude() {
     }
 
     afterEvaluate {
-        val (tinkerPatchExtensionTriples, _) = createEveryVariantTinkerPatchExtension()
+        val (tinkerPatchExtensionTriples, buildTypes) = createEveryVariantTinkerPatchExtension()
 
         forEachAssembleTasks { assembleTask, taskInfo ->
             // 对当前的flavor+buildType的输出文件加渠道号
@@ -56,7 +56,7 @@ fun Project.applyAppSoExclude() {
             tasks.register("soExcludeTinker${upCaseName}Apk") {
                 dependsOn(assembleTask)
                 doLast {
-                    val newApk = variantTinkerPatchExtension.variantOutput!!.outputFile
+                    val newApk = File("")
                     val baseApk = reZipApkWithFilterEntry(newApk, soExcludeList, appExtension)
                     val signingConfig = appExtension.buildTypes
                         .getByName(taskInfo.buildType).signingConfig!!
@@ -64,7 +64,7 @@ fun Project.applyAppSoExclude() {
                     variantTinkerPatchExtension.tinkerPatchExtension.oldApk = baseApk.absolutePath
 
                     val tinkerId = putTinkerManifestPlaceholders.toList()
-                        .find { (key, _) -> taskInfo.isSameTo(key) }
+                        .find { (key, value) -> taskInfo.isSameTo(key) }
                         ?.second?.get() ?: "tinkerId"
 
                     val tinkerPatchSchema = TinkerPatchSchema(
@@ -75,11 +75,11 @@ fun Project.applyAppSoExclude() {
                         outputFolder = variantTinkerPatchExtension.tinkerPatchExtension.outputFolder.let { outputFolder ->
                             if (!outputFolder.isNullOrEmpty()) {
                                 File(outputFolder).child {
-                                    TypedValue.PATH_DEFAULT_OUTPUT / variantTinkerPatchExtension.apkVariantInfo.dirName
+                                    TypedValue.PATH_DEFAULT_OUTPUT / variantTinkerPatchExtension.apkVariantInfo.name
                                 }
                             } else {
                                 newApk.parentFile.parentFile.parentFile.child {
-                                    TypedValue.PATH_DEFAULT_OUTPUT / variantTinkerPatchExtension.apkVariantInfo.dirName
+                                    TypedValue.PATH_DEFAULT_OUTPUT / variantTinkerPatchExtension.apkVariantInfo.name
                                 }
                             }
                         }.absolutePath,
@@ -89,15 +89,15 @@ fun Project.applyAppSoExclude() {
                     tinkerPatchSchema.run()
                     File("${tinkerPatchSchema.outputFolder}/patch_unsigned.apk")
                         .copyTo(buildOutputsDir.child {
-                            variantTinkerPatchExtension.applicationVariant.dirName / "patch_${tinkerId}_unsigned.apk"
+                            variantTinkerPatchExtension.applicationVariant.name / "patch_${tinkerId}_unsigned.apk"
                         })
                     File("${tinkerPatchSchema.outputFolder}/patch_signed.apk")
                         .copyTo(buildOutputsDir.child {
-                            variantTinkerPatchExtension.applicationVariant.dirName / "patch_${tinkerId}_signed.apk"
+                            variantTinkerPatchExtension.applicationVariant.name / "patch_${tinkerId}_signed.apk"
                         })
                     File("${tinkerPatchSchema.outputFolder}/patch_signed_7zip.apk")
                         .copyTo(buildOutputsDir.child {
-                            variantTinkerPatchExtension.applicationVariant.dirName / "patch_${tinkerId}_signed_7zip.apk"
+                            variantTinkerPatchExtension.applicationVariant.name / "patch_${tinkerId}_signed_7zip.apk"
                         })
                 }
             }

@@ -7,11 +7,8 @@ package io.github.chenfei0928.util
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.BuildType
 import com.android.build.api.variant.AndroidComponentsExtension
-import com.android.build.gradle.AppExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.bean.TaskInfo
-import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -30,8 +27,7 @@ internal fun <Android : Any> Project.buildSrcAndroid(
  * @param configure
  */
 internal fun <Android : AndroidComponentsExtension<*, *, *>> Project.buildSrcAndroidComponents(
-    configure: Action<Android>
-): Unit = extensions.configure("androidComponents", configure)
+): Android = extensions.getByName("androidComponents") as Android
 
 internal fun Project.checkApp(methodName: String) {
     extensions.getByName("android") as? ApplicationExtension
@@ -103,13 +99,13 @@ internal fun <TaskType : Task> Project.forEachTasks(
     taskType: Class<TaskType>,
     block: (task: TaskType, taskInfo: TaskInfo) -> Unit,
 ) {
-    val appExtension = buildSrcAndroid<AppExtension>()
+    val appExtension = buildSrcAndroid<ApplicationExtension>()
     // 读取所有buildTypes
     val buildTypeNames by lazy {
         appExtension.buildTypes.map { it.name }
     }
     val flavorDimensions by lazy {
-        appExtension.flavorDimensionList.toList()
+        appExtension.flavorDimensions.toList()
     }
     val dimensionNameMap by lazy {
         val dimensionNameMap = flavorDimensions.associateWith { ArrayList<String>() }

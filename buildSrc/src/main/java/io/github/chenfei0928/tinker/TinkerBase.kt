@@ -4,11 +4,9 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.api.variant.VariantOutput
 import com.android.build.api.variant.VariantOutputConfiguration
-import com.android.build.gradle.api.BaseVariantOutput
 import com.tencent.tinker.build.gradle.extension.TinkerPatchExtension
 import io.github.chenfei0928.Env
 import io.github.chenfei0928.bean.ApkVariantInfo
-import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.buildSrcAndroidComponents
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
@@ -24,12 +22,17 @@ internal fun Project.createEveryVariantTinkerPatchExtension(): Pair<List<Variant
     val outputsApkPath = mutableListOf<VariantTinkerPatchExtension>()
     val buildTypeNames = mutableListOf<String>()
 
-    buildSrcAndroid<com.android.build.gradle.AppExtension>().apply {
-        // 读取所有编译任务输出文件路径
-        applicationVariants.forEach { applicationVariant ->
+    buildSrcAndroidComponents<ApplicationAndroidComponentsExtension>().apply {
+        onVariants { applicationVariant ->
+            // 没有作用，beforeVariants和onVariants注册的回调会在方法返回后才被执行，无法获取outputsApkPath和buildTypeNames
+            Env.logger.lifecycle("onVariants: $applicationVariant")
+
             applicationVariant as ExtensionAware
             val tinkerPatchExtension =
-                applicationVariant.createAndConfigTinkerPatchExtension(this@createEveryVariantTinkerPatchExtension)
+                applicationVariant.createAndConfigTinkerPatchExtension(
+                    this@createEveryVariantTinkerPatchExtension,
+                    true
+                )
             applicationVariant.outputs.mapTo(outputsApkPath) {
                 VariantTinkerPatchExtension(
                     applicationVariant,
@@ -38,19 +41,17 @@ internal fun Project.createEveryVariantTinkerPatchExtension(): Pair<List<Variant
                     ApkVariantInfo(applicationVariant),
                 )
             }
-        }
 
-        // 读取所有buildTypes
-        buildTypes.forEach {
-            buildTypeNames.add(it.name)
+            buildTypeNames.add(applicationVariant.buildType!!)
         }
     }
+    Env.logger.lifecycle("已为以下变体创建 tinkerPatchExtension: $outputsApkPath, $buildTypeNames")
     return Pair(outputsApkPath, buildTypeNames)
 }
 
 data class VariantTinkerPatchExtension(
-    val applicationVariant: com.android.build.gradle.api.ApplicationVariant,
-    val variantOutput: BaseVariantOutput?,
+    val applicationVariant: ApplicationVariant,
+    val variantOutput: VariantOutput,
     val tinkerPatchExtension: TinkerPatchExtension,
     val apkVariantInfo: ApkVariantInfo,
 )
@@ -58,7 +59,7 @@ data class VariantTinkerPatchExtension(
 internal fun Project.putTinkerManifestPlaceholders(): Map<ApplicationVariant, Provider<String>> {
     val out = HashMap<ApplicationVariant, Provider<String>>()
     // 生成 tinkerId 到 manifestPlaceholders
-    buildSrcAndroidComponents<ApplicationAndroidComponentsExtension> {
+    buildSrcAndroidComponents<ApplicationAndroidComponentsExtension>().apply {
         onVariants { variant ->
             val mainOutput: VariantOutput = variant.outputs.single {
                 it.outputType == VariantOutputConfiguration.OutputType.SINGLE
