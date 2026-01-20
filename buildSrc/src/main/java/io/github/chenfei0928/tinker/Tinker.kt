@@ -1,7 +1,6 @@
 package io.github.chenfei0928.tinker
 
 import com.android.build.api.dsl.ApplicationExtension
-import com.android.build.gradle.AppExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.tencent.tinker.build.apkparser.AndroidParser
 import com.tencent.tinker.build.gradle.extension.TinkerPatchExtension
@@ -10,6 +9,7 @@ import com.tencent.tinker.build.util.FileOperation
 import com.tencent.tinker.build.util.TypedValue
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.Deps
+import io.github.chenfei0928.Env
 import io.github.chenfei0928.bean.ApkVariantInfo
 import io.github.chenfei0928.compiler.applyProguardMappingKeeping
 import io.github.chenfei0928.util.buildSrcAndroid
@@ -71,6 +71,7 @@ private fun Project.applyTinkerTask() {
 
     val (outputsApkPath, buildTypeNames) = createEveryVariantTinkerPatchExtension()
     afterEvaluate {
+        Env.logger.lifecycle("开始为每个flavor+buildType生成Tinker补丁包任务 ${outputsApkPath}, $buildTypeNames")
         // 根据buildTypes创建属于该buildType的全flavor的Tinker补丁包生成任务，并在之后对该project的所有task遍历中将其添加到该task的依赖中
         val patchBuildTypesTask: Map<String, TaskProvider<Task>> =
             buildTypeNames.associateWith { buildType ->

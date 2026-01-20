@@ -15,6 +15,9 @@ import org.gradle.api.provider.Provider
 /**
  * 为每个编译变体创建 [TinkerPatchExtension]
  *
+ * 返回值在该方法返回后不是立即可用，需要等待 [ApplicationAndroidComponentsExtension.onVariants] 回调后才可用
+ * 可以在方法返回后注册 [Project.afterEvaluate] 中来使用该方法的返回值
+ *
  * @author chenf()
  * @date 2025-12-18 15:06
  */
@@ -23,16 +26,17 @@ internal fun Project.createEveryVariantTinkerPatchExtension(): Pair<List<Variant
     val buildTypeNames = mutableListOf<String>()
 
     buildSrcAndroidComponents<ApplicationAndroidComponentsExtension>().apply {
+        finalizeDsl {
+            buildTypeNames.addAll(it.buildTypes.map { it.name })
+        }
         onVariants { applicationVariant ->
-            // 没有作用，beforeVariants和onVariants注册的回调会在方法返回后才被执行，无法获取outputsApkPath和buildTypeNames
-            Env.logger.lifecycle("onVariants: $applicationVariant")
-
             applicationVariant as ExtensionAware
             val tinkerPatchExtension =
                 applicationVariant.createAndConfigTinkerPatchExtension(
                     this@createEveryVariantTinkerPatchExtension,
                     true
                 )
+            // beforeVariants和onVariants注册的回调会在方法返回后才被执行，无法获取outputsApkPath和buildTypeNames
             applicationVariant.outputs.mapTo(outputsApkPath) {
                 VariantTinkerPatchExtension(
                     applicationVariant,
@@ -41,11 +45,8 @@ internal fun Project.createEveryVariantTinkerPatchExtension(): Pair<List<Variant
                     ApkVariantInfo(applicationVariant),
                 )
             }
-
-            buildTypeNames.add(applicationVariant.buildType!!)
         }
     }
-    Env.logger.lifecycle("已为以下变体创建 tinkerPatchExtension: $outputsApkPath, $buildTypeNames")
     return Pair(outputsApkPath, buildTypeNames)
 }
 

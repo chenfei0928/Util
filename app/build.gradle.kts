@@ -4,7 +4,7 @@ import io.github.chenfei0928.android.applyApp
 import io.github.chenfei0928.android.applyJetpackCompose
 import io.github.chenfei0928.android.applyTest
 import io.github.chenfei0928.compiler.applyKotlin
-import io.github.chenfei0928.tinker.applyAppTinker
+import io.github.chenfei0928.walle.applyAppWalle
 
 plugins {
     android
@@ -12,6 +12,7 @@ plugins {
 
 applyApp()
 applyTest()
+applyAppWalle()
 applyKotlin(parcelize = true, json = true, protobuf = true)
 applyJetpackCompose()
 //applyProtobuf(includeGrpc = true)
@@ -39,9 +40,14 @@ android {
             )
         }
     }
-}
 
-applyAppTinker()
+    flavorDimensions += "flavor"
+    productFlavors {
+        create("common") {
+            dimension = "flavor"
+        }
+    }
+}
 
 dependencies {
     implementation(DepsAndroidx.appcompat)

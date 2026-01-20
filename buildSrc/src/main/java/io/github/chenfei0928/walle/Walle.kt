@@ -1,13 +1,13 @@
 package io.github.chenfei0928.walle
 
-import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.google.common.io.Files
 import com.meituan.android.walle.GradlePlugin
 import io.github.chenfei0928.Contract
+import io.github.chenfei0928.Env
 import io.github.chenfei0928.bean.ApkVariantInfo
+import io.github.chenfei0928.util.AbsProvider
 import io.github.chenfei0928.util.buildOutputsDir
-import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.buildSrcAndroidComponents
 import io.github.chenfei0928.util.checkApp
 import io.github.chenfei0928.util.child
@@ -15,8 +15,11 @@ import io.github.chenfei0928.util.forEachAssembleTasks
 import io.github.chenfei0928.util.implementation
 import io.github.chenfei0928.util.replaceFirstCharToUppercase
 import org.gradle.api.Project
-import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.get
 import org.joor.Reflect
 import java.io.File
 
@@ -44,21 +47,27 @@ fun Project.applyAppWalle() {
         implementation("com.meituan.android.walle:library:$walleVersion")
     }
 
+    // 读取所有编译任务输出文件路径
+    val outputsApkPath: MutableList<Pair<ApkVariantInfo, Provider<FileCollection>>> = ArrayList()
+    val appExt = buildSrcAndroidComponents<ApplicationAndroidComponentsExtension>()
+    // 读取所有buildTypes
+    val buildTypeNames = ArrayList<String>()
+    appExt.finalizeDsl {
+        buildTypeNames.addAll(it.buildTypes.map { it.name })
+    }
+    appExt.onVariants { variant ->
+        val variantInfo = ApkVariantInfo(variant)
+        outputsApkPath.add(variantInfo to AbsProvider.LazyProvider {
+            tasks[variantInfo.assembleTaskName].outputs.files
+        })
+    }
+
     // 此时主build.gradle.kts还未执行完毕，等待project configure完毕后，根据生成的编译任务添加渠道信息注入task
     afterEvaluate {
-        val appExt = buildSrcAndroidComponents<ApplicationAndroidComponentsExtension>()
-        // 读取所有编译任务输出文件路径
-        val outputsApkPath: List<Pair<ApkVariantInfo, File>> = emptyList()
-//            appExt.applicationVariants.flatMap { variant ->
-//                variant.outputs.map { ApkVariantInfo(variant) to it.outputFile }
-//            }
-        // 读取所有buildTypes
-        val buildTypeNames: List<String> = emptyList()
-//            appExt.buildTypes.map { it.name }
-
+        Env.logger.lifecycle("开始为每个buildType添加全flavor打包任务 $outputsApkPath $buildTypeNames")
         // 根据buildTypes创建属于该buildType的全flavor编译任务，并在之后对该project的所有task遍历中将其添加到该task的依赖中
-        val buildTypesAllFlavorTask: Map<String, Task> = buildTypeNames.associateWith { buildType ->
-            return@associateWith task(
+        val buildTypesAllFlavorTask = buildTypeNames.associateWith { buildType ->
+            return@associateWith tasks.register(
                 Contract.ASSEMBLE_TASK_PREFIX + buildType.replaceFirstCharToUppercase() + MAKE_CHANNEL_TASK_SUFFIX
             ) {
                 outputs.dir(buildOutputsDir.child {
@@ -73,17 +82,20 @@ fun Project.applyAppWalle() {
                         outputDir.mkdirs()
                     }
                     // 如果不只是general productFlavor，则说明是全渠道打包，将其它的productFlavors输出文件复制到最终输出目录
-                    outputsApkPath.forEach { (variant, apkFile) ->
+                    outputsApkPath.forEach { (variant, apkFileProvider) ->
                         if (variant.buildTypeName.equals(buildType, true)) {
+                            val apkFile = apkFileProvider.get()
                             val channels = File(
-                                apkFile.parentFile, ChannelMaker.CHANNELS_APK_OUTPUT_DIR_NAME
+                                apkFile.asPath, ChannelMaker.CHANNELS_APK_OUTPUT_DIR_NAME
                             )
                             if (channels.exists()) {
                                 channels.listFiles()?.forEach {
                                     Files.copy(it, File(outputDir, it.name))
                                 }
                             } else {
-                                Files.copy(apkFile, File(outputDir, apkFile.name))
+                                apkFile.files.forEach {
+                                    Files.copy(it, File(outputDir, it.name))
+                                }
                             }
                         }
                     }
@@ -104,16 +116,26 @@ fun Project.applyAppWalle() {
                     }
                     ?: throw IllegalArgumentException("没有找到 ${taskInfo.targetFlavorBuildTypeVariantName} 输出apk文件")
 
-                val channelOutputFolder =
-                    File(targetFlavorBuildTypeApkFile.parentFile, CHANNELS_APK_OUTPUT_DIR_NAME)
 
                 // 某个productFlavor-buildType的渠道包任务
-                val assembleSomeBuildTypeChannels: Task =
-                    task(assembleTask.name + MAKE_CHANNEL_TASK_SUFFIX) {
+                val assembleSomeBuildTypeChannels: TaskProvider<*> =
+                    tasks.register(assembleTask.name + MAKE_CHANNEL_TASK_SUFFIX) {
                         inputs.file(channelFile)
-                        outputs.dir(channelOutputFolder)
+                        outputs.dir(
+                            File(
+                                targetFlavorBuildTypeApkFile.get().asPath,
+                                CHANNELS_APK_OUTPUT_DIR_NAME
+                            )
+                        )
                         description = "Make Multi-Channel by Meituan Walle"
                         group = "Channel"
+                        Env.logger.lifecycle("为${taskInfo}添加渠道号注入任务 ${outputs.files.singleFile.path}")
+
+                        // 要求该任务在标准Apk编译任务完成后进行执行
+                        // 使自己的assembleSomeBuildTypeChannels task依赖其(assembleTask)，并在其编译后对输出文件注入渠道号
+                        dependsOn(assembleTask)
+                        // 只有渠道信息文件存在，该task才可用
+                        onlyIf { channelFile.exists() }
 
                         doLast {
                             // 收集包信息
@@ -134,7 +156,7 @@ fun Project.applyAppWalle() {
                             // 读取渠道号，并生成签名后的apk包
                             ChannelMaker.getChannelListFromFile(channelFile).forEach {
                                 ChannelMaker.generateChannelApk(
-                                    apkFile = targetFlavorBuildTypeApkFile,
+                                    apkFile = targetFlavorBuildTypeApkFile.get().singleFile,
                                     channelOutputFolder = outputDir,
                                     nameVariantMap = nameVariantMap,
                                     channel = it
@@ -142,17 +164,10 @@ fun Project.applyAppWalle() {
                             }
                         }
                     }
-                // 要求该任务在标准Apk编译任务完成后进行执行
-                // 使自己的assembleSomeBuildTypeChannels task依赖其(assembleTask)，并在其编译后对输出文件注入渠道号
-                assembleSomeBuildTypeChannels.dependsOn(assembleTask)
-                // 只有渠道信息文件存在，该task才可用
-                assembleSomeBuildTypeChannels.onlyIf {
-                    channelFile.exists()
-                }
                 // 将该注入渠道名任务依赖到对应buildType的全渠道Task中
-                buildTypesAllFlavorTask[taskInfo.buildType]!!.dependsOn(
-                    assembleSomeBuildTypeChannels
-                )
+                buildTypesAllFlavorTask[taskInfo.buildType]?.configure {
+                    dependsOn(assembleSomeBuildTypeChannels)
+                }
             }
         }
     }

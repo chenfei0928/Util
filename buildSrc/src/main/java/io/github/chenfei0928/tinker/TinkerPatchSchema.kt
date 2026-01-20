@@ -1,7 +1,7 @@
 package io.github.chenfei0928.tinker
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.SigningConfig
-import com.android.build.gradle.AppExtension
 import com.tencent.tinker.build.gradle.extension.TinkerPatchExtension
 import com.tencent.tinker.build.patch.InputParam
 import com.tencent.tinker.build.patch.Runner
@@ -20,7 +20,7 @@ class TinkerPatchSchema(
     val buildApkPath: String,
     val signConfig: SigningConfig,
     val outputFolder: String,
-    val android: AppExtension,
+    val android: ApplicationExtension,
 ) {
 
     fun run() {
