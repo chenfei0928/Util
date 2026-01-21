@@ -11,6 +11,10 @@ tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
 
 @Suppress("kotlin:S6624")
 dependencies {
+    implementation(fileTree("libs") {
+        include("*.jar")
+    })
+
     // https://github.com/JetBrains/kotlin
     val kotlinVersion = "2.3.0"
     // AndroidGradlePlugin版本，建议与IDE版本同步
@@ -104,6 +108,26 @@ dependencies {
 
     // https://github.com/bintray/gradle-bintray-plugin
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
+    // https://github.com/didi/booster
+    implementation("com.didiglobal.booster:booster-gradle-plugin:5.1.0")
+    // https://github.com/RavenLiao/AnalyzeSoGradlePlugin/blob/master/README_zh.md
+    implementation("io.github.ravenliao.analyze-so:gradle-plugin:0.0.7")
+    // https://github.com/Kotlin/dokka
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:2.1.0")
+
+//    // 测试框架
+//    // https://plugins.gradle.org/plugin/org.sonarqube
+//    implementation("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:4.3.0.3225")
+//    // https://docs.gradle.org/current/userguide/jacoco_plugin.html
+//    // https://github.com/jacoco/jacoco
+//    // https://medium.com/nerd-for-tech/setup-jacoco-code-coverage-with-your-multimodule-android-app-kotlin-a0f82573a1
+//    implementation("org.jacoco:org.jacoco.core:0.8.10")
+//    // https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin
+//    implementation("org.jacoco:jacoco-maven-plugin:0.8.10")
+//    implementation("org.apache.maven.reporting:maven-reporting-api:3.1.0")
+//    // https://github.com/detekt/detekt
+//    // https://plugins.gradle.org/plugin/io.gitlab.arturbosch.detekt
+//    implementation("io.gitlab.arturbosch.detekt:io.gitlab.arturbosch.detekt.gradle.plugin:1.23.8")
 }
 
 repositories {
