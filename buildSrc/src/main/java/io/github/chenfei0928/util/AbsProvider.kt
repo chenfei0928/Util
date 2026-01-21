@@ -33,5 +33,7 @@ abstract class AbsProvider<T : Any> : Provider<T> {
 
     class LazyProvider<T : Any>(value: () -> T) : AbsProvider<T>() {
         override val value: T by lazy(value)
+
+        override fun toString() = "LazyProvider($value)"
     }
 }

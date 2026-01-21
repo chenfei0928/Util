@@ -13,4 +13,6 @@ class ExistTaskProvider<T : Task>(
 ) : TaskProvider<T>, AbsProvider<T>() {
     override fun configure(action: Action<in T>) = action.execute(value)
     override fun getName(): String = value.name
+
+    override fun toString(): String = value.toString()
 }
