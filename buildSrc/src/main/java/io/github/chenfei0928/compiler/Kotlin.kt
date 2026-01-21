@@ -1,11 +1,6 @@
 package io.github.chenfei0928.compiler
 
-import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.api.dsl.DefaultConfig
-import com.android.build.api.dsl.DynamicFeatureExtension
-import com.android.build.api.dsl.LibraryExtension
-import com.android.build.api.dsl.Packaging
 import com.google.devtools.ksp.gradle.KspExtension
 import com.google.devtools.ksp.gradle.KspGradleSubplugin
 import io.github.chenfei0928.Contract
@@ -13,7 +8,9 @@ import io.github.chenfei0928.Deps
 import io.github.chenfei0928.Env
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debugImplementation
+import io.github.chenfei0928.util.defaultConfig
 import io.github.chenfei0928.util.implementation
+import io.github.chenfei0928.util.packaging
 import io.github.chenfei0928.util.writeTmpProguardFile
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
@@ -55,39 +52,27 @@ fun Project.applyKotlin(
         apply<SerializationGradleSubplugin>()
     }
 
-    fun DefaultConfig.apply() {
-        if (Env.containsReleaseBuild) {
-            // Release编译时移除kotlin断言
-            proguardFile(
-                writeTmpProguardFile("kotlinParameterChecker.pro", proguardFileContent)
-            )
+    buildSrcAndroid<CommonExtension>().apply {
+        defaultConfig {
+            if (Env.containsReleaseBuild) {
+                // Release编译时移除kotlin断言
+                proguardFile(
+                    writeTmpProguardFile("kotlinParameterChecker.pro", proguardFileContent)
+                )
+            }
         }
-    }
 
-    fun Packaging.apply() {
-        resources.excludes += "DebugProbesKt.bin"
-        // https://github.com/Kotlin/kotlinx.coroutines/tree/master/kotlinx-coroutines-debug#build-failures-due-to-duplicate-resource-files
-        // for JNA and JNA-platform
-        resources.excludes += "META-INF/AL2.0"
-        resources.excludes += "META-INF/LGPL2.1"
-        resources.excludes += "com/sun/jna/**"
-        // for byte-buddy
-        resources.excludes += "META-INF/licenses/ASM"
-        resources.excludes += "win32-x86-64/**"
-        resources.excludes += "win32-x86/**"
-    }
-    when (val ext = buildSrcAndroid<CommonExtension>()) {
-        is ApplicationExtension -> {
-            ext.defaultConfig.apply()
-            ext.packaging.apply()
-        }
-        is LibraryExtension -> {
-            ext.defaultConfig.apply()
-            ext.packaging.apply()
-        }
-        is DynamicFeatureExtension -> {
-            ext.defaultConfig.apply()
-            ext.packaging.apply()
+        packaging {
+            resources.excludes += "DebugProbesKt.bin"
+            // https://github.com/Kotlin/kotlinx.coroutines/tree/master/kotlinx-coroutines-debug#build-failures-due-to-duplicate-resource-files
+            // for JNA and JNA-platform
+            resources.excludes += "META-INF/AL2.0"
+            resources.excludes += "META-INF/LGPL2.1"
+            resources.excludes += "com/sun/jna/**"
+            // for byte-buddy
+            resources.excludes += "META-INF/licenses/ASM"
+            resources.excludes += "win32-x86-64/**"
+            resources.excludes += "win32-x86/**"
         }
     }
 
