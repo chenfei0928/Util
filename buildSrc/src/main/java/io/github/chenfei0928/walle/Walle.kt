@@ -104,11 +104,9 @@ fun Project.applyAppWalle() {
                 }
                 // 对当前的flavor+buildType的输出文件加渠道号
                 val variant = outputsApkPath
-                    .find { (variant, _) ->
-                        variant.name == taskInfo.targetFlavorBuildTypeVariantName
-                    }
+                    .find { variant -> variant.name == taskInfo.targetFlavorBuildTypeVariantName }
                     ?: throw IllegalArgumentException(
-                        "not found ${taskInfo.targetFlavorBuildTypeVariantName} output apk file"
+                        "not found ${taskInfo.targetFlavorBuildTypeVariantName} output apk file in $outputsApkPath"
                     )
 
                 // 某个productFlavor-buildType的渠道包任务

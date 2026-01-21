@@ -39,10 +39,8 @@ data class ApkVariantInfo(
     )
 
     val assembleApkTasks = arrayOf(
-        AbsProvider.LazyProvider {
-            project.tasks["${Contract.ASSEMBLE_TASK_PREFIX}${name.replaceFirstCharToUppercase()}"]
-        },
-        AbsProvider.LazyProvider { project.tasks["package${name.replaceFirstCharToUppercase()}"] },
+        "${Contract.ASSEMBLE_TASK_PREFIX}${name.replaceFirstCharToUppercase()}",
+        "package${name.replaceFirstCharToUppercase()}",
     )
 
     // apk 文件生成已经由 assembleXxx 改为 packageXxx
