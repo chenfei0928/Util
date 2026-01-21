@@ -71,7 +71,10 @@ dependencies {
     implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.6")
     // 美团打包工具
     // https://github.com/Meituan-Dianping/walle
-    implementation("com.meituan.android.walle:plugin:1.1.7")
+    // https://github.com/Petterpx/walle
+    implementation("com.github.Petterpx.walle:plugin:1.0.5")
+    implementation("com.github.Petterpx.walle:payload_writer:1.0.5")
+//    implementation("com.meituan.android.walle:plugin:1.1.7")
     // https://github.com/google/guava
     implementation("com.google.guava:guava:33.5.0-jre")
     // https://github.com/didi/booster
@@ -111,6 +114,9 @@ repositories {
     maven("https://maven.aliyun.com/repository/gradle-plugin") {
         name = "aliMirrors-gradlePlugin"
     }
+    maven("https://maven.aliyun.com/repository/jcenter") {
+        name = "aliMirrors-jcenter"
+    }
     maven("https://maven.aliyun.com/repository/google") {
         name = "aliMirrors-google"
     }
@@ -127,6 +133,11 @@ repositories {
     // OPTIONAL If you want to use SNAPSHOT version, sonatype repository is required.
     maven("https://oss.sonatype.org/content/repositories/public") {
         name = "sonatype"
+    }
+    // 腾讯云镜像
+    // https://cloud.tencent.com/document/product/213/8623
+    maven("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/") {
+        name = "qCloudMirrors"
     }
     exclusiveContent {
         forRepository {

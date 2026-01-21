@@ -42,7 +42,7 @@ internal fun Project.createEveryVariantTinkerPatchExtension(): Pair<List<Variant
                     applicationVariant,
                     it,
                     tinkerPatchExtension,
-                    ApkVariantInfo(applicationVariant),
+                    ApkVariantInfo(this@createEveryVariantTinkerPatchExtension, applicationVariant),
                 )
             }
         }

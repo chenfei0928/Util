@@ -37,6 +37,7 @@ fun Project.applyApp() {
         defaultConfig {
             minSdk = Contract.minSdkVersion
             targetSdk = Contract.targetSdkVersion
+            compileSdk = Contract.compileSdkVersion
 
             versionCode = Env.vcsVersionCode
 

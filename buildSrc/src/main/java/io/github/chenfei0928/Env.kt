@@ -33,7 +33,7 @@ object Env {
             }
         // 创建impl
         impl = EnvImpl(containsReleaseBuild, protobufType)
-        logger.lifecycle("Env环境初始化：$containsReleaseBuild, ${Instant.now()}")
+        logger.lifecycle("Env init：$containsReleaseBuild, ${Instant.now()}")
         Thread(impl).start()
     }
 

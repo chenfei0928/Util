@@ -1,7 +1,6 @@
 package io.github.chenfei0928.walle
 
 import com.google.common.io.Files
-import com.meituan.android.walle.ChannelWriter
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -58,7 +57,7 @@ internal object ChannelMaker {
 
         val channelApkFile = File(channelOutputFolder, apkFileName)
         org.apache.commons.io.FileUtils.copyFile(apkFile, channelApkFile)
-        ChannelWriter.put(channelApkFile, channel, extraInfo)
+        com.meituan.android.walle.ChannelWriter.put(channelApkFile, channel, extraInfo)
 
         nameVariantMap["buildTime"] = buildTime
         nameVariantMap["channel"] = channelName

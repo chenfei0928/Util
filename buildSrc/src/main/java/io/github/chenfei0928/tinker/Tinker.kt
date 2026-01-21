@@ -23,7 +23,6 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.register
 import java.io.File
 import java.util.Locale
@@ -72,7 +71,7 @@ private fun Project.applyTinkerTask() {
 
     val (outputsApkPath, buildTypeNames) = createEveryVariantTinkerPatchExtension()
     afterEvaluate {
-        Env.logger.lifecycle("开始为每个flavor+buildType生成Tinker补丁包任务 ${outputsApkPath}, $buildTypeNames")
+        Env.logger.lifecycle("Generate Tinker patch task for every variants: ${outputsApkPath}, $buildTypeNames")
         // 根据buildTypes创建属于该buildType的全flavor的Tinker补丁包生成任务，并在之后对该project的所有task遍历中将其添加到该task的依赖中
         val patchBuildTypesTask: Map<String, TaskProvider<Task>> =
             buildTypeNames.associateWith { buildType ->
@@ -119,21 +118,21 @@ private fun Project.applyTinkerTask() {
                     }
                 }
 
-                val assembleOutputs = tasks[variantAndExtension.apkVariantInfo.assembleTaskName]
-                    .outputs.files
+                val apkFile = variantAndExtension.apkVariantInfo.apkFileProvider.get()
                 setPatchNewApkPath(
                     variantAndExtension.tinkerPatchExtension,
-                    assembleOutputs.singleFile,
+                    apkFile,
                     variantAndExtension.apkVariantInfo
                 )
                 setPatchOutputFolder(
                     variantAndExtension.tinkerPatchExtension,
-                    assembleOutputs.singleFile,
+                    apkFile,
                     variantAndExtension.apkVariantInfo
                 )
                 // 要求该任务在标准Apk编译任务完成后进行执行
                 // 使自己的assembleSomeBuildTypeChannels task依赖其(assembleTask)，并在其编译后对输出文件注入渠道号
                 dependsOn(assembleTask)
+                dependsOn(*variantAndExtension.apkVariantInfo.assembleApkTasks)
                 // 只有基线包存在，该task才可用
                 onlyIf { baselineApkFile.exists() }
             }

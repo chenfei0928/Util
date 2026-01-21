@@ -15,11 +15,8 @@ import io.github.chenfei0928.util.forEachAssembleTasks
 import io.github.chenfei0928.util.implementation
 import io.github.chenfei0928.util.replaceFirstCharToUppercase
 import org.gradle.api.Project
-import org.gradle.api.file.FileCollection
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.get
 import org.joor.Reflect
 import java.io.File
 
@@ -37,18 +34,19 @@ fun Project.applyAppWalle() {
     checkApp("applyAppWalle")
 
     val walleVersion: String = Reflect.onClass(GradlePlugin::class.java)
-        .call("getVersion").get()
+        .call("getVersion").get() ?: "1.0.5"
 
     // 自处理打渠道号流程，不使用Plugin处理，以避免引入了其他Plugin后无法共存
     // 也不使用CLI，减少打包流程人工操作的量或额外编写打包后处理脚本
     // 美团官方维护的版本不支持V3签名，使用的版本为：https://github.com/Meituan-Dianping/walle/issues/264
     dependencies {
         // https://github.com/Meituan-Dianping/walle
-        implementation("com.meituan.android.walle:library:$walleVersion")
+        implementation("com.github.Petterpx.walle:library:$walleVersion")
+//        implementation("com.meituan.android.walle:library:$walleVersion")
     }
 
     // 读取所有编译任务输出文件路径
-    val outputsApkPath: MutableList<Pair<ApkVariantInfo, Provider<FileCollection>>> = ArrayList()
+    val outputsApkPath: MutableList<ApkVariantInfo> = ArrayList()
     val appExt = buildSrcAndroidComponents<ApplicationAndroidComponentsExtension>()
     // 读取所有buildTypes
     val buildTypeNames = ArrayList<String>()
@@ -56,15 +54,12 @@ fun Project.applyAppWalle() {
         buildTypeNames.addAll(it.buildTypes.map { it.name })
     }
     appExt.onVariants { variant ->
-        val variantInfo = ApkVariantInfo(variant)
-        outputsApkPath.add(variantInfo to AbsProvider.LazyProvider {
-            tasks[variantInfo.assembleTaskName].outputs.files
-        })
+        outputsApkPath.add(ApkVariantInfo(this, variant))
     }
 
     // 此时主build.gradle.kts还未执行完毕，等待project configure完毕后，根据生成的编译任务添加渠道信息注入task
     afterEvaluate {
-        Env.logger.lifecycle("开始为每个buildType添加全flavor打包任务 $outputsApkPath $buildTypeNames")
+        Env.logger.lifecycle("Generate Walle package task for every variants: $outputsApkPath $buildTypeNames")
         // 根据buildTypes创建属于该buildType的全flavor编译任务，并在之后对该project的所有task遍历中将其添加到该task的依赖中
         val buildTypesAllFlavorTask = buildTypeNames.associateWith { buildType ->
             return@associateWith tasks.register(
@@ -82,20 +77,18 @@ fun Project.applyAppWalle() {
                         outputDir.mkdirs()
                     }
                     // 如果不只是general productFlavor，则说明是全渠道打包，将其它的productFlavors输出文件复制到最终输出目录
-                    outputsApkPath.forEach { (variant, apkFileProvider) ->
+                    outputsApkPath.forEach { variant ->
                         if (variant.buildTypeName.equals(buildType, true)) {
-                            val apkFile = apkFileProvider.get()
+                            val apkFile = variant.apkFileProvider.get()
                             val channels = File(
-                                apkFile.asPath, ChannelMaker.CHANNELS_APK_OUTPUT_DIR_NAME
+                                apkFile, ChannelMaker.CHANNELS_APK_OUTPUT_DIR_NAME
                             )
                             if (channels.exists()) {
                                 channels.listFiles()?.forEach {
                                     Files.copy(it, File(outputDir, it.name))
                                 }
                             } else {
-                                apkFile.files.forEach {
-                                    Files.copy(it, File(outputDir, it.name))
-                                }
+                                Files.copy(apkFile, File(outputDir, apkFile.name))
                             }
                         }
                     }
@@ -105,35 +98,36 @@ fun Project.applyAppWalle() {
 
         forEachAssembleTasks { assembleTask, taskInfo ->
             if (taskInfo.dimensionedFlavorName.isNotEmpty()) {
-                // 当前dimensionedFlavorName的渠道信息文件
+                // 当前dimensionedFlavorName的渠道信息文件，保存在 [app]/channels/[flavorName] 文件中
                 val channelFile: File = project.projectDir.child {
                     CHANNELS_PROFILE_DIR / taskInfo.dimensionedFlavorName
                 }
                 // 对当前的flavor+buildType的输出文件加渠道号
-                val (variant, targetFlavorBuildTypeApkFile) = outputsApkPath
+                val variant = outputsApkPath
                     .find { (variant, _) ->
                         variant.name == taskInfo.targetFlavorBuildTypeVariantName
                     }
-                    ?: throw IllegalArgumentException("没有找到 ${taskInfo.targetFlavorBuildTypeVariantName} 输出apk文件")
-
+                    ?: throw IllegalArgumentException(
+                        "not found ${taskInfo.targetFlavorBuildTypeVariantName} output apk file"
+                    )
 
                 // 某个productFlavor-buildType的渠道包任务
                 val assembleSomeBuildTypeChannels: TaskProvider<*> =
                     tasks.register(assembleTask.name + MAKE_CHANNEL_TASK_SUFFIX) {
                         inputs.file(channelFile)
-                        outputs.dir(
+                        outputs.dir(AbsProvider.LazyProvider {
                             File(
-                                targetFlavorBuildTypeApkFile.get().asPath,
+                                variant.apkFileProvider.get().parentFile,
                                 CHANNELS_APK_OUTPUT_DIR_NAME
                             )
-                        )
+                        })
                         description = "Make Multi-Channel by Meituan Walle"
                         group = "Channel"
-                        Env.logger.lifecycle("为${taskInfo}添加渠道号注入任务 ${outputs.files.singleFile.path}")
 
                         // 要求该任务在标准Apk编译任务完成后进行执行
                         // 使自己的assembleSomeBuildTypeChannels task依赖其(assembleTask)，并在其编译后对输出文件注入渠道号
                         dependsOn(assembleTask)
+                        dependsOn(*variant.assembleApkTasks)
                         // 只有渠道信息文件存在，该task才可用
                         onlyIf { channelFile.exists() }
 
@@ -146,8 +140,10 @@ fun Project.applyAppWalle() {
                                 "versionName" to variant.versionName,
                                 "versionCode" to variant.versionCode.toString(),
                                 "packageName" to variant.applicationId,
-                                "flavorName" to variant.flavorName
+                                "flavorName" to variant.flavorName,
                             )
+                            val apkFile = variant.apkFileProvider.get()
+                            Env.logger.lifecycle("Inject channels for ${taskInfo}: $apkFile")
                             val outputDir: File = outputs.files.singleFile
                             if (!outputDir.exists()) {
                                 outputDir.mkdirs()
@@ -156,10 +152,10 @@ fun Project.applyAppWalle() {
                             // 读取渠道号，并生成签名后的apk包
                             ChannelMaker.getChannelListFromFile(channelFile).forEach {
                                 ChannelMaker.generateChannelApk(
-                                    apkFile = targetFlavorBuildTypeApkFile.get().singleFile,
+                                    apkFile = apkFile,
                                     channelOutputFolder = outputDir,
                                     nameVariantMap = nameVariantMap,
-                                    channel = it
+                                    channel = it,
                                 )
                             }
                         }
