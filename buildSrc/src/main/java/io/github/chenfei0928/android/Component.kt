@@ -1,5 +1,6 @@
 package io.github.chenfei0928.android
 
+import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.internal.plugins.AppPlugin
 import com.android.build.gradle.internal.plugins.LibraryPlugin
 import io.github.chenfei0928.DepsAndroidx
@@ -19,19 +20,9 @@ fun Project.applyComponent() {
         applyLibrary()
     }
 
-    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
+    buildSrcAndroid<CommonExtension>().apply {
         buildFeatures.run {
             viewBinding = true
-        }
-
-        aaptOptions {
-            // 禁用cruncher, 以加速编译
-            cruncherEnabled = false
-        }
-
-        compileOptions {
-            // 开启增量编译
-            incremental = true
         }
     }
 

@@ -14,7 +14,10 @@ import io.github.chenfei0928.compiler.hasKotlin
 import io.github.chenfei0928.util.api
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.compileOnly
+import io.github.chenfei0928.util.defaultConfig
 import io.github.chenfei0928.util.implementation
+import io.github.chenfei0928.util.packaging
+import io.github.chenfei0928.util.sourceSets
 import io.github.chenfei0928.util.writeTmpProguardFile
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -112,15 +115,14 @@ fun Project.applyProtobuf(includeGrpc: Boolean = false, useKotlinExt: Boolean = 
     if (Env.protobufType.includeProguardRule) {
         val proguardFile = writeTmpProguardFile(proguardFileName, proguardRules)
 
-        buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
+        buildSrcAndroid<CommonExtension>().apply {
             defaultConfig {
                 proguardFile(proguardFile)
-                consumerProguardFile(proguardFile)
             }
         }
     }
 
-    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
+    buildSrcAndroid<CommonExtension>().apply {
         sourceSets {
             named("main") {
                 proto {
@@ -130,7 +132,7 @@ fun Project.applyProtobuf(includeGrpc: Boolean = false, useKotlinExt: Boolean = 
         }
 
         // 打包时排除proto接口的源代码
-        packagingOptions {
+        packaging {
             resources.excludes.add("**.proto")
         }
     }

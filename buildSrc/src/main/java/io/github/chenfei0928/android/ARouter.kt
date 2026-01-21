@@ -1,6 +1,7 @@
 package io.github.chenfei0928.android
 
 import com.alibaba.android.arouter.register.launch.PluginLaunch
+import com.android.build.api.dsl.ApplicationExtension
 import io.github.chenfei0928.Deps
 import io.github.chenfei0928.compiler.applyKotlin
 import io.github.chenfei0928.compiler.buildSrcKapt
@@ -26,7 +27,7 @@ fun Project.applyARouter() {
         apply<PluginLaunch>()
     }
 
-    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
+    buildSrcAndroid<ApplicationExtension>().apply {
         defaultConfig {
             proguardFile(writeTmpProguardFile("aRouter.pro", proguardContent))
 

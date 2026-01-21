@@ -1,9 +1,12 @@
 package io.github.chenfei0928.android
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.gradle.AppExtension
 import io.github.chenfei0928.Env
+import io.github.chenfei0928.util.adbExecutable
 import io.github.chenfei0928.util.buildOutputsDir
 import io.github.chenfei0928.util.buildSrcAndroid
+import io.github.chenfei0928.util.buildToolsDir
 import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.forEachAssembleTasks
 import io.github.chenfei0928.util.replaceFirstCharToUppercase
@@ -17,7 +20,7 @@ import java.text.DateFormat
  * @date 2023-12-07 16:43
  */
 fun Project.applySystemApp() {
-    val appExtension = buildSrcAndroid<AppExtension>()
+    val appExtension = buildSrcAndroid<ApplicationExtension>()
     val keyFile = File(rootProject.rootDir, "gradle/platform.pk8")
     val certFile = File(rootProject.rootDir, "gradle/platform.x509.pem")
 
@@ -52,7 +55,7 @@ fun Project.applySystemApp() {
 }
 
 private fun signAndInstallApk(
-    appExtension: AppExtension,
+    appExtension: ApplicationExtension,
     apkFile: File,
     keyFile: File,
     certFile: File,
@@ -61,9 +64,7 @@ private fun signAndInstallApk(
         "resign $apkFile ${DateFormat.getInstance().format(apkFile.lastModified())}"
     )
     val apksigner: File = appExtension.run {
-        val buildToolsDir = File(File(sdkDirectory, "build-tools"), buildToolsVersion)
-        val isWindows = System.getProperty("os.name").startsWith("Windows")
-        if (isWindows) File(buildToolsDir, "apksigner.bat")
+        if (Env.isWindows) File(buildToolsDir, "apksigner.bat")
         else File(buildToolsDir, "apksigner")
     }
     // 重签名
@@ -90,7 +91,7 @@ private fun signAndInstallApk(
     }
 }
 
-private fun installApk(appExtension: AppExtension, apkFile: File) {
+private fun installApk(appExtension: ApplicationExtension, apkFile: File) {
     // 卸载app
     ProcessBuilder().command(
         appExtension.adbExecutable.absolutePath,

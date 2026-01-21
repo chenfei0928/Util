@@ -1,6 +1,6 @@
 package io.github.chenfei0928.data
 
-import com.android.build.gradle.BaseExtension
+import com.android.build.api.dsl.CommonExtension
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.implementation
 import org.gradle.api.Project
@@ -26,7 +26,7 @@ fun Project.applyGreenDao(onlyDependencies: Boolean = true, schemaVersion: Int =
             // 生成数据库文件的目录
             targetGenDir("src/main/java")
             // 生成的数据库相关文件的包名
-            daoPackage = "${buildSrcAndroid<BaseExtension>().namespace}.dao"
+            daoPackage = "${buildSrcAndroid<CommonExtension>().namespace}.dao"
         }
     }
 

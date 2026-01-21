@@ -1,14 +1,11 @@
 package io.github.chenfei0928.android
 
-import com.android.build.api.dsl.ApplicationExtension
-import com.android.build.api.dsl.BuildFeatures
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.api.dsl.DynamicFeatureExtension
-import com.android.build.api.dsl.LibraryExtension
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.Deps
 import io.github.chenfei0928.DepsAndroidx
 import io.github.chenfei0928.compiler.buildSrcKotlin
+import io.github.chenfei0928.util.buildFeatures
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debugImplementation
 import io.github.chenfei0928.util.implementation
@@ -31,21 +28,11 @@ fun Project.applyJetpackCompose(
 ) {
     apply<ComposeCompilerGradleSubplugin>()
 
-    fun BuildFeatures.apply() {
-        // Enables Jetpack Compose for this module
-        compose = true
-    }
-
     // https://developer.android.com/jetpack/compose/setup?hl=zh-cn
-    when (val ext = buildSrcAndroid<CommonExtension>()) {
-        is ApplicationExtension -> ext.apply {
-            buildFeatures.apply()
-        }
-        is LibraryExtension -> ext.apply {
-            buildFeatures.apply()
-        }
-        is DynamicFeatureExtension -> ext.apply {
-            buildFeatures.apply()
+    buildSrcAndroid<CommonExtension>().apply {
+        buildFeatures {
+            // Enables Jetpack Compose for this module
+            compose = true
         }
     }
 

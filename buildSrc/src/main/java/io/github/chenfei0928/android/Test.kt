@@ -1,15 +1,12 @@
 package io.github.chenfei0928.android
 
-import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.api.dsl.DefaultConfig
-import com.android.build.api.dsl.DynamicFeatureExtension
-import com.android.build.api.dsl.LibraryExtension
-import com.android.build.api.dsl.TestOptions
 import io.github.chenfei0928.DepsAndroidx
 import io.github.chenfei0928.compiler.kotlinPluginVersion
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debugImplementation
+import io.github.chenfei0928.util.defaultConfig
+import io.github.chenfei0928.util.testOptions
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.dependencies
@@ -19,48 +16,28 @@ import org.gradle.kotlin.dsl.dependencies
  * @date 2021-07-28 17:37
  */
 fun Project.applyTest() {
-    fun DefaultConfig.apply() {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    buildSrcAndroid<CommonExtension>().apply {
+        defaultConfig {
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // The following argument makes the Android Test Orchestrator run its
-        // "pm clear" command after each test invocation. This command ensures
-        // that the app's state is completely cleared between tests.
-        setTestInstrumentationRunnerArguments(
-            mutableMapOf(
-                "clearPackageData" to "true"
+            // The following argument makes the Android Test Orchestrator run its
+            // "pm clear" command after each test invocation. This command ensures
+            // that the app's state is completely cleared between tests.
+            testInstrumentationRunnerArguments.putAll(
+                mutableMapOf(
+                    "clearPackageData" to "true"
+                )
             )
-        )
-    }
-
-    fun TestOptions.apply() {
-        unitTests.isIncludeAndroidResources = true
-        execution = "ANDROIDX_TEST_ORCHESTRATOR"
-    }
-    when (val ext = buildSrcAndroid<CommonExtension>()) {
-        is ApplicationExtension -> ext.apply {
-            defaultConfig.apply()
-            testOptions.apply()
-
-            useLibrary("android.test.runner")
-            useLibrary("android.test.base")
-            useLibrary("android.test.mock")
         }
-        is LibraryExtension -> ext.apply {
-            defaultConfig.apply()
-            testOptions.apply()
 
-            useLibrary("android.test.runner")
-            useLibrary("android.test.base")
-            useLibrary("android.test.mock")
+        testOptions {
+            unitTests.isIncludeAndroidResources = true
+            execution = "ANDROIDX_TEST_ORCHESTRATOR"
         }
-        is DynamicFeatureExtension -> ext.apply {
-            defaultConfig.apply()
-            testOptions.apply()
 
-            useLibrary("android.test.runner")
-            useLibrary("android.test.base")
-            useLibrary("android.test.mock")
-        }
+        useLibrary("android.test.runner")
+        useLibrary("android.test.base")
+        useLibrary("android.test.mock")
     }
 
     dependencies {

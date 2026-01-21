@@ -79,6 +79,7 @@ fun Project.applyApp() {
             // debug开发测试运行、包
             debug {
                 isDebuggable = true
+                isCrunchPngs = false
                 // 签名
                 signingConfig = signingConfigs.getByName("debug")
             }
@@ -86,7 +87,7 @@ fun Project.applyApp() {
 
         // 如果出现META-INF重复的问题 - 友盟社会化登录、分享
         // 打包时排除一些文件
-        packagingOptions {
+        packaging {
             resources.excludes.add("META-INF/beans.xml")
             // support支持库
             resources.excludes.add("META-INF/*.version")
@@ -108,7 +109,7 @@ fun Project.applyApp() {
         // Debug时不编译不必要的资源
         if (!Env.containsReleaseBuild) {
             productFlavors.all {
-                resourceConfigurations.addAll(
+                androidResources.localeFilters.addAll(
                     arrayOf("zh", "zh-rCN", "xxhdpi")
                 )
             }

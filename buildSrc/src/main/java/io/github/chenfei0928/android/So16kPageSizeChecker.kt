@@ -14,7 +14,7 @@ import org.gradle.api.attributes.Attribute
  * https://mp.weixin.qq.com/s/42PxeaOkZgplJp-tXNVLIQ
  */
 fun Project.addPageSizeCheck() {
-    task("findSoFileOrigins") {
+    tasks.register("findSoFileOrigins") {
         description = "扫描项目依赖的 AAR 文件，找出 .so 文件的来源。"
         group = "reporting" // 将任务归类到 "reporting" 组下
 

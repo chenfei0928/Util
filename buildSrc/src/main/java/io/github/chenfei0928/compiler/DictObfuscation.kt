@@ -1,8 +1,9 @@
 package io.github.chenfei0928.compiler
 
-import com.android.build.gradle.AppExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import io.github.chenfei0928.Contract
 import io.github.chenfei0928.util.buildSrcAndroid
+import io.github.chenfei0928.util.buildSrcAndroidComponents
 import io.github.chenfei0928.util.checkApp
 import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.replaceFirstCharToUppercase
@@ -49,10 +50,10 @@ fun Project.applyAppDictObfuscation() {
 
     // 将混淆字典生成任务添加到编译任务的依赖中
     afterEvaluate {
-        buildSrcAndroid<AppExtension>().apply {
-            applicationVariants.all {
+        buildSrcAndroidComponents<ApplicationAndroidComponentsExtension>().apply {
+            onVariants {
                 val preBuildName = getPreBuildName(name)
-                    ?: return@all
+                    ?: return@onVariants
                 val task = tasks.getByName(preBuildName)
                 task.dependsOn(genObfuscationDict)
             }

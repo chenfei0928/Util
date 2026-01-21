@@ -1,5 +1,6 @@
 package io.github.chenfei0928.data
 
+import com.android.build.api.dsl.CommonExtension
 import io.github.chenfei0928.DepsAndroidx
 import io.github.chenfei0928.compiler.buildSrcKapt
 import io.github.chenfei0928.compiler.buildSrcKsp
@@ -8,20 +9,22 @@ import io.github.chenfei0928.compiler.hasKotlinKapt
 import io.github.chenfei0928.compiler.hasKotlinKsp
 import io.github.chenfei0928.util.annotationProcessor
 import io.github.chenfei0928.util.buildSrcAndroid
+import io.github.chenfei0928.util.defaultConfig
 import io.github.chenfei0928.util.implementation
 import io.github.chenfei0928.util.kapt
 import io.github.chenfei0928.util.ksp
+import io.github.chenfei0928.util.sourceSets
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 
 fun Project.applyRoom() {
     val schemesPath = "$projectDir/schemas"
 
-    buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
+    buildSrcAndroid<CommonExtension>().apply {
         // https://developer.android.com/training/data-storage/room/migrating-db-versions#single-migration-test
         sourceSets {
             // Adds exported schema location as test app assets.
-            getByName("androidTest").assets.srcDir(schemesPath)
+            getByName("androidTest").assets.directories.add(schemesPath)
         }
     }
 
@@ -44,7 +47,7 @@ fun Project.applyRoom() {
             implementation(DepsAndroidx.room.ktx)
         }
     } else {
-        buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
+        buildSrcAndroid<CommonExtension>().apply {
             defaultConfig {
                 //指定room.schemaLocation生成的文件路径
                 javaCompileOptions {

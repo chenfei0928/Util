@@ -32,12 +32,15 @@ object Env {
                 }
             }
         // 创建impl
-        impl = EnvImpl(containsReleaseBuild, protobufType)
+        impl = EnvImpl(gradle, containsReleaseBuild, protobufType)
         logger.lifecycle("Env init：$containsReleaseBuild, ${Instant.now()}")
         Thread(impl).start()
     }
 
     val isWindows: Boolean = System.getProperty("os.name").startsWith("Windows")
+
+    internal val gradle: Gradle
+        get() = impl.gradle
 
     /**
      * 此次存在正式编译，或非开发目标编译（如qaTest）
@@ -60,6 +63,7 @@ object Env {
 
     //<editor-fold defaultstate="collapsed" desc="读取工程目录信息和运行时信息的实现，以便使用">
     private class EnvImpl(
+        val gradle: Gradle,
         val containsReleaseBuild: Boolean,
         val protobufType: ProtobufType,
     ) : Runnable {

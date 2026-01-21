@@ -8,6 +8,7 @@ import io.github.chenfei0928.Deps
 import io.github.chenfei0928.Env
 import io.github.chenfei0928.util.buildOutputsDir
 import io.github.chenfei0928.util.buildSrcAndroid
+import io.github.chenfei0928.util.buildToolsDir
 import io.github.chenfei0928.util.checkApp
 import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.forEachAssembleTasks
@@ -59,11 +60,11 @@ fun Project.applyAppSoExclude() {
                     val newApk = File("")
 //                    variantTinkerPatchExtension.variantOutput!!.outputFile
                     val baseApk = reZipApkWithFilterEntry(
-                        this@applyAppSoExclude, newApk, soExcludeList, appExtension
+                        newApk, soExcludeList, appExtension
                     )
                     val signingConfig = appExtension.buildTypes
                         .getByName(taskInfo.buildType).signingConfig!!
-                    signApk(this@applyAppSoExclude, appExtension, baseApk, signingConfig)
+                    signApk(appExtension, baseApk, signingConfig)
                     variantTinkerPatchExtension.tinkerPatchExtension.oldApk = baseApk.absolutePath
 
                     val tinkerId = putTinkerManifestPlaceholders.toList()
@@ -109,7 +110,6 @@ fun Project.applyAppSoExclude() {
 }
 
 private fun reZipApkWithFilterEntry(
-    project: Project,
     apkFile: File,
     soExcludeList: List<String>,
     appExtension: ApplicationExtension
@@ -134,9 +134,6 @@ private fun reZipApkWithFilterEntry(
     // 4字节对齐
     // zipalign -v 4 cx835.apk cx835_out.apk
     val zipalign: File = appExtension.run {
-        val buildToolsDir = File(
-            File(project.properties["sdk.dir"] as String, "build-tools"), buildToolsVersion
-        )
         if (Env.isWindows) File(buildToolsDir, "zipalign.exe")
         else File(buildToolsDir, "zipalign")
     }
@@ -163,7 +160,6 @@ private fun reZipApkWithFilterEntry(
 }
 
 private fun signApk(
-    project: Project,
     appExtension: ApplicationExtension,
     apkFile: File,
     signingConfigs: ApkSigningConfig,
@@ -172,9 +168,6 @@ private fun signApk(
         "resign $apkFile ${DateFormat.getInstance().format(apkFile.lastModified())}"
     )
     val apksigner: File = appExtension.run {
-        val buildToolsDir = File(
-            File(project.properties["sdk.dir"] as String, "build-tools"), buildToolsVersion
-        )
         if (Env.isWindows) File(buildToolsDir, "apksigner.bat")
         else File(buildToolsDir, "apksigner")
     }
