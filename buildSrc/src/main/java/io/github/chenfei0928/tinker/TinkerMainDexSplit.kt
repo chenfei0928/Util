@@ -17,7 +17,7 @@ import java.util.Locale
  *
  * https://juejin.cn/post/6844904164540022792
  *
- * @author chenfei(chenfei@cocos.com)
+ * @author chenf()
  * @date 2022-01-26 16:47
  */
 internal fun Project.applyTinkerMainDexSplit() {

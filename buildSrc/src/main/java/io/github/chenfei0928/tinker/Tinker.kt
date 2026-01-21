@@ -31,7 +31,7 @@ import java.util.Locale
  * 接入方式为仅依赖接入，编译完手动备份R8混淆表与资源文件混淆表。
  * 在需要打补丁时，应用基线包的混淆表生成新包，并使用命令行工具生成补丁包
  *
- * @author chenfei(chenfei@cocos.com)
+ * @author chenf()
  * @date 2021-10-22 17:56
  */
 fun Project.applyAppTinker() {

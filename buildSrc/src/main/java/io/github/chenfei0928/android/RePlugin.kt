@@ -51,9 +51,9 @@ fun Project.applyRePluginPlugin(name: String = project.name) {
         //插件名
         pluginName = name
         //宿主app的包名
-        hostApplicationId = "com.cocos.adventure.app"
+        hostApplicationId = ""
         //宿主app的启动activity
-        hostAppLauncherActivity = "com.xi.quickgame.ui.main.main.MainActivity"
+        hostAppLauncherActivity = ""
     }
 
     dependencies {
