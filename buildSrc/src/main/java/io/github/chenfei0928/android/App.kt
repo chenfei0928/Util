@@ -110,7 +110,7 @@ fun Project.applyApp() {
         if (!Env.containsReleaseBuild) {
             productFlavors.all {
                 androidResources.localeFilters.addAll(
-                    arrayOf("zh", "zh-rCN", "xxhdpi")
+                    arrayOf("zh", "zh-rCN")
                 )
             }
         }
