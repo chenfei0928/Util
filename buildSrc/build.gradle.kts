@@ -96,7 +96,8 @@ dependencies {
     // 360插件化
     // https://github.com/Qihoo360/RePlugin/blob/dev/README_CN.md
     implementation("com.qihoo360.replugin:replugin-host-gradle:3.1.0")
-    implementation("com.qihoo360.replugin:replugin-plugin-gradle:3.1.0")
+    // plugin的使用本地文件依赖
+//    implementation("com.qihoo360.replugin:replugin-plugin-gradle:3.1.0")
     // 腾讯Shadow插件化
     // https://github.com/Tencent/Shadow
     implementation("com.tencent.shadow.plugin:com.tencent.shadow.plugin.gradle.plugin:local-dc5bafb2-SNAPSHOT")
