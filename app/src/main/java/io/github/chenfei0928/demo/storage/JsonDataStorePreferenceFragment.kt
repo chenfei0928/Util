@@ -10,7 +10,7 @@ import io.github.chenfei0928.preference.DataStoreFieldAccessorCache
 import io.github.chenfei0928.preference.FieldAccessorPreferenceGroupBuilder.Companion.buildPreferenceScreen
 import io.github.chenfei0928.preference.base.DataCopyClassFieldAccessor.Companion.cacheCopyFunc
 import io.github.chenfei0928.preference.base.DataCopyClassFieldAccessor.Companion.property
-import io.github.chenfei0928.preference.bindEnum
+import io.github.chenfei0928.preference.base.bindEnum
 
 /**
  * @author chenf()
@@ -46,11 +46,11 @@ class JsonDataStorePreferenceFragment : PreferenceFragmentCompat() {
             }
             dropDownPreference<JsonBean.JsonEnum>(dataStore.property(JsonBean::enum)) {
                 title = "enum"
-                bindEnum()
+                enumSetter.bindEnum()
             }
             multiSelectListPreference<JsonBean.JsonEnum>(dataStore.property(JsonBean::enums)) {
                 title = "enumList"
-                bindEnum()
+                enumSetter.bindEnum()
             }
         }
     }
