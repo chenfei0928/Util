@@ -1,11 +1,9 @@
 package io.github.chenfei0928.demo.storage
 
 import android.os.Bundle
-import io.github.chenfei0928.util.Log
 import android.view.View
 import androidx.core.os.postDelayed
 import androidx.preference.PreferenceFragmentCompat
-import io.github.chenfei0928.content.sp.saver.PreferenceType
 import io.github.chenfei0928.content.sp.saver.registerOnSpPropertyChangeListener
 import io.github.chenfei0928.content.sp.saver.toLiveData
 import io.github.chenfei0928.demo.bean.JsonBean
@@ -13,9 +11,10 @@ import io.github.chenfei0928.demo.bean.Test
 import io.github.chenfei0928.lang.toStringByReflect
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.os.safeHandler
-import io.github.chenfei0928.preference.base.FieldAccessor
-import io.github.chenfei0928.preference.bindEnum
+import io.github.chenfei0928.preference.base.FieldAccessor.Companion.property
+import io.github.chenfei0928.preference.base.bindEnum
 import io.github.chenfei0928.preference.sp.SpSaverPreferenceGroupBuilder.Companion.buildPreferenceScreen
+import io.github.chenfei0928.util.Log
 import kotlin.random.Random
 
 /**
@@ -69,32 +68,25 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
             }
             dropDownPreference<JsonBean.JsonEnum>(TestSpSaver::enum) {
                 title = "enum"
-                bindEnum()
+                enumSetter.bindEnum()
             }
             multiSelectListPreference<JsonBean.JsonEnum>(TestSpSaver::enums) {
                 title = "enumList"
-                bindEnum()
+                enumSetter.bindEnum()
             }
             // 以下方式可以达到引用sp中结构体类型的字段，但不建议，sp存储大量数据时性能较低
             // 且会丢失值更新缓存，除非在实现时添加接口 FieldAccessor.SpLocalStorageKey
             checkBoxPreference(
                 spSaver.fieldAccessorCache.property(
-                object : FieldAccessor.Field<TestSpSaver, Boolean>,
-                    FieldAccessor.SpLocalStorageKey {
-                    override val pdsKey: String = "json_boolean"
-                    override val localStorageKey: String = "json"
-                    override val vType: PreferenceType<Boolean> = PreferenceType.Native.BOOLEAN
-                    override fun get(data: TestSpSaver): Boolean = data.json?.boolean == true
-                    override fun set(data: TestSpSaver, value: Boolean): TestSpSaver {
+                    name = "json_boolean",
+                    getter = { it.json?.boolean == true },
+                    setter = { data, value ->
                         val json = data.json ?: JsonBean.InnerJsonBean()
                         json.boolean = value
                         data.json = json
-                        return data
+                        data
                     }
-
-                    override fun toString(): String = "field($pdsKey $vType)"
-                }
-            ).pdsKey) {
+                )) {
                 title = "json_boolean"
             }
         }

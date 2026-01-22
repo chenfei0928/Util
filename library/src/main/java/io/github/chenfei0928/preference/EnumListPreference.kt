@@ -5,10 +5,7 @@ import android.util.AttributeSet
 import androidx.preference.DropDownPreference
 import androidx.preference.ListPreference
 import androidx.preference.MultiSelectListPreference
-import com.google.protobuf.ProtocolMessageEnum
-import com.google.protobuf.protobufEnumAvailableValues
-import io.github.chenfei0928.preference.base.VisibleNamed
-import io.github.chenfei0928.preference.base.bindEnum
+import io.github.chenfei0928.preference.base.PreferenceEnumSetter
 
 /**
  * @author chenf()
@@ -25,20 +22,8 @@ class EnumDropDownPreference<E : Enum<E>> : DropDownPreference {
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context) : super(context)
-}
 
-inline fun <reified E> EnumDropDownPreference<E>.bindEnum() where E : Enum<E>, E : VisibleNamed {
-    bindEnum(enumValues<E>())
-}
-
-inline fun <reified E : Enum<E>> EnumDropDownPreference<E>.bindEnum(visibleNamed: Context.(enum: E) -> CharSequence) {
-    bindEnum<E>(enumValues<E>(), visibleNamed)
-}
-
-inline fun <reified E> EnumDropDownPreference<E>.bindProtobufEnum(
-    visibleNamed: Context.(enum: E) -> CharSequence
-) where E : Enum<E>, E : ProtocolMessageEnum {
-    bindEnum<E>(protobufEnumAvailableValues<E>(), visibleNamed)
+    val enumSetter = PreferenceEnumSetter.ListPreferenceImpl<E>(this)
 }
 
 class EnumListPreference<E : Enum<E>> : ListPreference {
@@ -52,20 +37,8 @@ class EnumListPreference<E : Enum<E>> : ListPreference {
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context) : super(context)
-}
 
-inline fun <reified E> EnumListPreference<E>.bindEnum() where E : Enum<E>, E : VisibleNamed {
-    bindEnum(enumValues<E>())
-}
-
-inline fun <reified E : Enum<E>> EnumListPreference<E>.bindEnum(visibleNamed: Context.(enum: E) -> CharSequence) {
-    bindEnum<E>(enumValues<E>(), visibleNamed)
-}
-
-inline fun <reified E> EnumListPreference<E>.bindProtobufEnum(
-    visibleNamed: Context.(enum: E) -> CharSequence
-) where E : Enum<E>, E : ProtocolMessageEnum {
-    bindEnum<E>(protobufEnumAvailableValues<E>(), visibleNamed)
+    val enumSetter = PreferenceEnumSetter.ListPreferenceImpl<E>(this)
 }
 
 class EnumMultiSelectListPreference<E : Enum<E>> : MultiSelectListPreference {
@@ -79,20 +52,6 @@ class EnumMultiSelectListPreference<E : Enum<E>> : MultiSelectListPreference {
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context) : super(context)
-}
 
-inline fun <reified E> EnumMultiSelectListPreference<E>.bindEnum() where E : Enum<E>, E : VisibleNamed {
-    bindEnum(enumValues<E>())
-}
-
-inline fun <reified E : Enum<E>> EnumMultiSelectListPreference<E>.bindEnum(
-    visibleNamed: Context.(enum: E) -> CharSequence
-) {
-    bindEnum<E>(enumValues<E>(), visibleNamed)
-}
-
-inline fun <reified E> EnumMultiSelectListPreference<E>.bindProtobufEnum(
-    visibleNamed: Context.(enum: E) -> CharSequence
-) where E : Enum<E>, E : ProtocolMessageEnum {
-    bindEnum<E>(protobufEnumAvailableValues<E>(), visibleNamed)
+    val enumSetter = PreferenceEnumSetter.MultiSelectListPreferenceImpl<E>(this)
 }

@@ -117,7 +117,7 @@ constructor(
     //</editor-fold>
 
     /**
-     * 通知一个字段被变更，并返回受影响的field的key
+     * 通知一个字段被变更；并返回受影响的field的key，即 [androidx.preference.Preference.getKey] 的集合
      */
     internal fun onPropertyChange(localStorageKey: String): Collection<String> {
         return properties.mapNotNull {

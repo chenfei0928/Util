@@ -16,6 +16,7 @@ interface FieldAccessor<T> {
     //<editor-fold desc="快速访问字段扩展" defaultstatus="collapsed">
     /**
      * 该访问器所包含的所有field，其中不仅会包含 [T] 的 property，还可能会包含某个结构体字段的二阶字段
+     * key: [Field.pdsKey]
      */
     val properties: Map<String, Field<T, *>>
 
@@ -43,6 +44,13 @@ interface FieldAccessor<T> {
         property2: Field<T2, V>,
     ): Field<T, V>
 
+    /**
+     * 根据本地存储字段名获取其 [Field]
+     *
+     * @param V 值类型
+     * @param name [Field.pdsKey] 同时作为 [androidx.preference.Preference.getKey] 和 [PreferenceDataStore] 回调中的key
+     * @return [Field] 如果找不到对应的字段，则返回 null
+     */
     fun <V> findByName(name: String): Field<T, V>
     //</editor-fold>
 
@@ -65,7 +73,14 @@ interface FieldAccessor<T> {
 
     interface SpLocalStorageKey {
         /**
-         * 该字段在本地持久化存储所使用的key
+         * 该字段返回在本地持久化存储所使用的key。
+         *
+         * 用于在sp文件更新时判断受影响的 [Field] 或 [androidx.preference.Preference]，即：
+         * [io.github.chenfei0928.content.sp.saver.registerOnSpPropertyChangeListener]、
+         * [io.github.chenfei0928.preference.sp.SpSaverFieldAccessorCache.onPropertyChange]
+         *
+         * 或在 [io.github.chenfei0928.content.sp.saver.SpCommit] 中根据
+         * [kotlin.reflect.KProperty] 移除或判断其是否在本地存储中存在。
          */
         val localStorageKey: String
     }
@@ -209,6 +224,13 @@ interface FieldAccessor<T> {
         //</editor-fold>
     }
 
+    abstract class SpKeyInline<T, V>(
+        pdsKey: String,
+        final override val localStorageKey: String,
+        vClass: Class<V>,
+        actualTypeIndex: Int = 1,
+    ) : Inline<T, V>(pdsKey, vClass, actualTypeIndex), SpLocalStorageKey
+
     companion object {
         //<editor-fold desc="对其他的访问" defaultstatus="collapsed">
         /**
@@ -217,14 +239,17 @@ interface FieldAccessor<T> {
          * @param T 宿主类类型
          * @param V 字段类型
          * @param name 用于[PreferenceDataStore]中访问的字段名称
+         * @param localStorageKey 本地存储的键名，默认为[name]一个下划线之前的字符串，
+         * 如果没有下划线也没有指定，则不使用 [SpLocalStorageKey] 接口
          * @param getter 访问器
          * @param setter 修改器
          */
         inline fun <T, reified V> FieldAccessor<T>.property(
             name: String,
+            localStorageKey: String? = if ('_' in name) name.substringBefore('_') else null,
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: T, value: V) -> T,
-        ): Field<T, V> = field(name, getter, setter).let(::property)
+        ): Field<T, V> = field(name, localStorageKey, getter, setter).let(::property)
 
         /**
          * 通过自定义[getter]、[setter]来访问字段
@@ -232,14 +257,20 @@ interface FieldAccessor<T> {
          * @param T 宿主类类型
          * @param V 字段类型
          * @param name 用于[PreferenceDataStore]中访问的字段名称
+         * @param localStorageKey 本地存储的键名，默认为[name]一个下划线之前的字符串，
+         * 如果没有下划线也没有指定，则不使用 [SpLocalStorageKey] 接口
          * @param getter 访问器
          * @param setter 修改器
          */
         inline fun <T, reified V> FieldAccessor<*>.field(
             name: String,
+            localStorageKey: String? = if ('_' in name) name.substringBefore('_') else null,
             crossinline getter: (data: T) -> V,
             crossinline setter: (data: T, value: V) -> T,
-        ): Field<T, V> = object : Inline<T, V>(name, V::class.java) {
+        ): Field<T, V> = if (localStorageKey == null) object : Inline<T, V>(name, V::class.java) {
+            override fun get(data: T): V = getter(data)
+            override fun set(data: T, value: V): T = setter(data, value)
+        } else object : SpKeyInline<T, V>(name, localStorageKey, V::class.java) {
             override fun get(data: T): V = getter(data)
             override fun set(data: T, value: V): T = setter(data, value)
         }

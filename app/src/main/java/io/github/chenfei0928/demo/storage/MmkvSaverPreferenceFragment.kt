@@ -1,7 +1,6 @@
 package io.github.chenfei0928.demo.storage
 
 import android.os.Bundle
-import io.github.chenfei0928.util.Log
 import android.view.View
 import androidx.core.os.postDelayed
 import androidx.preference.PreferenceFragmentCompat
@@ -12,8 +11,9 @@ import io.github.chenfei0928.lang.toStringByReflect
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.os.safeHandler
 import io.github.chenfei0928.preference.base.FieldAccessor
-import io.github.chenfei0928.preference.bindEnum
+import io.github.chenfei0928.preference.base.bindEnum
 import io.github.chenfei0928.preference.sp.SpSaverPreferenceGroupBuilder.Companion.buildPreferenceScreen
+import io.github.chenfei0928.util.Log
 import kotlin.random.Random
 
 /**
@@ -63,11 +63,11 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
             }
             dropDownPreference<JsonBean.JsonEnum>(TestMmkvSaver::enum) {
                 title = "enum"
-                bindEnum()
+                enumSetter.bindEnum()
             }
             multiSelectListPreference<JsonBean.JsonEnum>(TestMmkvSaver::enums) {
                 title = "enumList"
-                bindEnum()
+                enumSetter.bindEnum()
             }
             // 以下方式可以达到引用sp中结构体类型的字段，但会丢失值更新缓存，除非在实现时添加接口 FieldAccessor.SpLocalStorageKey
             val innerField = if ("json_boolean" in spSaver.fieldAccessorCache.properties) {

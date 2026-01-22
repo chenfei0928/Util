@@ -82,7 +82,7 @@ abstract class AbsPreferenceGroupBuilder<Builder>(
     ): Builder = applyBuilder {
         preference(EnumDropDownPreference<E>(context).apply {
             this.key = key
-//            bindEnum(enumValues<E>())
+            enumSetter.tryBindEnum()
         }, block)
     }
 
@@ -101,7 +101,7 @@ abstract class AbsPreferenceGroupBuilder<Builder>(
     ): Builder = applyBuilder {
         preference(EnumListPreference<E>(context).apply {
             this.key = key
-//            bindEnum(enumValues<E>())
+            enumSetter.tryBindEnum()
         }, block)
     }
 
@@ -111,7 +111,7 @@ abstract class AbsPreferenceGroupBuilder<Builder>(
     ): Builder = applyBuilder {
         preference(EnumMultiSelectListPreference<E>(context).apply {
             this.key = key
-//            bindEnum(enumValues<E>())
+            enumSetter.tryBindEnum()
         }, block)
     }
 
