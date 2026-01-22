@@ -57,7 +57,8 @@ interface FieldAccessor<T> {
     interface Field<T, V> {
         /**
          * 用于在 [PreferenceDataStore] 中存取所使用的 key，
-         * 同时会设置给 [androidx.preference.Preference.getKey]，不要求与持久化后保存的结构体或Map字典的key相同
+         * 同时会设置给 [androidx.preference.Preference.getKey]，
+         * 该数据不会要求与持久化后保存的结构体中字段名或Map字典key的一致性
          */
         val pdsKey: String
 
@@ -73,14 +74,21 @@ interface FieldAccessor<T> {
 
     interface SpLocalStorageKey {
         /**
-         * 该字段返回在本地持久化存储所使用的key。
-         *
-         * 用于在sp文件更新时判断受影响的 [Field] 或 [androidx.preference.Preference]，即：
-         * [io.github.chenfei0928.content.sp.saver.registerOnSpPropertyChangeListener]、
-         * [io.github.chenfei0928.preference.sp.SpSaverFieldAccessorCache.onPropertyChange]
-         *
-         * 或在 [io.github.chenfei0928.content.sp.saver.SpCommit] 中根据
+         * 该字段返回在本地持久化存储所使用的key。用于：
+         * - [io.github.chenfei0928.content.sp.saver.SpCommit] 中根据
          * [kotlin.reflect.KProperty] 移除或判断其是否在本地存储中存在。
+         * - 在sp文件更新时，筛选受影响的 [Field] ，即：
+         * - [io.github.chenfei0928.preference.sp.SpSaverFieldAccessorCache.onPropertyChange]
+         * - 在sp文件更新时，筛选受影响的 [androidx.preference.Preference] ，即：
+         * [io.github.chenfei0928.content.sp.saver.registerOnSpPropertyChangeListener]
+         * `BaseSpSaverWatcher.kt` 文件中的 `registerOnSpPropertyChangeListener` 扩展函数。
+         * 注：该包路径下有该名称的多个重载，KotlinDoc可能引用到错误的方法，签名为
+         * ```kotlin
+         * fun <SpSaver : BaseSpSaver<SpSaver>> SpSaver.registerOnSpPropertyChangeListener(
+         *     owner: LifecycleOwner,
+         *     @MainThread callback: (field: SpSaverFieldAccessor.Field<SpSaver, *>) -> Unit,
+         * )
+         * ```
          */
         val localStorageKey: String
     }

@@ -3,14 +3,16 @@ package io.github.chenfei0928.content.sp.saver
 import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner
 import io.github.chenfei0928.content.sp.registerOnSharedPreferenceChangeListener
+import io.github.chenfei0928.content.sp.saver.DataStoreDelegateStoreProvider.Companion.dataStore
 import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor
+import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor.Companion.property
 import io.github.chenfei0928.util.Log
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 
-private const val TAG = "Ut_AbsSpSaverWatcher"
+private const val TAG = "Ut_BaseSpSaverWatcher"
 
 /**
  * 监听sp的变化并通知任何字段变化
