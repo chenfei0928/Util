@@ -3,7 +3,7 @@ package io.github.chenfei0928.content.sp.saver
 import android.content.SharedPreferences
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver.Companion.edit
 import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor
-import io.github.chenfei0928.preference.sp.SpSaverFieldAccessorCache
+import io.github.chenfei0928.preference.sp.SpSaverFieldObserver
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -64,9 +64,13 @@ constructor(
     }
     //</editor-fold>
 
-    val fieldAccessorCache: SpSaverFieldAccessorCache<SpSaver> by lazy {
+    val fieldAccessorCache: SpSaverFieldObserver<SpSaver> by lazy {
         @Suppress("UNCHECKED_CAST")
-        SpSaverFieldAccessorCache<SpSaver>(this as SpSaver)
+        SpSaverFieldObserver<SpSaver>(
+            saver = this as SpSaver,
+            sp = sp,
+            enableFieldObservable = enableFieldObservable
+        )
     }
 
     //<editor-fold desc="提供通用SpCommit的默认实现" defaultstatus="collapsed">
@@ -76,9 +80,9 @@ constructor(
 
     final override fun remove(key: String) {
         editor.remove(key)
-        // 查找存储值为该key的字段，为了避免找到二次field，使用pdsKey查找
-        fieldAccessorCache.spSaverPropertyDelegateFields.find { it.pdsKey == key }
-            ?.let(::onFieldValueRemoved)
+        // 查找存储值为该key的字段
+        fieldAccessorCache.spSaverPropertyDelegateFields.filter { it.localStorageKey == key }
+            .forEach(::onFieldValueRemoved)
     }
 
     final override fun remove(property: KProperty<*>) {
@@ -87,6 +91,11 @@ constructor(
         onFieldValueRemoved(field)
     }
 
+    /**
+     * 当一个字段的值被移除时，会调用此方法。
+     *
+     * @param field 被移除的字段信息。
+     */
     protected open fun onFieldValueRemoved(field: SpSaverFieldAccessor.Field<SpSaver, *>) {
         // noop
     }
@@ -114,10 +123,6 @@ constructor(
         DataStoreDelegateStoreProvider(
             enableFieldObservable, findSpAccessorDelegateIfStruct, block()
         )
-
-    internal open fun onPropertyAdded(field: SpSaverFieldAccessor.Field<SpSaver, *>) {
-        // noop
-    }
 
     companion object {
         @JvmStatic

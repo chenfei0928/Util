@@ -7,6 +7,9 @@ import kotlin.reflect.KProperty
 /**
  * 字段值更新时的监听对象
  *
+ * 用于向 [com.tencent.mmkv.MMKV] 或其它不支持
+ * [android.content.SharedPreferences.registerOnSharedPreferenceChangeListener] 的实现提供值更新监听。
+ *
  * @author chenf()
  * @date 2025-02-11 17:22
  */

@@ -7,6 +7,8 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 /**
+ * @param enableFieldObservable 是否启用字段级别的观察者
+ *
  * @author chenf()
  * @date 2024-12-23 11:33
  */
@@ -34,7 +36,7 @@ constructor(
             findSpAccessorDelegateIfStruct,
             delegate
         )
-        thisRef.onPropertyAdded(field)
+        thisRef.fieldAccessorCache.onPropertyAdded(field)
         return delegate
     }
 

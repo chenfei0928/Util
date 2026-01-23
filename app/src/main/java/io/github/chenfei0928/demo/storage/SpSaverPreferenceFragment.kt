@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.postDelayed
 import androidx.preference.PreferenceFragmentCompat
-import io.github.chenfei0928.content.sp.saver.registerOnSpPropertyChangeListener
 import io.github.chenfei0928.content.sp.saver.toLiveData
 import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.demo.bean.Test
@@ -29,15 +28,16 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
         spSaver.toLiveData(spSaver::int).observe(viewLifecycleOwner) {
             Log.v(TAG, "onCreate: spSaver int newValue is $it")
         }
-        spSaver.registerOnSpPropertyChangeListener(viewLifecycleOwner, spSaver::enum) {
-            Log.v(TAG, "onCreate: spSaver enum newValue is $it")
-        }
-        spSaver.registerOnSpPropertyChangeListener(viewLifecycleOwner) {
+        spSaver.fieldAccessorCache.getPropertyObservable(spSaver::enum)
+            .observe(viewLifecycleOwner) {
+                Log.v(TAG, "onCreate: spSaver enum newValue is $it")
+            }
+        spSaver.fieldAccessorCache.anyPropertySetCallback.observe(viewLifecycleOwner) {
             Log.v(TAG, buildString {
                 append("onCreate: spSaver onSpPropertyChange ")
                 append(it)
                 append(' ')
-                append(it.get(spSaver)?.toStringByReflect())
+                append(it.second?.toStringByReflect())
             })
         }
         safeHandler.postDelayed(100L) {

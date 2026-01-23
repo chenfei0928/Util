@@ -24,7 +24,7 @@ import kotlin.reflect.jvm.isAccessible
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-04-24 10:42
  */
-class SpSaverFieldAccessorCache<SpSaver : AbsSpSaver<SpSaver, *, *>>
+open class SpSaverFieldAccessorCache<SpSaver : AbsSpSaver<SpSaver, *, *>>
 constructor(
     internal val saver: SpSaver,
     fieldAccessor: SpSaverFieldAccessor<SpSaver> = SpSaverFieldAccessor.Impl(saver),

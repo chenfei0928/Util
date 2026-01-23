@@ -25,7 +25,7 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        spSaver.anyPropertySetCallback.observe(viewLifecycleOwner) {
+        spSaver.fieldAccessorCache.anyPropertySetCallback.observe(viewLifecycleOwner) { it ->
             Log.v(TAG, buildString {
                 append("onCreate: mmkvSaver anyPropertySetCallback ")
                 append(it)
@@ -33,7 +33,9 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
                 append(it.second?.toStringByReflect())
             })
         }
-        spSaver.getPropertyObservable(TestMmkvSaver::int).observe(viewLifecycleOwner) {
+        spSaver.fieldAccessorCache.getPropertyObservable(
+            TestMmkvSaver::int
+        ).observe(viewLifecycleOwner) {
             Log.v(TAG, "onCreate: mmkvSaver int newValue is $it")
         }
         safeHandler.postDelayed(100L) {

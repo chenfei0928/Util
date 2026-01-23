@@ -44,6 +44,10 @@ interface SpSaverFieldAccessor<SpSaver : AbsSpSaver<SpSaver, *, *>> : FieldAcces
      * [SpSaver] 的字段信息接口
      *
      * 用于 [SpSaverFieldAccessorCache] 负责提供的获取其Kt字段信息 [property] 与最外层委托 [outDelegate]
+     *
+     * @param property 字段的 [KProperty] 信息
+     * @param outDelegate 最外层委托，用于获取字段的本地存储键 [localStorageKey]
+     * @param observable 字段的 [SpValueObservable] 信息，用于在 [BaseMmkvSaver] 中监听字段变化
      */
     interface Field<SpSaver : AbsSpSaver<SpSaver, *, *>, V> : FieldAccessor.Field<SpSaver, V>,
         FieldAccessor.SpLocalStorageKey {

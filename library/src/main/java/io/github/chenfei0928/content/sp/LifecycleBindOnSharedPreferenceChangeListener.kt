@@ -19,20 +19,19 @@ import androidx.lifecycle.LiveData
  */
 interface LifecycleBindOnSharedPreferenceChangeListener
     : SharedPreferences.OnSharedPreferenceChangeListener {
-    val sharedPreferences: SharedPreferences
     val filterKey: String?
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         // sp被清空时回调中的key为null，在此处需要验证是否是sp被清空的情况，如果是被清空时，总是回调
         if (filterKey != null && key != null && filterKey != key)
             return
-        onChangedOrClear(this.sharedPreferences, key)
+        onChangedOrClear(sharedPreferences, key)
     }
 
     fun onChangedOrClear(sharedPreferences: SharedPreferences, key: String?)
 
     abstract class Base(
-        override val sharedPreferences: SharedPreferences,
+        private val sharedPreferences: SharedPreferences,
         override val filterKey: String?,
     ) : LifecycleBindOnSharedPreferenceChangeListener, LifecycleEventObserver {
 
@@ -56,7 +55,7 @@ interface LifecycleBindOnSharedPreferenceChangeListener
      * @date 2024-12-25 18:23
      */
     abstract class SpValueLiveData<R>(
-        override val sharedPreferences: SharedPreferences,
+        private val sharedPreferences: SharedPreferences,
         override val filterKey: String?,
     ) : LiveData<R>(), LifecycleBindOnSharedPreferenceChangeListener {
 
