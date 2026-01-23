@@ -35,6 +35,7 @@ class SpSaverFieldObserver<SpSaver : AbsSpSaver<SpSaver, *, *>>(
         }
     }
 
+    //<editor-fold desc="根据KProperty获取值更新LiveData或LiveListener" defaultstatus="collapsed">
     /**
      * 根据指定 [property] 获取其对应值更新的 [LiveData]
      *
@@ -84,14 +85,16 @@ class SpSaverFieldObserver<SpSaver : AbsSpSaver<SpSaver, *, *>>(
                 ?.observable
                 ?: SpValueObservable.find(getDelegateOrByReflect(property))
                 ?: throw IllegalArgumentException(
-                    "没有找到 SpValueObservable，已经为它包装了 dataStore ？$property"
+                    "没有找到 SpValueObservable，已经为它包装了 dataStore ? $property"
                 )
         } else {
             val delegate = getDelegateOrByReflect(property)
             SpFieldChangeLiveListeners(this, property, delegate)
         }
     }
+    //</editor-fold>
 
+    //<editor-fold desc="对SharedPreference的监听，用于监听单个字段的更新" defaultstatus="collapsed">
     private class SpFieldChangeLiveListeners<SpSaver : AbsSpSaver<SpSaver, *, *>, V>(
         private val observer: SpSaverFieldObserver<SpSaver>,
         private val property: KProperty<V>,
@@ -100,8 +103,8 @@ class SpSaverFieldObserver<SpSaver : AbsSpSaver<SpSaver, *, *>>(
         override val filterKey: String = delegate.getLocalStorageKey(property)
 
         override fun onChangedOrClear(sharedPreferences: SharedPreferences, key: String?) {
-            val newValue = delegate.getValue(observer.saver, property)
-            forEach { it(newValue as V) }
+            val newValue: V = delegate.getValue(observer.saver, property)
+            forEach { it(newValue) }
         }
 
         override fun onActive() {
@@ -114,29 +117,28 @@ class SpSaverFieldObserver<SpSaver : AbsSpSaver<SpSaver, *, *>>(
             observer.sp.unregisterOnSharedPreferenceChangeListener(this)
         }
     }
+    //</editor-fold>
 
     /**
      * 任何属性更新时都会回调，回调时传入字段和其新值。
      */
     val anyPropertyChangeCallback: ILiveListener<(Pair<SpSaverFieldAccessor.Field<SpSaver, *>, *>) -> Unit>
-        get() = if (enableFieldObservable) {
-            privateAnyPropertySetCallback
-        } else {
-            spChangeListeners
-        }
+        get() = if (enableFieldObservable) privateAnyPropertySetCallback else spChangeListeners
 
     private val privateAnyPropertySetCallback =
         MediatorLiveListeners<(Pair<SpSaverFieldAccessor.Field<SpSaver, *>, *>) -> Unit>()
     private val spChangeListeners: LiveListeners<(Pair<SpSaverFieldAccessor.Field<SpSaver, *>, *>) -> Unit> =
         SpChangeLiveListeners(this)
 
+    //<editor-fold desc="对SharedPreference的监听，以获取所有字段的变化状态并回调字段更新" defaultstatus="collapsed">
     private class SpChangeLiveListeners<SpSaver : AbsSpSaver<SpSaver, *, *>>(
         private val observer: SpSaverFieldObserver<SpSaver>,
-        override val filterKey: String? = null,
     ) : LiveListeners<(Pair<SpSaverFieldAccessor.Field<SpSaver, *>, *>) -> Unit>(),
-        LifecycleBindOnSharedPreferenceChangeListener {
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
-        override fun onChangedOrClear(sharedPreferences: SharedPreferences, key: String?) {
+        override fun onSharedPreferenceChanged(
+            sharedPreferences: SharedPreferences?, key: String?
+        ) {
             val fields: List<SpSaverFieldAccessor.Field<SpSaver, *>> = if (key == null) {
                 // Android R以上时 clear sp，会回调null，R以下时clear时不会回调
                 observer.spSaverPropertyDelegateFields
@@ -145,22 +147,21 @@ class SpSaverFieldObserver<SpSaver : AbsSpSaver<SpSaver, *, *>>(
                 val fields: List<SpSaverFieldAccessor.Field<SpSaver, *>> =
                     observer.spSaverPropertyDelegateFields
                         .filter { it.localStorageKey == key }
-                // 找得到属性，回调通知该字段被更改
+                // 没有找到对应的字段，则忽略此次回调
                 fields.ifEmpty {
                     Log.d(TAG, buildString {
                         append("registerOnSharedPreferenceChangeListener: ")
                         append("cannot found property of the key($key) in class ")
                         append(observer.saver.javaClass.simpleName)
                     })
-                    return@onChangedOrClear
+                    return@onSharedPreferenceChanged
                 }
             }
-            fields.forEach { field -> onChangedOrClear(field) }
-        }
-
-        fun onChangedOrClear(field: SpSaverFieldAccessor.Field<SpSaver, *>) {
-            val callbackValue = field to field.get(observer.saver)
-            forEach { it(callbackValue) }
+            // 找得到属性，回调通知该字段被更改
+            fields.forEach { field ->
+                val callbackValue = field to field.get(observer.saver)
+                forEach { it(callbackValue) }
+            }
         }
 
         override fun onActive() {
@@ -173,6 +174,7 @@ class SpSaverFieldObserver<SpSaver : AbsSpSaver<SpSaver, *, *>>(
             observer.sp.unregisterOnSharedPreferenceChangeListener(this)
         }
     }
+    //</editor-fold>
 
     companion object {
         private const val TAG = "Ut_SpSaverFieldObserver"

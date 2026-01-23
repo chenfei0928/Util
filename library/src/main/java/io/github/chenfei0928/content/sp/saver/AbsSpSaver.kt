@@ -30,6 +30,12 @@ constructor(
         fun getLocalStorageKey(property: KProperty<*>): String
     }
 
+    /**
+     * 装饰器，用于在字段委托上附加额外的功能。例如：字段值变更监听、字段值类型转换等。
+     *
+     * @param SpSaver 子类类型
+     * @param V 输入输出的字段类型
+     */
     interface Decorate<SpSaver : AbsSpSaver<SpSaver, *, *>, V> {
         val saver: Delegate<SpSaver, V>
 
@@ -137,7 +143,5 @@ constructor(
                 apply()
             }
         }
-
-        fun <Sp : SharedPreferences> getSp(spSaver: AbsSpSaver<*, Sp, *>): Sp = spSaver.sp
     }
 }
