@@ -56,7 +56,6 @@ interface LifecycleBindOnSharedPreferenceChangeListener
      */
     abstract class SpValueLiveData<R>(
         private val sharedPreferences: SharedPreferences,
-        override val filterKey: String?,
     ) : LiveData<R>(), LifecycleBindOnSharedPreferenceChangeListener {
 
         final override fun onChangedOrClear(sharedPreferences: SharedPreferences, key: String?) {

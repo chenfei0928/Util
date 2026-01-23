@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.postDelayed
 import androidx.preference.PreferenceFragmentCompat
-import io.github.chenfei0928.content.sp.saver.toLiveData
 import io.github.chenfei0928.demo.bean.JsonBean
 import io.github.chenfei0928.demo.bean.Test
 import io.github.chenfei0928.lang.toStringByReflect
@@ -25,17 +24,16 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        spSaver.toLiveData(spSaver::int).observe(viewLifecycleOwner) {
-            Log.v(TAG, "onCreate: spSaver int newValue is $it")
+        spSaver.fieldAccessorCache.getPropertyLiveData(spSaver::int).observe(viewLifecycleOwner) {
+            Log.v(TAG, "onCreate: spSaver int newValue is $it, by getPropertyLiveData")
         }
-        spSaver.fieldAccessorCache.getPropertyObservable(spSaver::enum)
-            .observe(viewLifecycleOwner) {
-                Log.v(TAG, "onCreate: spSaver enum newValue is $it")
-            }
-        spSaver.fieldAccessorCache.anyPropertySetCallback.observe(viewLifecycleOwner) {
+        spSaver.fieldAccessorCache.getPropertyObservable(spSaver::int).observe(viewLifecycleOwner) {
+            Log.v(TAG, "onCreate: spSaver int newValue is $it, by getPropertyObservable")
+        }
+        spSaver.fieldAccessorCache.anyPropertyChangeCallback.observe(viewLifecycleOwner) {
             Log.v(TAG, buildString {
-                append("onCreate: spSaver onSpPropertyChange ")
-                append(it)
+                append("onCreate: spSaver anyPropertyChangeCallback ")
+                append(it.first)
                 append(' ')
                 append(it.second?.toStringByReflect())
             })

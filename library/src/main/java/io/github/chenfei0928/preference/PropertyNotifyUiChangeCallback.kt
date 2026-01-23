@@ -9,7 +9,7 @@ import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor
 
 /**
  * 可用于 [SharedPreferences.registerOnSharedPreferenceChangeListener] 来注册sp变化监听
- * 或 [io.github.chenfei0928.preference.sp.SpSaverFieldObserver.anyPropertySetCallback] 来注册mmkv变化监听，
+ * 或 [io.github.chenfei0928.preference.sp.SpSaverFieldObserver.anyPropertyChangeCallback] 来注册mmkv变化监听，
  * 来自动向 [preferenceScreen] 刷新关联项
  *
  * @author chenf()
