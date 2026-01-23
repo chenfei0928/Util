@@ -63,11 +63,11 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
             }
             dropDownPreference<JsonBean.JsonEnum>(TestMmkvSaver::enum) {
                 title = "enum"
-                enumSetter.bindEnum()
+                bindEnum()
             }
             multiSelectListPreference<JsonBean.JsonEnum>(TestMmkvSaver::enums) {
                 title = "enumList"
-                enumSetter.bindEnum()
+                bindEnum()
             }
             // 以下方式可以达到引用sp中结构体类型的字段，但会丢失值更新缓存，除非在实现时添加接口 FieldAccessor.SpLocalStorageKey
             val innerField = if ("json_boolean" in spSaver.fieldAccessorCache.properties) {

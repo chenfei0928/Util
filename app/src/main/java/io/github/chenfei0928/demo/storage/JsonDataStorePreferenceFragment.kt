@@ -46,11 +46,11 @@ class JsonDataStorePreferenceFragment : PreferenceFragmentCompat() {
             }
             dropDownPreference<JsonBean.JsonEnum>(dataStore.property(JsonBean::enum)) {
                 title = "enum"
-                enumSetter.bindEnum()
+                bindEnum()
             }
             multiSelectListPreference<JsonBean.JsonEnum>(dataStore.property(JsonBean::enums)) {
                 title = "enumList"
-                enumSetter.bindEnum()
+                bindEnum()
             }
         }
     }

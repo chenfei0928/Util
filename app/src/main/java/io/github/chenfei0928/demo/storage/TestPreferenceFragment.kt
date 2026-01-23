@@ -61,12 +61,12 @@ class TestPreferenceFragment : PreferenceFragmentCompat() {
             }
             dropDownPreference<TestEnum>(dataStore.property(Test.ENUM_FIELD_NUMBER)) {
                 title = "enum"
-                enumSetter.bindProtobufEnum { it.name }
+                bindProtobufEnum { it.name }
             }
             multiSelectListPreference<TestEnum>(dataStore.property(Test.ENUMLIST_FIELD_NUMBER)) {
                 Test.getDefaultInstance().enumListValueList
                 title = "enumList"
-                enumSetter.bindProtobufEnum { it.name }
+                bindProtobufEnum { it.name }
             }
         }
     }

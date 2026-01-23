@@ -11,7 +11,8 @@ import io.github.chenfei0928.preference.base.PreferenceEnumSetter
  * @author chenf()
  * @date 2025-02-26 15:12
  */
-class EnumDropDownPreference<E : Enum<E>> : DropDownPreference {
+class EnumDropDownPreference<E : Enum<E>>
+    : DropDownPreference, PreferenceEnumSetter<E> {
     constructor(
         context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes)
@@ -22,11 +23,10 @@ class EnumDropDownPreference<E : Enum<E>> : DropDownPreference {
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context) : super(context)
-
-    val enumSetter = PreferenceEnumSetter.ListPreferenceImpl<E>(this)
 }
 
-class EnumListPreference<E : Enum<E>> : ListPreference {
+class EnumListPreference<E : Enum<E>>
+    : ListPreference, PreferenceEnumSetter<E> {
     constructor(
         context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes)
@@ -37,11 +37,10 @@ class EnumListPreference<E : Enum<E>> : ListPreference {
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context) : super(context)
-
-    val enumSetter = PreferenceEnumSetter.ListPreferenceImpl<E>(this)
 }
 
-class EnumMultiSelectListPreference<E : Enum<E>> : MultiSelectListPreference {
+class EnumMultiSelectListPreference<E : Enum<E>>
+    : MultiSelectListPreference, PreferenceEnumSetter<E> {
     constructor(
         context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes)
@@ -52,6 +51,4 @@ class EnumMultiSelectListPreference<E : Enum<E>> : MultiSelectListPreference {
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context) : super(context)
-
-    val enumSetter = PreferenceEnumSetter.MultiSelectListPreferenceImpl<E>(this)
 }

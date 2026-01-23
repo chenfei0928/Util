@@ -68,11 +68,11 @@ class SpSaverPreferenceFragment : PreferenceFragmentCompat() {
             }
             dropDownPreference<JsonBean.JsonEnum>(TestSpSaver::enum) {
                 title = "enum"
-                enumSetter.bindEnum()
+                bindEnum()
             }
             multiSelectListPreference<JsonBean.JsonEnum>(TestSpSaver::enums) {
                 title = "enumList"
-                enumSetter.bindEnum()
+                bindEnum()
             }
             // 以下方式可以达到引用sp中结构体类型的字段，但不建议，sp存储大量数据时性能较低
             // 且会丢失值更新缓存，除非在实现时添加接口 FieldAccessor.SpLocalStorageKey

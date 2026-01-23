@@ -49,11 +49,11 @@ abstract class JsonLocalFileStoragePreferenceFragment(
             }
             dropDownPreference<JsonBean.JsonEnum>(dataStore.property(JsonBean::enum)) {
                 title = "enum"
-                enumSetter.bindEnum()
+                bindEnum()
             }
             multiSelectListPreference<JsonBean.JsonEnum>(dataStore.property(JsonBean::enums)) {
                 title = "enumList"
-                enumSetter.bindEnum()
+                bindEnum()
             }
         }
     }
