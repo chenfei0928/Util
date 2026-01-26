@@ -13,10 +13,11 @@ data class ListChanges(
     var to: Int = 0,
 ) {
 
-    abstract class ListCallback : ObservableList.OnListChangedCallback<ObservableList<Any>>() {
-        protected abstract fun onNotifyCallback(sender: ObservableList<Any>, changes: ListChanges)
+    abstract class ListCallback<E : Any> :
+        ObservableList.OnListChangedCallback<ObservableList<E>>() {
+        protected abstract fun onNotifyCallback(sender: ObservableList<E>, changes: ListChanges)
 
-        override fun onChanged(sender: ObservableList<Any>) {
+        override fun onChanged(sender: ObservableList<E>) {
             val listChanges = sListChanges.acquire() ?: ListChanges()
             onNotifyCallback(sender, listChanges.apply {
                 notificationType = ALL
@@ -28,7 +29,7 @@ data class ListChanges(
         }
 
         override fun onItemRangeChanged(
-            sender: ObservableList<Any>, positionStart: Int, itemCount: Int
+            sender: ObservableList<E>, positionStart: Int, itemCount: Int
         ) {
             val listChanges = sListChanges.acquire() ?: ListChanges()
             onNotifyCallback(sender, listChanges.apply {
@@ -41,7 +42,7 @@ data class ListChanges(
         }
 
         override fun onItemRangeInserted(
-            sender: ObservableList<Any>, positionStart: Int, itemCount: Int
+            sender: ObservableList<E>, positionStart: Int, itemCount: Int
         ) {
             val listChanges = sListChanges.acquire() ?: ListChanges()
             onNotifyCallback(sender, listChanges.apply {
@@ -54,7 +55,7 @@ data class ListChanges(
         }
 
         override fun onItemRangeMoved(
-            sender: ObservableList<Any>, fromPosition: Int, toPosition: Int, itemCount: Int
+            sender: ObservableList<E>, fromPosition: Int, toPosition: Int, itemCount: Int
         ) {
             val listChanges = sListChanges.acquire() ?: ListChanges()
             onNotifyCallback(sender, listChanges.apply {
@@ -67,7 +68,7 @@ data class ListChanges(
         }
 
         override fun onItemRangeRemoved(
-            sender: ObservableList<Any>, positionStart: Int, itemCount: Int
+            sender: ObservableList<E>, positionStart: Int, itemCount: Int
         ) {
             val listChanges = sListChanges.acquire() ?: ListChanges()
             onNotifyCallback(sender, listChanges.apply {

@@ -47,14 +47,14 @@ abstract class TwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>
      *
      * @param sourceObservable 如果是来自于某项观察的属性发生了变化，则为变化了值的
      * [Observable]/[ObservableList]/[ObservableMap]。
-     * 如果是[holder]其加载出来时同步状态则为[null]
+     * 如果是[holder]其加载出来时同步状态则为 `null`
      *
      * @param propertyId 根据[sourceObservable]类型不同：
-     * - [null]时为[null]；
-     * - [Observable.OnPropertyChangedCallback.onPropertyChanged]的propertyId；
+     * - `null` 时为 `null`；
+     * - [Observable.OnPropertyChangedCallback.onPropertyChanged]的 propertyId；
      * - [ObservableList.OnListChangedCallback]为参数封装的[ListChanges]；
-     * - [ObservableMap.OnMapChangedCallback.onMapChanged]的key；
-     * - [LiveData]时为[null]；
+     * - [ObservableMap.OnMapChangedCallback.onMapChanged]的 key；
+     * - [LiveData]时为 `null`；
      */
     protected abstract fun syncBeanChanged(
         holder: VH, sourceObservable: Any?, propertyId: Any?,
