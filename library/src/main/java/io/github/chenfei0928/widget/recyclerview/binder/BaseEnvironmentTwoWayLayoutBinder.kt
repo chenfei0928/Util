@@ -61,11 +61,11 @@ abstract class BaseEnvironmentTwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>(
             createCallback(holder, observer) ?: when {
                 observer is LiveData<*> ->
                     InternalCallback.LiveDataObserver(this, holder, observer)
-                DependencyChecker.dataBinding && observer is Observable ->
+                DependencyChecker.dataBindingCommon && observer is Observable ->
                     InternalCallback.ObservableObserver(this, holder, observer)
-                DependencyChecker.dataBinding && observer is ObservableList<*> ->
+                DependencyChecker.dataBindingCommon && observer is ObservableList<*> ->
                     InternalCallback.ObservableListObserver(this, holder, observer)
-                DependencyChecker.dataBinding && observer is ObservableMap<*, *> ->
+                DependencyChecker.dataBindingCommon && observer is ObservableMap<*, *> ->
                     InternalCallback.ObservableMapObserver(this, holder, observer)
                 else -> throw IllegalArgumentException(
                     "子类 ${this.javaClass.name} 未提供有效回调以注册，" +

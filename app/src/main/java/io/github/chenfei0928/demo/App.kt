@@ -18,6 +18,7 @@ class App : Application() {
             guavaListenableFuture = false,
             guava = false,
             androidXListenableFuture = false,
+            dataBindingCommon = false,
             flexBox = false,
             protobuf = DependencyChecker.Protobuf.FULL_ABOVE_4_28,
             googleTypes = GoogleTypes.Gson,

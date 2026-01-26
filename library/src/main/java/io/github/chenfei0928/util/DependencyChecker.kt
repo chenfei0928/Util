@@ -23,8 +23,8 @@ interface DependencyChecker {
     // androidx.concurrent:concurrent-futures-ktx
     val androidXListenableFuture: Boolean
 
-    // androidx.databinding:databinding-xxx
-    val dataBinding: Boolean
+    // androidx.databinding:databinding-common
+    val dataBindingCommon: Boolean
 
     // https://github.com/google/flexbox-layout
     val flexBox: Boolean
@@ -106,7 +106,7 @@ interface DependencyChecker {
         override val guavaListenableFuture: Boolean get() = UtilInitializer.sdkDependency.guavaListenableFuture
         override val guava: Boolean get() = UtilInitializer.sdkDependency.guava
         override val androidXListenableFuture: Boolean get() = UtilInitializer.sdkDependency.androidXListenableFuture
-        override val dataBinding: Boolean get() = UtilInitializer.sdkDependency.dataBinding
+        override val dataBindingCommon: Boolean get() = UtilInitializer.sdkDependency.dataBindingCommon
         override val flexBox: Boolean get() = UtilInitializer.sdkDependency.flexBox
         override val protobuf: Protobuf? get() = UtilInitializer.sdkDependency.protobuf
         override val googleTypes: GoogleTypes get() = UtilInitializer.sdkDependency.googleTypes
@@ -126,7 +126,7 @@ interface DependencyChecker {
         override val guava: Boolean,
         override val androidXListenableFuture: Boolean,
         override val flexBox: Boolean,
-        override val dataBinding: Boolean,
+        override val dataBindingCommon: Boolean,
         override val protobuf: Protobuf?,
         override val googleTypes: GoogleTypes,
         override val mmkv: Boolean,
@@ -203,8 +203,8 @@ interface DependencyChecker {
             }
         },
         DATA_BINDING {
-            // dataBinding库大概率不存在，使用方案2加载
-            override fun initValue(): Boolean = forName("androidx.databinding.DataBindingUtil")
+            // dataBinding库大概率存在，使用方案1加载
+            override fun initValue(): Boolean = reference<androidx.databinding.Observable>()
         },
 
         /**
@@ -297,7 +297,7 @@ interface DependencyChecker {
             override val guavaListenableFuture: Boolean by GUAVA_LISTENABLE_FUTURE
             override val guava: Boolean by GUAVA
             override val androidXListenableFuture: Boolean by ANDROID_X_LISTENABLE_FUTURE
-            override val dataBinding: Boolean by DATA_BINDING
+            override val dataBindingCommon: Boolean by DATA_BINDING
             override val flexBox: Boolean by FLEXBOX
             override val protobuf: Protobuf? by PROTOBUF
             override val googleTypes: GoogleTypes by GOOGLE_TYPES
