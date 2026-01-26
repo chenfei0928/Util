@@ -906,7 +906,7 @@ abstract class BundleSupportType<T>(
             override fun create(parcel: Parcel): SparseArray<T> {
                 val size = parcel.readInt()
                 val array = SparseArray<T>(size)
-                (0 until size).forEach { _ ->
+                for (i in 0 until size) {
                     val key = parcel.readInt()
                     val item: T? = if (ParcelCompat.readBoolean(parcel)) {
                         ParcelCompat.readParcelable(parcel, clazz.classLoader, clazz)

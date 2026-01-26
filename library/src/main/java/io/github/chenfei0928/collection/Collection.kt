@@ -1,7 +1,5 @@
 package io.github.chenfei0928.collection
 
-import java.util.LinkedList
-
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the collection.
  */
@@ -14,7 +12,7 @@ inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
 }
 
 fun <T> Iterator<T>.collect(): List<T> {
-    val output = LinkedList<T>()
+    val output = ArrayList<T>()
     forEach { output.add(it) }
     return output
 }
