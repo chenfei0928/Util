@@ -18,7 +18,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.drakeet.multitype.MultiTypeAdapter
 import com.google.protobuf.ProtobufParceler
-import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.app.fragment.ArgumentDelegate
 import io.github.chenfei0928.concurrent.coroutines.coroutineScope
 import io.github.chenfei0928.demo.bean.Bean
@@ -62,7 +61,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        MMKV.initialize(this)
 
         val binding = setContentViewBinding<ActivityMainBinding>(
             R.layout.activity_main, ActivityMainBinding::bind

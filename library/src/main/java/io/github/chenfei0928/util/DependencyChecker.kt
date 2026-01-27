@@ -4,6 +4,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.common.reflect.GoogleTypes
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.gson.reflect.TypeToken
+import com.google.protobuf.MessageLiteOrBuilder
+import com.google.protobuf.MessageOrBuilder
 import com.google.protobuf.TextFormat
 import io.github.chenfei0928.base.UtilInitializer
 
@@ -50,9 +52,12 @@ interface DependencyChecker {
     /**
      * Kotlin 编译器是否将 [kotlin.reflect.KProperty.returnType] 编译进二进制文件
      *
+     * 即 `XxxClass::field.returnType`，而非 [kotlin.reflect.typeOf] 方法
+     * 可查看反编译后的 `static final /* synthetic */ KProperty<Object>[] $$delegatedProperties` 字段查看
+     *
      * 为 true 时获取成本将变低
      *
-     * 实测 Kt2.2 时未默认提供该功能
+     * 实测 Kt2.3 时未默认提供该功能
      */
     val ktKPropertyCompiledKType: Boolean
 
@@ -61,9 +66,12 @@ interface DependencyChecker {
      * [kotlin.reflect.KProperty1.getDelegate]、
      * [kotlin.reflect.KProperty2.getDelegate] 编译进二进制文件
      *
+     * 即 `XxxClass::field.getDelegate()`
+     * 可查看反编译后的 `static final /* synthetic */ KProperty<Object>[] $$delegatedProperties` 字段查看
+     *
      * 为 true 时获取成本将变低
      *
-     * 实测 Kt2.2 时未默认提供该功能
+     * 实测 Kt2.3 时未默认提供该功能
      */
     val ktKPropertyCompiledDelegate: Boolean
 
@@ -72,32 +80,66 @@ interface DependencyChecker {
      * Protobuf 依赖信息，如果没有依赖，使用处的值类型定义应该为nullable，以用于标记没有依赖Protobuf依赖的情况
      *
      * @property hasFullDependency 是否包含完整的 protobuf 依赖，即包含了 protobuf-lite 与 protobuf-java 的所有类
-     * @property useTextFormatPrinter 是否使用在 Full 版 `4.28.0` 加入并成为推荐的 [TextFormat.Printer.emittingSingleLine]
-     * 设置后的 [TextFormat.Printer]，替代 [TextFormat.shortDebugString] 打印 Protobuf 消息
      */
     enum class Protobuf(
         internal val hasFullDependency: Boolean,
-        internal val useTextFormatPrinter: Boolean,
     ) {
         /**
          * Lite 版本依赖，不包含完整的 protobuf-java 依赖
          *
-         * 同时不支持 [com.google.protobuf.toShortString] 对消息进行 toString 单行输出
+         * 同时不支持对消息进行 toString 单行输出
          */
-        LITE(false, false),
+        LITE(false) {
+            override fun appendShortTo(
+                builder: StringBuilder, message: MessageLiteOrBuilder
+            ): StringBuilder = builder.append(message.toString())
+        },
 
         /**
          * Full 版本依赖，包含了 protobuf-java 的所有类
          *
          * 但依赖版本低于 `4.28.0` 不支持 [TextFormat.Printer.emittingSingleLine]
          */
-        FULL(true, false),
+        FULL(true) {
+            override fun appendShortTo(
+                builder: StringBuilder, message: MessageLiteOrBuilder
+            ): StringBuilder = if (message is MessageOrBuilder) {
+                builder.append(message.javaClass.simpleName)
+                builder.append('@')
+                builder.append(Integer.toHexString(hashCode()))
+                builder.append("(")
+                @Suppress("DEPRECATION")
+                builder.append(TextFormat.shortDebugString(message))
+                builder.append(')')
+            } else {
+                builder.append(message.toString())
+            }
+        },
 
         /**
          * Full 版本依赖，并版本大于等于 `4.28.0`，包含了 protobuf-java 的所有类，
          * 并支持 [TextFormat.Printer.emittingSingleLine]
          */
-        FULL_ABOVE_4_28(true, true);
+        FULL_ABOVE_4_28(true) {
+            private val printer by lazy { TextFormat.printer().emittingSingleLine(true) }
+            override fun appendShortTo(
+                builder: StringBuilder, message: MessageLiteOrBuilder
+            ): StringBuilder = if (message is MessageOrBuilder) {
+                builder.append(message.javaClass.simpleName)
+                builder.append('@')
+                builder.append(Integer.toHexString(hashCode()))
+                builder.append("(")
+                printer.print(message, builder)
+                builder.append(')')
+            } else {
+                builder.append(message.toString())
+            }
+        };
+
+        abstract fun appendShortTo(
+            builder: StringBuilder,
+            message: MessageLiteOrBuilder,
+        ): StringBuilder
     }
     //</editor-fold>
 

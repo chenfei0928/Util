@@ -1,8 +1,6 @@
 package io.github.chenfei0928.lang
 
 import androidx.annotation.ReturnThis
-import com.google.protobuf.Message
-import com.google.protobuf.toShortString
 import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.util.DependencyChecker
@@ -42,8 +40,10 @@ import kotlin.toString
  * @property reflectSkipPackages 跳过反射处理字段的包名前缀，例如"java.lang."、"kotlin."等。
  * 在列表中的类型哪怕 [useToStringMethod] 返回`false`也会直接调用 [Any.toString] 方法输出，否则使用反射输出字段。
  * @property skipNodeTypes 跳过节点记录的类型，例如String、Int等，在列表中的类型每次都会 toString
- * @property protobufToShortString 是否在对protobuf的 [Message] 类型调用 [Message.toShortString] 方法，而不是 [Message.toString]
- * @property stringerProvider 自定义类型的toString方式，例如 protobuf 的 [Message] 类型可以使用 [Message.toShortString]
+ * @property protobufToShortString 是否在对protobuf的 [com.google.protobuf.MessageLiteOrBuilder]
+ * 类型调用 [DependencyChecker.Protobuf.appendShortTo] 方法，而不是 [Any.toString]
+ * @property stringerProvider 自定义类型的toString方式，例如 protobuf 的
+ * [com.google.protobuf.MessageLiteOrBuilder] 类型可以使用 [DependencyChecker.Protobuf.appendShortTo]
  */
 data class ToStringByReflectConfig(
     private val useToString: Boolean,

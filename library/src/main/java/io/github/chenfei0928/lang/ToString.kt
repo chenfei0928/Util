@@ -9,8 +9,7 @@ import androidx.annotation.ReturnThis
 import androidx.collection.LruCache
 import androidx.collection.SparseArrayCompat
 import androidx.core.util.size
-import com.google.protobuf.Message
-import com.google.protobuf.toShortString
+import com.google.protobuf.MessageLiteOrBuilder
 import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.collection.getOrPut
 import io.github.chenfei0928.collection.mapToArray
@@ -20,6 +19,7 @@ import io.github.chenfei0928.reflect.isFinal
 import io.github.chenfei0928.reflect.isStatic
 import io.github.chenfei0928.reflect.isTransient
 import io.github.chenfei0928.reflect.isWriteByKotlin
+import io.github.chenfei0928.util.DependencyChecker
 import io.github.chenfei0928.util.Log
 import java.lang.ref.Reference
 import java.lang.reflect.Field
@@ -175,9 +175,10 @@ private fun StringBuilder.appendByReflectImpl(
             appendByReflectImpl(all, record.onChildNode(all, "getAll"))
         }
         // 判断该类有没有重写toString
-        else -> if (record.config.protobufToShortString && any is Message) {
+        else -> if (record.config.protobufToShortString && any is MessageLiteOrBuilder) {
             // protobuf 序列化对象
-            append(any.toShortString())
+            DependencyChecker.protobuf?.appendShortTo(this, any)
+            this
         } else if (!record.config.useToStringMethod(any.javaClass)) {
             // 如果该类的 toString 方法没有被重写过（包括其父类）则反射输出字段
             appendObjectByReflectImpl(any, record)

@@ -2,6 +2,7 @@ package io.github.chenfei0928.demo
 
 import android.app.Application
 import com.google.common.reflect.GoogleTypes
+import com.tencent.mmkv.MMKV
 import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.util.DependencyChecker
 
@@ -13,6 +14,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        MMKV.initialize(this)
         UtilInitializer.sdkDependency = DependencyChecker.UserInput(
             material = false,
             guavaListenableFuture = false,

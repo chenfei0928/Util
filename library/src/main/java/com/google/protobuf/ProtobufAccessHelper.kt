@@ -64,25 +64,12 @@ val <T : MessageLite> Class<T>.protobufDefaultInstance: T
 val <T : MessageLite> Class<T>.protobufParserForType: Parser<T>
     get() = protobufDefaultInstance.parserForType as Parser<T>
 
-private val shortDebugStringer: (MessageOrBuilder, Appendable) -> Unit by lazy(LazyThreadSafetyMode.NONE) {
-    if (DependencyChecker.protobuf?.useTextFormatPrinter == true) {
-        TextFormat.printer().emittingSingleLine(true)::print
-    } else { message, appendable ->
-        appendable.append(TextFormat.shortDebugString(message))
-    }
-}
-
 /**
  * 对Protobuf结构体进行短 toString，
  * 它不会像标准toString一样每输出一个字段就换行
  */
-fun Message.toShortString() = buildString {
-    append(this@toShortString.javaClass.simpleName)
-    append('@')
-    append(Integer.toHexString(hashCode()))
-    append("(")
-    shortDebugStringer(this@toShortString, this)
-    append(')')
+fun MessageOrBuilder.toShortString() = buildString {
+    DependencyChecker.protobuf?.appendShortTo(this, this@toShortString)
 }
 
 //<editor-fold desc="Protobuf获取枚举未注册值" defaultstatus="collapsed">
