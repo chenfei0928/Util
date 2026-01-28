@@ -77,6 +77,7 @@ open class ReadOnlyCacheDelegate<Host : Any, V>(
         CACHE_MODE_INSTANCE,
         CACHE_MODE_INSTANCE_WITH_PROPERTY
     )
+    @Retention(AnnotationRetention.SOURCE)
     annotation class CacheMode
 
     companion object {
