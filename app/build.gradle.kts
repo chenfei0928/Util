@@ -44,7 +44,6 @@ android {
 dependencies {
     implementation(DepsAndroidx.appcompat)
     implementation(DepsAndroidx.constraintlayout.layout)
-    implementation(DepsAndroidx.multidex.core)
     implementation(DepsAndroidx.preference)
     implementation(DepsAndroidx.lifecycle.service)
     implementation(DepsAndroidx.datastore.core)
