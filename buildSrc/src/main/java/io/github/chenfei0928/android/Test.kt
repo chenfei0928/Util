@@ -48,7 +48,8 @@ fun Project.applyTest() {
         debugImplementation(DepsAndroidx.fragmentTest)
         testImplementation(DepsAndroidx.arch.testing)
         testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-        testImplementation("com.github.andrzejchm.RESTMock:android:0.3.1")
+        // https://github.com/andrzejchm/RESTMock
+        testImplementation("com.github.andrzejchm.RESTMock:android:0.4.4")
         //AssertJ
         testImplementation("org.assertj:assertj-core:3.13.2")
         testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinPluginVersion")
