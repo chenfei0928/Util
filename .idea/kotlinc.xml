@@ -10,6 +10,7 @@
     <option name="additionalArguments" value="-XXLanguage:ExplicitBackingFields" />
   </component>
   <component name="KotlinJpsPluginSettings">
-    <option name="version" value="2.3.0" />
+    <option name="externalSystemId" value="Gradle" />
+    <option name="version" value="2.4.0" />
   </component>
 </project>

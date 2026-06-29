@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 
 /**
  * 无副作用，类似于{@link Keep}
- * 指定某个方法被混淆删除后不会产生副作用，用于去除Debug日志用
+ * 标记如果某个方法被混淆删除后不会产生副作用，用于去除Debug日志用
  *
  * @author ChenFei(chenfei0928 @ gmail.com)
  * @date 2019-08-19 14:22

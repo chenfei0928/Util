@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting
  * @author chenf()
  * @date 2025-02-28 11:49
  */
+//@kotlin.internal.IntrinsicConstEvaluation
 val Descriptors.GenericDescriptor.jvmFullyQualifiedName: String
     get() {
         val fileOptions = file.options

@@ -1,5 +1,7 @@
 package io.github.chenfei0928.util
 
+import android.os.Build
+import android.os.DeadObjectException
 import android.os.DeadSystemException
 import android.util.Log
 import androidx.annotation.Size
@@ -38,8 +40,10 @@ internal object SystemLog : LogInterface {
                 if (t is java.net.UnknownHostException) {
                     return@run msg
                 }
-                if (t is DeadSystemException) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && t is DeadSystemException) {
                     return@run "$msg\nDeadSystemException: The system died; earlier logs will point to the root cause"
+                } else if (t is DeadObjectException) {
+                    return@run "$msg\nDeadObjectException: The system died; earlier logs will point to the root cause"
                 }
                 t = t.cause
             }

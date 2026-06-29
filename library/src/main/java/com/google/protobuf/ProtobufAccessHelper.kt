@@ -68,7 +68,7 @@ val <T : MessageLite> Class<T>.protobufParserForType: Parser<T>
  * 对Protobuf结构体进行短 toString，
  * 它不会像标准toString一样每输出一个字段就换行
  */
-fun MessageOrBuilder.toShortString() = buildString {
+fun MessageOrBuilder.toShortString(): String = buildString {
     DependencyChecker.protobuf?.appendShortTo(this, this@toShortString)
 }
 
@@ -78,6 +78,7 @@ const val PROTOBUF_ENUM_UNRECOGNIZED_NAME = "UNRECOGNIZED"
 /**
  * 获取protobuf枚举的默认值实例
  */
+//@kotlin.internal.IntrinsicConstEvaluation
 fun <E> Class<E>.protobufEnumUnrecognized(): E
         where E : kotlin.Enum<E>, E : ProtocolMessageEnum =
     enumConstants!!.find { it.isUnrecognized }!!
@@ -85,6 +86,7 @@ fun <E> Class<E>.protobufEnumUnrecognized(): E
 /**
  * 获取protobuf枚举的默认值实例
  */
+//@kotlin.internal.IntrinsicConstEvaluation
 inline fun <reified E> protobufEnumUnrecognized(): E
         where E : kotlin.Enum<E>, E : ProtocolMessageEnum =
     enumValues<E>().find { it.isUnrecognized }!!
@@ -100,6 +102,7 @@ inline fun <reified E> protobufEnumAvailableValues(): Array<E> where  E : kotlin
     }.toTypedArray()
 }
 
+//@kotlin.internal.IntrinsicConstEvaluation
 val <E> E.isUnrecognized: Boolean
         where E : kotlin.Enum<E>, E : ProtocolMessageEnum
     get() = this.name == PROTOBUF_ENUM_UNRECOGNIZED_NAME

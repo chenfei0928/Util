@@ -321,12 +321,14 @@ interface DependencyChecker {
 
         companion object : DependencyChecker {
             val PROTOBUF: Lazy<Protobuf?> = lazy(LazyThreadSafetyMode.NONE) {
-                if (!PROTOBUF_LITE.value) null
-                else if (!PROTOBUF_FULL.value) Protobuf.LITE
-                else if (
-                    TextFormat::shortDebugString.annotations.find { it is java.lang.Deprecated } != null
-                ) Protobuf.FULL_ABOVE_4_28
-                else Protobuf.FULL
+                when {
+                    !PROTOBUF_LITE.value -> null
+                    !PROTOBUF_FULL.value -> Protobuf.LITE
+                    @Suppress("DEPRECATION")
+                    TextFormat::shortDebugString.annotations.find { it is java.lang.Deprecated } != null ->
+                        Protobuf.FULL_ABOVE_4_28
+                    else -> Protobuf.FULL
+                }
             }
 
             val GOOGLE_TYPES: Lazy<GoogleTypes> = lazy(LazyThreadSafetyMode.NONE) {

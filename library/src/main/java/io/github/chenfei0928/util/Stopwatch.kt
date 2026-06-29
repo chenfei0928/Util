@@ -63,18 +63,18 @@ class Stopwatch(
         for (i in available.size - 2 downTo 0) {
             val node = available[i]
             val node1 = available[i + 1]
-            // 判断下一节点起止范围与当前节点的起止范围
+            // 判断下一个节点起止范围与当前节点的起止范围
             if (node1.start in node) {
-                // 如果下一节点结束位置在当前节点的范围外，合并这两个节点再移除下一节点
-                // 否则当前节点完全包含下一节点，直接移除下一节点
+                // 如果下一个节点结束位置在当前节点的范围外，合并这两个节点再移除下一个节点
+                // 否则当前节点完全包含下一个节点，直接移除下一个节点
                 if (node1.end !in node) {
                     node.end = node1.end
                 }
                 available.remove(node1)
                 data.remove(node1)
             } else if (node.start in node1) {
-                // 如果下一节点结束位置在当前节点的范围外，合并这两个节点再移除下一节点
-                // 否则当前节点完全包含下一节点，直接移除下一节点
+                // 如果下一个节点结束位置在当前节点的范围外，合并这两个节点再移除下一个节点
+                // 否则当前节点完全包含下一个节点，直接移除下一个节点
                 if (node.end !in node1) {
                     node1.end = node.end
                 }

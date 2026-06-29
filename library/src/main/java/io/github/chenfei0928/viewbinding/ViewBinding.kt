@@ -90,7 +90,7 @@ private fun findSetContentViewChildView(
 ): View {
     val endChildren = parent.childCount
     val childrenAdded = endChildren - startChildren
-    return if (childrenAdded == 1) {
+    if (childrenAdded == 1) {
         return parent.getChildAt(endChildren - 1)
     } else {
         val children = arrayOfNulls<View>(childrenAdded)

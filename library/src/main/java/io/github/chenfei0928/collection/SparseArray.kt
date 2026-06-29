@@ -4,6 +4,7 @@ import android.util.SparseArray
 import android.util.SparseIntArray
 import androidx.collection.SparseArrayCompat
 import androidx.core.util.containsKey
+import androidx.core.util.size
 
 inline operator fun <T> SparseArrayCompat<T>.contains(value: T): Boolean {
     return containsValue(value)
@@ -19,7 +20,7 @@ inline fun <T> SparseArray<T>.getOrPut(key: Int, defaultValue: (key: Int) -> T):
     return newValue
 }
 
-fun <T> SparseArray<T>.keys(): IntArray = IntArray(size()) {
+fun <T> SparseArray<T>.keys(): IntArray = IntArray(size) {
     keyAt(it)
 }
 

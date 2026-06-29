@@ -53,8 +53,8 @@ object Contract {
 
     //<editor-fold desc="工程Module的sdkVersion等配置">
     internal const val minSdkVersion = 21
-    internal const val targetSdkVersion = 35
-    internal const val compileSdkVersion = 35
+    internal const val targetSdkVersion = 37
+    internal const val compileSdkVersion = 37
 
     const val flavorDimensions_campaignName = "campaignName"
     //</editor-fold>
