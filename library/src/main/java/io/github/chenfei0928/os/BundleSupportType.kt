@@ -1658,21 +1658,21 @@ abstract class BundleSupportType<T>(
             val clazz = type.tClass<Any>()
             val creator: Creator<*> = when {
                 // 基础数据类型与其数组
-                clazz == java.lang.Byte::class.java || clazz == java.lang.Byte.TYPE -> ByteType
+                clazz == Byte::class.java || clazz == java.lang.Byte.TYPE -> ByteType
                 clazz == ByteArray::class.java -> ByteArrayType
-                clazz == java.lang.Short::class.java || clazz == java.lang.Short.TYPE -> ShortType
+                clazz == Short::class.java || clazz == java.lang.Short.TYPE -> ShortType
                 clazz == ShortArray::class.java -> ShortArrayType
-                clazz == Integer::class.java || clazz == Integer.TYPE -> IntType
+                clazz == Int::class.java || clazz == Integer.TYPE -> IntType
                 clazz == IntArray::class.java -> IntArrayType
-                clazz == java.lang.Long::class.java || clazz == java.lang.Long.TYPE -> LongType
+                clazz == Long::class.java || clazz == java.lang.Long.TYPE -> LongType
                 clazz == LongArray::class.java -> LongArrayType
-                clazz == java.lang.Float::class.java || clazz == java.lang.Float.TYPE -> FloatType
+                clazz == Float::class.java || clazz == java.lang.Float.TYPE -> FloatType
                 clazz == FloatArray::class.java -> FloatArrayType
-                clazz == java.lang.Double::class.java || clazz == java.lang.Double.TYPE -> DoubleType
+                clazz == Double::class.java || clazz == java.lang.Double.TYPE -> DoubleType
                 clazz == DoubleArray::class.java -> DoubleArrayType
-                clazz == java.lang.Boolean::class.java || clazz == java.lang.Boolean.TYPE -> BooleanType
+                clazz == Boolean::class.java || clazz == java.lang.Boolean.TYPE -> BooleanType
                 clazz == BooleanArray::class.java -> BooleanArrayType
-                clazz == Character::class.java || clazz == Character.TYPE -> CharType
+                clazz == Char::class.java || clazz == Character.TYPE -> CharType
                 clazz == CharArray::class.java -> CharArrayType
                 // 原生的final类型
                 clazz == String::class.java -> StringType
@@ -1691,7 +1691,7 @@ abstract class BundleSupportType<T>(
                         arg0Class.isSubclassOf(Parcelable::class.java) -> ListParcelableType
                         arg0Class == String::class.java -> ListStringType
                         arg0Class.isSubclassOf(CharSequence::class.java) -> ListCharSequenceType
-                        arg0Class == Integer::class.java -> ListIntegerType
+                        arg0Class == Int::class.java -> ListIntegerType
                         DependencyChecker.protobuf != null && arg0Class.isSubclassOf(MessageLite::class.java) ->
                             ListProtoBufType
                         else -> NotSupportType

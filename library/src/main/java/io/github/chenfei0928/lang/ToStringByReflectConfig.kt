@@ -4,32 +4,8 @@ import androidx.annotation.ReturnThis
 import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.util.DependencyChecker
-import java.lang.Byte
-import java.lang.CharSequence
-import java.lang.Double
-import java.lang.Float
-import java.lang.Long
-import java.lang.Number
-import java.lang.Short
 import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.Any
-import kotlin.Boolean
-import kotlin.BooleanArray
-import kotlin.ByteArray
-import kotlin.CharArray
-import kotlin.DoubleArray
-import kotlin.FloatArray
-import kotlin.IntArray
-import kotlin.LongArray
-import kotlin.ShortArray
-import kotlin.String
-import kotlin.Suppress
-import kotlin.apply
-import kotlin.charArrayOf
-import kotlin.code
-import kotlin.toRawBits
-import kotlin.toString
 
 /**
  * 配置ToStringByReflect的参数
@@ -254,17 +230,17 @@ data class ToStringByReflectConfig(
                 "kotlinx.",
             ),
             skipNodeTypes = setOf(
-                java.lang.String::class.java,
+                String::class.java,
                 CharSequence::class.java,
                 Number::class.java,
-                java.lang.Boolean::class.java,
+                Boolean::class.java,
                 Byte::class.java,
                 Short::class.java,
-                Integer::class.java,
+                Int::class.java,
                 Long::class.java,
                 Float::class.java,
                 Double::class.java,
-                Character::class.java,
+                Char::class.java,
                 Void::class.java,
                 Date::class.java,
             ),

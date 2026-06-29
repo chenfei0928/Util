@@ -103,24 +103,15 @@ object ListenersProxy {
         return@newProxyInstance if (lis != null) {
             method.safeInvoke(lis, args)
         } else when (method.returnType) {
-            Void::class.java, Void.TYPE
-                -> null
-            java.lang.Byte::class.java, java.lang.Byte.TYPE
-                -> 0.toByte()
-            java.lang.Short::class.java, java.lang.Short.TYPE
-                -> 0.toShort()
-            Integer::class.java, Integer.TYPE
-                -> 0
-            java.lang.Long::class.java, java.lang.Long.TYPE,
-                -> 0L
-            java.lang.Float::class.java, java.lang.Float.TYPE
-                -> 0f
-            java.lang.Double::class.java, java.lang.Double.TYPE
-                -> 0.0
-            java.lang.Boolean::class.java, java.lang.Boolean.TYPE
-                -> false
-            java.lang.Character::class.java, java.lang.Character.TYPE
-                -> Character.MIN_VALUE
+            Void::class.java, Void.TYPE -> null
+            Byte::class.java, java.lang.Byte.TYPE -> 0.toByte()
+            Short::class.java, java.lang.Short.TYPE -> 0.toShort()
+            Int::class.java, Integer.TYPE -> 0
+            Long::class.java, java.lang.Long.TYPE -> 0L
+            Float::class.java, java.lang.Float.TYPE -> 0f
+            Double::class.java, java.lang.Double.TYPE -> 0.0
+            Boolean::class.java, java.lang.Boolean.TYPE -> false
+            Char::class.java, Character.TYPE -> Character.MIN_VALUE
             else -> null
         }
     } as T
