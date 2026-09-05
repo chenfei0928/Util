@@ -9,13 +9,12 @@ tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
     }
 }
 
-@Suppress("kotlin:S6624")
 dependencies {
     // https://github.com/JetBrains/kotlin
-    val kotlinVersion = "2.4.0"
+    val kotlinVersion = "2.4.10"
     // AndroidGradlePlugin版本，建议与IDE版本同步
     // https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml
-    val agpVersion = "9.1.0"
+    val agpVersion = "9.4.0"
 
     implementation(kotlin("stdlib-jdk7", kotlinVersion))
     implementation(kotlin("reflect", kotlinVersion))
@@ -68,7 +67,7 @@ dependencies {
     implementation("com.github.CodingGay:BlackObfuscator-ASPlugin:3.9")
     // 增加 protobuf-gradle-plugin 插件
     // https://github.com/google/protobuf-gradle-plugin
-    implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.6")
+    implementation("com.google.protobuf:protobuf-gradle-plugin:0.10.0")
     // 美团打包工具
     // https://github.com/Meituan-Dianping/walle
     implementation("com.meituan.android.walle:plugin:1.1.7")

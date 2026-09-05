@@ -103,10 +103,6 @@ fun Project.applyKotlin(
     }
 
     extensions.configure<KotlinAndroidProjectExtension>("kotlin") {
-        sourceSets.all {
-            languageSettings.enableLanguageFeature("ExplicitBackingFields")
-            languageSettings.enableLanguageFeature("ExperimentalAtomicApi")
-        }
     }
 
     dependencies {

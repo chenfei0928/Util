@@ -57,7 +57,7 @@ open class LifecycleCacheDelegate<Owner : LifecycleOwner, V : LifecycleEventObse
         lateinit var observer: LifecycleEventObserver
 
         override fun close() {
-            Log.d(TAG, "close: $observer because $owner was close.", RuntimeException())
+            Log.d(TAG, "close: ", RuntimeException("Close $observer because $owner was close."))
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 cache.remove(owner, observer)
             } else {
