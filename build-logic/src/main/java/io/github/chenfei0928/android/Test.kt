@@ -1,9 +1,11 @@
 package io.github.chenfei0928.android
 
-import io.github.chenfei0928.DepsAndroidx
 import io.github.chenfei0928.compiler.kotlinPluginVersion
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debugImplementation
+import io.github.chenfei0928.util.libsForCatalog
+import io.github.chenfei0928.util.library
+import io.github.chenfei0928.util.version
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.dependencies
@@ -13,6 +15,7 @@ import org.gradle.kotlin.dsl.dependencies
  * @date 2021-07-28 17:37
  */
 fun Project.applyTest() {
+    val libs = libsForCatalog()
     buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
         defaultConfig {
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -45,8 +48,8 @@ fun Project.applyTest() {
         testImplementation("org.mockito:mockito-core:5.17.0")
         testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
         // Testing Fragments in Isolation
-        debugImplementation(DepsAndroidx.fragmentTest)
-        testImplementation(DepsAndroidx.arch.testing)
+        debugImplementation(libs.library("androidx-fragment-testing"))
+        testImplementation(libs.library("androidx-arch-testing"))
         testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
         // https://github.com/andrzejchm/RESTMock
         testImplementation("com.github.andrzejchm.RESTMock:android:0.4.4")

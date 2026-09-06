@@ -4,8 +4,10 @@ import com.qihoo360.replugin.gradle.host.Replugin
 import com.qihoo360.replugin.gradle.host.RepluginConfig
 import com.qihoo360.replugin.gradle.plugin.ReClassConfig
 import com.qihoo360.replugin.gradle.plugin.ReClassPlugin
-import io.github.chenfei0928.Deps
 import io.github.chenfei0928.util.implementation
+import io.github.chenfei0928.util.libsForCatalog
+import io.github.chenfei0928.util.library
+import io.github.chenfei0928.util.version
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
@@ -15,6 +17,7 @@ import org.gradle.kotlin.dsl.dependencies
  * @date 2025-03-17 17:41
  */
 fun Project.applyRePluginHost() {
+    val libs = libsForCatalog()
     apply<Replugin>()
 
     extensions.configure<RepluginConfig>("repluginHostConfig") {
@@ -23,24 +26,22 @@ fun Project.applyRePluginHost() {
     }
 
     dependencies {
-        implementation(Deps.framework.repluginHost)
+        implementation(libs.library("replugin-host"))
     }
 }
 
 fun Project.applyRePluginPlugin(name: String = project.name) {
+    val libs = libsForCatalog()
     apply<ReClassPlugin>()
 
     extensions.configure<ReClassConfig>("repluginPluginConfig") {
         appModule = "app"
-        //插件名
         pluginName = name
-        //宿主app的包名
         hostApplicationId = "com.cocos.adventure.app"
-        //宿主app的启动activity
         hostAppLauncherActivity = "com.xi.quickgame.ui.main.main.MainActivity"
     }
 
     dependencies {
-        implementation(Deps.framework.repluginPlugin)
+        implementation(libs.library("replugin-plugin"))
     }
 }

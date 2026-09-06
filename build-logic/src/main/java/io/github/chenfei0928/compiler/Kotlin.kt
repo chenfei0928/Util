@@ -3,11 +3,13 @@ package io.github.chenfei0928.compiler
 import com.google.devtools.ksp.gradle.KspExtension
 import com.google.devtools.ksp.gradle.KspGradleSubplugin
 import io.github.chenfei0928.Contract
-import io.github.chenfei0928.Deps
 import io.github.chenfei0928.Env
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.debugImplementation
 import io.github.chenfei0928.util.implementation
+import io.github.chenfei0928.util.libsForCatalog
+import io.github.chenfei0928.util.library
+import io.github.chenfei0928.util.version
 import io.github.chenfei0928.util.writeTmpProguardFile
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
@@ -106,6 +108,7 @@ fun Project.applyKotlin(
     }
 
     dependencies {
+        val libs = project.libsForCatalog()
         // stdlib 有jdk7和jdk8版本
         val jdkVersion = if (Contract.androidSdkToJdkVersion(Contract.minSdkVersion) >= 8) 8 else 7
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk$jdkVersion:$kotlinPluginVersion")
@@ -115,19 +118,19 @@ fun Project.applyKotlin(
         // Json序列化支持
         // https://github.com/Kotlin/kotlinx.serialization
         if (json) {
-            implementation(Deps.kotlin.json)
+            implementation(libs.library("kotlinx-serialization-json"))
         }
         if (protobuf) {
-            implementation(Deps.kotlin.protobuf)
+            implementation(libs.library("kotlinx-serialization-protobuf"))
         }
         // 协程库
         // https://github.com/Kotlin/kotlinx.coroutines
         val coroutinesVersion = "1.10.2"
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+        implementation(libs.library("kotlinx-coroutines-android"))
         // Kotlin官方解决方案，需要在Kotlin协程库在入前调用 System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
         // https://github.com/Kotlin/kotlinx.coroutines/blob/master/docs/topics/debugging.md
         // https://github.com/Kotlin/kotlinx.coroutines/tree/master/kotlinx-coroutines-debug
-        debugImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:$coroutinesVersion")
+        debugImplementation(libs.library("kotlinx-coroutines-debug"))
         // 此库可以将调用栈补充到被协程抛出的异常上，每网上抛出一次suspend/coroutineContext(?)切换均会追加一个调用栈
         // https://github.com/Anamorphosee/stacktrace-decoroutinator#android
 //        debugImplementation("dev.reformator.stacktracedecoroutinator:stacktrace-decoroutinator-android:2.3.9")

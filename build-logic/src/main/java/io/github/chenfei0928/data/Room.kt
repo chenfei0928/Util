@@ -1,6 +1,5 @@
 package io.github.chenfei0928.data
 
-import io.github.chenfei0928.DepsAndroidx
 import io.github.chenfei0928.compiler.buildSrcKapt
 import io.github.chenfei0928.compiler.buildSrcKsp
 import io.github.chenfei0928.compiler.hasKotlin
@@ -11,10 +10,14 @@ import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.implementation
 import io.github.chenfei0928.util.kapt
 import io.github.chenfei0928.util.ksp
+import io.github.chenfei0928.util.libsForCatalog
+import io.github.chenfei0928.util.library
+import io.github.chenfei0928.util.version
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 
 fun Project.applyRoom() {
+    val libs = libsForCatalog()
     val schemesPath = "$projectDir/schemas"
 
     buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
@@ -26,7 +29,7 @@ fun Project.applyRoom() {
     }
 
     dependencies {
-        implementation(DepsAndroidx.room.runtime)
+        implementation(libs.library("androidx-room-runtime"))
     }
 
     val param = mapOf(
@@ -40,8 +43,8 @@ fun Project.applyRoom() {
         }
 
         dependencies {
-            ksp(DepsAndroidx.room.compiler)
-            implementation(DepsAndroidx.room.ktx)
+            ksp(libs.library("androidx-room-compiler"))
+            implementation(libs.library("androidx-room-ktx"))
         }
     } else {
         buildSrcAndroid<com.android.build.gradle.BaseExtension>().apply {
@@ -65,10 +68,10 @@ fun Project.applyRoom() {
 
         dependencies {
             if (hasKotlin) {
-                kapt(DepsAndroidx.room.compiler)
-                implementation(DepsAndroidx.room.ktx)
+                kapt(libs.library("androidx-room-compiler"))
+                implementation(libs.library("androidx-room-ktx"))
             } else {
-                annotationProcessor(DepsAndroidx.room.compiler)
+                annotationProcessor(libs.library("androidx-room-compiler"))
             }
         }
     }

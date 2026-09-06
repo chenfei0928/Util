@@ -7,7 +7,6 @@ import com.tencent.tinker.build.gradle.task.TinkerPatchSchemaTask
 import com.tencent.tinker.build.util.FileOperation
 import com.tencent.tinker.build.util.TypedValue
 import io.github.chenfei0928.Contract
-import io.github.chenfei0928.Deps
 import io.github.chenfei0928.bean.ApkVariantInfo
 import io.github.chenfei0928.compiler.applyProguardMappingKeeping
 import io.github.chenfei0928.util.buildSrcAndroid
@@ -15,6 +14,9 @@ import io.github.chenfei0928.util.checkApp
 import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.forEachAssembleTasks
 import io.github.chenfei0928.util.implementation
+import io.github.chenfei0928.util.libsForCatalog
+import io.github.chenfei0928.util.library
+import io.github.chenfei0928.util.version
 import io.github.chenfei0928.util.mappingFileSaveDir
 import io.github.chenfei0928.util.replaceFirstCharToUppercase
 import org.gradle.api.Project
@@ -33,6 +35,7 @@ import java.util.Locale
  * @date 2021-10-22 17:56
  */
 fun Project.applyAppTinker() {
+    val libs = libsForCatalog()
     checkApp("applyAppTinker")
 
     applyProguardMappingKeeping()
@@ -53,7 +56,7 @@ fun Project.applyAppTinker() {
 
     // 添加 tinkerSdk 依赖
     dependencies {
-        implementation(Deps.framework.tinker)
+        implementation(libs.library("tinker"))
     }
 }
 

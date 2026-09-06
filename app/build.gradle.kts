@@ -1,5 +1,3 @@
-import io.github.chenfei0928.Deps
-import io.github.chenfei0928.DepsAndroidx
 import io.github.chenfei0928.android.applyApp
 import io.github.chenfei0928.android.applyJetpackCompose
 import io.github.chenfei0928.android.applyTest
@@ -42,20 +40,17 @@ android {
 }
 
 dependencies {
-    implementation(DepsAndroidx.appcompat)
-    implementation(DepsAndroidx.constraintlayout.layout)
-    implementation(DepsAndroidx.preference)
-    implementation(DepsAndroidx.lifecycle.service)
-    implementation(DepsAndroidx.datastore.core)
-    implementation(DepsAndroidx.media)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.preference)
+    implementation(libs.androidx.lifecycle.service)
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.media)
 
-    implementation(Deps.widget.recyclerView.multiType)
+    implementation(libs.multi.type)
 
-    implementation(Deps.lib.xxPermission)
-//    implementation(Deps.lib.util) {
-//        isChanging = "SNAPSHOT" in version.toString()
-//    }
+    implementation(libs.xxpermission)
     implementation(projects.library)
-    implementation(Deps.lib.google.gson)
-    implementation(Deps.lib.mmkv)
+    implementation(libs.gson)
+    implementation(libs.mmkv)
 }

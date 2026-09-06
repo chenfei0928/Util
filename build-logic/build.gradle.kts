@@ -1,11 +1,23 @@
 plugins {
     java
     `kotlin-dsl`
+    `java-gradle-plugin`
+    `maven-publish`
+}
+
+group = "io.github.chenfei0928"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
     compilerOptions {
         freeCompilerArgs.add("-Xskip-metadata-version-check")
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
     }
 }
 

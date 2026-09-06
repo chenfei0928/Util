@@ -1,7 +1,6 @@
 package io.github.chenfei0928.android
 
 import com.alibaba.android.arouter.register.launch.PluginLaunch
-import io.github.chenfei0928.Deps
 import io.github.chenfei0928.compiler.applyKotlin
 import io.github.chenfei0928.compiler.buildSrcKapt
 import io.github.chenfei0928.compiler.hasKotlin
@@ -9,6 +8,9 @@ import io.github.chenfei0928.util.annotationProcessor
 import io.github.chenfei0928.util.buildSrcAndroid
 import io.github.chenfei0928.util.implementation
 import io.github.chenfei0928.util.kapt
+import io.github.chenfei0928.util.libsForCatalog
+import io.github.chenfei0928.util.library
+import io.github.chenfei0928.util.version
 import io.github.chenfei0928.util.writeTmpProguardFile
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -22,6 +24,7 @@ import org.gradle.kotlin.dsl.dependencies
  * @date 2021-07-30 17:40
  */
 fun Project.applyARouter() {
+    val libs = libsForCatalog()
     if (plugins.hasPlugin(com.android.build.gradle.AppPlugin::class.java)) {
         apply<PluginLaunch>()
     }
@@ -47,10 +50,10 @@ fun Project.applyARouter() {
     }
 
     dependencies {
-        implementation(Deps.lib.aRouter.api)
-        annotationProcessor(Deps.lib.aRouter.compiler)
+        implementation(libs.library("arouter-api"))
+        annotationProcessor(libs.library("arouter-compiler"))
         if (hasKotlin) {
-            kapt(Deps.lib.aRouter.compiler)
+            kapt(libs.library("arouter-compiler"))
         }
     }
 }

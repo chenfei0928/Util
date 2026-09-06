@@ -1,6 +1,37 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        mavenLocal()
+    }
+    includeBuild("build-logic")
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven("https://maven.aliyun.com/repository/central")
+        maven("https://maven.aliyun.com/repository/gradle-plugin")
+        maven("https://maven.aliyun.com/repository/google")
+        maven("https://jitpack.io")
+        maven("https://oss.sonatype.org/content/repositories/public")
+        maven("http://maven.geelib.360.cn/nexus/repository/replugin/") {
+            isAllowInsecureProtocol = true
+        }
+    }
+    dependencies {
+        classpath("io.github.chenfei0928:build-logic:1.0.0")
+    }
+}
+
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
+
 dependencyResolutionManagement {
     enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
