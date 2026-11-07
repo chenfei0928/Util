@@ -35,8 +35,8 @@ public class PcmToWavConverter {
     private static byte[] createHeader(long totalAudioLen, int sampleRate, byte channels, byte bitNum) {
         // 采样字节byte率
         long byteRate = (long) sampleRate * channels * bitNum / 8;
-        // 总大小，由于不包括RIFF和WAV，所以是44 - 8 = 36，在加上PCM文件大小
-        long totalDataLen = totalAudioLen + 36;
+        // 总大小，所以是44，在加上PCM文件大小
+        long totalDataLen = totalAudioLen + 44;
         byte[] header = new byte[HEADER_SIZE_WAVE];
         // RIFF
         header[0] = 'R';
@@ -83,10 +83,10 @@ public class PcmToWavConverter {
         header[30] = (byte) ((byteRate >> 16) & 0xff);
         header[31] = (byte) ((byteRate >> 24) & 0xff);
         // 确定系统一次要处理多少个这样字节的数据，确定缓冲区，通道数*采样位数
-        header[32] = (byte) (channels * 16 / 8);
+        header[32] = (byte) (channels * bitNum / 8);
         header[33] = 0;
         //每个样本的数据位数
-        header[34] = 16;
+        header[34] = bitNum;
         header[35] = 0;
         // Data chunk
         // data
@@ -127,8 +127,8 @@ public class PcmToWavConverter {
     }
 
     private void fixSize(byte[] target, int size) {
-        // 总大小，由于不包括RIFF和WAV，所以是44 - 8 = 36，在加上PCM文件大小
-        int totalDataLen = size + 36;
+        // 总大小，所以是44，在加上PCM文件大小
+        int totalDataLen = size + 44;
         // 数据大小
         target[4] = (byte) (totalDataLen & 0xff);
         target[5] = (byte) ((totalDataLen >> 8) & 0xff);

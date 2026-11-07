@@ -13,7 +13,7 @@ import io.github.chenfei0928.preference.base.ProtobufMessageField
 import io.github.chenfei0928.preference.base.ProtobufMessageField.Companion.property
 import io.github.chenfei0928.preference.base.ProtobufMessageField.Companion.protobufField
 import io.github.chenfei0928.preference.base.ProtobufMessageField.Companion.protobufProperty
-import io.github.chenfei0928.preference.bindProtobufEnum
+import io.github.chenfei0928.preference.base.bindProtobufEnum
 
 /**
  * @author chenf()

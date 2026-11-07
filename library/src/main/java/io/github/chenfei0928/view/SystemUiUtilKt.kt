@@ -4,6 +4,7 @@
  */
 package io.github.chenfei0928.view
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.view.Gravity
 import android.view.View
@@ -25,6 +26,7 @@ import androidx.core.view.updatePadding
 import androidx.core.view.updatePaddingRelative
 import io.github.chenfei0928.lang.contains
 
+@SuppressLint("RtlHardcoded")
 fun View.applySystemInsetMargin(@GravityInt direction: Int) {
     val originalMarginLeft = marginLeft
     val originalMarginTop = marginTop
@@ -64,6 +66,7 @@ fun View.applySystemInsetMargin(@GravityInt direction: Int) {
     }
 }
 
+@SuppressLint("RtlHardcoded")
 fun View.applySystemInsetPadding(@GravityInt direction: Int) {
     val originalPaddingLeft = paddingLeft
     val originalPaddingTop = paddingTop

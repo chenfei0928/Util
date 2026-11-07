@@ -1,12 +1,11 @@
 package io.github.chenfei0928.widget.recyclerview.binder
 
 import androidx.annotation.CallSuper
-import androidx.databinding.Observable
 import io.github.chenfei0928.util.BeanExtValDelegate
 import io.github.chenfei0928.widget.recyclerview.adapter.ViewHolder
 
 /**
- * dataBinding [Observable] 的从实例状态回调通知view更新的实现
+ * dataBinding [androidx.databinding.Observable] 的从实例状态回调通知view更新的实现
  * 要求子类实现[setBeanPropertyChangedNeedViewUpdateCallback]回调，将给定的监听器设置给bean的可监听字段，
  * 在字段值变化时通知给定的回调，回调中将会调用[syncBeanChanged]来更新view
  *
@@ -55,8 +54,8 @@ abstract class BaseObservableTwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>(
     private class ObservableBindToViewHolderCallback<Bean, VH : ViewHolder<Bean>>(
         private val binder: BaseObservableTwoWayLayoutBinder<Bean, VH>,
         var holder: VH? = null,
-    ) : Observable.OnPropertyChangedCallback() {
-        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+    ) : androidx.databinding.Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(sender: androidx.databinding.Observable?, propertyId: Int) {
             val holder = holder
                 ?: return
             binder.syncBeanChanged(holder, sender, propertyId)
@@ -69,6 +68,6 @@ abstract class BaseObservableTwoWayLayoutBinder<Bean, VH : ViewHolder<Bean>>(
      * 在字段值变化时通知给定的回调，回调中将会调用[syncBeanChanged]来更新view
      */
     protected abstract fun setBeanPropertyChangedNeedViewUpdateCallback(
-        bean: Bean, callback: Observable.OnPropertyChangedCallback
+        bean: Bean, callback: androidx.databinding.Observable.OnPropertyChangedCallback
     )
 }

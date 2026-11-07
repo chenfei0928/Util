@@ -1,13 +1,15 @@
 package io.github.chenfei0928.data
 
 /**
+ * @param useProtobufLite 使用ProtobufLite作为基类生成示例类
+ * @param useFullDependencies 如果使用ProtobufLite作为基类时（即[useProtobufLite]为true时），
+ * 是否使用Lite或Full运行时
+ *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2022-07-05 18:39
  */
 enum class ProtobufType(
-    // 使用ProtobufLite作为基类生成示例类
     internal val useProtobufLite: Boolean,
-    // 不使用Lite运行时，仅当[useLite]为true时有效
     internal val useFullDependencies: Boolean,
 ) {
     /**

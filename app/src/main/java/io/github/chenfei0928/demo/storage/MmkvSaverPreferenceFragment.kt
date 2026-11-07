@@ -1,7 +1,6 @@
 package io.github.chenfei0928.demo.storage
 
 import android.os.Bundle
-import io.github.chenfei0928.util.Log
 import android.view.View
 import androidx.core.os.postDelayed
 import androidx.preference.PreferenceFragmentCompat
@@ -12,8 +11,9 @@ import io.github.chenfei0928.lang.toStringByReflect
 import io.github.chenfei0928.os.Debug
 import io.github.chenfei0928.os.safeHandler
 import io.github.chenfei0928.preference.base.FieldAccessor
-import io.github.chenfei0928.preference.bindEnum
+import io.github.chenfei0928.preference.base.bindEnum
 import io.github.chenfei0928.preference.sp.SpSaverPreferenceGroupBuilder.Companion.buildPreferenceScreen
+import io.github.chenfei0928.util.Log
 import kotlin.random.Random
 
 /**
@@ -25,16 +25,22 @@ class MmkvSaverPreferenceFragment : PreferenceFragmentCompat() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        spSaver.anyPropertySetCallback.observe(viewLifecycleOwner) {
+        spSaver.fieldAccessorCache.getPropertyLiveData(TestMmkvSaver::int)
+            .observe(viewLifecycleOwner) {
+                Log.v(TAG, "onCreate: mmkvSaver int newValue is $it, by getPropertyLiveData")
+            }
+        spSaver.fieldAccessorCache.getPropertyObservable(
+            TestMmkvSaver::int
+        ).observe(viewLifecycleOwner) {
+            Log.v(TAG, "onCreate: mmkvSaver int newValue is $it, by getPropertyObservable")
+        }
+        spSaver.fieldAccessorCache.anyPropertyChangeCallback.observe(viewLifecycleOwner) {
             Log.v(TAG, buildString {
                 append("onCreate: mmkvSaver anyPropertySetCallback ")
-                append(it)
+                append(it.first)
                 append(' ')
                 append(it.second?.toStringByReflect())
             })
-        }
-        spSaver.getPropertyObservable(TestMmkvSaver::int).observe(viewLifecycleOwner) {
-            Log.v(TAG, "onCreate: mmkvSaver int newValue is $it")
         }
         safeHandler.postDelayed(100L) {
             Log.i(TAG, "onViewCreated: set obj, before is $spSaver")

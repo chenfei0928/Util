@@ -2,6 +2,7 @@ package io.github.chenfei0928.concurrent.lazy
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.CoroutineContext
@@ -20,18 +21,19 @@ import kotlin.coroutines.EmptyCoroutineContext
  */
 class SuspendGetter<T>(
     private val context: CoroutineContext = EmptyCoroutineContext,
-    private val initializer: suspend CoroutineScope.() -> T
+    private val start: CoroutineStart = CoroutineStart.LAZY,
+    private val initializer: suspend CoroutineScope.() -> T,
 ) {
     // 原子化获取值的引用，用于避免多线程访问并发冲突
     private val atomicReference = AtomicReference<IGetter<T>>(
-        IGetter.DeferredGetter(context, initializer)
+        IGetter.DeferredGetter(context, start, initializer = initializer)
     )
 
     /**
      * 重置值以下次获取时重新执行初始化[initializer]
      */
     fun reset() {
-        atomicReference.set(IGetter.DeferredGetter(context, initializer))
+        atomicReference.set(IGetter.DeferredGetter(context, start, initializer = initializer))
     }
 
     /**
@@ -46,7 +48,7 @@ class SuspendGetter<T>(
      *
      * @return 获取到的数据
      */
-    tailrec suspend fun get(): T = when (val mayBeDeferred = atomicReference.get()) {
+    tailrec suspend fun getOrAwait(): T = when (val mayBeDeferred = atomicReference.get()) {
         is IGetter.Object<T> -> {
             // 已获取到的值，直接返回结果
             mayBeDeferred.obj
@@ -68,10 +70,12 @@ class SuspendGetter<T>(
                 next
             } else {
                 // 更新结果失败（缓存中的值可能已经被更新），重新执行该方法以获取最新数据
-                get()
+                getOrAwait()
             }
         }
     }
+
+    fun getNowOrNull(): T? = (atomicReference.get() as? IGetter.Object<T>)?.obj
 
     /**
      * 使用自定义逻辑更新本地值
@@ -81,7 +85,7 @@ class SuspendGetter<T>(
     suspend fun update(block: (T) -> T) {
         do {
             // 检查以确认缓存中的值是已获取完毕的
-            get()
+            getOrAwait()
             val mayBeDeferred = atomicReference.get()
             // 如果缓存中的值是已获取完毕的，执行更新缓存值的回调并更新到缓存中，如果成功则函数结束，否则重试
         } while (mayBeDeferred !is IGetter.Object ||
@@ -106,11 +110,12 @@ class SuspendGetter<T>(
          */
         class DeferredGetter<T>(
             context: CoroutineContext,
+            start: CoroutineStart,
             initializer: suspend CoroutineScope.() -> T
         ) : IGetter<T>, suspend () -> T {
             // 延期获取代码的执行者实例
             private val deferred = CoroutineScope(context).async(
-                start = CoroutineStart.LAZY,
+                start = start,
                 block = initializer
             )
 
@@ -119,7 +124,12 @@ class SuspendGetter<T>(
              *
              * @return 获取到的数据结果
              */
+            @OptIn(ExperimentalCoroutinesApi::class)
             override suspend fun invoke(): T {
+                if (deferred.isCompleted) {
+                    return deferred.getCompleted()
+                }
+                deferred.start()
                 return deferred.await()
             }
         }

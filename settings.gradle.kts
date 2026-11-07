@@ -1,3 +1,6 @@
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
 dependencyResolutionManagement {
     enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)

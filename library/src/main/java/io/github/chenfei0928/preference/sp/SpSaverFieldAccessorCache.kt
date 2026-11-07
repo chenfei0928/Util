@@ -24,7 +24,7 @@ import kotlin.reflect.jvm.isAccessible
  * @author chenfei(chenfei0928@gmail.com)
  * @date 2022-04-24 10:42
  */
-class SpSaverFieldAccessorCache<SpSaver : AbsSpSaver<SpSaver, *, *>>
+open class SpSaverFieldAccessorCache<SpSaver : AbsSpSaver<SpSaver, *, *>>
 constructor(
     internal val saver: SpSaver,
     fieldAccessor: SpSaverFieldAccessor<SpSaver> = SpSaverFieldAccessor.Impl(saver),
@@ -55,12 +55,16 @@ constructor(
         it.property.name == property.name
     } as? Field<SpSaver, V>
 
+    private val delegateByReflect = mutableMapOf<String, AbsSpSaver.Delegate<SpSaver, *>>()
+
     /**
      * 根据 [property] 查询对应的委托，如果查找不到则通过反射获取其委托
      */
     @Suppress("UNCHECKED_CAST")
     internal fun <V> getDelegateOrByReflect(property: KProperty<V>): AbsSpSaver.Delegate<SpSaver, V> {
-        return findFieldOrNullByProperty(property)?.outDelegate ?: run {
+        return findFieldOrNullByProperty(property)?.outDelegate ?: delegateByReflect.getOrPut(
+            property.name
+        ) {
             Log.d(TAG, buildString {
                 append("getDelegateByProperty: getDelegate fallback to kotlin reflect call, maybe slow, because ")
                 append(property)
@@ -84,7 +88,7 @@ constructor(
                 "Property($property) must is delegate subclass as AbsSpSaver.Delegate: $delegate0"
             }
             delegate0 as AbsSpSaver.Delegate<SpSaver, V>
-        }
+        } as AbsSpSaver.Delegate<SpSaver, V>
     }
 
     /**
@@ -117,7 +121,8 @@ constructor(
     //</editor-fold>
 
     /**
-     * 通知一个字段被变更，并返回受影响的field的key
+     * 通知一个字段被变更；并返回受影响的 [Field.pdsKey] 的集合，
+     * 即 [androidx.preference.Preference.getKey] 的集合
      */
     internal fun onPropertyChange(localStorageKey: String): Collection<String> {
         return properties.mapNotNull {

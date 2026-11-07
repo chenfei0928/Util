@@ -18,6 +18,7 @@ object ResUriUtil {
                 context.getResourcePackageName(id) + "/" + id
 
     @JvmStatic
+//    @kotlin.internal.IntrinsicConstEvaluation
     fun getAssetFileUri(assetFileName: String) =
         "file:///android_asset/$assetFileName"
 }

@@ -33,10 +33,12 @@ arrayOf(
     File(appDataRoaming, "\\BaiduYunGuanjia\\BaiduYunKernel\\VideoLog"),
     File(appDataRoaming, "\\HandBrake\\logs"),
     File(appDataRoaming, "\\Tencent\\TencentVideoMPlayer\\webkit_cache"),
+    File(appDataRoaming, "\\MrRSS\\logs"),
+    File(appDataRoaming, "\\Microsoft\\OneDrive\\Update"),
 
     File(local, "\\Microsoft\\OneDrive\\logs"),
+    File(local, "\\Microsoft\\OneDrive\\Update"),
     File(local, "\\Figma\\packages"),
-    File(local, "\\JetBrains\\IdeaIC2025.2\\log"),
     File(local, "\\EpicGamesLauncher\\Saved\\Logs"),
     File(local, "\\Battle.net\\Cache"),
     File(local, "\\UniGetUI\\Chocolatey\\logs"),
@@ -45,6 +47,11 @@ arrayOf(
     File(local, "\\cbox\\cache"),
     File(local, "\\Qingfeng\\HeyboxChat\\log"),
     File(local, "\\Feishu\\app.todelete"),
+    File(local, "\\Quark\\User Data\\pdf-viewer"),
+    File(local, "\\Quark\\User Data\\QianwenInstaller"),
+    File(local, "\\Quark\\User Data\\ulog"),
+    File(local, "\\quark-cloud-drive-updater"),
+    File(local, "\\Google\\Chrome\\User Data\\Default\\IndexedDB\\https_v.youku.com_0.indexeddb.blob"),
 
     File(userHome, "\\.comate-engine\\log"),
     File(userHome, "\\.comate-engine\\mpc-log"),
@@ -58,7 +65,19 @@ arrayOf(
     }
 }
 
-// 飞书目录旧版本
+val skipJeetBrainsDir = arrayOf(
+    "device-explorer",
+    "plugins",
+)
+(File(local, "Google").listFiles { it.isDirectory && it.name.startsWith("AndroidStudio") } +
+        File(local, "JetBrains").listFiles { it.isDirectory && it.name.startsWith("IdeaIC") }
+        ).forEach {
+            it.listFiles().filter { it.name !in skipJeetBrainsDir }.forEach {
+//                it.deleteRecursively()
+            }
+    }
+
+// 飞书等目录旧版本(最新版本永远不为版本号为目录名，旧版本以版本号为目录名)
 arrayOf(
     File(local, "\\Feishu"),
 ).forEach {
@@ -139,6 +158,8 @@ File(appDataRoaming, "\\Figma\\DesktopProfile").listFiles { it.isDirectory }?.to
 arrayOf(
     File(local, "\\kingsoft\\WPS Office"),
     File(local, "\\youdao\\dict\\Application"),
+    File(local, "\\Programs\\Quark"),
+    File(local, "\\Programs\\QuarkCloudDrive"),
 
     File(appDataRoaming, "\\Tencent\\WXWork\\wmpf_Applet"),
     File(appDataRoaming, """\Tencent\WXWork\WXDrive_x64"""),
@@ -210,6 +231,10 @@ private fun cleanChromiumCache(dir: File) {
 private fun cleanPoolOldVersion(files: List<File>) {
     val namesFile: MutableMap<String, MutableMap<ModuleDescriptor.Version, File>> = HashMap()
     files.forEach { file ->
+        if (file.name == "__obsolete") {
+            file.deleteRecursively()
+            return@forEach
+        }
         if (file.listFiles().isNullOrEmpty()) {
             file.deleteRecursively()
             return@forEach
@@ -234,3 +259,22 @@ private fun cleanPoolOldVersion(files: List<File>) {
         }
     }
 }
+
+val programData = System.getenv("ALLUSERSPROFILE")
+val epicPatch = File(programData, "Ubisoft\\Ubisoft Game Launcher\\patch")
+if (epicPatch.exists()) {
+    val usingPath = File(epicPatch, "patch.txt").readLines().firstOrNull()
+    epicPatch.listFiles().filter { it.isDirectory && it.name != usingPath }.forEach {
+        it.deleteRecursively()
+    }
+}
+
+val deleteDirName = arrayOf(
+    "cache", "log", "Dump"
+)
+File(programData, "MI").walk().onEnter { file ->
+    if (file.isDirectory && deleteDirName.any { file.name.equals(it, true) }) {
+        file.deleteRecursively()
+    }
+    true
+}.forEach {}

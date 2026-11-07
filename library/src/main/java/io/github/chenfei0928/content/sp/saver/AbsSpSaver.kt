@@ -3,7 +3,7 @@ package io.github.chenfei0928.content.sp.saver
 import android.content.SharedPreferences
 import io.github.chenfei0928.content.sp.saver.AbsSpSaver.Companion.edit
 import io.github.chenfei0928.preference.sp.SpSaverFieldAccessor
-import io.github.chenfei0928.preference.sp.SpSaverFieldAccessorCache
+import io.github.chenfei0928.preference.sp.SpSaverFieldObserver
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -11,6 +11,8 @@ import kotlin.reflect.KProperty
 /**
  * 对提供[SharedPreferences]字段存取框架进行支持，子类通过属性委托来快速实现对sp中字段的存取功能。
  * 但在对字段值进行修改时，其不会被立刻写入，需要手动调用[commit]或[apply]进行保存，或使用[edit]来进行编辑。
+ *
+ * @param enableFieldObservable 是否启用字段级别的观察者 [io.github.chenfei0928.content.sp.saver.convert.SpValueObservable]
  *
  * @author ChenFei(chenfei0928@gmail.com)
  * @date 2020-07-15 15:34
@@ -30,6 +32,12 @@ constructor(
         fun getLocalStorageKey(property: KProperty<*>): String
     }
 
+    /**
+     * 装饰器，用于在字段委托上附加额外的功能。例如：字段值变更监听、字段值类型转换等。
+     *
+     * @param SpSaver 子类类型
+     * @param V 输入输出的字段类型
+     */
     interface Decorate<SpSaver : AbsSpSaver<SpSaver, *, *>, V> {
         val saver: Delegate<SpSaver, V>
 
@@ -64,9 +72,13 @@ constructor(
     }
     //</editor-fold>
 
-    val fieldAccessorCache: SpSaverFieldAccessorCache<SpSaver> by lazy {
+    val fieldAccessorCache: SpSaverFieldObserver<SpSaver> by lazy {
         @Suppress("UNCHECKED_CAST")
-        SpSaverFieldAccessorCache<SpSaver>(this as SpSaver)
+        SpSaverFieldObserver<SpSaver>(
+            saver = this as SpSaver,
+            sp = sp,
+            enableFieldObservable = enableFieldObservable
+        )
     }
 
     //<editor-fold desc="提供通用SpCommit的默认实现" defaultstatus="collapsed">
@@ -76,9 +88,9 @@ constructor(
 
     final override fun remove(key: String) {
         editor.remove(key)
-        // 查找存储值为该key的字段，为了避免找到二次field，使用pdsKey查找
-        fieldAccessorCache.spSaverPropertyDelegateFields.find { it.pdsKey == key }
-            ?.let(::onFieldValueRemoved)
+        // 查找存储值为该key的字段
+        fieldAccessorCache.spSaverPropertyDelegateFields.filter { it.localStorageKey == key }
+            .forEach(::onFieldValueRemoved)
     }
 
     final override fun remove(property: KProperty<*>) {
@@ -87,6 +99,11 @@ constructor(
         onFieldValueRemoved(field)
     }
 
+    /**
+     * 当一个字段的值被移除时，会调用此方法。
+     *
+     * @param field 被移除的字段信息。
+     */
     protected open fun onFieldValueRemoved(field: SpSaverFieldAccessor.Field<SpSaver, *>) {
         // noop
     }
@@ -109,15 +126,11 @@ constructor(
      */
     protected inline fun <V> dataStore(
         findSpAccessorDelegateIfStruct: Boolean = false,
-        block: () -> Delegate<SpSaver, V>
+        block: () -> Delegate<SpSaver, V>,
     ): PropertyDelegateProvider<SpSaver, ReadWriteProperty<SpSaver, V>> =
         DataStoreDelegateStoreProvider(
             enableFieldObservable, findSpAccessorDelegateIfStruct, block()
         )
-
-    internal open fun onPropertyAdded(field: SpSaverFieldAccessor.Field<SpSaver, *>) {
-        // noop
-    }
 
     companion object {
         @JvmStatic
@@ -132,7 +145,5 @@ constructor(
                 apply()
             }
         }
-
-        fun <Sp : SharedPreferences> getSp(spSaver: AbsSpSaver<*, Sp, *>): Sp = spSaver.sp
     }
 }

@@ -21,6 +21,9 @@
         <activity
             android:name=".storage.PreferenceActivity"
             android:exported="false" />
+        <activity
+            android:name=".ComposeActivity"
+            android:exported="false" />
 
         <service
             android:name=".AudioFocusService"

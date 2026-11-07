@@ -6,12 +6,10 @@
  */
 package io.github.chenfei0928.collection
 
-inline fun <reified T, reified R> Collection<T>.mapToArray(
+inline fun <T, reified R> Collection<T>.mapToArray(
     transform: (T) -> R
 ): Array<R> = if (this is List<T>) {
-    Array<R>(size) {
-        transform(get(it))
-    }
+    Array(size) { transform(get(it)) }
 } else {
     val output = arrayOfNulls<R>(size)
     this.forEachIndexed { index, item ->
@@ -19,12 +17,6 @@ inline fun <reified T, reified R> Collection<T>.mapToArray(
     }
     @Suppress("UNCHECKED_CAST")
     output as Array<R>
-}
-
-inline fun <T, reified R> List<T>.mapToArray(
-    transform: (T) -> R
-): Array<R> = Array(size) {
-    transform(this[it])
 }
 
 inline fun <T, reified R> Array<T>.mapToArray(
@@ -45,12 +37,6 @@ inline fun <T> Collection<T>.mapToIntArray(
         output[index] = transform(item)
     }
     output
-}
-
-inline fun <T> List<T>.mapToIntArray(
-    transform: (T) -> Int
-): IntArray = IntArray(size) {
-    transform(this[it])
 }
 
 inline fun <T> Array<T>.mapToIntArray(

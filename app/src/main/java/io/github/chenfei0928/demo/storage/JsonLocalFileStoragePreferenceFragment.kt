@@ -10,7 +10,7 @@ import io.github.chenfei0928.preference.LocalStorageFieldAccessorCache
 import io.github.chenfei0928.preference.base.DataCopyClassFieldAccessor.Companion.cacheCopyFunc
 import io.github.chenfei0928.preference.base.DataCopyClassFieldAccessor.Companion.property
 import io.github.chenfei0928.preference.base.MutableFieldAccessor.Companion.property
-import io.github.chenfei0928.preference.bindEnum
+import io.github.chenfei0928.preference.base.bindEnum
 
 /**
  * @author chenf()

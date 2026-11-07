@@ -29,7 +29,8 @@ inline fun SharedPreferences.registerOnSharedPreferenceChangeListener(
 inline fun <T> SharedPreferences.toLiveData(
     filterKey: String? = null, crossinline valueGetter: (SharedPreferences) -> T
 ): LiveData<T> = object : LifecycleBindOnSharedPreferenceChangeListener.SpValueLiveData<T>(
-    this, filterKey
+    this
 ) {
+    override val filterKey: String? = filterKey
     override fun valueGetter(): T = valueGetter(this@toLiveData)
 }

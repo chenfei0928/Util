@@ -1,37 +1,11 @@
 package io.github.chenfei0928.lang
 
 import androidx.annotation.ReturnThis
-import com.google.protobuf.Message
-import com.google.protobuf.toShortString
 import io.github.chenfei0928.base.UtilInitializer
 import io.github.chenfei0928.reflect.isSubclassOf
 import io.github.chenfei0928.util.DependencyChecker
-import java.lang.Byte
-import java.lang.CharSequence
-import java.lang.Double
-import java.lang.Float
-import java.lang.Long
-import java.lang.Number
-import java.lang.Short
 import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.Any
-import kotlin.Boolean
-import kotlin.BooleanArray
-import kotlin.ByteArray
-import kotlin.CharArray
-import kotlin.DoubleArray
-import kotlin.FloatArray
-import kotlin.IntArray
-import kotlin.LongArray
-import kotlin.ShortArray
-import kotlin.String
-import kotlin.Suppress
-import kotlin.apply
-import kotlin.charArrayOf
-import kotlin.code
-import kotlin.toRawBits
-import kotlin.toString
 
 /**
  * 配置ToStringByReflect的参数
@@ -42,8 +16,10 @@ import kotlin.toString
  * @property reflectSkipPackages 跳过反射处理字段的包名前缀，例如"java.lang."、"kotlin."等。
  * 在列表中的类型哪怕 [useToStringMethod] 返回`false`也会直接调用 [Any.toString] 方法输出，否则使用反射输出字段。
  * @property skipNodeTypes 跳过节点记录的类型，例如String、Int等，在列表中的类型每次都会 toString
- * @property protobufToShortString 是否在对protobuf的 [Message] 类型调用 [Message.toShortString] 方法，而不是 [Message.toString]
- * @property stringerProvider 自定义类型的toString方式，例如 protobuf 的 [Message] 类型可以使用 [Message.toShortString]
+ * @property protobufToShortString 是否在对protobuf的 [com.google.protobuf.MessageLiteOrBuilder]
+ * 类型调用 [DependencyChecker.Protobuf.appendShortTo] 方法，而不是 [Any.toString]
+ * @property stringerProvider 自定义类型的toString方式，例如 protobuf 的
+ * [com.google.protobuf.MessageLiteOrBuilder] 类型可以使用 [DependencyChecker.Protobuf.appendShortTo]
  */
 data class ToStringByReflectConfig(
     private val useToString: Boolean,
@@ -254,17 +230,17 @@ data class ToStringByReflectConfig(
                 "kotlinx.",
             ),
             skipNodeTypes = setOf(
-                java.lang.String::class.java,
+                String::class.java,
                 CharSequence::class.java,
                 Number::class.java,
-                java.lang.Boolean::class.java,
+                Boolean::class.java,
                 Byte::class.java,
                 Short::class.java,
-                Integer::class.java,
+                Int::class.java,
                 Long::class.java,
                 Float::class.java,
                 Double::class.java,
-                Character::class.java,
+                Char::class.java,
                 Void::class.java,
                 Date::class.java,
             ),

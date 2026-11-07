@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap
 @Throws(
     IllegalAccessException::class, IllegalArgumentException::class, InvocationTargetException::class
 )
-inline fun Method.safeInvoke(target: Any?, args: Array<Any?>?): Any? {
+fun Method.safeInvoke(target: Any?, args: Array<Any?>?): Any? {
     return if (args == null) {
         this.invoke(target)
     } else {

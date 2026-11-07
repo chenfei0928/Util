@@ -25,7 +25,7 @@ fun Drawable.asRipple(context: Context): Drawable {
 }
 
 /**
- * 处理图层列表中每一图层
+ * 处理图层列表中每一个图层
  */
 inline fun LayerDrawable.forEachLayer(block: (index: Int, drawable: Drawable) -> Unit) {
     for (it in 0 until numberOfLayers) {

@@ -49,6 +49,7 @@ open class MediatorLiveListeners<ThisObserver> : LiveListeners<ThisObserver>() {
                 } else {
                     liveListeners.removeObserver(observer)
                 }
+                field = value
             }
     }
 }
