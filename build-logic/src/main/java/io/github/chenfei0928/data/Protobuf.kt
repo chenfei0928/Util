@@ -5,7 +5,6 @@ import com.google.protobuf.gradle.GenerateProtoTask
 import com.google.protobuf.gradle.ProtobufExtension
 import com.google.protobuf.gradle.ProtobufPlugin
 import com.google.protobuf.gradle.proto
-import io.github.chenfei0928.Deps
 import io.github.chenfei0928.Env
 import io.github.chenfei0928.compiler.hasKotlin
 import io.github.chenfei0928.util.api
@@ -15,21 +14,13 @@ import io.github.chenfei0928.util.defaultConfig
 import io.github.chenfei0928.util.implementation
 import io.github.chenfei0928.util.packaging
 import io.github.chenfei0928.util.sourceSets
+import io.github.chenfei0928.util.libsForCatalog
+import io.github.chenfei0928.util.library
+import io.github.chenfei0928.util.version
 import io.github.chenfei0928.util.writeTmpProguardFile
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
-
-// https://github.com/grpc/grpc-java
-private const val grpcVersion = Deps.lib.protobuf.grpcVersion
-
-// https://github.com/grpc/grpc-kotlin
-private const val grpcKotlinVersion = Deps.lib.protobuf.grpcKotlinVersion
-
-// https://github.com/protocolbuffers/protobuf
-// https://github.com/protocolbuffers/protobuf/blob/main/java/lite.md
-// https://mvnrepository.com/artifact/com.google.protobuf/protobuf-javalite
-private const val protobufVersion = Deps.lib.protobuf.protobufVersion
 
 private const val proguardFileName = "protobuf.pro"
 private const val proguardRules = """
@@ -47,6 +38,11 @@ private const val proguardRules = """
  * @date 2021-10-28 15:12
  */
 fun Project.applyProtobufDependencies(includeGrpc: Boolean = true) {
+    val libs = libsForCatalog()
+    val grpcVersion = libs.version("grpc")
+    val grpcKotlinVersion = libs.version("grpc-kotlin")
+    val protobufVersion = libs.version("protobuf-java")
+
     buildSrcAndroid<CommonExtension>().apply {
         // 打包时排除proto接口的源代码
         packaging.resources.excludes.add("**.proto")
@@ -77,15 +73,15 @@ fun Project.applyProtobufDependencies(includeGrpc: Boolean = true) {
         // Protobuf
         implementation("com.google.protobuf:protoc:$protobufVersion")
         if (Env.protobufType.useFullDependencies) {
-            api(Deps.lib.protobuf.java)
-            api(Deps.lib.protobuf.util)
+            api(libs.library("protobuf-java"))
+            api(libs.library("protobuf-util"))
             if (hasKotlin) {
-                api(Deps.lib.protobuf.kotlin)
+                api(libs.library("protobuf-kotlin"))
             }
         } else {
-            implementation(Deps.lib.protobuf.kotlin)
+            implementation(libs.library("protobuf-kotlin"))
             if (hasKotlin) {
-                api(Deps.lib.protobuf.kotlinLite)
+                api(libs.library("protobuf-kotlin-lite"))
             }
         }
     }
@@ -98,6 +94,11 @@ fun Project.applyProtobufDependencies(includeGrpc: Boolean = true) {
  * @param useKotlinExt 是否生成Protobuf数据结构的Kotlin扩展函数
  */
 fun Project.applyProtobuf(includeGrpc: Boolean = false, useKotlinExt: Boolean = false) {
+    val libs = libsForCatalog()
+    val grpcVersion = libs.version("grpc")
+    val grpcKotlinVersion = libs.version("grpc-kotlin")
+    val protobufVersion = libs.version("protobuf-java")
+
     apply<ProtobufPlugin>()
 
     applyProtobufDependencies(includeGrpc = includeGrpc)

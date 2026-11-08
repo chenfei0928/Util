@@ -158,8 +158,8 @@ File(appDataRoaming, "\\Figma\\DesktopProfile").listFiles { it.isDirectory }?.to
 arrayOf(
     File(local, "\\kingsoft\\WPS Office"),
     File(local, "\\youdao\\dict\\Application"),
-    File(local, "\\Programs\\Quark"),
-    File(local, "\\Programs\\QuarkCloudDrive"),
+    // File(local, "\\Programs\\Quark"),
+    // File(local, "\\Programs\\QuarkCloudDrive"),
 
     File(appDataRoaming, "\\Tencent\\WXWork\\wmpf_Applet"),
     File(appDataRoaming, """\Tencent\WXWork\WXDrive_x64"""),

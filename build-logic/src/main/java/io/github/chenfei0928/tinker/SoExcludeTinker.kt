@@ -4,7 +4,6 @@ import com.android.build.api.dsl.ApkSigningConfig
 import com.android.build.api.dsl.ApplicationExtension
 import com.google.gradle.osdetector.OsDetectorPlugin
 import com.tencent.tinker.build.util.TypedValue
-import io.github.chenfei0928.Deps
 import io.github.chenfei0928.Env
 import io.github.chenfei0928.util.buildOutputsDir
 import io.github.chenfei0928.util.buildSrcAndroid
@@ -13,6 +12,9 @@ import io.github.chenfei0928.util.checkApp
 import io.github.chenfei0928.util.child
 import io.github.chenfei0928.util.forEachAssembleTasks
 import io.github.chenfei0928.util.implementation
+import io.github.chenfei0928.util.libsForCatalog
+import io.github.chenfei0928.util.library
+import io.github.chenfei0928.util.version
 import io.github.chenfei0928.util.replaceFirstCharToUppercase
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -28,6 +30,7 @@ import java.util.zip.ZipOutputStream
  * @date 2025-12-18 14:20
  */
 fun Project.applyAppSoExclude() {
+    val libs = libsForCatalog()
     checkApp("applyAppSoExclude")
     apply<OsDetectorPlugin>()
 
@@ -36,7 +39,7 @@ fun Project.applyAppSoExclude() {
 
     // 添加 tinkerSdk 依赖
     dependencies {
-        implementation(Deps.framework.tinker)
+        implementation(libs.library("tinker"))
     }
 
     val appExtension = buildSrcAndroid<ApplicationExtension>()
